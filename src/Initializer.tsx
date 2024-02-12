@@ -1,4 +1,5 @@
-import { CssBaseline } from '@foundation';
+import { CssBaseline, webDemoTheme } from '@foundation';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { RootStore } from '@store';
 import i18n from '@translation';
 import { configure } from 'mobx';
@@ -18,7 +19,9 @@ export const Initializer = () => {
       <BrowserRouter>
         <I18nextProvider i18n={i18n}>
           <Provider rootStore={rootStore}>
-            <App />
+            <ThemeProvider theme={webDemoTheme}>
+              <App />
+            </ThemeProvider>
           </Provider>
         </I18nextProvider>
       </BrowserRouter>

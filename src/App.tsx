@@ -1,19 +1,20 @@
-import { styled } from '@foundation';
+import { Typography, styled } from '@foundation';
 import { AssetsPage, NFTsPage, Navigation, SettingsPage, TransactionsPage } from '@pages';
 import { observer } from 'mobx-react';
 import { Routes, Route } from 'react-router-dom';
 
-const RootStyled = styled('div')(() => ({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  backgroundColor: '#eeeeee',
+const RootStyled = styled('div')(({ theme }) => ({
+  height: '100vh',
+  backgroundColor: theme.palette.background.default,
 }));
 
 export const App = observer(function App() {
   return (
     <RootStyled>
-      Hello im web demo
+      <Typography variant="h1" color="text.primary">
+        Hello im web demo
+      </Typography>
+
       <Navigation />
       <Routes>
         <Route path="assets" element={<AssetsPage />} />

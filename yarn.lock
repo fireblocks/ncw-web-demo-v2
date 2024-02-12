@@ -964,6 +964,11 @@
   resolved "https://registry.npmjs.org/@floating-ui/utils/-/utils-0.2.1.tgz#16308cea045f0fc777b6ff20a9f25474dd8293d2"
   integrity sha512-9TANp6GPoMtYzQdt54kfAyMmz1+osLlXdg2ENroU7zzrtflTLrrC/lgrIfaSe+Wu0b89GKccT7vxXA0MoAIO+Q==
 
+"@fontsource-variable/figtree@^5.0.19":
+  version "5.0.19"
+  resolved "https://registry.npmjs.org/@fontsource-variable/figtree/-/figtree-5.0.19.tgz#143201f4566c4a30dd0262a0901850a72395d992"
+  integrity sha512-4R7dcsjNJxAhamtOXDlsZgXIPYShzP2sloFFaQXOO9bUHk1thkQWElXzvlinzzI17H59iexUf987m7XTOv/zyQ==
+
 "@fontsource/roboto@^5.0.8":
   version "5.0.8"
   resolved "https://registry.npmjs.org/@fontsource/roboto/-/roboto-5.0.8.tgz#613b477a56f21b5705db1a67e995c033ef317f76"

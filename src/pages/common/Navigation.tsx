@@ -1,4 +1,4 @@
-import { styled } from '@foundation';
+import { Typography, styled } from '@foundation';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
@@ -15,16 +15,32 @@ export const Navigation = observer(function Navigation() {
   return (
     <RootStyled>
       <li>
-        <NavLink to="/assets">{t('PAGE_NAME.ASSETS')}</NavLink>
+        <NavLink to="/assets">
+          <Typography variant="h6" color="text.primary">
+            {t('PAGE_NAME.ASSETS')}
+          </Typography>
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/transactions">{t('PAGE_NAME.TRANSACTIONS')}</NavLink>
+        <NavLink to="/transactions">
+          <Typography variant="h6" color="text.primary">
+            {t('PAGE_NAME.TRANSACTIONS')}
+          </Typography>
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/nfts">{t('PAGE_NAME.NFTs')}</NavLink>
+        <NavLink to="/nfts">
+          <Typography variant="h6" color="text.primary">
+            {t('PAGE_NAME.NFTs')}{' '}
+          </Typography>
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/settings">{t('PAGE_NAME.SETTINGS')}</NavLink>
+        <NavLink to="/settings">
+          <Typography variant="h6" color="text.primary">
+            {t('PAGE_NAME.SETTINGS')}{' '}
+          </Typography>
+        </NavLink>
       </li>
     </RootStyled>
   );
