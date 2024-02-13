@@ -4,23 +4,19 @@ import { action, computed, makeObservable, observable } from 'mobx';
 export class UserStore {
   @observable public loggedUser: IUser | null;
   @observable public storeIsReady: boolean;
+  @observable public error: string;
 
   private _authManager: IAuthManager;
-  private _error: string;
 
   constructor() {
     this.loggedUser = null;
     this.storeIsReady = false;
 
-    this._error = '';
+    this.error = '';
     this._authManager = new FirebaseAuthManager();
 
     this._authManager.onUserChanged((user) => {
-      if (user) {
-        this.setUser(user);
-      } else {
-        this.setStoreIsReady(true);
-      }
+      this.setUser(user);
     });
 
     makeObservable(this);
@@ -39,20 +35,26 @@ export class UserStore {
       });
   }
 
+  public logout(): void {
+    this._authManager
+      .logout()
+      .then(() => {
+        this.setUser(null);
+      })
+      .catch((error) => {
+        this.setError(error.message);
+      });
+  }
+
   @action
-  public setUser(user: IUser) {
+  public setUser(user: IUser | null) {
     this.loggedUser = user;
-    this.setStoreIsReady(true);
+    this.storeIsReady = true;
   }
 
   @action
   public setError(error: string) {
-    this._error = error;
-  }
-
-  @action
-  public setStoreIsReady(isReady: boolean) {
-    this.storeIsReady = isReady;
+    this.error = error;
   }
 
   @computed
