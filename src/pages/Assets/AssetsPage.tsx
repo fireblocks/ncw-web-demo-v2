@@ -7,7 +7,7 @@ const RootStyled = styled('div')(() => ({
   height: '100%',
 }));
 
-export const AssetsPage = observer(function AssetsPage() {
+export const AssetsPage: React.FC = observer(function AssetsPage() {
   return (
     <RootStyled>
       <Typography variant="h4" color="text.primary">

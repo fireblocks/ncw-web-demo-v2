@@ -4,6 +4,7 @@ export const translationToEnglish = {
     NFTs: 'NFTs',
     TRANSACTIONS: 'Transactions',
     SETTINGS: 'Settings',
+    LOGIN: 'Log in',
   },
   COMMON: {
     LOADING: 'Loading...',

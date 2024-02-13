@@ -7,7 +7,7 @@ const RootStyled = styled('div')(() => ({
   height: '100%',
 }));
 
-export const NFTsPage = observer(function NFTsPage() {
+export const NFTsPage: React.FC = observer(function NFTsPage() {
   return (
     <RootStyled>
       <Typography variant="h4" color="text.primary">
