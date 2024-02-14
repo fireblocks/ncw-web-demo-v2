@@ -1,5 +1,5 @@
 import { Button, Typography, styled } from '@foundation';
-import { useDeviceStore, useUserStore } from '@store';
+import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { redirect } from 'react-router-dom';
 
