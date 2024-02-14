@@ -27,9 +27,10 @@
       "esModuleInterop": true,
       "baseUrl": "./src",
       "paths": {
+        "@api": ["./api"],
         "@foundation": ["./foundation"],
         "@store": ["./store"],
-        "@api": ["./api"],
+        "@services": ["./services"],
         "@pages": ["./pages"],
         "@translation": ["./translation"],
         "@auth": ["./auth"],

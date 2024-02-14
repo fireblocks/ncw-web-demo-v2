@@ -1,6 +1,6 @@
 import { Typography, styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Navigation, SettingsPage, TransactionsPage } from '@pages';
-import { useUserStore } from '@store';
+import { useDeviceStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { Routes, Route } from 'react-router-dom';
 
@@ -11,10 +11,13 @@ const RootStyled = styled('div')(({ theme }) => ({
 
 export const App: React.FC = observer(function App() {
   const userStore = useUserStore();
+  const deviceStore = useDeviceStore();
 
   if (!userStore.storeIsReady) {
     return null;
-  }
+  } 
+
+  deviceStore.init();
 
   return (
     <RootStyled>
@@ -30,7 +33,7 @@ export const App: React.FC = observer(function App() {
           <>
             <Route path="assets" element={<AssetsPage />} />
             <Route path="transactions" element={<TransactionsPage />} />
-            <Route path="nft" element={<NFTsPage />} />
+            <Route path="nfts" element={<NFTsPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </>
         )}
