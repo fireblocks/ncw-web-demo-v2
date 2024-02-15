@@ -1,8 +1,9 @@
 import { Typography, styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Navigation, SettingsPage, TransactionsPage } from '@pages';
-import { useDeviceStore, useUserStore } from '@store';
+import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { Routes, Route } from 'react-router-dom';
+import { StoreInitializer } from './StoreInitializer';
 
 const RootStyled = styled('div')(({ theme }) => ({
   height: '100vh',
@@ -11,16 +12,14 @@ const RootStyled = styled('div')(({ theme }) => ({
 
 export const App: React.FC = observer(function App() {
   const userStore = useUserStore();
-  const deviceStore = useDeviceStore();
 
   if (!userStore.storeIsReady) {
     return null;
-  } 
-
-  deviceStore.init();
+  }
 
   return (
     <RootStyled>
+      {userStore.loggedUser && <StoreInitializer />}
       <Typography variant="h1" color="text.primary">
         {userStore.loggedUser ? `Hello ${userStore.userDisplayName}! Im web demo` : 'Hello im web demo'}
       </Typography>

@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { MobXProviderContext } from 'mobx-react';
+import { AccountsStore } from './Accounts.store';
 import { AssetsStore } from './Assets.store';
 import { DeviceStore } from './Device.store';
 import { RootStore } from './Root.store';
@@ -29,4 +30,9 @@ export function useAssetsStore(): AssetsStore {
 export function useTransactionsStore(): TransactionsStore {
   const rootStore = useRootStore();
   return rootStore.transactionsStore;
+}
+
+export function useAccountsStore(): AccountsStore {
+  const rootStore = useRootStore();
+  return rootStore.accountsStore;
 }

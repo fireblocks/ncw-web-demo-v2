@@ -20,7 +20,9 @@ export class AccountsStore {
   @action
   public async init(): Promise<void> {
     const deviceId = this._rootStore.deviceStore.deviceId;
-    const myAccounts = await getAccounts(deviceId, this._rootStore.userStore.accessToken);
+    const accessToken = this._rootStore.userStore.accessToken;
+
+    const myAccounts = await getAccounts(deviceId, accessToken);
 
     myAccounts.map((a) => {
       this.addAccount(a);

@@ -18,7 +18,11 @@ export class TransactionsStore {
   @action
   public async init(): Promise<void> {
     this.transactions = [];
-    const transactions = await getTransactions('deviceId', this._rootStore.userStore.accessToken);
+
+    const deviceId = this._rootStore.deviceStore.deviceId;
+    const accessToken = this._rootStore.userStore.accessToken;
+
+    const transactions = await getTransactions(deviceId, accessToken);
     transactions.map((t) => {
       this.addTransaction(t);
     });
