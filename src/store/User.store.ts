@@ -1,7 +1,7 @@
+import { getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
-import { getUserId } from '@api';
 
 export class UserStore {
   @observable public loggedUser: IUser | null;
@@ -66,12 +66,21 @@ export class UserStore {
   public setUser(user: IUser | null) {
     this.loggedUser = user;
     if (user) {
-      this._authManager.getAccessToken().then((token) => {
-        this.setAccessToken(token);
-        getUserId(token).then((userId) => {
-          this.setUserId(userId);
+      this._authManager
+        .getAccessToken()
+        .then((token) => {
+          this.setAccessToken(token);
+          getUserId(token)
+            .then((userId) => {
+              this.setUserId(userId);
+            })
+            .catch((error) => {
+              this.setError(error.message);
+            });
+        })
+        .catch((error) => {
+          this.setError(error.message);
         });
-      });
     }
     this.storeIsReady = true;
   }
@@ -96,6 +105,7 @@ export class UserStore {
     this.setUser(null);
     this.setAccessToken('');
     this.setUserId('');
+    this.setError('');
   }
 
   @computed

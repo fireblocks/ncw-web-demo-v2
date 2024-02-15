@@ -10,34 +10,34 @@ export type TTransactionStatus =
   | 'QUEUED'
   | 'CANCELLING';
 
-export interface ITransferPeer {
+export interface ITransferPeerDTO {
   id: string;
   type: string;
   name?: string;
   walletId?: string;
 }
 
-export interface IAmountInfo {
+export interface IAmountInfoDTO {
   amount?: string;
   requestedAmount?: string;
   netAmount?: string;
   amountUSD?: string;
 }
 
-export interface IFeeInfo {
+export interface IFeeInfoDTO {
   networkFee?: string;
   serviceFee?: string;
   gasPrice?: string;
 }
 
-export interface ITransactionDetails {
+export interface ITransactionDetailsDTO {
   id: string; //	ID of the transaction.
   assetId: string; //	Transaction asset.
-  source: ITransferPeer; //	Source of the transaction.
-  destination: ITransferPeer; //	Fireblocks supports multiple destinations for UTXO-based blockchains. For other blockchains, this array will always be composed of one element.
+  source: ITransferPeerDTO; //	Source of the transaction.
+  destination: ITransferPeerDTO; //	Fireblocks supports multiple destinations for UTXO-based blockchains. For other blockchains, this array will always be composed of one element.
   requestedAmount: number; //	The amount requested by the user.
-  amountInfo: IAmountInfo; //	Details of the transaction's amount in string format.
-  feeInfo: IFeeInfo; //	Details of the transaction's fee in string format.
+  amountInfo: IAmountInfoDTO; //	Details of the transaction's amount in string format.
+  feeInfo: IFeeInfoDTO; //	Details of the transaction's fee in string format.
   amount: number; //	If the transfer is a withdrawal from an exchange, the actual amount that was requested to be transferred. Otherwise, the requested amount.
   netAmount: number; //	The net amount of the transaction, after fee deduction.
   amountUSD: number; //	The USD value of the requested amount.
@@ -66,15 +66,15 @@ export interface ITransactionDetails {
   extraParameters: any; // JSON object	Protocol / operation specific parameters.
 }
 
-export interface ITransactionData {
+export interface ITransactionDTO {
   id: string;
   status: TTransactionStatus;
   createdAt?: number;
   lastUpdated?: number;
-  details?: ITransactionDetails;
+  details?: ITransactionDetailsDTO;
 }
 
-export interface INewTransactionData {
+export interface INewTransactionDTO {
   note: string;
   accountId: string;
   assetId: string;
@@ -84,7 +84,7 @@ export interface INewTransactionData {
   estimateFee: boolean;
 }
 
-export const getTransactions = async (deviceId: string, token: string): Promise<ITransactionData[]> => {
+export const getTransactions = async (deviceId: string, token: string): Promise<ITransactionDTO[]> => {
   const response = await getCall(`api/devices/${deviceId}/transactions?poll=true&startDate=0&details=true`, token);
   const transactions = await response.json();
   return transactions;
@@ -93,8 +93,8 @@ export const getTransactions = async (deviceId: string, token: string): Promise<
 export const createTransaction = async (
   deviceId: string,
   token: string,
-  dataToSend?: INewTransactionData
-): Promise<ITransactionData> => {
+  dataToSend?: INewTransactionDTO,
+): Promise<ITransactionDTO> => {
   const createTxResponse = await postCall(`api/devices/${deviceId}/transactions`, token, dataToSend);
   return createTxResponse;
 };

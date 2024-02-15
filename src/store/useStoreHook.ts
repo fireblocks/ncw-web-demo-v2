@@ -1,8 +1,10 @@
 import { useContext } from 'react';
 import { MobXProviderContext } from 'mobx-react';
-import { RootStore } from './Root.store';
-import { UserStore } from './User.store';
+import { AssetsStore } from './Assets.store';
 import { DeviceStore } from './Device.store';
+import { RootStore } from './Root.store';
+import { TransactionsStore } from './Transactions.store';
+import { UserStore } from './User.store';
 
 export function useRootStore(): RootStore {
   const stores = useContext(MobXProviderContext);
@@ -17,4 +19,14 @@ export function useUserStore(): UserStore {
 export function useDeviceStore(): DeviceStore {
   const rootStore = useRootStore();
   return rootStore.deviceStore;
+}
+
+export function useAssetsStore(): AssetsStore {
+  const rootStore = useRootStore();
+  return rootStore.assetsStore;
+}
+
+export function useTransactionsStore(): TransactionsStore {
+  const rootStore = useRootStore();
+  return rootStore.transactionsStore;
 }

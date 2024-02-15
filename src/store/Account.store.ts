@@ -1,13 +1,13 @@
-import { ITransactionDTO } from '@api';
+import { IAccountDTO } from '@api';
 import { makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
-export class TransactionStore {
-  @observable public data: ITransactionDTO;
+export class AccountStore {
+  @observable public data: IAccountDTO;
 
   private _rootStore: RootStore;
 
-  constructor(dto: ITransactionDTO, rootStore: RootStore) {
+  constructor(dto: IAccountDTO, rootStore: RootStore) {
     this.data = dto;
     this._rootStore = rootStore;
 

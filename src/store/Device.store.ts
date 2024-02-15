@@ -1,6 +1,6 @@
+import { getOrGenerateDeviceId } from '@api';
 import { action, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
-import { getOrGenerateDeviceId } from '@api';
 
 export class DeviceStore {
   @observable public deviceId: string;
