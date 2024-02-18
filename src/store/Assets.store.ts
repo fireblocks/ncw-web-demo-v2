@@ -51,7 +51,6 @@ export class AssetsStore {
     this.supportedAssets.push(assetStore);
   }
 
-  @action
   public async addAsset(assetId: string): Promise<void> {
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accountId = this._rootStore.accountsStore.currentAccountId;

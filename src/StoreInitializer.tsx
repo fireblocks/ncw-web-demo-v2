@@ -13,13 +13,14 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
       deviceStore.init();
       await accountsStore.init();
       await assetsStore.init();
+      await deviceStore.assignDeviceToNewWallet();
     };
 
-    if (userStore.accessToken) {
+    if (userStore.accessToken && deviceStore.deviceId) {
       fetchData().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userStore.accessToken]);
+  }, [userStore.accessToken, deviceStore.deviceId]);
 
   return null;
 });

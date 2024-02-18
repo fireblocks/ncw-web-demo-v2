@@ -8,6 +8,10 @@ const RootStyled = styled('div')(() => ({
   height: '100%',
 }));
 
+const LiStyled = styled('li')(({ theme }) => ({
+  padding: theme.spacing(1, 0),
+}));
+
 export const SettingsPage: React.FC = observer(function SettingsPage() {
   const userStore = useUserStore();
   const deviceStore = useDeviceStore();
@@ -18,16 +22,27 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
         Hello im SettingsPage
       </Typography>
       <ul>
-        <li>
+        <LiStyled>
           <Typography variant="subtitle1" color="text.primary">
-            UserId: {userStore.userId}
+            UserId:
+            <br />
+            {userStore.userId}
           </Typography>
-        </li>
-        <li>
+        </LiStyled>
+        <LiStyled>
           <Typography variant="subtitle1" color="text.primary">
-            Device: {deviceStore.deviceId}
+            Device:
+            <br />
+            {deviceStore.deviceId}
           </Typography>
-        </li>
+        </LiStyled>
+        <LiStyled>
+          <Typography variant="subtitle1" color="text.primary">
+            Wallet:
+            <br />
+            {deviceStore.walletId}
+          </Typography>
+        </LiStyled>
       </ul>
     </RootStyled>
   );
