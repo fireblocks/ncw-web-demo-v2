@@ -2,6 +2,7 @@ import { makeObservable, observable } from 'mobx';
 import { AccountsStore } from './Accounts.store';
 import { AssetsStore } from './Assets.store';
 import { DeviceStore } from './Device.store';
+import { FireblocksSDKStore } from './FireblocksSDK.store';
 import { TransactionsStore } from './Transactions.store';
 import { UserStore } from './User.store';
 
@@ -11,6 +12,7 @@ export class RootStore {
   @observable public assetsStore: AssetsStore;
   @observable public accountsStore: AccountsStore;
   @observable public transactionsStore: TransactionsStore;
+  @observable public fireblocksSDKStore: FireblocksSDKStore;
 
   constructor() {
     this.userStore = new UserStore(this);
@@ -18,6 +20,7 @@ export class RootStore {
     this.assetsStore = new AssetsStore(this);
     this.accountsStore = new AccountsStore(this);
     this.transactionsStore = new TransactionsStore(this);
+    this.fireblocksSDKStore = new FireblocksSDKStore(this);
 
     makeObservable(this);
   }

@@ -26,7 +26,7 @@ export const LoginPage: React.FC = observer(function LoginPage() {
   return (
     <RootStyled>
       <Typography variant="h4" color="text.primary">
-        Hello im LoginPage
+        Hello im Login page
       </Typography>
       <ActionsStyled>
         <Button

@@ -11,7 +11,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
   return (
     <RootStyled>
       <Typography variant="h4" color="text.primary">
-        Hello im AssetsPage
+        Hello im Assets page
       </Typography>
     </RootStyled>
   );

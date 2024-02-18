@@ -36,3 +36,8 @@ export function useAccountsStore(): AccountsStore {
   const rootStore = useRootStore();
   return rootStore.accountsStore;
 }
+
+export function useFireblocksSDKStore() {
+  const rootStore = useRootStore();
+  return rootStore.fireblocksSDKStore;
+}

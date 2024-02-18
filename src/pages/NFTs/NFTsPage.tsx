@@ -11,7 +11,7 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
   return (
     <RootStyled>
       <Typography variant="h4" color="text.primary">
-        Hello im NFTsPage
+        Hello im NFTs page
       </Typography>
     </RootStyled>
   );

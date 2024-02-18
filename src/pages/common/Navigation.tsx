@@ -8,6 +8,8 @@ const RootStyled = styled('ul')(({ theme }) => ({
   display: 'inline-flex',
   listStyle: 'none',
   gap: theme.spacing(2),
+  padding: theme.spacing(2, 0),
+  margin: 0,
 }));
 
 export const Navigation: React.FC = observer(function Navigation() {

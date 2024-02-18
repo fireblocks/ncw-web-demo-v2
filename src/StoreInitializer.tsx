@@ -9,11 +9,12 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
   const userStore = useUserStore();
 
   React.useEffect(() => {
+    deviceStore.init();
+
     const fetchData = async () => {
-      deviceStore.init();
-      await accountsStore.init();
-      await assetsStore.init();
       await deviceStore.assignDeviceToNewWallet();
+      await assetsStore.init();
+      await accountsStore.init();
     };
 
     if (userStore.accessToken && deviceStore.deviceId) {

@@ -19,7 +19,7 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
   return (
     <RootStyled>
       <Typography variant="h4" color="text.primary">
-        Hello im SettingsPage
+        Hello im Settings page
       </Typography>
       <ul>
         <LiStyled>
