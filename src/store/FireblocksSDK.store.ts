@@ -39,7 +39,7 @@ export class FireblocksSDKStore {
   }
 
   @action
-  public dispose(): void {
+  public async dispose(): Promise<void> {
     if (!this.sdkInstance) {
       return;
     }
@@ -48,6 +48,10 @@ export class FireblocksSDKStore {
       this._unsubscribeTransactionsPolling();
       this._unsubscribeTransactionsPolling = null;
     }
+
+    await this.sdkInstance.dispose();
+    this.sdkInstance = null;
+    this.sdkStatus = 'sdk_not_ready';
   }
 
   @action
