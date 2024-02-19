@@ -84,10 +84,13 @@ export interface INewTransactionDTO {
   estimateFee: boolean;
 }
 
-export const getTransactions = async (deviceId: string, token: string): Promise<ITransactionDTO[]> => {
+const TX_POLL_INTERVAL = 5000;
+
+export const sleep = (ms: number = TX_POLL_INTERVAL) => new Promise((res) => setTimeout(res, ms));
+
+export const getTransactions = async (deviceId: string, token: string): Promise<Response> => {
   const response = await getCall(`api/devices/${deviceId}/transactions?poll=true&startDate=0&details=true`, token);
-  const transactions = await response.json();
-  return transactions;
+  return response;
 };
 
 export const createTransaction = async (
