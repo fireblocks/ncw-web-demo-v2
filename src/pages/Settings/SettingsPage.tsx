@@ -1,6 +1,7 @@
 import { Typography, styled } from '@foundation';
-import { useDeviceStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
+import { useTranslation } from 'react-i18next';
+import { SettingsItems } from './SettingsItems';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -8,42 +9,18 @@ const RootStyled = styled('div')(() => ({
   height: '100%',
 }));
 
-const LiStyled = styled('li')(({ theme }) => ({
-  padding: theme.spacing(1, 0),
-}));
-
 export const SettingsPage: React.FC = observer(function SettingsPage() {
-  const userStore = useUserStore();
-  const deviceStore = useDeviceStore();
+  const { t } = useTranslation();
 
   return (
     <RootStyled>
-      <Typography variant="h4" color="text.primary">
-        Hello im Settings page
+      <Typography variant="h3" color="text.primary">
+        {t('PAGE_NAME.SETTINGS')}
       </Typography>
-      <ul>
-        <LiStyled>
-          <Typography variant="subtitle1" color="text.primary">
-            UserId:
-            <br />
-            {userStore.userId}
-          </Typography>
-        </LiStyled>
-        <LiStyled>
-          <Typography variant="subtitle1" color="text.primary">
-            Device:
-            <br />
-            {deviceStore.deviceId}
-          </Typography>
-        </LiStyled>
-        <LiStyled>
-          <Typography variant="subtitle1" color="text.primary">
-            Wallet:
-            <br />
-            {deviceStore.walletId}
-          </Typography>
-        </LiStyled>
-      </ul>
+      <Typography variant="body1" color="text.secondary">
+        {t('SETTINGS.DESCRIPTION')}
+      </Typography>
+      <SettingsItems />
     </RootStyled>
   );
 });

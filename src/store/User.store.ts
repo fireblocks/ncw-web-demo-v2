@@ -112,4 +112,9 @@ export class UserStore {
   public get userDisplayName(): string {
     return this.loggedUser?.displayName || '';
   }
+
+  @computed
+  public get userShortDisplayName(): string {
+    return this.userDisplayName[0];
+  }
 }

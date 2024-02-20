@@ -1,5 +1,5 @@
-import { Typography, styled } from '@foundation';
-import { AssetsPage, LoginPage, NFTsPage, Navigation, SettingsPage, TransactionsPage } from '@pages';
+import { styled } from '@foundation';
+import { AssetsPage, LoginPage, NFTsPage, Header, SettingsPage, TransactionsPage } from '@pages';
 import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { Routes, Route } from 'react-router-dom';
@@ -20,11 +20,7 @@ export const App: React.FC = observer(function App() {
   return (
     <RootStyled>
       {userStore.loggedUser && <StoreInitializer />}
-      <Typography variant="h1" color="text.primary">
-        {userStore.loggedUser ? `Hello ${userStore.userDisplayName}! Im web demo` : 'Hello im web demo'}
-      </Typography>
-
-      <Navigation />
+      <Header />
       <Routes>
         <Route path="login" element={<LoginPage />} />
 
