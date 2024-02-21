@@ -1,7 +1,7 @@
 import { Button, Typography, styled } from '@foundation';
-import ArrowLeft from '@icons/ArrowLeft.svg';
-import Logo from '@icons/Logo.svg';
-import Settings from '@icons/Settings.svg';
+import IconArrowLeft from '@icons/arrow-left.svg';
+import IconLogo from '@icons/logo.svg';
+import IconSettings from '@icons/settings.svg';
 import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -48,10 +48,10 @@ export const Header: React.FC = observer(function Header() {
     <RootStyled>
       <LogoStyled>
         {isNotSettingsPage ? (
-          <img src={Logo} />
+          <img src={IconLogo} />
         ) : (
           <Button variant="contained" onClick={onBackClick}>
-            <img src={ArrowLeft} />
+            <img src={IconArrowLeft} />
           </Button>
         )}
       </LogoStyled>
@@ -79,7 +79,7 @@ export const Header: React.FC = observer(function Header() {
       <SettingsAndProfileStyled>
         <NavLink to="/settings">
           <Button variant="contained">
-            <img src={Settings} />
+            <img src={IconSettings} />
           </Button>
         </NavLink>
         <Button variant="contained">{userStore.userShortDisplayName}</Button>

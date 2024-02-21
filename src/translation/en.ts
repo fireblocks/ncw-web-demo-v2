@@ -40,6 +40,21 @@ export const translationToEnglish = {
       },
     },
   },
+  ASSETS: {
+    TITLE: 'My Assets',
+    CURRENT_BALANCE: 'Current balance',
+    ADD_ASSET: 'Add asset',
+    TABLE: {
+      HEADERS: {
+        CURRENCY: 'Currency',
+        BALANCE: 'Balance',
+        PRICE: 'Price',
+        CHANGE_24H: '24h Change',
+        MARKET_CAP: 'Market Cap',
+        VOLUME_24H: '24h Volume',
+      },
+    },
+  },
   COMMON: {
     LOADING: 'Loading...',
   },
