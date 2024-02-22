@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, Typography, styled } from '@foundation';
+import { Button, Dialog, Skeleton, Typography, styled } from '@foundation';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { useAssetsStore } from '@store';
@@ -27,7 +27,6 @@ interface IProps {
 export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog({ isOpen, onClose }) {
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
-  console.log(assetsStore.supportedAssets);
 
   return (
     <Dialog
@@ -37,16 +36,21 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
       onClose={onClose}
     >
       <div>
-        <ListStyled>
-          {assetsStore.supportedAssets.map((asset) => (
-            <AssetStyled key={asset.id}>
-              {asset.iconUrl && <img width='30px' src={asset.iconUrl} alt={asset.name} />}
-              <Typography component="p">{asset.name}</Typography>
-              <Typography component="p">{asset.id}</Typography>
-              <Typography component="p">${asset.rate}</Typography>
-            </AssetStyled>
-          ))}
-        </ListStyled>
+        {assetsStore.isLoading ? (
+          <Skeleton mode="TABLE" />
+        ) : (
+          <ListStyled>
+            {assetsStore.supportedAssets.map((asset) => (
+              <AssetStyled key={asset.id}>
+                {asset.iconUrl && <img width="30px" src={asset.iconUrl} alt={asset.name} />}
+                <Typography component="p">{asset.name}</Typography>
+                <Typography component="p">{asset.id}</Typography>
+                <Typography component="p">${asset.rate}</Typography>
+                <Button variant="contained">{t('ASSETS.ADD_ASSET')}</Button>
+              </AssetStyled>
+            ))}
+          </ListStyled>
+        )}
       </div>
     </Dialog>
   );

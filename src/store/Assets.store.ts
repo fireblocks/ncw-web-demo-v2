@@ -6,6 +6,7 @@ import { RootStore } from './Root.store';
 export class AssetsStore {
   @observable public myAssets: AssetStore[];
   @observable public supportedAssets: AssetStore[];
+  @observable public isLoading: boolean;
 
   private _rootStore: RootStore;
 
@@ -13,12 +14,14 @@ export class AssetsStore {
     this.myAssets = [];
     this.supportedAssets = [];
     this._rootStore = rootStore;
+    this.isLoading = false;
 
     makeObservable(this);
   }
 
   @action
   public async init(): Promise<void> {
+    this.setIsLoading(true);
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
     const accessToken = this._rootStore.userStore.accessToken;
@@ -35,6 +38,7 @@ export class AssetsStore {
         this.addSupportedAsset(a);
       });
     }
+    this.setIsLoading(false);
   }
 
   @action
@@ -42,6 +46,11 @@ export class AssetsStore {
     const assetStore = new AssetStore(assetData, this._rootStore);
 
     this.myAssets.push(assetStore);
+  }
+
+  @action
+  public setIsLoading(state: boolean): void {
+    this.isLoading = state;
   }
 
   @action

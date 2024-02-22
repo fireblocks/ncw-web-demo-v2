@@ -3,8 +3,6 @@ import Button from '@mui/material/Button';
 import MUIDialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import Slide from '@mui/material/Slide';
-import { TransitionProps } from '@mui/material/transitions';
 import { Typography } from '@mui/material';
 import { IconButton, styled } from '@foundation';
 import IconClose from '@icons/close.svg';
@@ -28,15 +26,6 @@ const CloseButtonStyled = styled('div')(({ theme }) => ({
   right: theme.spacing(4),
 }));
 
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 interface IProps {
   title: string;
   description: string;
@@ -56,7 +45,7 @@ export const Dialog: React.FC<IProps> = ({
   doAction,
   children,
 }) => (
-  <MUIDialog open={isOpen} TransitionComponent={Transition} keepMounted onClose={onClose} fullWidth maxWidth="md">
+  <MUIDialog open={isOpen} keepMounted onClose={onClose} fullWidth maxWidth="md">
     <RootStyled>
       <DialogHeaderStyled>
         <Typography variant="h2" component="p">

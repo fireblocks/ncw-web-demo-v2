@@ -6,3 +6,4 @@ export * from './ModeSwitcher';
 export * from './ContentSection';
 export * from './Dialog';
 export * from './IconButton';
+export * from './Skeleton';
