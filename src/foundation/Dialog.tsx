@@ -3,10 +3,30 @@ import Button from '@mui/material/Button';
 import MUIDialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
+import { Typography } from '@mui/material';
+import { IconButton, styled } from '@foundation';
+import IconClose from '@icons/close.svg';
+
+const RootStyled = styled('div')(({ theme }) => ({
+  backgroundColor: theme.palette.secondary.main,
+}));
+
+const DialogContentStyled = styled(DialogContent)(({ theme }) => ({
+  backgroundColor: theme.palette.secondary.light,
+}));
+
+const DialogHeaderStyled = styled('div')(({ theme }) => ({
+  position: 'relative',
+  padding: theme.spacing(4),
+}));
+
+const CloseButtonStyled = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  top: theme.spacing(4),
+  right: theme.spacing(4),
+}));
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -18,24 +38,46 @@ const Transition = React.forwardRef(function Transition(
 });
 
 interface IProps {
+  title: string;
+  description: string;
   isOpen: boolean;
+  actionCaption?: string;
   onClose: () => void;
+  doAction?: () => void;
+  children: JSX.Element;
 }
 
-export const Dialog: React.FC<IProps> = ({ isOpen, onClose }) => (
-  <React.Fragment>
-    <MUIDialog open={isOpen} TransitionComponent={Transition} keepMounted onClose={onClose}>
-      <DialogTitle>{"Use Google's location service?"}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Let Google help apps determine location. This means sending anonymous location data to Google, even when no
-          apps are running.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Disagree</Button>
-        <Button onClick={onClose}>Agree</Button>
-      </DialogActions>
-    </MUIDialog>
-  </React.Fragment>
+export const Dialog: React.FC<IProps> = ({
+  title,
+  description,
+  isOpen,
+  actionCaption,
+  onClose,
+  doAction,
+  children,
+}) => (
+  <MUIDialog open={isOpen} TransitionComponent={Transition} keepMounted onClose={onClose} fullWidth maxWidth="md">
+    <RootStyled>
+      <DialogHeaderStyled>
+        <Typography variant="h2" component="p">
+          {title}
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary">
+          {description}
+        </Typography>
+        <CloseButtonStyled>
+          <IconButton onClick={onClose}>
+            <img src={IconClose} />
+          </IconButton>
+        </CloseButtonStyled>
+      </DialogHeaderStyled>
+
+      <DialogContentStyled>{children}</DialogContentStyled>
+      {doAction && actionCaption && (
+        <DialogActions>
+          <Button onClick={doAction}>{actionCaption}</Button>
+        </DialogActions>
+      )}
+    </RootStyled>
+  </MUIDialog>
 );

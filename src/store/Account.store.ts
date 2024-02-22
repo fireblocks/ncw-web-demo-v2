@@ -1,5 +1,5 @@
 import { IAccountDTO } from '@api';
-import { makeObservable, observable } from 'mobx';
+import { computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
 export class AccountStore {
@@ -12,5 +12,10 @@ export class AccountStore {
     this._rootStore = rootStore;
 
     makeObservable(this);
+  }
+
+  @computed
+  public get accountId(): number {
+    return this.data.accountId;
   }
 }

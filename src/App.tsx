@@ -7,7 +7,7 @@ import { StoreInitializer } from './StoreInitializer';
 
 const RootStyled = styled('div')(({ theme }) => ({
   height: '100vh',
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: theme.palette.primary.main,
 }));
 
 const ContentStyled = styled('div')(() => ({

@@ -5,13 +5,11 @@ import { RootStore } from './Root.store';
 
 export class AccountsStore {
   @observable public accounts: AccountStore[];
-  @observable public currentAccountId: number | null;
 
   private _rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
     this.accounts = [];
-    this.currentAccountId = null;
     this._rootStore = rootStore;
 
     makeObservable(this);
@@ -38,13 +36,8 @@ export class AccountsStore {
     });
   }
 
-  @action
-  public setCurrentAccountId(accountId: number): void {
-    this.currentAccountId = accountId;
-  }
-
   @computed
   public get currentAccount(): AccountStore | undefined {
-    return this.accounts.find((a) => a.data.accountId === this.currentAccountId);
+    return this.accounts.length > 0 ? this.accounts[0] : undefined;
   }
 }

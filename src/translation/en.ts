@@ -54,6 +54,10 @@ export const translationToEnglish = {
         VOLUME_24H: '24h Volume',
       },
     },
+    ADD_DIALOG: {
+      TITLE: 'Add an Asset',
+      DESCRIPTION: 'Select an asset from the list or search for a new asset',
+    },
   },
   COMMON: {
     LOADING: 'Loading...',

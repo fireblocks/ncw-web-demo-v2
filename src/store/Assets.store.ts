@@ -20,10 +20,10 @@ export class AssetsStore {
   @action
   public async init(): Promise<void> {
     const deviceId = this._rootStore.deviceStore.deviceId;
-    const accountId = this._rootStore.accountsStore.currentAccountId;
+    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
     const accessToken = this._rootStore.userStore.accessToken;
 
-    if (deviceId && accountId && accessToken) {
+    if (deviceId && accountId !== undefined && accessToken) {
       const myAssets = await getAssets(deviceId, accountId, accessToken);
       const supportedAssets = await getSupportedAssets(deviceId, accountId, accessToken);
 
@@ -53,7 +53,7 @@ export class AssetsStore {
 
   public async addAsset(assetId: string): Promise<void> {
     const deviceId = this._rootStore.deviceStore.deviceId;
-    const accountId = this._rootStore.accountsStore.currentAccountId;
+    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId && accessToken) {

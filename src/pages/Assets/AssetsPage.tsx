@@ -38,7 +38,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
         {t('ASSETS.TITLE')}
       </Typography>
       <div>
-        <Typography variant="h5" color="text.primary">
+        <Typography variant="subtitle1" color="text.secondary">
           {t('ASSETS.CURRENT_BALANCE')}
         </Typography>
         <Typography variant="h1" color="text.primary">

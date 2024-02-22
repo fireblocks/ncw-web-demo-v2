@@ -1,4 +1,4 @@
-import { Button, Typography, styled } from '@foundation';
+import { Button, IconButton, Typography, styled } from '@foundation';
 import IconArrowLeft from '@icons/arrow-left.svg';
 import IconLogo from '@icons/logo.svg';
 import IconSettings from '@icons/settings.svg';
@@ -38,21 +38,19 @@ export const Header: React.FC = observer(function Header() {
   const navigate = useNavigate();
   const userStore = useUserStore();
 
-  const onBackClick = () => {
-    navigate(-1);
-  };
-
   const isNotSettingsPage = location.pathname !== '/settings';
 
   return (
     <RootStyled>
       <LogoStyled>
         {isNotSettingsPage ? (
-          <img src={IconLogo} />
+          <IconButton onClick={() => navigate('/assets')}>
+            <img src={IconLogo} />
+          </IconButton>
         ) : (
-          <Button variant="contained" onClick={onBackClick}>
+          <IconButton onClick={() => navigate(-1)}>
             <img src={IconArrowLeft} />
-          </Button>
+          </IconButton>
         )}
       </LogoStyled>
       <TreasuryPagesStyled>
@@ -77,12 +75,14 @@ export const Header: React.FC = observer(function Header() {
         )}
       </TreasuryPagesStyled>
       <SettingsAndProfileStyled>
-        <NavLink to="/settings">
-          <Button variant="contained">
-            <img src={IconSettings} />
-          </Button>
-        </NavLink>
-        <Button variant="contained">{userStore.userShortDisplayName}</Button>
+        <IconButton onClick={() => navigate('/settings')}>
+          <img src={IconSettings} />
+        </IconButton>
+        <IconButton>
+          <Typography variant="body2" component="span">
+            {userStore.userShortDisplayName}
+          </Typography>
+        </IconButton>
       </SettingsAndProfileStyled>
     </RootStyled>
   );
