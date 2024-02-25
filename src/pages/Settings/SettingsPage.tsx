@@ -1,5 +1,5 @@
-import { Typography, styled } from '@foundation';
-import { useAccountsStore, useDeviceStore, useUserStore } from '@store';
+import { Button, Typography, styled } from '@foundation';
+import { useAccountsStore, useDeviceStore, useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { SettingsItems } from './SettingsItems';
@@ -15,6 +15,7 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
   const userStore = useUserStore();
   const deviceStore = useDeviceStore();
   const accountsStore = useAccountsStore();
+  const fireblocksSDKStore = useFireblocksSDKStore();
 
   return (
     <RootStyled>
@@ -33,6 +34,21 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
         Device id: {deviceStore.deviceId}
         <br />
         Account id: {accountsStore.accounts.length > 0 && accountsStore.accounts[0].data.accountId}
+        <br />
+        {fireblocksSDKStore.sdkInstance && (
+          <>
+            MPS keys status:{' '}
+            {fireblocksSDKStore.isMPCReady ? (
+              'Ready'
+            ) : (
+              <Button variant="contained" onClick={() => fireblocksSDKStore.generateMPCKeys()}>
+                <Typography variant="body1" color="text.secondary">
+                  Generate
+                </Typography>
+              </Button>
+            )}
+          </>
+        )}
       </Typography>
 
       <SettingsItems />

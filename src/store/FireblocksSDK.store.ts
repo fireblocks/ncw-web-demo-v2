@@ -7,6 +7,7 @@ import {
   IMessagesHandler,
   TEnv,
   TEvent,
+  TMPCAlgorithm,
 } from '@fireblocks/ncw-js-sdk';
 import { secureStorageProviderFactory } from '@services';
 import { ENV_CONFIG } from 'env_config';
@@ -20,6 +21,7 @@ export class FireblocksSDKStore {
   @observable public keysBackupStatus: string;
   @observable public keysRecoveryStatus: string;
   @observable public joinWalletEventDescriptor: string;
+  @observable public isMPCReady: boolean;
 
   private _rootStore: RootStore;
   private _unsubscribeTransactionsPolling: (() => void) | null;
@@ -31,6 +33,7 @@ export class FireblocksSDKStore {
     this.keysBackupStatus = '';
     this.keysRecoveryStatus = '';
     this.joinWalletEventDescriptor = '';
+    this.isMPCReady = false;
 
     this._unsubscribeTransactionsPolling = null;
     this._rootStore = rootStore;
@@ -50,14 +53,14 @@ export class FireblocksSDKStore {
     }
 
     await this.sdkInstance.dispose();
-    this.sdkInstance = null;
-    this.sdkStatus = 'sdk_not_ready';
+    this.setSDKInstance(null);
+    this.setSDKStatus('sdk_not_ready');
   }
 
   @action
   public async init() {
-    this.sdkInstance = null;
-    this.sdkStatus = 'initializing_sdk';
+    this.setSDKInstance(null);
+    this.setSDKStatus('initializing_sdk');
 
     try {
       const messagesHandler: IMessagesHandler = {
@@ -99,9 +102,9 @@ export class FireblocksSDKStore {
         },
       };
 
-      this.sdkInstance = await FireblocksNCWFactory({
+      const sdkInstance = await FireblocksNCWFactory({
         env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
-        logLevel: 'VERBOSE',
+        logLevel: 'INFO',
         deviceId: this._rootStore.deviceStore.deviceId,
         messagesHandler,
         eventsHandler,
@@ -109,16 +112,20 @@ export class FireblocksSDKStore {
         logger: ConsoleLoggerFactory(),
       });
 
+      this.setSDKInstance(sdkInstance);
+
       this.setUnsubscribeTransactionsPolling(
         this._rootStore.transactionsStore.listenToTransactions((transaction: ITransactionDTO) => {
           this._rootStore.transactionsStore.addOrEditTransaction(transaction);
         }),
       );
-      const keyStatus = await this.sdkInstance.getKeysStatus();
-      this.setKeysStatus(keyStatus);
-      this.sdkStatus = 'sdk_available';
+      if (this.sdkInstance) {
+        const keyStatus = await this.sdkInstance.getKeysStatus();
+        this.setKeysStatus(keyStatus);
+        this.setSDKStatus('sdk_available');
+      }
     } catch (error) {
-      this.sdkStatus = 'sdk_initialization_failed';
+      this.setSDKStatus('sdk_initialization_failed');
       throw error;
     }
   }
@@ -132,6 +139,18 @@ export class FireblocksSDKStore {
     await this.sdkInstance.clearAllStorage();
     const keyStatus = await this.sdkInstance.getKeysStatus();
     this.setKeysStatus(keyStatus);
+  }
+
+  @action
+  public async generateMPCKeys() {
+    if (!this.sdkInstance) {
+      throw new Error('fireblocksNCW is not initialized');
+    }
+
+    this.setIsMPCReady(false);
+    const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1']);
+    await this.sdkInstance.generateMPCKeys(ALGORITHMS);
+    this.setIsMPCReady(true);
   }
 
   @action
@@ -152,6 +171,21 @@ export class FireblocksSDKStore {
   @action
   public setJoinWalletEventDescriptor(descriptor: string) {
     this.joinWalletEventDescriptor = descriptor;
+  }
+
+  @action
+  public setIsMPCReady(isReady: boolean) {
+    this.isMPCReady = isReady;
+  }
+
+  @action
+  public setSDKStatus(status: TFireblocksNCWStatus) {
+    this.sdkStatus = status;
+  }
+
+  @action
+  public setSDKInstance(instance: IFireblocksNCW | null) {
+    this.sdkInstance = instance;
   }
 
   @action

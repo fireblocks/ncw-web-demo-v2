@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAccountsStore, useAssetsStore, useDeviceStore, useUserStore } from '@store';
+import { useAccountsStore, useAssetsStore, useDeviceStore, useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 
 export const StoreInitializer: React.FC = observer(function StoreInitializer() {
@@ -7,6 +7,7 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
   const assetsStore = useAssetsStore();
   const accountsStore = useAccountsStore();
   const userStore = useUserStore();
+  const fireblocksSDKStore = useFireblocksSDKStore();
 
   // Load device and accounts data
   React.useEffect(() => {
@@ -27,6 +28,7 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
   React.useEffect(() => {
     const fetchAssets = async () => {
       await assetsStore.init();
+      await fireblocksSDKStore.init();
     };
 
     if (accountsStore.currentAccount) {

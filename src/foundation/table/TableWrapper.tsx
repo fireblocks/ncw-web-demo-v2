@@ -7,4 +7,4 @@ const RootStyled = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
 }));
 
-export const TableWrapper: React.FC = () => <RootStyled>here will be table</RootStyled>;
+export const TableWrapper: React.FC<{ children: JSX.Element }> = ({ children }) => <RootStyled>{children}</RootStyled>;

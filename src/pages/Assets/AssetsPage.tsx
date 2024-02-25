@@ -3,6 +3,7 @@ import { Button, ContentSection, ModeSwitcher, TViewMode, TableWrapper, Typograp
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { AddAssetDialog } from './AddAssetDialog';
+import { AssetsList } from './AssetsList';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -53,7 +54,9 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
           </Button>
         </ModeWrapperStyled>
       </ContentSection>
-      <TableWrapper />
+      <TableWrapper>
+        <AssetsList />
+      </TableWrapper>
       <AddAssetDialog isOpen={isDialogOpen} onClose={onDialogClose} />
     </RootStyled>
   );

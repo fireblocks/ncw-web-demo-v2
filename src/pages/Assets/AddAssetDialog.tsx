@@ -28,6 +28,11 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
 
+  const handleAddAsset = (assetId: string) => {
+    assetsStore.addAsset(assetId);
+    onClose();
+  };
+
   return (
     <Dialog
       title={t('ASSETS.ADD_DIALOG.TITLE')}
@@ -46,7 +51,9 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
                 <Typography component="p">{asset.name}</Typography>
                 <Typography component="p">{asset.id}</Typography>
                 <Typography component="p">${asset.rate}</Typography>
-                <Button variant="contained">{t('ASSETS.ADD_ASSET')}</Button>
+                <Button onClick={() => handleAddAsset(asset.id)} variant="contained">
+                  {t('ASSETS.ADD_ASSET')}
+                </Button>
               </AssetStyled>
             ))}
           </ListStyled>

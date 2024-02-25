@@ -65,7 +65,7 @@ export class AssetsStore {
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
     const accessToken = this._rootStore.userStore.accessToken;
 
-    if (deviceId && accountId && accessToken) {
+    if (deviceId && accountId !== undefined && accessToken) {
       await addAsset(deviceId, accountId, assetId, accessToken);
       const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken);
 
