@@ -22,6 +22,7 @@ export class FireblocksSDKStore {
   @observable public keysRecoveryStatus: string;
   @observable public joinWalletEventDescriptor: string;
   @observable public isMPCReady: boolean;
+  @observable public isMPCGenerating: boolean;
 
   private _rootStore: RootStore;
   private _unsubscribeTransactionsPolling: (() => void) | null;
@@ -34,6 +35,7 @@ export class FireblocksSDKStore {
     this.keysRecoveryStatus = '';
     this.joinWalletEventDescriptor = '';
     this.isMPCReady = false;
+    this.isMPCGenerating = false;
 
     this._unsubscribeTransactionsPolling = null;
     this._rootStore = rootStore;
@@ -59,6 +61,7 @@ export class FireblocksSDKStore {
 
   @action
   public async init() {
+    this.setIsMPCGenerating(true);
     this.setSDKInstance(null);
     this.setSDKStatus('initializing_sdk');
 
@@ -127,6 +130,8 @@ export class FireblocksSDKStore {
     } catch (error) {
       this.setSDKStatus('sdk_initialization_failed');
       throw error;
+    } finally {
+      this.setIsMPCGenerating(false);
     }
   }
 
@@ -186,6 +191,11 @@ export class FireblocksSDKStore {
   @action
   public setSDKInstance(instance: IFireblocksNCW | null) {
     this.sdkInstance = instance;
+  }
+
+  @action
+  public setIsMPCGenerating(isMPCGenerating: boolean) {
+    this.isMPCGenerating = isMPCGenerating;
   }
 
   @action

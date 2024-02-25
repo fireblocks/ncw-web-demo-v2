@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from '@foundation';
+import { TableWrapper, Typography, styled } from '@foundation';
 import { observer } from 'mobx-react';
 import { useAssetsStore } from '@store';
 
@@ -11,10 +11,16 @@ export const AssetsList: React.FC = observer(function AssetsList() {
   const assetsStore = useAssetsStore();
 
   return (
-    <RootStyled>
-      {assetsStore.myAssets.map((a) => (
-        <div key={a.id}>{a.name}</div>
-      ))}
-    </RootStyled>
+    <TableWrapper>
+      <ul>
+        {assetsStore.myAssets.map((a) => (
+          <li key={a.id}>
+            <Typography variant="subtitle1" color="text.primary">
+              {a.name}
+            </Typography>
+          </li>
+        ))}
+      </ul>
+    </TableWrapper>
   );
 });

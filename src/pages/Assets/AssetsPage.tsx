@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ContentSection, ModeSwitcher, TViewMode, TableWrapper, Typography, styled } from '@foundation';
+import { Button, ContentSection, ModeSwitcher, TViewMode, Typography, styled } from '@foundation';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { AddAssetDialog } from './AddAssetDialog';
@@ -54,9 +54,9 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
           </Button>
         </ModeWrapperStyled>
       </ContentSection>
-      <TableWrapper>
-        <AssetsList />
-      </TableWrapper>
+
+      <AssetsList />
+
       <AddAssetDialog isOpen={isDialogOpen} onClose={onDialogClose} />
     </RootStyled>
   );

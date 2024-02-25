@@ -17,6 +17,32 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
   const accountsStore = useAccountsStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
 
+  const renderMPCKeysSection = () => {
+    if (!fireblocksSDKStore.sdkInstance) {
+      return null;
+    }
+
+    if (fireblocksSDKStore.isMPCGenerating) {
+      return 'MPS keys status: Generating';
+    }
+
+    if (fireblocksSDKStore.isMPCReady) {
+      return 'MPS keys status: Ready';
+    }
+
+    if (!fireblocksSDKStore.isMPCReady) {
+      return (
+        <Button variant="contained" onClick={() => fireblocksSDKStore.generateMPCKeys()}>
+          <Typography variant="body1" color="text.secondary">
+            Generate MPC keys
+          </Typography>
+        </Button>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <RootStyled>
       <Typography variant="h3" color="text.primary">
@@ -35,20 +61,7 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
         <br />
         Account id: {accountsStore.accounts.length > 0 && accountsStore.accounts[0].data.accountId}
         <br />
-        {fireblocksSDKStore.sdkInstance && (
-          <>
-            MPS keys status:{' '}
-            {fireblocksSDKStore.isMPCReady ? (
-              'Ready'
-            ) : (
-              <Button variant="contained" onClick={() => fireblocksSDKStore.generateMPCKeys()}>
-                <Typography variant="body1" color="text.secondary">
-                  Generate
-                </Typography>
-              </Button>
-            )}
-          </>
-        )}
+        {renderMPCKeysSection()}
       </Typography>
 
       <SettingsItems />
