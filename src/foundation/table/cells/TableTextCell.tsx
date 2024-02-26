@@ -27,7 +27,7 @@ export const TableTextCell: React.FC<IProps> = ({ text, mode = 'REGULAR' }) => {
 
   return (
     <RootStyled>
-      <Typography component="p" variant="subtitle1" color={color}>
+      <Typography component="p" variant="body1" color={color}>
         {text}
       </Typography>
     </RootStyled>

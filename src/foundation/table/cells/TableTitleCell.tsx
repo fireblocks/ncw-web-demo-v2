@@ -20,10 +20,9 @@ const ImageStyled = styled('div')(({ theme }) => ({
   borderRadius: 12,
 }));
 
-const TextStyled = styled('div')(({ theme }) => ({
+const TextStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(0.5),
 }));
 
 interface IProps {
@@ -38,10 +37,10 @@ export const TableTitleCell: React.FC<IProps> = ({ title, subtitle, iconUrl }) =
       <img width="24px" height="24px" src={iconUrl} alt={title} />
     </ImageStyled>
     <TextStyled>
-      <Typography component="p" color="text.primary">
+      <Typography component="p" color="text.primary" variant="subtitle2">
         {title}
       </Typography>
-      <Typography component="p" color="text.secondary">
+      <Typography component="p" color="text.secondary" variant="body1">
         {subtitle}
       </Typography>
     </TextStyled>

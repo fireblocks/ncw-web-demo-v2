@@ -1,9 +1,9 @@
 import { Typography, styled } from '@foundation';
 
-const RootStyled = styled('div')(({ theme }) => ({
+const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(0.5),
+  justifyContent: 'center',
 }));
 
 interface IProps {
@@ -13,10 +13,10 @@ interface IProps {
 
 export const TableBalanceCell: React.FC<IProps> = ({ balance, balanceInUsd }) => (
   <RootStyled>
-    <Typography component="p" color="text.primary">
+    <Typography component="p" color="text.primary" variant="body1">
       {balance}
     </Typography>
-    <Typography component="p" color="text.primary">
+    <Typography component="p" color="text.primary" variant="body1">
       ${balanceInUsd}
     </Typography>
   </RootStyled>

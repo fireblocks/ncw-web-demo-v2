@@ -22,9 +22,21 @@ const theme: ThemeOptions = {
       fontSize: 18,
       lineHeight: 1,
     },
+    body1: {
+      fontSize: 13,
+      lineHeight: '24px',
+      fontWeight: 500,
+    },
     subtitle1: {
-      fontSize: 16,
+      fontSize: 12,
+      lineHeight: '24px',
+      fontWeight: 500,
       textTransform: 'uppercase',
+    },
+    subtitle2: {
+      fontSize: 13,
+      lineHeight: '24px',
+      fontWeight: 600,
     },
   },
 };
