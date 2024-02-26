@@ -7,7 +7,7 @@ const RootStyled = styled('div')(({ theme }) => ({
   flexDirection: 'row',
   justifyContent: 'flex-start',
   alignItems: 'center',
-  gap: theme.spacing(2),
+  gap: theme.spacing(2.5),
 }));
 
 interface IProps {

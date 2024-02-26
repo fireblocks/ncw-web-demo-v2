@@ -10,14 +10,31 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '200px 1fr 200px',
-  padding: theme.spacing(4, 8),
+  padding: theme.spacing(4, 0),
+}));
+
+const NavLinkStyled = styled(NavLink)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  textDecoration: 'none',
+  gap: theme.spacing(2),
+  fontWeight: 700,
+  fontSize: 14,
+  textTransform: 'uppercase',
+}));
+
+const LinkMarkerStyled = styled('div')(({ theme }) => ({
+  width: 28,
+  height: 2,
+  backgroundColor: theme.palette.text.primary,
 }));
 
 const TreasuryPagesStyled = styled('div')(({ theme }) => ({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   justifyContent: 'center',
-  gap: theme.spacing(2),
+  gap: theme.spacing(5),
 }));
 
 const LogoStyled = styled('div')(() => ({
@@ -39,6 +56,9 @@ export const Header: React.FC = observer(function Header() {
   const userStore = useUserStore();
 
   const isNotSettingsPage = location.pathname !== '/settings';
+  const isAssetsPage = location.pathname === '/assets';
+  const isTransactionsPage = location.pathname === '/transactions';
+  const isNftsPage = location.pathname === '/nfts';
 
   return (
     <RootStyled>
@@ -64,21 +84,24 @@ export const Header: React.FC = observer(function Header() {
       <TreasuryPagesStyled>
         {isNotSettingsPage && (
           <>
-            <NavLink to="/assets">
-              <Typography variant="h6" color="text.primary">
+            <NavLinkStyled to="/assets">
+              <Typography variant="inherit" color="text.primary">
                 {t('NAVIGATION.ASSETS')}
               </Typography>
-            </NavLink>
-            <NavLink to="/transactions">
-              <Typography variant="h6" color="text.primary">
+              {isAssetsPage && <LinkMarkerStyled />}
+            </NavLinkStyled>
+            <NavLinkStyled to="/transactions">
+              <Typography variant="inherit" color="text.primary">
                 {t('NAVIGATION.TRANSACTIONS')}
               </Typography>
-            </NavLink>
-            <NavLink to="/nfts">
-              <Typography variant="h6" color="text.primary">
+              {isTransactionsPage && <LinkMarkerStyled />}
+            </NavLinkStyled>
+            <NavLinkStyled to="/nfts">
+              <Typography variant="inherit" color="text.primary">
                 {t('NAVIGATION.NFTs')}{' '}
               </Typography>
-            </NavLink>
+              {isNftsPage && <LinkMarkerStyled />}
+            </NavLinkStyled>
           </>
         )}
       </TreasuryPagesStyled>

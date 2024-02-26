@@ -6,10 +6,17 @@ const theme: ThemeOptions = {
     primary: {
       main: '#000000',
       light: '#2a2a2a',
+      dark: '#2D68FF',
     },
     secondary: {
       main: '#1B1B1B',
       light: '#222222',
+    },
+    success: {
+      main: '#16A34A',
+    },
+    error: {
+      main: '#EF4444',
     },
     text: {
       primary: '#FFFFFF',
@@ -37,6 +44,23 @@ const theme: ThemeOptions = {
       fontSize: 13,
       lineHeight: '24px',
       fontWeight: 600,
+    },
+    h1: {
+      fontSize: 60,
+      lineHeight: 1,
+      fontWeight: 500,
+    },
+    h5: {
+      fontSize: 16,
+      lineHeight: '20px',
+      fontWeight: 600,
+      textTransform: 'uppercase',
+    },
+    h6: {
+      fontSize: 14,
+      lineHeight: '20px',
+      fontWeight: 500,
+      textTransform: 'uppercase',
     },
   },
 };

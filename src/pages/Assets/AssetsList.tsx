@@ -48,9 +48,8 @@ export const AssetsList: React.FC = observer(function AssetsList() {
       </TableHead>
       <TableBody>
         {assetsStore.myAssets.map((a) => (
-          <TableRow>
+          <TableRow key={a.id}>
             <RowStyled
-              key={a.id}
               onMouseEnter={() => {
                 setHoveredLine(a.id);
               }}

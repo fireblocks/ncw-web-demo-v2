@@ -9,11 +9,20 @@ const IconButtonStyled = styled(MUIIconButton)(({ theme }) => ({
   minWidth: 50,
   height: 50,
   boxSizing: 'border-box',
-  textAlign: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-around',
+  alignContent: 'center',
+  alignItems: 'center',
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
 }));
 
 const LargeStyled = styled('div')(({ theme }) => ({
-  margin: theme.spacing(2, 3),
+  margin: theme.spacing(0, 2.5),
+  width: 24,
+  height: 24,
 }));
 
 interface IProps {
