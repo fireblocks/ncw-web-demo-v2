@@ -10,6 +10,7 @@ export * from './table/cells/TableHeaderCell';
 export * from './table/cells/TableTextCell';
 export * from './table/cells/TableTitleCell';
 export * from './table/cells/TableTransferCell';
+export * from './table/cells/TableCell';
 export * from './ModeSwitcher';
 export * from './ContentSection';
 export * from './Dialog';

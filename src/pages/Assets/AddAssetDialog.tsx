@@ -1,22 +1,28 @@
 import React from 'react';
-import { Button, Dialog, Skeleton, Typography, styled } from '@foundation';
+import {
+  Button,
+  Dialog,
+  Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TableTextCell,
+  TableTitleCell,
+  styled,
+} from '@foundation';
 import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 
-const ListStyled = styled('ul')(() => ({
-  listStyle: 'none',
-  padding: 0,
-  margin: 0,
+const RowStyled = styled('div')(() => ({
+  display: 'grid',
+  gridTemplateColumns: '1.7fr 1fr 130px',
 }));
 
-const AssetStyled = styled('li')(({ theme }) => ({
-  listStyle: 'none',
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: theme.spacing(2),
-  padding: theme.spacing(1, 0),
+const TableWrapperStyled = styled('div')(() => ({
+  height: 500,
+  overflow: 'auto',
 }));
 
 interface IProps {
@@ -27,6 +33,7 @@ interface IProps {
 export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog({ isOpen, onClose }) {
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
+  const [hoveredLine, setHoveredLine] = React.useState<string | null>(null);
 
   const handleAddAsset = (assetId: string) => {
     assetsStore.addAsset(assetId);
@@ -44,24 +51,39 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
         {assetsStore.isLoading ? (
           <Skeleton mode="TABLE" />
         ) : (
-          <ListStyled>
-            {assetsStore.supportedAssets.map((asset) => (
-              <AssetStyled key={asset.id}>
-                {asset.iconUrl && <img width="30px" src={asset.iconUrl} alt={asset.name} />}
-                <Typography component="p">{asset.name}</Typography>
-                <Typography component="p">{asset.id}</Typography>
-                <Typography component="p">${asset.rate}</Typography>
-                <Button
-                  onClick={() => {
-                    handleAddAsset(asset.id);
-                  }}
-                  variant="contained"
-                >
-                  {t('ASSETS.ADD_ASSET')}
-                </Button>
-              </AssetStyled>
-            ))}
-          </ListStyled>
+          <TableWrapperStyled>
+            <Table>
+              <TableBody>
+                {assetsStore.supportedAssets.map((a) => (
+                  <TableRow key={a.id}>
+                    <RowStyled
+                      onMouseEnter={() => {
+                        setHoveredLine(a.id);
+                      }}
+                      onMouseLeave={() => {
+                        setHoveredLine(null);
+                      }}
+                    >
+                      <TableTitleCell title={a.name} subtitle={a.symbol} iconUrl={a.iconUrl} />
+                      <TableTextCell text={`$${a.rate}`} />
+                      <TableCell>
+                        {hoveredLine === a.id ? (
+                          <Button
+                            onClick={() => {
+                              handleAddAsset(a.id);
+                            }}
+                            variant="contained"
+                          >
+                            {t('ASSETS.ADD_ASSET')}
+                          </Button>
+                        ) : null}
+                      </TableCell>
+                    </RowStyled>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableWrapperStyled>
         )}
       </div>
     </Dialog>

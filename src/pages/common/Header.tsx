@@ -114,7 +114,7 @@ export const Header: React.FC = observer(function Header() {
           <img src={IconSettings} />
         </IconButton>
         <IconButton>
-          <Typography variant="body2" component="span">
+          <Typography variant="subtitle2" component="span">
             {userStore.userShortDisplayName}
           </Typography>
         </IconButton>

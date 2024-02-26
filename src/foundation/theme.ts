@@ -50,6 +50,11 @@ const theme: ThemeOptions = {
       lineHeight: 1,
       fontWeight: 500,
     },
+    h2: {
+      fontSize: 36,
+      lineHeight: '44px',
+      fontWeight: 500,
+    },
     h5: {
       fontSize: 16,
       lineHeight: '20px',

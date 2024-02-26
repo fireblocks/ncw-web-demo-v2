@@ -11,18 +11,29 @@ const RootStyled = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.secondary.main,
 }));
 
+const MUIDialogStyled = styled(MUIDialog)(() => ({
+  '.MuiDialog-paper': {
+    width: 800,
+    maxWidth: 800,
+  },
+}));
+
 const DialogContentStyled = styled(DialogContent)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.light,
+  padding: 0,
 }));
 
 const DialogHeaderStyled = styled('div')(({ theme }) => ({
   position: 'relative',
-  padding: theme.spacing(4),
+  padding: theme.spacing(5, 4),
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(1),
 }));
 
 const CloseButtonStyled = styled('div')(({ theme }) => ({
   position: 'absolute',
-  top: theme.spacing(4),
+  top: theme.spacing(5),
   right: theme.spacing(4),
 }));
 
@@ -45,7 +56,7 @@ export const Dialog: React.FC<IProps> = ({
   doAction,
   children,
 }) => (
-  <MUIDialog open={isOpen} keepMounted onClose={onClose} fullWidth maxWidth="md">
+  <MUIDialogStyled open={isOpen} keepMounted onClose={onClose}>
     <RootStyled>
       <DialogHeaderStyled>
         <Typography variant="h2" component="p">
@@ -68,5 +79,5 @@ export const Dialog: React.FC<IProps> = ({
         </DialogActions>
       )}
     </RootStyled>
-  </MUIDialog>
+  </MUIDialogStyled>
 );
