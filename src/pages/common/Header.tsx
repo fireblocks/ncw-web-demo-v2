@@ -1,4 +1,4 @@
-import { Button, IconButton, Typography, styled } from '@foundation';
+import { IconButton, Typography, styled } from '@foundation';
 import IconArrowLeft from '@icons/arrow-left.svg';
 import IconLogo from '@icons/logo.svg';
 import IconSettings from '@icons/settings.svg';
@@ -44,11 +44,19 @@ export const Header: React.FC = observer(function Header() {
     <RootStyled>
       <LogoStyled>
         {isNotSettingsPage ? (
-          <IconButton onClick={() => navigate('/assets')}>
+          <IconButton
+            onClick={() => {
+              navigate('/assets');
+            }}
+          >
             <img src={IconLogo} />
           </IconButton>
         ) : (
-          <IconButton onClick={() => navigate(-1)}>
+          <IconButton
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
             <img src={IconArrowLeft} />
           </IconButton>
         )}
@@ -75,7 +83,11 @@ export const Header: React.FC = observer(function Header() {
         )}
       </TreasuryPagesStyled>
       <SettingsAndProfileStyled>
-        <IconButton onClick={() => navigate('/settings')}>
+        <IconButton
+          onClick={() => {
+            navigate('/settings');
+          }}
+        >
           <img src={IconSettings} />
         </IconButton>
         <IconButton>

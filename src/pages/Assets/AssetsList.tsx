@@ -9,6 +9,7 @@ import {
   TableRow,
   TableTextCell,
   TableTitleCell,
+  TableTransferCell,
   styled,
 } from '@foundation';
 import { useAssetsStore } from '@store';
@@ -23,6 +24,7 @@ const RowStyled = styled('div')(() => ({
 export const AssetsList: React.FC = observer(function AssetsList() {
   const assetsStore = useAssetsStore();
   const { t } = useTranslation();
+  const [hoveredLine, setHoveredLine] = React.useState<string | null>(null);
 
   if (assetsStore.isLoading && !assetsStore.myAssets.length) {
     return (
@@ -47,13 +49,21 @@ export const AssetsList: React.FC = observer(function AssetsList() {
       <TableBody>
         {assetsStore.myAssets.map((a) => (
           <TableRow>
-            <RowStyled key={a.id}>
+            <RowStyled
+              key={a.id}
+              onMouseEnter={() => {
+                setHoveredLine(a.id);
+              }}
+              onMouseLeave={() => {
+                setHoveredLine(null);
+              }}
+            >
               <TableTitleCell title={a.name} subtitle={a.symbol} iconUrl={a.iconUrl} />
               <TableBalanceCell balance={a.rate} balanceInUsd={a.rate} />
               <TableTextCell text={`$${a.rate}`} />
               <TableTextCell mode="POSITIVE" text="+ 1%" />
               <TableTextCell text={`$${a.rate}`} />
-              <TableTextCell text={`$${a.rate}`} />
+              {hoveredLine === a.id ? <TableTransferCell /> : <TableTextCell text={`$${a.rate}`} />}
             </RowStyled>
           </TableRow>
         ))}

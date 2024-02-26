@@ -12,13 +12,18 @@ const IconButtonStyled = styled(MUIIconButton)(({ theme }) => ({
   textAlign: 'center',
 }));
 
+const LargeStyled = styled('div')(({ theme }) => ({
+  margin: theme.spacing(2, 3),
+}));
+
 interface IProps {
   onClick?: () => void;
   children: JSX.Element;
+  large?: boolean;
 }
 
-export const IconButton: React.FC<IProps> = ({ onClick, children }) => (
+export const IconButton: React.FC<IProps> = ({ onClick, children, large }) => (
   <IconButtonStyled size="small" onClick={onClick}>
-    {children}
+    {large ? <LargeStyled>{children}</LargeStyled> : children}
   </IconButtonStyled>
 );
