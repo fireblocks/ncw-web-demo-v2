@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ContentSection, ModeSwitcher, TViewMode, Typography, styled } from '@foundation';
+import { Button, ContentSection, Typography, styled } from '@foundation';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { AddAssetDialog } from './AddAssetDialog';
@@ -20,11 +20,7 @@ const ModeWrapperStyled = styled('div')(({ theme }) => ({
 
 export const AssetsPage: React.FC = observer(function AssetsPage() {
   const { t } = useTranslation();
-  const [mode, setMode] = React.useState<TViewMode>('CARD');
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const handleModeChange = (_: React.MouseEvent<HTMLElement>, value: TViewMode) => {
-    setMode(value);
-  };
   const onDialogOpen = () => {
     setIsDialogOpen(true);
   };
@@ -48,15 +44,12 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
       </div>
       <ContentSection>
         <ModeWrapperStyled>
-          <ModeSwitcher value={mode} onChange={handleModeChange} />
           <Button variant="contained" color="primary" onClick={onDialogOpen}>
             {t('ASSETS.ADD_ASSET')}
           </Button>
         </ModeWrapperStyled>
       </ContentSection>
-
       <AssetsList />
-
       <AddAssetDialog isOpen={isDialogOpen} onClose={onDialogClose} />
     </RootStyled>
   );

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { IconButton as MUIIconButton } from '@mui/material';
 import { styled } from '@foundation';
+import { IconButton as MUIIconButton } from '@mui/material';
 
 const IconButtonStyled = styled(MUIIconButton)(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
@@ -18,5 +18,7 @@ interface IProps {
 }
 
 export const IconButton: React.FC<IProps> = ({ onClick, children }) => (
-  <IconButtonStyled size='small' onClick={onClick}>{children}</IconButtonStyled>
+  <IconButtonStyled size="small" onClick={onClick}>
+    {children}
+  </IconButtonStyled>
 );

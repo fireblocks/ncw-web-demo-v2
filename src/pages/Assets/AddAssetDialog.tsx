@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Dialog, Skeleton, Typography, styled } from '@foundation';
+import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { useAssetsStore } from '@store';
 
 const ListStyled = styled('ul')(() => ({
   listStyle: 'none',
@@ -51,7 +51,12 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
                 <Typography component="p">{asset.name}</Typography>
                 <Typography component="p">{asset.id}</Typography>
                 <Typography component="p">${asset.rate}</Typography>
-                <Button onClick={() => handleAddAsset(asset.id)} variant="contained">
+                <Button
+                  onClick={() => {
+                    handleAddAsset(asset.id);
+                  }}
+                  variant="contained"
+                >
                   {t('ASSETS.ADD_ASSET')}
                 </Button>
               </AssetStyled>

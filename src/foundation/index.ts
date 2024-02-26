@@ -1,7 +1,14 @@
 export { styled } from '@mui/material/styles';
 export { CssBaseline, Typography, Button } from '@mui/material';
 export * from './theme';
-export * from './table/TableWrapper';
+export * from './table/Table';
+export * from './table/TableHead';
+export * from './table/TableRow';
+export * from './table/TableBody';
+export * from './table/cells/TableBalanceCell';
+export * from './table/cells/TableHeaderCell';
+export * from './table/cells/TableTextCell';
+export * from './table/cells/TableTitleCell';
 export * from './ModeSwitcher';
 export * from './ContentSection';
 export * from './Dialog';

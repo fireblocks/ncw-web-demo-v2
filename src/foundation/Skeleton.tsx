@@ -1,6 +1,6 @@
 import React from 'react';
-import MUISkeleton from '@mui/material/Skeleton';
 import { styled } from '@foundation';
+import MUISkeleton from '@mui/material/Skeleton';
 
 const RootStyled = styled('div')(({ theme }) => ({
   width: '70%',
@@ -26,25 +26,23 @@ interface IProps {
   mode: 'TABLE' | 'CARDS';
 }
 
-export const Skeleton: React.FC<IProps> = ({ mode }) => {
-  return (
-    <RootStyled>
-      {mode === 'TABLE' && (
-        <TableStyled>
-          <MUISkeleton variant="rounded" width="100%" height={40} />
-          <MUISkeleton variant="rounded" width="100%" height={40} />
-          <MUISkeleton variant="rounded" width="100%" height={40} />
-          <MUISkeleton variant="rounded" width="100%" height={40} />
-        </TableStyled>
-      )}
+export const Skeleton: React.FC<IProps> = ({ mode }) => (
+  <RootStyled>
+    {mode === 'TABLE' && (
+      <TableStyled>
+        <MUISkeleton variant="rounded" width="100%" height={40} />
+        <MUISkeleton variant="rounded" width="100%" height={40} />
+        <MUISkeleton variant="rounded" width="100%" height={40} />
+        <MUISkeleton variant="rounded" width="100%" height={40} />
+      </TableStyled>
+    )}
 
-      {mode === 'CARDS' && (
-        <CardsStyled>
-          <MUISkeleton variant="rounded" width={175} height={175} />
-          <MUISkeleton variant="rounded" width={175} height={175} />
-          <MUISkeleton variant="rounded" width={175} height={175} />
-        </CardsStyled>
-      )}
-    </RootStyled>
-  );
-};
+    {mode === 'CARDS' && (
+      <CardsStyled>
+        <MUISkeleton variant="rounded" width={175} height={175} />
+        <MUISkeleton variant="rounded" width={175} height={175} />
+        <MUISkeleton variant="rounded" width={175} height={175} />
+      </CardsStyled>
+    )}
+  </RootStyled>
+);

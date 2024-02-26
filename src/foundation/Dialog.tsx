@@ -1,11 +1,11 @@
 import * as React from 'react';
+import { IconButton, styled } from '@foundation';
+import IconClose from '@icons/close.svg';
+import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import MUIDialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { Typography } from '@mui/material';
-import { IconButton, styled } from '@foundation';
-import IconClose from '@icons/close.svg';
 
 const RootStyled = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.secondary.main,

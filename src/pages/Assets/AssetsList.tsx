@@ -1,26 +1,63 @@
 import React from 'react';
-import { TableWrapper, Typography, styled } from '@foundation';
-import { observer } from 'mobx-react';
+import {
+  Skeleton,
+  Table,
+  TableBalanceCell,
+  TableBody,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  TableTextCell,
+  TableTitleCell,
+  styled,
+} from '@foundation';
 import { useAssetsStore } from '@store';
+import { observer } from 'mobx-react';
+import { useTranslation } from 'react-i18next';
 
-const RootStyled = styled('div')(() => ({
-  display: 'block',
+const RowStyled = styled('div')(() => ({
+  display: 'grid',
+  gridTemplateColumns: '1.5fr 1fr 1fr 0.8fr 1fr 1fr',
 }));
 
 export const AssetsList: React.FC = observer(function AssetsList() {
   const assetsStore = useAssetsStore();
+  const { t } = useTranslation();
+
+  if (assetsStore.isLoading && !assetsStore.myAssets.length) {
+    return (
+      <Table>
+        <Skeleton mode="TABLE" />
+      </Table>
+    );
+  }
 
   return (
-    <TableWrapper>
-      <ul>
+    <Table>
+      <TableHead>
+        <RowStyled>
+          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.CURRENCY')} />
+          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.BALANCE')} />
+          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.PRICE')} />
+          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.CHANGE_24H')} />
+          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.MARKET_CAP')} />
+          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.VOLUME_24H')} />
+        </RowStyled>
+      </TableHead>
+      <TableBody>
         {assetsStore.myAssets.map((a) => (
-          <li key={a.id}>
-            <Typography variant="subtitle1" color="text.primary">
-              {a.name}
-            </Typography>
-          </li>
+          <TableRow>
+            <RowStyled key={a.id}>
+              <TableTitleCell title={a.name} subtitle={a.symbol} iconUrl={a.iconUrl} />
+              <TableBalanceCell balance={a.rate} balanceInUsd={a.rate} />
+              <TableTextCell text={`$${a.rate}`} />
+              <TableTextCell mode="POSITIVE" text="+ 1%" />
+              <TableTextCell text={`$${a.rate}`} />
+              <TableTextCell text={`$${a.rate}`} />
+            </RowStyled>
+          </TableRow>
         ))}
-      </ul>
-    </TableWrapper>
+      </TableBody>
+    </Table>
   );
 });
