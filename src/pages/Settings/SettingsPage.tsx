@@ -1,4 +1,4 @@
-import { Button, Typography, styled } from '@foundation';
+import { ActionButton, Typography, styled } from '@foundation';
 import { useAccountsStore, useDeviceStore, useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -31,13 +31,7 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
     }
 
     if (!fireblocksSDKStore.isMPCReady) {
-      return (
-        <Button variant="contained" onClick={() => fireblocksSDKStore.generateMPCKeys()}>
-          <Typography variant="body1" color="text.secondary">
-            Generate MPC keys
-          </Typography>
-        </Button>
-      );
+      return <ActionButton onClick={() => fireblocksSDKStore.generateMPCKeys()} caption="Generate MPC keys" />;
     }
 
     return null;

@@ -26,7 +26,7 @@ const LargeStyled = styled('div')(({ theme }) => ({
 }));
 
 interface IProps {
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   children: JSX.Element;
   large?: boolean;
 }

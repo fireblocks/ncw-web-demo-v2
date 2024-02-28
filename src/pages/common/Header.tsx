@@ -1,4 +1,5 @@
-import { IconButton, Typography, styled } from '@foundation';
+import React from 'react';
+import { DropDownMenu, IconButton, MenuItem, Typography, styled } from '@foundation';
 import IconArrowLeft from '@icons/arrow-left.svg';
 import IconLogo from '@icons/logo.svg';
 import IconSettings from '@icons/settings.svg';
@@ -55,10 +56,30 @@ export const Header: React.FC = observer(function Header() {
   const navigate = useNavigate();
   const userStore = useUserStore();
 
+  const [userMenuAnchorEl, setUserMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+
   const isNotSettingsPage = location.pathname !== '/settings';
   const isAssetsPage = location.pathname === '/assets';
   const isTransactionsPage = location.pathname === '/transactions';
   const isNftsPage = location.pathname === '/nfts';
+  const isUserMenuOpen = Boolean(userMenuAnchorEl);
+
+  const onOpenUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setUserMenuAnchorEl(event.currentTarget);
+  };
+
+  const onCloseUserMenuClick = () => {
+    setUserMenuAnchorEl(null);
+  };
+
+  const onLogoutClick = () => {
+    userStore.logout();
+    setUserMenuAnchorEl(null);
+  };
+
+  if (!userStore.loggedUser) {
+    return null;
+  }
 
   return (
     <RootStyled>
@@ -113,12 +134,15 @@ export const Header: React.FC = observer(function Header() {
         >
           <img src={IconSettings} />
         </IconButton>
-        <IconButton>
+        <IconButton onClick={onOpenUserMenuClick}>
           <Typography variant="subtitle2" component="span">
             {userStore.userShortDisplayName}
           </Typography>
         </IconButton>
       </SettingsAndProfileStyled>
+      <DropDownMenu anchorEl={userMenuAnchorEl} isOpen={isUserMenuOpen} onClose={onCloseUserMenuClick}>
+        <MenuItem onClick={onLogoutClick}>Logout</MenuItem>
+      </DropDownMenu>
     </RootStyled>
   );
 });
