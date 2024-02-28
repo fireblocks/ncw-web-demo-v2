@@ -35,7 +35,11 @@ export class AssetStore {
   }
 
   @computed
-  public get rate(): number {
-    return this.data.rate || 0;
+  public get rate(): string {
+    if (this.data.rate) {
+      return this.data.rate.toLocaleString('en-IN', { style: 'currency', currency: 'USD' });
+    }
+
+    return '0';
   }
 }

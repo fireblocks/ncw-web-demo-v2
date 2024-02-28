@@ -7,8 +7,8 @@ const RootStyled = styled('div')(() => ({
 }));
 
 interface IProps {
-  balance: number;
-  balanceInUsd: number;
+  balance: string;
+  balanceInUsd: string;
 }
 
 export const TableBalanceCell: React.FC<IProps> = ({ balance, balanceInUsd }) => (
@@ -17,7 +17,7 @@ export const TableBalanceCell: React.FC<IProps> = ({ balance, balanceInUsd }) =>
       {balance}
     </Typography>
     <Typography component="p" color="text.primary" variant="body1">
-      ${balanceInUsd}
+      {balanceInUsd}
     </Typography>
   </RootStyled>
 );
