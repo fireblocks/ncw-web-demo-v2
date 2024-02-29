@@ -21,8 +21,9 @@ const RowStyled = styled('div')(() => ({
 }));
 
 const TableWrapperStyled = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'column',
   height: 500,
-  overflow: 'auto',
 }));
 
 interface IProps {
@@ -36,8 +37,12 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
   const [hoveredLine, setHoveredLine] = React.useState<string | null>(null);
 
   const handleAddAsset = (assetId: string) => {
-    assetsStore.addAsset(assetId);
-    onClose();
+    assetsStore
+      .addAsset(assetId)
+      .then(() => {
+        onClose();
+      })
+      .catch(() => {});
   };
 
   return (

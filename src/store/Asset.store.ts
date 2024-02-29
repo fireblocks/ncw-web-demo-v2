@@ -2,7 +2,7 @@ import { IAssetAddressDTO, IAssetBalanceDTO, IAssetDTO } from '@api';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
-const localizedCurrencyView = (amount: number): string =>
+export const localizedCurrencyView = (amount: number): string =>
   amount.toLocaleString('en-IN', { style: 'currency', currency: 'USD' });
 
 const NOT_AVAILABLE = '--';
@@ -63,7 +63,8 @@ export class AssetStore {
 
   @computed
   public get availableBalance(): string {
-    return this.balanceData?.available || '0';
+    // TODO: remove this line and use the real data
+    return this.balanceData?.available || `${Math.floor(Math.random() * 40)}`;
   }
 
   @computed

@@ -54,7 +54,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
             {t('ASSETS.CURRENT_BALANCE')}
           </Typography>
           <Typography variant="h1" color="text.primary">
-            $45,873.03
+            {assetsStore.isLoading ? t('COMMON.LOADING') : assetsStore.totalAvailableBalanceInUSD}
           </Typography>
         </BalanceStyled>
       </HeadingStyled>
@@ -62,6 +62,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
         <ActionsWrapperStyled>
           <ActionButton onClick={onDialogOpen} caption={t('ASSETS.ADD_ASSET')} />
           <IconButton
+            tooltip={t('ASSETS.REFRESH_BALANCES')}
             onClick={() => {
               assetsStore.refreshBalances();
             }}

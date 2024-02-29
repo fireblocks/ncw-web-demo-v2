@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { styled } from '@foundation';
-import { IconButton as MUIIconButton } from '@mui/material';
+import { IconButton as MUIIconButton, Tooltip } from '@mui/material';
 
 const IconButtonStyled = styled(MUIIconButton)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.dark,
@@ -29,10 +29,21 @@ interface IProps {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   children: JSX.Element;
   large?: boolean;
+  tooltip?: string;
 }
 
-export const IconButton: React.FC<IProps> = ({ onClick, children, large }) => (
-  <IconButtonStyled size="small" onClick={onClick}>
-    {large ? <LargeStyled>{children}</LargeStyled> : children}
-  </IconButtonStyled>
+export const IconButton: React.FC<IProps> = ({ onClick, children, large, tooltip }) => (
+  <>
+    {tooltip ? (
+      <Tooltip title={tooltip} arrow placement="top">
+        <IconButtonStyled size="small" onClick={onClick}>
+          {large ? <LargeStyled>{children}</LargeStyled> : children}
+        </IconButtonStyled>
+      </Tooltip>
+    ) : (
+      <IconButtonStyled size="small" onClick={onClick}>
+        {large ? <LargeStyled>{children}</LargeStyled> : children}
+      </IconButtonStyled>
+    )}
+  </>
 );

@@ -3,9 +3,9 @@ import { styled } from '@foundation';
 import MUISkeleton from '@mui/material/Skeleton';
 
 const RootStyled = styled('div')(({ theme }) => ({
-  width: '70%',
+  width: '100%',
   margin: '0 auto',
-  padding: theme.spacing(2),
+  padding: theme.spacing(4, 0),
 }));
 
 const TableStyled = styled('div')(({ theme }) => ({

@@ -1,6 +1,7 @@
 import { IconButton, styled } from '@foundation';
 import IconReceive from '@icons/receive.svg';
 import IconSend from '@icons/send.svg';
+import { useTranslation } from 'react-i18next';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -15,13 +16,17 @@ interface IProps {
   onSend?: () => void;
 }
 
-export const TableTransferCell: React.FC<IProps> = ({ onReceive, onSend }) => (
-  <RootStyled>
-    <IconButton large onClick={onReceive}>
-      <img src={IconReceive} />
-    </IconButton>
-    <IconButton large onClick={onSend}>
-      <img src={IconSend} />
-    </IconButton>
-  </RootStyled>
-);
+export const TableTransferCell: React.FC<IProps> = ({ onReceive, onSend }) => {
+  const { t } = useTranslation();
+
+  return (
+    <RootStyled>
+      <IconButton tooltip={t('ASSETS.RECEIVE')} large onClick={onReceive}>
+        <img src={IconReceive} />
+      </IconButton>
+      <IconButton tooltip={t('ASSETS.SEND')} large onClick={onSend}>
+        <img src={IconSend} />
+      </IconButton>
+    </RootStyled>
+  );
+};

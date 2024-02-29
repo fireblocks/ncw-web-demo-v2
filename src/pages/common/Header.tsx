@@ -128,6 +128,7 @@ export const Header: React.FC = observer(function Header() {
       </TreasuryPagesStyled>
       <SettingsAndProfileStyled>
         <IconButton
+          tooltip={t('SETTINGS.NAME')}
           onClick={() => {
             navigate('/settings');
           }}

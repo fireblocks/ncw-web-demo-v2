@@ -12,6 +12,7 @@ export const translationToEnglish = {
     LOGIN: 'Log in',
   },
   SETTINGS: {
+    NAME: 'Settings',
     DESCRIPTION: 'Description',
     ITEMS: {
       CREATE_A_KEY_BACKUP: {
@@ -44,6 +45,9 @@ export const translationToEnglish = {
     TITLE: 'My Assets',
     CURRENT_BALANCE: 'Current balance',
     ADD_ASSET: 'Add asset',
+    REFRESH_BALANCES: 'Refresh balances',
+    RECEIVE: 'Receive',
+    SEND: 'Send',
     TABLE: {
       HEADERS: {
         CURRENCY: 'Currency',

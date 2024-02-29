@@ -1,6 +1,6 @@
 import { IAssetDTO, addAsset, getAddress, getAsset, getAssets, getBalance, getSupportedAssets } from '@api';
-import { action, makeObservable, observable, runInAction } from 'mobx';
-import { AssetStore } from './Asset.store';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import { AssetStore, localizedCurrencyView } from './Asset.store';
 import { RootStore } from './Root.store';
 
 export class AssetsStore {
@@ -15,10 +15,16 @@ export class AssetsStore {
     this.myAssets = [];
     this.supportedAssets = [];
     this._rootStore = rootStore;
-    this.isLoading = false;
+    this.isLoading = true;
     this.error = '';
 
     makeObservable(this);
+  }
+
+  @computed
+  public get totalAvailableBalanceInUSD(): string {
+    const balance = this.myAssets.reduce((acc, a) => acc + Number(a.availableBalance) * (a.assetData.rate || 0), 0);
+    return localizedCurrencyView(balance);
   }
 
   @action
@@ -76,7 +82,6 @@ export class AssetsStore {
   @action
   public addSupportedAsset(assetData: IAssetDTO): void {
     const assetStore = new AssetStore(assetData, null, null, this._rootStore);
-
     this.supportedAssets.push(assetStore);
   }
 
@@ -94,6 +99,7 @@ export class AssetsStore {
   }
 
   public refreshBalances(): void {
+    this.setIsLoading(true);
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
     const accessToken = this._rootStore.userStore.accessToken;
@@ -106,6 +112,9 @@ export class AssetsStore {
           })
           .catch((e) => {
             this.setError(e.message);
+          })
+          .finally(() => {
+            this.setIsLoading(false);
           });
       });
     }
