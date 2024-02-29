@@ -1,9 +1,11 @@
 import React from 'react';
 import {
+  CopyText,
   Skeleton,
   Table,
   TableBalanceCell,
   TableBody,
+  TableCell,
   TableHead,
   TableHeaderCell,
   TableRow,
@@ -18,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 const RowStyled = styled('div')(() => ({
   display: 'grid',
-  gridTemplateColumns: '1.5fr 1fr 1fr 0.8fr 1fr 1fr',
+  gridTemplateColumns: '1.5fr 1fr 0.7fr 1fr 1fr',
 }));
 
 export const AssetsList: React.FC = observer(function AssetsList() {
@@ -41,9 +43,8 @@ export const AssetsList: React.FC = observer(function AssetsList() {
           <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.CURRENCY')} />
           <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.BALANCE')} />
           <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.PRICE')} />
-          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.CHANGE_24H')} />
-          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.MARKET_CAP')} />
-          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.VOLUME_24H')} />
+          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.ADDRESS')} />
+          <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.BASE_ASSET')} />
         </RowStyled>
       </TableHead>
       <TableBody>
@@ -60,9 +61,10 @@ export const AssetsList: React.FC = observer(function AssetsList() {
               <TableTitleCell title={a.name} subtitle={a.symbol} iconUrl={a.iconUrl} />
               <TableBalanceCell balance={a.availableBalance} balanceInUsd={a.availableBalanceInUSD} />
               <TableTextCell text={a.rate} />
-              <TableTextCell mode="POSITIVE" text="+ 1%" />
-              <TableTextCell text={a.rate} />
-              {hoveredLine === a.id ? <TableTransferCell /> : <TableTextCell text={a.rate} />}
+              <TableCell>
+                <CopyText text={a.address} />
+              </TableCell>
+              {hoveredLine === a.id ? <TableTransferCell /> : <TableTextCell text={a.baseAsset} />}
             </RowStyled>
           </TableRow>
         ))}

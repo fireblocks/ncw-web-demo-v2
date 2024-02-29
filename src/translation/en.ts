@@ -52,6 +52,9 @@ export const translationToEnglish = {
         CHANGE_24H: '24h Change',
         MARKET_CAP: 'Market Cap',
         VOLUME_24H: '24h Volume',
+        ADDRESS: 'Address',
+        BLOCKCHAIN: 'Blockchain',
+        BASE_ASSET: 'Base Asset',
       },
     },
     ADD_DIALOG: {
@@ -61,5 +64,6 @@ export const translationToEnglish = {
   },
   COMMON: {
     LOADING: 'Loading...',
+    COPIED: 'Copied!',
   },
 };

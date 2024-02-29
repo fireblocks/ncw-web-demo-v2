@@ -18,3 +18,4 @@ export * from './IconButton';
 export * from './Skeleton';
 export * from './ActionButton';
 export * from './DropDownMenu';
+export * from './CopyText';

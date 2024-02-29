@@ -6,13 +6,20 @@ import { Routes, Route } from 'react-router-dom';
 import { StoreInitializer } from './StoreInitializer';
 
 const RootStyled = styled('div')(({ theme }) => ({
-  height: '100vh',
+  display: 'flex',
+  flexDirection: 'column',
+  flex: 1,
+  width: '100%',
   backgroundColor: theme.palette.primary.main,
 }));
 
 const ContentStyled = styled('div')(() => ({
   maxWidth: 1440,
+  width: 1440,
   margin: '0 auto',
+  display: 'flex',
+  flexDirection: 'column',
+  flex: 1,
 }));
 
 export const App: React.FC = observer(function App() {

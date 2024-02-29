@@ -4,7 +4,7 @@ import { styled } from '@foundation';
 const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'row',
-  justifyContent: 'center',
+  justifyContent: 'flex-start',
   alignItems: 'center',
 }));
 

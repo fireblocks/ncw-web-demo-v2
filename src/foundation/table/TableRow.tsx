@@ -3,6 +3,7 @@ import { styled } from '@foundation';
 
 const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(3, 6),
+  backgroundColor: theme.palette.primary.light,
   borderBottom: `2px solid ${theme.palette.secondary.main}`,
   transition: 'background-color 0.3s',
   '&:hover': {

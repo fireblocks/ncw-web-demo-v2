@@ -1,11 +1,10 @@
 import { ReactElement } from 'react';
 import { styled } from '@foundation';
 
-const RootStyled = styled('div')(({ theme }) => ({
+const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
-  backgroundColor: theme.palette.primary.light,
+  flex: 1,
 }));
 
 export const Table: React.FC<{ children: ReactElement | ReactElement[] }> = ({ children }) => (

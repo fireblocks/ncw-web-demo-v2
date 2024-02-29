@@ -10,7 +10,7 @@ import { AssetsList } from './AssetsList';
 const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  flex: 1,
 }));
 
 const ActionsWrapperStyled = styled('div')(({ theme }) => ({

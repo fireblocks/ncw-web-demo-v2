@@ -1,4 +1,4 @@
-import { IAssetDTO, addAsset, getAsset, getAssets, getBalance, getSupportedAssets } from '@api';
+import { IAssetDTO, addAsset, getAddress, getAsset, getAssets, getBalance, getSupportedAssets } from '@api';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 import { AssetStore } from './Asset.store';
 import { RootStore } from './Root.store';
@@ -53,8 +53,9 @@ export class AssetsStore {
 
     if (accountId !== undefined) {
       const balance = await getBalance(deviceId, accountId, assetData.id, accessToken);
+      const address = await getAddress(deviceId, accountId, assetData.id, accessToken);
 
-      const assetStore = new AssetStore(assetData, balance, this._rootStore);
+      const assetStore = new AssetStore(assetData, balance, address, this._rootStore);
 
       runInAction(() => {
         this.myAssets.push(assetStore);
@@ -74,7 +75,7 @@ export class AssetsStore {
 
   @action
   public addSupportedAsset(assetData: IAssetDTO): void {
-    const assetStore = new AssetStore(assetData, null, this._rootStore);
+    const assetStore = new AssetStore(assetData, null, null, this._rootStore);
 
     this.supportedAssets.push(assetStore);
   }
