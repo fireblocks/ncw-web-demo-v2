@@ -2,7 +2,7 @@ import { styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Header, SettingsPage, TransactionsPage } from '@pages';
 import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { StoreInitializer } from './StoreInitializer';
 
 const RootStyled = styled('div')(({ theme }) => ({
@@ -42,12 +42,12 @@ export const App: React.FC = observer(function App() {
               <Route path="transactions" element={<TransactionsPage />} />
               <Route path="nfts" element={<NFTsPage />} />
               <Route path="settings" element={<SettingsPage />} />
-              <Route path="*" element={<AssetsPage />} />
+              <Route path="*" element={<Navigate to="/assets" />} />
             </>
           ) : (
             <>
               <Route path="login" element={<LoginPage />} />
-              <Route path="*" element={<LoginPage />} />
+              <Route path="*" element={<Navigate to="/login" />} />
             </>
           )}
         </Routes>
