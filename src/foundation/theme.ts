@@ -10,6 +10,7 @@ const theme: ThemeOptions = {
     },
     secondary: {
       main: '#1B1B1B',
+      dark: '#333333',
       light: '#222222',
     },
     success: {

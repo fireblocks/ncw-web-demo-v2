@@ -13,8 +13,8 @@ const RootStyled = styled('div')(({ theme }) => ({
 
 const MUIDialogStyled = styled(MUIDialog)(() => ({
   '.MuiDialog-paper': {
-    width: 800,
-    maxWidth: 800,
+    width: 750,
+    maxWidth: 750,
   },
 }));
 

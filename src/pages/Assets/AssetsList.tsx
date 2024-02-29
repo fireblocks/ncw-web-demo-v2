@@ -58,7 +58,7 @@ export const AssetsList: React.FC = observer(function AssetsList() {
               }}
             >
               <TableTitleCell title={a.name} subtitle={a.symbol} iconUrl={a.iconUrl} />
-              <TableBalanceCell balance={a.rate} balanceInUsd={a.rate} />
+              <TableBalanceCell balance={a.availableBalance} balanceInUsd={a.availableBalanceInUSD} />
               <TableTextCell text={a.rate} />
               <TableTextCell mode="POSITIVE" text="+ 1%" />
               <TableTextCell text={a.rate} />

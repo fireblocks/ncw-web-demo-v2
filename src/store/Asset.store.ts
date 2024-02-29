@@ -1,17 +1,25 @@
-import { IAssetDTO } from '@api';
-import { computed, makeObservable, observable } from 'mobx';
+import { IAssetBalanceDTO, IAssetDTO } from '@api';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
 export class AssetStore {
   @observable public data: IAssetDTO;
+  @observable public balance: IAssetBalanceDTO | null;
 
   private _rootStore: RootStore;
 
-  constructor(dto: IAssetDTO, rootStore: RootStore) {
+  constructor(dto: IAssetDTO, balance: IAssetBalanceDTO | null, rootStore: RootStore) {
     this.data = dto;
+    this.balance = balance;
     this._rootStore = rootStore;
 
     makeObservable(this);
+  }
+
+  @action
+  public setBalance(balance: IAssetBalanceDTO): void {
+    this.balance = null;
+    this.balance = balance;
   }
 
   @computed
@@ -32,6 +40,20 @@ export class AssetStore {
   @computed
   public get name(): string {
     return this.data.name;
+  }
+
+  @computed
+  public get availableBalance(): string {
+    return this.balance?.available || '0';
+  }
+
+  @computed
+  public get availableBalanceInUSD(): string {
+    if (this.data.rate) {
+      return `${Number(this.availableBalance) * this.data.rate}`;
+    }
+
+    return '--';
   }
 
   @computed

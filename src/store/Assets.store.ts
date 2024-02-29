@@ -1,5 +1,5 @@
-import { IAssetDTO, addAsset, getAsset, getAssets, getSupportedAssets } from '@api';
-import { action, makeObservable, observable } from 'mobx';
+import { IAssetDTO, addAsset, getAsset, getAssets, getBalance, getSupportedAssets } from '@api';
+import { action, makeObservable, observable, runInAction } from 'mobx';
 import { AssetStore } from './Asset.store';
 import { RootStore } from './Root.store';
 
@@ -7,6 +7,7 @@ export class AssetsStore {
   @observable public myAssets: AssetStore[];
   @observable public supportedAssets: AssetStore[];
   @observable public isLoading: boolean;
+  @observable public error: string;
 
   private _rootStore: RootStore;
 
@@ -15,6 +16,7 @@ export class AssetsStore {
     this.supportedAssets = [];
     this._rootStore = rootStore;
     this.isLoading = false;
+    this.error = '';
 
     makeObservable(this);
   }
@@ -30,9 +32,11 @@ export class AssetsStore {
       const myAssets = await getAssets(deviceId, accountId, accessToken);
       const supportedAssets = await getSupportedAssets(deviceId, accountId, accessToken);
 
-      myAssets.map((a) => {
-        this.addMyAsset(a);
-      });
+      await Promise.all(
+        myAssets.map(async (a) => {
+          await this.addMyAsset(a);
+        }),
+      );
 
       supportedAssets.map((a) => {
         this.addSupportedAsset(a);
@@ -42,10 +46,20 @@ export class AssetsStore {
   }
 
   @action
-  public addMyAsset(assetData: IAssetDTO): void {
-    const assetStore = new AssetStore(assetData, this._rootStore);
+  public async addMyAsset(assetData: IAssetDTO): Promise<void> {
+    const deviceId = this._rootStore.deviceStore.deviceId;
+    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+    const accessToken = this._rootStore.userStore.accessToken;
 
-    this.myAssets.push(assetStore);
+    if (accountId !== undefined) {
+      const balance = await getBalance(deviceId, accountId, assetData.id, accessToken);
+
+      const assetStore = new AssetStore(assetData, balance, this._rootStore);
+
+      runInAction(() => {
+        this.myAssets.push(assetStore);
+      });
+    }
   }
 
   @action
@@ -54,8 +68,13 @@ export class AssetsStore {
   }
 
   @action
+  public setError(error: string): void {
+    this.error = error;
+  }
+
+  @action
   public addSupportedAsset(assetData: IAssetDTO): void {
-    const assetStore = new AssetStore(assetData, this._rootStore);
+    const assetStore = new AssetStore(assetData, null, this._rootStore);
 
     this.supportedAssets.push(assetStore);
   }
@@ -69,7 +88,25 @@ export class AssetsStore {
       await addAsset(deviceId, accountId, assetId, accessToken);
       const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken);
 
-      this.addMyAsset(assetDTO);
+      await this.addMyAsset(assetDTO);
+    }
+  }
+
+  public refreshBalances(): void {
+    const deviceId = this._rootStore.deviceStore.deviceId;
+    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+    const accessToken = this._rootStore.userStore.accessToken;
+
+    if (accountId !== undefined) {
+      this.myAssets.forEach((a) => {
+        getBalance(deviceId, accountId, a.id, accessToken)
+          .then((balance) => {
+            a.setBalance(balance);
+          })
+          .catch((e) => {
+            this.setError(e.message);
+          });
+      });
     }
   }
 }

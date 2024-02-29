@@ -65,7 +65,7 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
                       }}
                     >
                       <TableTitleCell title={a.name} subtitle={a.symbol} iconUrl={a.iconUrl} />
-                      <TableTextCell text={`$${a.rate}`} />
+                      <TableTextCell text={a.rate} />
                       <TableCell>
                         {hoveredLine === a.id ? (
                           <Button

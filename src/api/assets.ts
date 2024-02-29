@@ -58,7 +58,7 @@ export const addAsset = async (
   token: string,
 ): Promise<IAssetAddressDTO> => {
   const response = await postCall(`api/devices/${deviceId}/accounts/${accountId}/assets/${assetId}`, token);
-  return await response;
+  return response;
 };
 
 export const getAsset = async (

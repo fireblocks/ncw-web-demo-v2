@@ -3,7 +3,7 @@ import { styled } from '@foundation';
 import { IconButton as MUIIconButton } from '@mui/material';
 
 const IconButtonStyled = styled(MUIIconButton)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.light,
+  backgroundColor: theme.palette.secondary.dark,
   padding: 0,
   borderRadius: 4,
   minWidth: 50,

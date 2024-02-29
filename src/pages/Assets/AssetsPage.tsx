@@ -1,5 +1,7 @@
 import React from 'react';
-import { ActionButton, ContentSection, Typography, styled } from '@foundation';
+import { ActionButton, ContentSection, IconButton, Typography, styled } from '@foundation';
+import IconRefresh from '@icons/refresh.svg';
+import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { AddAssetDialog } from './AddAssetDialog';
@@ -11,7 +13,7 @@ const RootStyled = styled('div')(() => ({
   height: '100%',
 }));
 
-const ModeWrapperStyled = styled('div')(({ theme }) => ({
+const ActionsWrapperStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   width: '100%',
   justifyContent: 'flex-end',
@@ -31,6 +33,7 @@ const HeadingStyled = styled('div')(({ theme }) => ({
 
 export const AssetsPage: React.FC = observer(function AssetsPage() {
   const { t } = useTranslation();
+  const assetsStore = useAssetsStore();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const onDialogOpen = () => {
     setIsDialogOpen(true);
@@ -56,9 +59,16 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
         </BalanceStyled>
       </HeadingStyled>
       <ContentSection>
-        <ModeWrapperStyled>
+        <ActionsWrapperStyled>
           <ActionButton onClick={onDialogOpen} caption={t('ASSETS.ADD_ASSET')} />
-        </ModeWrapperStyled>
+          <IconButton
+            onClick={() => {
+              assetsStore.refreshBalances();
+            }}
+          >
+            <img src={IconRefresh} />
+          </IconButton>
+        </ActionsWrapperStyled>
       </ContentSection>
       <AssetsList />
       <AddAssetDialog isOpen={isDialogOpen} onClose={onDialogClose} />
