@@ -1,4 +1,13 @@
-import { IAssetDTO, addAsset, getAddress, getAsset, getAssets, getBalance, getSupportedAssets } from '@api';
+import {
+  IAssetDTO,
+  IAssetsSummaryDTO,
+  addAsset,
+  getAddress,
+  getAsset,
+  getAssetsSummary,
+  getBalance,
+  getSupportedAssets,
+} from '@api';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { AssetStore, localizedCurrencyView } from './Asset.store';
 import { RootStore } from './Root.store';
@@ -23,7 +32,7 @@ export class AssetsStore {
 
   @computed
   public get totalAvailableBalanceInUSD(): string {
-    const balance = this.myAssets.reduce((acc, a) => acc + Number(a.availableBalance) * (a.assetData.rate || 0), 0);
+    const balance = this.myAssets.reduce((acc, a) => acc + Number(a.totalBalance) * (a.assetData.rate || 0), 0);
     return localizedCurrencyView(balance);
   }
 
@@ -35,33 +44,25 @@ export class AssetsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId !== undefined && accessToken) {
-      const myAssets = await getAssets(deviceId, accountId, accessToken);
+      const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken);
       const supportedAssets = await getSupportedAssets(deviceId, accountId, accessToken);
 
-      await Promise.all(
-        myAssets.map(async (a) => {
-          await this.addMyAsset(a);
-        }),
-      );
-
-      supportedAssets.map((a) => {
-        this.addSupportedAsset(a);
-      });
+      assetsSummary.map(async (a) => {
+        await this.addMyAsset(a);
+      }),
+        supportedAssets.map((a) => {
+          this.addSupportedAsset(a);
+        });
     }
     this.setIsLoading(false);
   }
 
   @action
-  public async addMyAsset(assetData: IAssetDTO): Promise<void> {
-    const deviceId = this._rootStore.deviceStore.deviceId;
+  public async addMyAsset(assetData: IAssetsSummaryDTO): Promise<void> {
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-    const accessToken = this._rootStore.userStore.accessToken;
 
     if (accountId !== undefined) {
-      const balance = await getBalance(deviceId, accountId, assetData.id, accessToken);
-      const address = await getAddress(deviceId, accountId, assetData.id, accessToken);
-
-      const assetStore = new AssetStore(assetData, balance, address, this._rootStore);
+      const assetStore = new AssetStore(assetData.asset, assetData.balance, assetData.address, this._rootStore);
 
       runInAction(() => {
         this.myAssets.push(assetStore);
@@ -93,8 +94,10 @@ export class AssetsStore {
     if (deviceId && accountId !== undefined && accessToken) {
       await addAsset(deviceId, accountId, assetId, accessToken);
       const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken);
+      const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken);
+      const addressDTO = await getAddress(deviceId, accountId, assetId, accessToken);
 
-      await this.addMyAsset(assetDTO);
+      await this.addMyAsset({ asset: assetDTO, balance: balanceDTO, address: addressDTO });
     }
   }
 
@@ -105,18 +108,21 @@ export class AssetsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (accountId !== undefined) {
-      this.myAssets.forEach((a) => {
-        getBalance(deviceId, accountId, a.id, accessToken)
-          .then((balance) => {
-            a.setBalance(balance);
-          })
-          .catch((e) => {
-            this.setError(e.message);
-          })
-          .finally(() => {
-            this.setIsLoading(false);
+      getAssetsSummary(deviceId, accountId, accessToken)
+        .then((assetsSummary) => {
+          assetsSummary.map((a) => {
+            const asset = this.myAssets.find((as) => as.id === a.asset.id);
+            if (asset) {
+              asset.setBalance(a.balance);
+            }
           });
-      });
+        })
+        .catch((e) => {
+          this.setError(e.message);
+        })
+        .finally(() => {
+          this.setIsLoading(false);
+        });
     }
   }
 }

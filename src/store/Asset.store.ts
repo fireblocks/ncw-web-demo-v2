@@ -62,9 +62,8 @@ export class AssetStore {
   }
 
   @computed
-  public get availableBalance(): string {
-    // TODO: remove this line and use the real data
-    return this.balanceData?.available || `${Math.floor(Math.random() * 40)}`;
+  public get totalBalance(): string {
+    return this.balanceData?.total || '0';
   }
 
   @computed
@@ -83,10 +82,8 @@ export class AssetStore {
   }
 
   @computed
-  public get availableBalanceInUSD(): string {
-    return this.assetData.rate
-      ? localizedCurrencyView(Number(this.availableBalance) * this.assetData.rate)
-      : NOT_AVAILABLE;
+  public get totalBalanceInUSD(): string {
+    return this.assetData.rate ? localizedCurrencyView(Number(this.totalBalance) * this.assetData.rate) : NOT_AVAILABLE;
   }
 
   @computed

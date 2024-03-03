@@ -51,6 +51,12 @@ export interface IAssetBalanceDTO {
   blockHash?: string;
 }
 
+export interface IAssetsSummaryDTO {
+  asset: IAssetDTO;
+  address: IAssetAddressDTO;
+  balance: IAssetBalanceDTO;
+}
+
 export const addAsset = async (
   deviceId: string,
   accountId: number,
@@ -74,6 +80,16 @@ export const getAsset = async (
 export const getAssets = async (deviceId: string, accountId: number, token: string): Promise<IAssetDTO[]> => {
   const response = await getCall(`api/devices/${deviceId}/accounts/${accountId}/assets`, token);
   return response.json();
+};
+
+export const getAssetsSummary = async (
+  deviceId: string,
+  accountId: number,
+  token: string,
+): Promise<IAssetsSummaryDTO[]> => {
+  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId}/assets/summary`, token);
+  const assetsMap = await response.json();
+  return Object.values(assetsMap);
 };
 
 export const getSupportedAssets = async (deviceId: string, accountId: number, token: string): Promise<IAssetDTO[]> => {
