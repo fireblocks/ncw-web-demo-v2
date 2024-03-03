@@ -65,6 +65,15 @@ export const translationToEnglish = {
       TITLE: 'Add an Asset',
       DESCRIPTION: 'Select an asset from the list or search for a new asset',
     },
+    NEW_TRANSACTION_DIALOG: {
+      RECEIVE_TITLE: 'Receive Asset',
+      SEND_TITLE: 'Transfer Asset',
+      DESCRIPTION: 'Some dialog explanation',
+      AMOUNT: 'Select amount of',
+      RECEIVING_ADDRESS: 'Receiving address',
+      FEE_LEVEL: 'Select fee level',
+      ACTION: 'Transfer asset',
+    },
   },
   COMMON: {
     LOADING: 'Loading...',

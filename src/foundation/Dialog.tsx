@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { IconButton, styled } from '@foundation';
+import { ActionButton, IconButton, styled } from '@foundation';
 import IconClose from '@icons/close.svg';
 import { Typography } from '@mui/material';
-import Button from '@mui/material/Button';
 import MUIDialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -11,16 +10,28 @@ const RootStyled = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.secondary.main,
 }));
 
-const MUIDialogStyled = styled(MUIDialog)(() => ({
+const MUIDialogMediumStyled = styled(MUIDialog)(() => ({
   '.MuiDialog-paper': {
     width: 750,
     maxWidth: 750,
   },
 }));
 
+const MUIDialogSmallStyled = styled(MUIDialog)(() => ({
+  '.MuiDialog-paper': {
+    width: 550,
+    maxWidth: 550,
+  },
+}));
+
 const DialogContentStyled = styled(DialogContent)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.light,
   padding: 0,
+}));
+
+const DialogActionsStyled = styled(DialogActions)(({ theme }) => ({
+  backgroundColor: theme.palette.secondary.light,
+  padding: theme.spacing(0, 3, 4, 0),
 }));
 
 const DialogHeaderStyled = styled('div')(({ theme }) => ({
@@ -45,6 +56,7 @@ interface IProps {
   onClose: () => void;
   doAction?: () => void;
   children: JSX.Element;
+  size?: 'small' | 'medium' | 'large';
 }
 
 export const Dialog: React.FC<IProps> = ({
@@ -55,29 +67,44 @@ export const Dialog: React.FC<IProps> = ({
   onClose,
   doAction,
   children,
-}) => (
-  <MUIDialogStyled open={isOpen} keepMounted onClose={onClose}>
-    <RootStyled>
-      <DialogHeaderStyled>
-        <Typography variant="h2" component="p">
-          {title}
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          {description}
-        </Typography>
-        <CloseButtonStyled>
-          <IconButton onClick={onClose}>
-            <img src={IconClose} />
-          </IconButton>
-        </CloseButtonStyled>
-      </DialogHeaderStyled>
+  size = 'medium',
+}) => {
+  let DialogComponent = null;
 
-      <DialogContentStyled>{children}</DialogContentStyled>
-      {doAction && actionCaption && (
-        <DialogActions>
-          <Button onClick={doAction}>{actionCaption}</Button>
-        </DialogActions>
-      )}
-    </RootStyled>
-  </MUIDialogStyled>
-);
+  switch (size) {
+    case 'small':
+      DialogComponent = MUIDialogSmallStyled;
+      break;
+    case 'medium':
+      DialogComponent = MUIDialogMediumStyled;
+      break;
+    default:
+      DialogComponent = MUIDialogMediumStyled;
+  }
+  return (
+    <DialogComponent open={isOpen} keepMounted onClose={onClose}>
+      <RootStyled>
+        <DialogHeaderStyled>
+          <Typography variant="h2" component="p">
+            {title}
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            {description}
+          </Typography>
+          <CloseButtonStyled>
+            <IconButton onClick={onClose}>
+              <img src={IconClose} />
+            </IconButton>
+          </CloseButtonStyled>
+        </DialogHeaderStyled>
+
+        <DialogContentStyled>{children}</DialogContentStyled>
+        {doAction && actionCaption && (
+          <DialogActionsStyled>
+            <ActionButton isDialog onClick={doAction} caption={actionCaption} />
+          </DialogActionsStyled>
+        )}
+      </RootStyled>
+    </DialogComponent>
+  );
+};

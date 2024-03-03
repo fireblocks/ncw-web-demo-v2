@@ -14,9 +14,11 @@ import {
   TableTransferCell,
   styled,
 } from '@foundation';
-import { useAssetsStore } from '@store';
+import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
+import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
+import { TNewTransactionMode } from '@api';
 
 const RowStyled = styled('div')(() => ({
   display: 'grid',
@@ -26,7 +28,23 @@ const RowStyled = styled('div')(() => ({
 export const AssetsList: React.FC = observer(function AssetsList() {
   const assetsStore = useAssetsStore();
   const { t } = useTranslation();
-  const [hoveredLine, setHoveredLine] = React.useState<string | null>(null);
+
+  const [selectedAssetId, setSelectedAssetId] = React.useState<string | null>(null);
+  const [selectedAssetStore, setSelectedAssetStore] = React.useState<AssetStore | undefined>(undefined);
+
+  const [isNewTransactionDialogOpen, setIsNewTransactionDialogOpen] = React.useState(false);
+  const [transactionDialogMode, setTransactionDialogMode] = React.useState<TNewTransactionMode>(null);
+
+  const onNewTransactionDialogOpen = () => {
+    setIsNewTransactionDialogOpen(true);
+    if (selectedAssetId) {
+      setSelectedAssetStore(assetsStore.getAssetById(selectedAssetId));
+    }
+  };
+
+  const onNewTransactionDialogClose = () => {
+    setIsNewTransactionDialogOpen(false);
+  };
 
   if (assetsStore.isLoading && !assetsStore.myAssets.length) {
     return (
@@ -52,10 +70,10 @@ export const AssetsList: React.FC = observer(function AssetsList() {
           <TableRow key={a.id}>
             <RowStyled
               onMouseEnter={() => {
-                setHoveredLine(a.id);
+                setSelectedAssetId(a.id);
               }}
               onMouseLeave={() => {
-                setHoveredLine(null);
+                setSelectedAssetId(null);
               }}
             >
               <TableTitleCell title={a.name} subtitle={a.symbol} iconUrl={a.iconUrl} />
@@ -64,8 +82,18 @@ export const AssetsList: React.FC = observer(function AssetsList() {
               <TableCell>
                 <CopyText text={a.address} />
               </TableCell>
-              {hoveredLine === a.id ? (
-                <TableTransferCell totalBalance={a.totalBalance} />
+              {selectedAssetId === a.id ? (
+                <TableTransferCell
+                  onSend={() => {
+                    setTransactionDialogMode('SEND');
+                    onNewTransactionDialogOpen();
+                  }}
+                  onReceive={() => {
+                    setTransactionDialogMode('RECEIVE');
+                    onNewTransactionDialogOpen();
+                  }}
+                  totalBalance={a.totalBalance}
+                />
               ) : (
                 <TableTextCell text={a.baseAsset} />
               )}
@@ -73,6 +101,13 @@ export const AssetsList: React.FC = observer(function AssetsList() {
           </TableRow>
         ))}
       </TableBody>
+
+      <NewTransactionDialog
+        isOpen={isNewTransactionDialogOpen}
+        onClose={onNewTransactionDialogClose}
+        mode={transactionDialogMode}
+        asset={selectedAssetStore}
+      />
     </Table>
   );
 });

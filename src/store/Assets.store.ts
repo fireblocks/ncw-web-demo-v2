@@ -111,7 +111,7 @@ export class AssetsStore {
       getAssetsSummary(deviceId, accountId, accessToken)
         .then((assetsSummary) => {
           assetsSummary.map((a) => {
-            const asset = this.myAssets.find((as) => as.id === a.asset.id);
+            const asset = this.getAssetById(a.asset.id);
             if (asset) {
               asset.setBalance(a.balance);
             }
@@ -124,5 +124,9 @@ export class AssetsStore {
           this.setIsLoading(false);
         });
     }
+  }
+
+  public getAssetById(assetId: string): AssetStore | undefined {
+    return this.myAssets.find((a) => a.id === assetId);
   }
 }

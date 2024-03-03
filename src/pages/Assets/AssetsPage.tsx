@@ -34,8 +34,9 @@ const HeadingStyled = styled('div')(({ theme }) => ({
 export const AssetsPage: React.FC = observer(function AssetsPage() {
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
+
   const [isAddAssetDialogOpen, setIsAddAssetDialogOpen] = React.useState(false);
-  
+
   const onAddAssetDialogOpen = () => {
     setIsAddAssetDialogOpen(true);
   };

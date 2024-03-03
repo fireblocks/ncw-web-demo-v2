@@ -10,6 +10,10 @@ export type TTransactionStatus =
   | 'QUEUED'
   | 'CANCELLING';
 
+export type TFeeLevel = 'LOW' | 'MEDIUM' | 'HIGH';
+
+export type TNewTransactionMode = 'SEND' | 'RECEIVE' | null;
+
 export interface ITransferPeerDTO {
   id: string;
   type: string;
@@ -80,7 +84,7 @@ export interface INewTransactionDTO {
   assetId: string;
   amount: string;
   destAddress: string;
-  feeLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  feeLevel: TFeeLevel;
   estimateFee: boolean;
 }
 
