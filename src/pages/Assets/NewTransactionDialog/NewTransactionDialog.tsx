@@ -31,21 +31,14 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   const [address, setAddress] = React.useState('');
   const [_, setFeeLevel] = React.useState('LOW');
 
-  const clearSelections = () => {
-    setAmount('');
-    setAddress('');
-  };
-
-  const handleDialogClose = () => {
-    onClose();
-    clearSelections();
-  };
-
   React.useEffect(() => {
     if (mode === 'RECEIVE') {
       setAddress(asset?.address || '');
+    } else {
+      setAmount('');
+      setAddress('');
     }
-  }, [mode]);
+  }, [mode, asset]);
 
   if (!asset) {
     return null;
@@ -61,7 +54,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       )}
       description={t('ASSETS.NEW_TRANSACTION_DIALOG.DESCRIPTION')}
       isOpen={isOpen}
-      onClose={handleDialogClose}
+      onClose={onClose}
       doAction={mode === 'SEND' ? () => {} : undefined}
       actionCaption={t('ASSETS.NEW_TRANSACTION_DIALOG.ACTION')}
     >
