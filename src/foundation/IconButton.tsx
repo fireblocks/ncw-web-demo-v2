@@ -30,18 +30,19 @@ interface IProps {
   children: JSX.Element;
   large?: boolean;
   tooltip?: string;
+  disabled?: boolean;
 }
 
-export const IconButton: React.FC<IProps> = ({ onClick, children, large, tooltip }) => (
+export const IconButton: React.FC<IProps> = ({ onClick, children, large, tooltip, disabled }) => (
   <>
-    {tooltip ? (
+    {tooltip && !disabled ? (
       <Tooltip title={tooltip} arrow placement="top">
         <IconButtonStyled size="small" onClick={onClick}>
           {large ? <LargeStyled>{children}</LargeStyled> : children}
         </IconButtonStyled>
       </Tooltip>
     ) : (
-      <IconButtonStyled size="small" onClick={onClick}>
+      <IconButtonStyled size="small" onClick={onClick} disabled={disabled}>
         {large ? <LargeStyled>{children}</LargeStyled> : children}
       </IconButtonStyled>
     )}

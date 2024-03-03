@@ -12,11 +12,12 @@ const RootStyled = styled('div')(({ theme }) => ({
 }));
 
 interface IProps {
+  totalBalance: number;
   onReceive?: () => void;
   onSend?: () => void;
 }
 
-export const TableTransferCell: React.FC<IProps> = ({ onReceive, onSend }) => {
+export const TableTransferCell: React.FC<IProps> = ({ totalBalance, onReceive, onSend }) => {
   const { t } = useTranslation();
 
   return (
@@ -24,7 +25,7 @@ export const TableTransferCell: React.FC<IProps> = ({ onReceive, onSend }) => {
       <IconButton tooltip={t('ASSETS.RECEIVE')} large onClick={onReceive}>
         <img src={IconReceive} />
       </IconButton>
-      <IconButton tooltip={t('ASSETS.SEND')} large onClick={onSend}>
+      <IconButton disabled={totalBalance === 0} tooltip={t('ASSETS.SEND')} large onClick={onSend}>
         <img src={IconSend} />
       </IconButton>
     </RootStyled>

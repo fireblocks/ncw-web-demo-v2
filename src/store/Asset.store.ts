@@ -62,8 +62,8 @@ export class AssetStore {
   }
 
   @computed
-  public get totalBalance(): string {
-    return this.balanceData?.total || '0';
+  public get totalBalance(): number {
+    return Number(this.balanceData?.total) || 0;
   }
 
   @computed

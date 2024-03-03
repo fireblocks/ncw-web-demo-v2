@@ -7,7 +7,7 @@ const RootStyled = styled('div')(() => ({
 }));
 
 interface IProps {
-  balance: string;
+  balance: number;
   balanceInUsd: string;
 }
 

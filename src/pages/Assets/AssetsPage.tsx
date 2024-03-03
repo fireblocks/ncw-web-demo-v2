@@ -34,13 +34,14 @@ const HeadingStyled = styled('div')(({ theme }) => ({
 export const AssetsPage: React.FC = observer(function AssetsPage() {
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const onDialogOpen = () => {
-    setIsDialogOpen(true);
+  const [isAddAssetDialogOpen, setIsAddAssetDialogOpen] = React.useState(false);
+  
+  const onAddAssetDialogOpen = () => {
+    setIsAddAssetDialogOpen(true);
   };
 
-  const onDialogClose = () => {
-    setIsDialogOpen(false);
+  const onAddAssetDialogClose = () => {
+    setIsAddAssetDialogOpen(false);
   };
 
   return (
@@ -60,7 +61,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
       </HeadingStyled>
       <ContentSection>
         <ActionsWrapperStyled>
-          <ActionButton onClick={onDialogOpen} caption={t('ASSETS.ADD_ASSET')} />
+          <ActionButton onClick={onAddAssetDialogOpen} caption={t('ASSETS.ADD_ASSET')} />
           <IconButton
             tooltip={t('ASSETS.REFRESH_BALANCES')}
             onClick={() => {
@@ -72,7 +73,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
         </ActionsWrapperStyled>
       </ContentSection>
       <AssetsList />
-      <AddAssetDialog isOpen={isDialogOpen} onClose={onDialogClose} />
+      <AddAssetDialog isOpen={isAddAssetDialogOpen} onClose={onAddAssetDialogClose} />
     </RootStyled>
   );
 });

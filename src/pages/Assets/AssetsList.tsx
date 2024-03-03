@@ -64,7 +64,11 @@ export const AssetsList: React.FC = observer(function AssetsList() {
               <TableCell>
                 <CopyText text={a.address} />
               </TableCell>
-              {hoveredLine === a.id ? <TableTransferCell /> : <TableTextCell text={a.baseAsset} />}
+              {hoveredLine === a.id ? (
+                <TableTransferCell totalBalance={a.totalBalance} />
+              ) : (
+                <TableTextCell text={a.baseAsset} />
+              )}
             </RowStyled>
           </TableRow>
         ))}
