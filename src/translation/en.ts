@@ -11,6 +11,20 @@ export const translationToEnglish = {
     SETTINGS: 'Settings Page',
     LOGIN: 'Log in',
   },
+  TRANSACTIONS: {
+    TITLE: 'Transactions history',
+    TABLE: {
+      HEADERS: {
+        ACTION: 'Action',
+        AMOUNT: 'Amount',
+        FEE: 'Fee',
+        STATUS: 'Status',
+        DATE: 'Date',
+        ADDRESS: 'Address',
+        ACTIONS: 'Actions',
+      },
+    },
+  },
   SETTINGS: {
     NAME: 'Settings',
     DESCRIPTION: 'Description',
@@ -71,8 +85,19 @@ export const translationToEnglish = {
       DESCRIPTION: 'Some dialog explanation',
       AMOUNT: 'Select amount of',
       RECEIVING_ADDRESS: 'Receiving address',
-      FEE_LEVEL: 'Select fee level',
+      FEE_LEVEL: {
+        LOW: 'Low',
+        MEDIUM: 'Medium',
+        HIGH: 'High',
+        CAPTION: 'Select fee level',
+      },
       ACTION: 'Transfer asset',
+      QR_DETAILS: 'QR details',
+      TRANSACTION_TYPE: {
+        CAPTION: 'Transaction type',
+        TRANSFER: 'Transfer',
+        TYPED_MESSAGE: 'Typed message',
+      },
     },
   },
   COMMON: {

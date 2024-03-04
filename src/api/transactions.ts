@@ -12,6 +12,8 @@ export type TTransactionStatus =
 
 export type TFeeLevel = 'LOW' | 'MEDIUM' | 'HIGH';
 
+export type TNewTransactionType = 'TYPED_MESSAGE' | 'TRANSFER';
+
 export type TNewTransactionMode = 'SEND' | 'RECEIVE' | null;
 
 export interface ITransferPeerDTO {

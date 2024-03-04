@@ -1,6 +1,6 @@
 import { ITransactionDTO, ITransactionDetailsDTO, TTransactionStatus } from '@api';
 import { TTransactionSignatureStatus } from '@fireblocks/ncw-js-sdk';
-import { action, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
 export class TransactionStore {
@@ -24,6 +24,16 @@ export class TransactionStore {
     this._rootStore = rootStore;
 
     makeObservable(this);
+  }
+
+  @computed
+  public get assetId(): string {
+    return this.details?.assetId || '';
+  }
+
+  @computed
+  public get sourceAddress(): string {
+    return this.details?.sourceAddress || '';
   }
 
   @action

@@ -1,12 +1,12 @@
 import React from 'react';
-import { AssetAmountInput, Dialog, TextInput, styled } from '@foundation';
-import { AssetStore, localizedCurrencyView } from '@store';
+import { TNewTransactionMode, TFeeLevel } from '@api';
+import { AddressField, AssetAmountInput, Dialog, QRField, TextInput, styled } from '@foundation';
+import { AssetStore, localizedCurrencyView, useAccountsStore, useDeviceStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { TNewTransactionMode } from '@api';
-import { SelectedAsset } from './SelectedAsset';
-import { QRBlock } from './QRBlock';
 import { FeeLevel } from './FeeLevel';
+import { SelectedAsset } from './SelectedAsset';
+import { TxType } from './TxType';
 
 const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(3),
@@ -26,17 +26,57 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   onClose,
 }) {
   const { t } = useTranslation();
+  const transactionsStore = useTransactionsStore();
+  const deviceStore = useDeviceStore();
+  const accountsStore = useAccountsStore();
+
+  console.log(transactionsStore.transactions);
 
   const [amount, setAmount] = React.useState('');
   const [address, setAddress] = React.useState('');
-  const [_, setFeeLevel] = React.useState('LOW');
+  const [feeLevel, setFeeLevel] = React.useState('LOW');
+  const [txType, setTxType] = React.useState('TRANSFER');
+
+  const clearState = () => {
+    setAmount('');
+    setAddress('');
+    setFeeLevel('LOW');
+    setTxType('TRANSFER');
+  };
+
+  const createNewTransaction = () => {
+    if (txType === 'TRANSFER') {
+      transactionsStore
+        .createTransaction({
+          note: `API Transaction by ${deviceStore.deviceId}`,
+          accountId: `${accountsStore.currentAccount?.accountId}`,
+          assetId: `${asset?.id}`,
+          destAddress: address,
+          estimateFee: false,
+          feeLevel: feeLevel as TFeeLevel,
+          amount,
+        })
+        .then(() => {
+          onClose();
+          clearState();
+        })
+        .catch(() => {});
+    } else {
+      transactionsStore
+        .createTransaction()
+        .then(() => {
+          onClose();
+          clearState();
+        })
+        .catch(() => {});
+    }
+  };
 
   React.useEffect(() => {
     if (mode === 'RECEIVE') {
       setAddress(asset?.address || '');
     } else {
-      setAmount('');
-      setAddress('');
+      clearState();
     }
   }, [mode, asset]);
 
@@ -55,42 +95,38 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       description={t('ASSETS.NEW_TRANSACTION_DIALOG.DESCRIPTION')}
       isOpen={isOpen}
       onClose={onClose}
-      doAction={mode === 'SEND' ? () => {} : undefined}
+      doAction={mode === 'SEND' ? createNewTransaction : undefined}
       actionCaption={t('ASSETS.NEW_TRANSACTION_DIALOG.ACTION')}
     >
       <RootStyled>
         <SelectedAsset asset={asset} />
         {mode === 'SEND' ? (
           <>
-            <AssetAmountInput
-              placeholder="0"
-              label={t('ASSETS.NEW_TRANSACTION_DIALOG.AMOUNT')}
-              value={amount}
-              setValue={setAmount}
-              assetSymbol={asset?.symbol}
-              adornment={convertedAmount}
-            />
-
-            <TextInput
-              placeholder={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
-              label={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
-              value={address}
-              setValue={setAddress}
-            />
-
-            <FeeLevel setLevel={setFeeLevel} />
+            <TxType setType={setTxType} />
+            {txType === 'TRANSFER' && (
+              <>
+                <AssetAmountInput
+                  placeholder="0"
+                  label={t('ASSETS.NEW_TRANSACTION_DIALOG.AMOUNT')}
+                  value={amount}
+                  setValue={setAmount}
+                  assetSymbol={asset.symbol}
+                  adornment={convertedAmount}
+                />
+                <TextInput
+                  placeholder={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
+                  label={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
+                  value={address}
+                  setValue={setAddress}
+                />
+                <FeeLevel setLevel={setFeeLevel} />
+              </>
+            )}
           </>
         ) : (
           <>
-            <TextInput
-              readonly
-              placeholder={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
-              label={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
-              value={address}
-              setValue={setAddress}
-            />
-
-            <QRBlock value={address} />
+            <QRField label={t('ASSETS.NEW_TRANSACTION_DIALOG.QR_DETAILS')} value={address} />
+            <AddressField address={address} label={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')} />
           </>
         )}
       </RootStyled>

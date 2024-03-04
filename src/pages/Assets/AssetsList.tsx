@@ -1,4 +1,5 @@
 import React from 'react';
+import { TNewTransactionMode } from '@api';
 import {
   CopyText,
   Skeleton,
@@ -18,7 +19,6 @@ import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
-import { TNewTransactionMode } from '@api';
 
 const RowStyled = styled('div')(() => ({
   display: 'grid',

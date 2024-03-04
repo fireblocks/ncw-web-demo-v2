@@ -1,4 +1,4 @@
-import { ITransactionDTO, getTransactions, sleep } from '@api';
+import { INewTransactionDTO, ITransactionDTO, createTransaction, getTransactions, sleep } from '@api';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { RootStore } from './Root.store';
 import { TransactionStore } from './Transaction.store';
@@ -9,6 +9,7 @@ export class TransactionsStore {
   @observable public transactions: TransactionStore[];
   @observable public transactionSubscriptions: Map<string, TTransactionHandler[]>;
   @observable public transactionsActivePolling: Map<string, boolean>;
+  @observable public isLoading: boolean;
 
   private _disposed: boolean;
   private _rootStore: RootStore;
@@ -17,6 +18,7 @@ export class TransactionsStore {
     this.transactions = [];
     this.transactionSubscriptions = new Map();
     this.transactionsActivePolling = new Map();
+    this.isLoading = true;
 
     this._disposed = false;
     this._rootStore = rootStore;
@@ -33,7 +35,13 @@ export class TransactionsStore {
   }
 
   @action
+  public setIsLoading(state: boolean): void {
+    this.isLoading = state;
+  }
+
+  @action
   public async init(): Promise<void> {
+    this.setIsLoading(true);
     this.transactions = [];
 
     const deviceId = this._rootStore.deviceStore.deviceId;
@@ -45,6 +53,7 @@ export class TransactionsStore {
     transactions.forEach((t: ITransactionDTO) => {
       this.addTransaction(t);
     });
+    this.setIsLoading(false);
   }
 
   @action
@@ -75,10 +84,18 @@ export class TransactionsStore {
 
     if (!subscriptions) {
       subscriptions = [];
-      this.transactionSubscriptions.set(this._rootStore.deviceStore.deviceId, subscriptions);
+      runInAction(() => {
+        if (subscriptions) {
+          this.transactionSubscriptions.set(this._rootStore.deviceStore.deviceId, subscriptions);
+        }
+      });
     }
 
-    subscriptions.push(callBack);
+    runInAction(() => {
+      if (subscriptions) {
+        subscriptions.push(callBack);
+      }
+    });
 
     this.startPollingTransactions()
       .then(() => {})
@@ -150,5 +167,16 @@ export class TransactionsStore {
   @computed
   public get hasTransactionsActivePollingForCurrentDevice(): boolean {
     return !!this.transactionsActivePolling.get(this._rootStore.deviceStore.deviceId);
+  }
+
+  public async createTransaction(dataToSend?: INewTransactionDTO): Promise<void> {
+    const deviceId = this._rootStore.deviceStore.deviceId;
+    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+    const accessToken = this._rootStore.userStore.accessToken;
+
+    if (deviceId && accountId !== undefined && accessToken) {
+      const newTxData = await createTransaction(deviceId, accessToken, dataToSend);
+      this.addTransaction(newTxData);
+    }
   }
 }

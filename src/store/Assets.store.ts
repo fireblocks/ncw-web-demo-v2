@@ -47,18 +47,19 @@ export class AssetsStore {
       const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken);
       const supportedAssets = await getSupportedAssets(deviceId, accountId, accessToken);
 
-      assetsSummary.map(async (a) => {
-        await this.addMyAsset(a);
-      }),
-        supportedAssets.map((a) => {
-          this.addSupportedAsset(a);
-        });
+      assetsSummary.map((a) => {
+        this.addMyAsset(a);
+      });
+
+      supportedAssets.map((a) => {
+        this.addSupportedAsset(a);
+      });
     }
     this.setIsLoading(false);
   }
 
   @action
-  public async addMyAsset(assetData: IAssetsSummaryDTO): Promise<void> {
+  public addMyAsset(assetData: IAssetsSummaryDTO): void {
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
 
     if (accountId !== undefined) {
@@ -97,7 +98,7 @@ export class AssetsStore {
       const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken);
       const addressDTO = await getAddress(deviceId, accountId, assetId, accessToken);
 
-      await this.addMyAsset({ asset: assetDTO, balance: balanceDTO, address: addressDTO });
+      this.addMyAsset({ asset: assetDTO, balance: balanceDTO, address: addressDTO });
     }
   }
 
