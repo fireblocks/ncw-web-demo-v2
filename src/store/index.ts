@@ -6,3 +6,4 @@ export * from './Accounts.store';
 export * from './Assets.store';
 export * from './Asset.store';
 export * from './FireblocksSDK.store';
+export * from './Transaction.store';

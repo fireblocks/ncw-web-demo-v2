@@ -1,4 +1,10 @@
-import { ITransactionDTO, ITransactionDetailsDTO, TNewTransactionType, TTransactionStatus } from '@api';
+import {
+  ITransactionDTO,
+  ITransactionDetailsDTO,
+  TNewTransactionType,
+  TTransactionStatus,
+  cancelTransaction,
+} from '@api';
 import { TTransactionSignatureStatus } from '@fireblocks/ncw-js-sdk';
 import { AssetStore, NOT_AVAILABLE_PLACEHOLDER, localizedCurrencyView } from '@store';
 import { action, computed, makeObservable, observable } from 'mobx';
@@ -11,6 +17,7 @@ export class TransactionStore {
   @observable public createdAt: number | null;
   @observable public lastUpdated: number | null;
   @observable public details: ITransactionDetailsDTO | null;
+  @observable public error: string;
 
   private _rootStore: RootStore;
 
@@ -21,6 +28,7 @@ export class TransactionStore {
     this.createdAt = dto.createdAt || null;
     this.lastUpdated = dto.lastUpdated || null;
     this.details = dto.details || null;
+    this.error = '';
 
     this._rootStore = rootStore;
 
@@ -75,6 +83,23 @@ export class TransactionStore {
   }
 
   @computed
+  public get cantBeCanceled(): boolean {
+    return !!this.status && ['COMPLETED', 'FAILED', 'CANCELLED', 'CONFIRMING', 'CANCELLING'].includes(this.status);
+  }
+
+  @computed
+  public get isFinal(): boolean {
+    switch (this.status) {
+      case 'COMPLETED':
+      case 'FAILED':
+      case 'CANCELLED':
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  @computed
   public get asset(): AssetStore | undefined {
     return this._rootStore.assetsStore.getAssetById(this.assetId);
   }
@@ -82,6 +107,46 @@ export class TransactionStore {
   @action
   public updateSignatureStatus(signatureStatus: TTransactionSignatureStatus) {
     this.signatureStatus = signatureStatus;
+  }
+
+  @action
+  public updateStatus(status: TTransactionStatus) {
+    this.status = status;
+  }
+
+  @action
+  public setError(error: string): void {
+    this.error = error;
+  }
+
+  public signTransaction() {
+    this._rootStore.fireblocksSDKStore.sdkInstance
+      ?.signTransaction(this.id)
+      .then(() => {})
+      .catch((e) => {
+        this.setError(e.message);
+        this._rootStore.fireblocksSDKStore.sdkInstance
+          ?.stopInProgressSignTransaction()
+          .then(() => {})
+          .catch((err) => {
+            this.setError(err.message);
+          });
+      });
+  }
+
+  public cancelTransaction() {
+    const deviceId = this._rootStore.deviceStore.deviceId;
+    const accessToken = this._rootStore.userStore.accessToken;
+
+    if (deviceId && accessToken) {
+      cancelTransaction(deviceId, accessToken, this.id)
+        .then(() => {
+          this.updateStatus('CANCELLING');
+        })
+        .catch((e) => {
+          this.setError(e.message);
+        });
+    }
   }
 
   @action

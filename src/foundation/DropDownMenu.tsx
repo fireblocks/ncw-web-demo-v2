@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { styled } from '@mui/material';
 import Menu from '@mui/material/Menu/Menu';
 
@@ -12,7 +13,7 @@ const MenuStyled = styled(Menu)(({ theme }) => ({
 interface IProps {
   anchorEl: HTMLElement | null;
   isOpen: boolean;
-  children: JSX.Element;
+  children: ReactElement | ReactElement[];
   onClose: () => void;
 }
 

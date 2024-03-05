@@ -1,7 +1,8 @@
 import React from 'react';
-import { TNewTransactionType } from '@api';
 import {
   CopyText,
+  DropDownMenu,
+  MenuItem,
   Skeleton,
   Table,
   TableBalanceCell,
@@ -15,7 +16,8 @@ import {
   TableTitleCell,
   styled,
 } from '@foundation';
-import { useTransactionsStore } from '@store';
+import IconDots from '@icons/dots.svg';
+import { TransactionStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,20 +26,27 @@ const RowStyled = styled('div')(() => ({
   gridTemplateColumns: '1.5fr 1fr 1fr 0.7fr 1fr 1fr 0.7fr',
 }));
 
-const operationTypeFormatter = (type: TNewTransactionType | null) => {
-  switch (type) {
-    case 'TYPED_MESSAGE':
-      return 'Typed message';
-    case 'TRANSFER':
-      return 'Transfer';
-    default:
-      return 'Unknown';
-  }
-};
+const ActionsStyled = styled('div')(() => ({
+  width: '100%',
+  textAlign: 'right',
+}));
 
 export const TransactionsList: React.FC = observer(function TransactionsList() {
   const transactionsStore = useTransactionsStore();
   const { t } = useTranslation();
+
+  const [txMenuAnchorEl, setTxMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [selectedTx, setSelectedTx] = React.useState<TransactionStore | null>(null);
+
+  const isTxMenuOpen = Boolean(txMenuAnchorEl);
+
+  const onOpenTxMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setTxMenuAnchorEl(event.currentTarget);
+  };
+
+  const onCloseTxMenuClick = () => {
+    setTxMenuAnchorEl(null);
+  };
 
   if (transactionsStore.isLoading && !transactionsStore.transactions.length) {
     return (
@@ -57,7 +66,7 @@ export const TransactionsList: React.FC = observer(function TransactionsList() {
           <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.STATUS')} />
           <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.DATE')} />
           <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.ADDRESS')} />
-          <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.OPERATION')} />
+          <TableHeaderCell title="" />
         </RowStyled>
       </TableHead>
       <TableBody>
@@ -74,11 +83,44 @@ export const TransactionsList: React.FC = observer(function TransactionsList() {
               <TableStatusCell status={tx.status} />
               <TableTextCell text={tx.createdAt ? new Date(tx.createdAt).toLocaleString() : ''} />
               <TableCell>{tx.destinationAddress ? <CopyText text={tx.destinationAddress} /> : null}</TableCell>
-              <TableTextCell text={operationTypeFormatter(tx.operationType)} />
+              <TableCell>
+                {tx.isFinal ? null : (
+                  <ActionsStyled
+                    onClick={(e) => {
+                      setSelectedTx(tx);
+                      onOpenTxMenuClick(e);
+                    }}
+                  >
+                    <img src={IconDots} />
+                  </ActionsStyled>
+                )}
+              </TableCell>
             </RowStyled>
           </TableRow>
         ))}
       </TableBody>
+
+      <DropDownMenu anchorEl={txMenuAnchorEl} isOpen={isTxMenuOpen} onClose={onCloseTxMenuClick}>
+        <MenuItem
+          disabled={!!selectedTx && selectedTx.status !== 'PENDING_SIGNATURE'}
+          onClick={() => {
+            selectedTx?.signTransaction();
+            onCloseTxMenuClick();
+          }}
+        >
+          {t('TRANSACTIONS.TABLE.SIGN')}
+        </MenuItem>
+
+        <MenuItem
+          disabled={!!selectedTx && selectedTx.cantBeCanceled}
+          onClick={() => {
+            selectedTx?.cancelTransaction();
+            onCloseTxMenuClick();
+          }}
+        >
+          {t('TRANSACTIONS.TABLE.CANCEL')}
+        </MenuItem>
+      </DropDownMenu>
     </Table>
   );
 });

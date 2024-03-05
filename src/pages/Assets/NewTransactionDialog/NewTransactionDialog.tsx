@@ -30,8 +30,6 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   const deviceStore = useDeviceStore();
   const accountsStore = useAccountsStore();
 
-  console.log(transactionsStore.transactions);
-
   const [amount, setAmount] = React.useState('');
   const [address, setAddress] = React.useState('');
   const [feeLevel, setFeeLevel] = React.useState('LOW');
