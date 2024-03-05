@@ -5,7 +5,7 @@ import { RootStore } from './Root.store';
 export const localizedCurrencyView = (amount: number): string =>
   amount.toLocaleString('en-IN', { style: 'currency', currency: 'USD' });
 
-const NOT_AVAILABLE = '--';
+export const NOT_AVAILABLE_PLACEHOLDER = '--';
 
 export class AssetStore {
   @observable public assetData: IAssetDTO;
@@ -68,12 +68,12 @@ export class AssetStore {
 
   @computed
   public get address(): string {
-    return this.addressData?.address || NOT_AVAILABLE;
+    return this.addressData?.address || NOT_AVAILABLE_PLACEHOLDER;
   }
 
   @computed
   public get blockChainName(): string {
-    return this.assetData.blockchainDisplayName || NOT_AVAILABLE;
+    return this.assetData.blockchainDisplayName || NOT_AVAILABLE_PLACEHOLDER;
   }
 
   @computed
@@ -83,11 +83,13 @@ export class AssetStore {
 
   @computed
   public get totalBalanceInUSD(): string {
-    return this.assetData.rate ? localizedCurrencyView(Number(this.totalBalance) * this.assetData.rate) : NOT_AVAILABLE;
+    return this.assetData.rate
+      ? localizedCurrencyView(Number(this.totalBalance) * this.assetData.rate)
+      : NOT_AVAILABLE_PLACEHOLDER;
   }
 
   @computed
   public get rate(): string {
-    return this.assetData.rate ? localizedCurrencyView(this.assetData.rate) : NOT_AVAILABLE;
+    return this.assetData.rate ? localizedCurrencyView(this.assetData.rate) : NOT_AVAILABLE_PLACEHOLDER;
   }
 }

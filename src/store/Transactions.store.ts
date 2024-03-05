@@ -10,6 +10,7 @@ export class TransactionsStore {
   @observable public transactionSubscriptions: Map<string, TTransactionHandler[]>;
   @observable public transactionsActivePolling: Map<string, boolean>;
   @observable public isLoading: boolean;
+  @observable public error: string;
 
   private _disposed: boolean;
   private _rootStore: RootStore;
@@ -19,11 +20,17 @@ export class TransactionsStore {
     this.transactionSubscriptions = new Map();
     this.transactionsActivePolling = new Map();
     this.isLoading = true;
+    this.error = '';
 
     this._disposed = false;
     this._rootStore = rootStore;
 
     makeObservable(this);
+  }
+
+  @action
+  public setError(error: string): void {
+    this.error = error;
   }
 
   @action
@@ -157,8 +164,8 @@ export class TransactionsStore {
             }
           }
         });
-      } catch (e) {
-        console.error('Error polling transactions', e);
+      } catch (e: any) {
+        this.setError(e.message);
         await sleep();
       }
     }

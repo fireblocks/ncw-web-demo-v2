@@ -14,6 +14,8 @@ export const translationToEnglish = {
   TRANSACTIONS: {
     TITLE: 'Transactions history',
     TABLE: {
+      RECEIVED: 'Received',
+      SENT: 'Sent',
       HEADERS: {
         ACTION: 'Action',
         AMOUNT: 'Amount',
@@ -22,6 +24,7 @@ export const translationToEnglish = {
         DATE: 'Date',
         ADDRESS: 'Address',
         ACTIONS: 'Actions',
+        OPERATION: 'Operation',
       },
     },
   },

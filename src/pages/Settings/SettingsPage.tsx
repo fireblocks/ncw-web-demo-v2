@@ -53,6 +53,8 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
         <br />
         Device id: {deviceStore.deviceId}
         <br />
+        Wallet id: {deviceStore.walletId}
+        <br />
         Account id: {accountsStore.accounts.length > 0 && accountsStore.accounts[0].data.accountId}
         <br />
         {renderMPCKeysSection()}
