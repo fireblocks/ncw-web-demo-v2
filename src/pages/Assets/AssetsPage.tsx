@@ -4,7 +4,7 @@ import IconRefresh from '@icons/refresh.svg';
 import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { AddAssetDialog } from './AddAssetDialog';
+import { AddAssetDialog } from './AddAssetDialog/AddAssetDialog';
 import { AssetsList } from './AssetsList';
 
 const RootStyled = styled('div')(() => ({

@@ -23,6 +23,11 @@ const NavLinkStyled = styled(NavLink)(({ theme }) => ({
   fontWeight: 700,
   fontSize: 14,
   textTransform: 'uppercase',
+  transition: 'color 0.3s',
+  color: theme.palette.text.primary,
+  '&:hover': {
+    color: theme.palette.text.secondary,
+  },
 }));
 
 const LinkMarkerStyled = styled('div')(({ theme }) => ({
@@ -106,19 +111,19 @@ export const Header: React.FC = observer(function Header() {
         {isNotSettingsPage && (
           <>
             <NavLinkStyled to="/assets">
-              <Typography variant="inherit" color="text.primary">
+              <Typography variant="inherit" color="inherit">
                 {t('NAVIGATION.ASSETS')}
               </Typography>
               {isAssetsPage && <LinkMarkerStyled />}
             </NavLinkStyled>
             <NavLinkStyled to="/transactions">
-              <Typography variant="inherit" color="text.primary">
+              <Typography variant="inherit" color="inherit">
                 {t('NAVIGATION.TRANSACTIONS')}
               </Typography>
               {isTransactionsPage && <LinkMarkerStyled />}
             </NavLinkStyled>
             <NavLinkStyled to="/nfts">
-              <Typography variant="inherit" color="text.primary">
+              <Typography variant="inherit" color="inherit">
                 {t('NAVIGATION.NFTs')}{' '}
               </Typography>
               {isNftsPage && <LinkMarkerStyled />}

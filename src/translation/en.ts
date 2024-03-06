@@ -84,6 +84,7 @@ export const translationToEnglish = {
     ADD_DIALOG: {
       TITLE: 'Add an Asset',
       DESCRIPTION: 'Select an asset from the list or search for a new asset',
+      SEARCH: 'SEARCH FOR AN ASSET',
     },
     NEW_TRANSACTION_DIALOG: {
       RECEIVE_TITLE: 'Receive Asset',
