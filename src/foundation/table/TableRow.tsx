@@ -11,4 +11,9 @@ const RootStyled = styled('div')(({ theme }) => ({
   },
 }));
 
-export const TableRow: React.FC<{ children: JSX.Element }> = ({ children }) => <RootStyled>{children}</RootStyled>;
+interface IProps {
+  children: JSX.Element;
+  style?: React.CSSProperties;
+}
+
+export const TableRow: React.FC<IProps> = ({ children, style }) => <RootStyled style={style}>{children}</RootStyled>;

@@ -18,6 +18,7 @@ export class TransactionStore {
   @observable public lastUpdated: number | null;
   @observable public details: ITransactionDetailsDTO | null;
   @observable public error: string;
+  @observable public isSigning: boolean;
 
   private _rootStore: RootStore;
 
@@ -29,6 +30,7 @@ export class TransactionStore {
     this.lastUpdated = dto.lastUpdated || null;
     this.details = dto.details || null;
     this.error = '';
+    this.isSigning = false;
 
     this._rootStore = rootStore;
 
@@ -120,15 +122,22 @@ export class TransactionStore {
   }
 
   @action
+  public setIsSigning(isSigning: boolean) {
+    this.isSigning = isSigning;
+  }
+
+  @action
   public setError(error: string): void {
     this.error = error;
   }
 
   public signTransaction() {
+    this.setIsSigning(true);
     this._rootStore.fireblocksSDKStore.sdkInstance
       ?.signTransaction(this.id)
       .then(() => {})
       .catch((e) => {
+        this.setIsSigning(false);
         this.setError(e.message);
         this._rootStore.fireblocksSDKStore.sdkInstance
           ?.stopInProgressSignTransaction()

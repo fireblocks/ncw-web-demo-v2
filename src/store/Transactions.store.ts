@@ -51,7 +51,7 @@ export class TransactionsStore {
     const transactionStore = new TransactionStore(transactionData, this._rootStore);
 
     runInAction(() => {
-      this.transactions.push(transactionStore);
+      this.transactions.unshift(transactionStore);
     });
   }
 

@@ -1,29 +1,15 @@
 import React from 'react';
 import { TNewTransactionMode } from '@api';
-import {
-  CopyText,
-  Skeleton,
-  Table,
-  TableBalanceCell,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-  TableTextCell,
-  TableTitleCell,
-  TableTransferCell,
-  styled,
-} from '@foundation';
+import { Skeleton, Table, TableBody, TableHead, TableHeaderCell } from '@foundation';
 import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList } from 'react-window';
+import { AssetsListItem, RowStyled } from './AssetsListItem';
 import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
 
-const RowStyled = styled('div')(() => ({
-  display: 'grid',
-  gridTemplateColumns: '1.5fr 1fr 0.7fr 1fr 1fr',
-}));
+const TABLE_ROW_HEIGHT = 106;
 
 export const AssetsList: React.FC = observer(function AssetsList() {
   const assetsStore = useAssetsStore();
@@ -66,40 +52,27 @@ export const AssetsList: React.FC = observer(function AssetsList() {
         </RowStyled>
       </TableHead>
       <TableBody>
-        {assetsStore.myAssetsSortedByBalanceInUSD.map((a) => (
-          <TableRow key={a.id}>
-            <RowStyled
-              onMouseEnter={() => {
-                setSelectedAssetId(a.id);
-              }}
-              onMouseLeave={() => {
-                setSelectedAssetId(null);
-              }}
+        <AutoSizer>
+          {({ height, width }) => (
+            <FixedSizeList
+              height={height}
+              width={width}
+              itemCount={assetsStore.myAssetsSortedByBalanceInUSD.length}
+              itemSize={TABLE_ROW_HEIGHT}
             >
-              <TableTitleCell title={a.name} subtitle={a.symbol} iconUrl={a.iconUrl} />
-              <TableBalanceCell balance={a.totalBalance} balanceInUsd={a.totalBalanceInUSD} />
-              <TableTextCell text={a.rate} />
-              <TableCell>
-                <CopyText text={a.address} />
-              </TableCell>
-              {selectedAssetId === a.id ? (
-                <TableTransferCell
-                  onSend={() => {
-                    setTransactionDialogMode('SEND');
-                    onNewTransactionDialogOpen();
-                  }}
-                  onReceive={() => {
-                    setTransactionDialogMode('RECEIVE');
-                    onNewTransactionDialogOpen();
-                  }}
-                  totalBalance={a.totalBalance}
+              {({ index, style }) => (
+                <AssetsListItem
+                  index={index}
+                  style={style}
+                  selectedAssetId={selectedAssetId}
+                  setSelectedAssetId={setSelectedAssetId}
+                  setTransactionDialogMode={setTransactionDialogMode}
+                  onNewTransactionDialogOpen={onNewTransactionDialogOpen}
                 />
-              ) : (
-                <TableTextCell text={a.baseAsset} />
               )}
-            </RowStyled>
-          </TableRow>
-        ))}
+            </FixedSizeList>
+          )}
+        </AutoSizer>
       </TableBody>
 
       <NewTransactionDialog
