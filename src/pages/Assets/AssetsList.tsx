@@ -66,7 +66,7 @@ export const AssetsList: React.FC = observer(function AssetsList() {
         </RowStyled>
       </TableHead>
       <TableBody>
-        {assetsStore.myAssets.map((a) => (
+        {assetsStore.myAssetsSortedByBalanceInUSD.map((a) => (
           <TableRow key={a.id}>
             <RowStyled
               onMouseEnter={() => {

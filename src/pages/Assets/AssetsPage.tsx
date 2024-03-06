@@ -64,6 +64,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
         <ActionsWrapperStyled>
           <ActionButton onClick={onAddAssetDialogOpen} caption={t('ASSETS.ADD_ASSET')} />
           <IconButton
+            disabled={assetsStore.isLoading}
             tooltip={t('ASSETS.REFRESH_BALANCES')}
             onClick={() => {
               assetsStore.refreshBalances();

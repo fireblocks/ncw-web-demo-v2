@@ -88,6 +88,11 @@ export class TransactionStore {
   }
 
   @computed
+  public get isSubmitted(): boolean {
+    return this.status === 'SUBMITTED';
+  }
+
+  @computed
   public get isFinal(): boolean {
     switch (this.status) {
       case 'COMPLETED':
@@ -139,9 +144,10 @@ export class TransactionStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accessToken) {
+      this.updateStatus('CANCELLING');
       cancelTransaction(deviceId, accessToken, this.id)
         .then(() => {
-          this.updateStatus('CANCELLING');
+          this.updateStatus('CANCELLED');
         })
         .catch((e) => {
           this.setError(e.message);

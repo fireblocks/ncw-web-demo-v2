@@ -26,7 +26,7 @@ const statusFormatter = (status: TTransactionStatus) => {
     case 'FAILED':
       return 'Failed';
     default:
-      return 'Unknown';
+      return '';
   }
 };
 

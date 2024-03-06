@@ -18,6 +18,7 @@ export const translationToEnglish = {
       SIGN: 'Sign',
       RECEIVED: 'Received',
       SENT: 'Sent',
+      SUBMITTED: 'Submitted',
       HEADERS: {
         ACTION: 'Action',
         AMOUNT: 'Amount',

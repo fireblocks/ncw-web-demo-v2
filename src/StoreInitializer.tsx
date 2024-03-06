@@ -37,18 +37,20 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
     const fetchAssets = async () => {
       await assetsStore.init();
       await fireblocksSDKStore.init();
-      await transactionsStore.init();
     };
 
     if (accountsStore.currentAccount) {
       fetchAssets().catch(() => {});
     }
-
-    return () => {
-      transactionsStore.dispose();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountsStore.currentAccount]);
+
+  React.useEffect(
+    () => () => {
+      transactionsStore.dispose();
+    },
+    [transactionsStore],
+  );
 
   return null;
 });

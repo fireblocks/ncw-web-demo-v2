@@ -35,14 +35,19 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
   const [hoveredLine, setHoveredLine] = React.useState<string | null>(null);
+  const [isAddDisabled, setIsAddDisabled] = React.useState(false);
 
   const handleAddAsset = (assetId: string) => {
+    setIsAddDisabled(true);
     assetsStore
       .addAsset(assetId)
       .then(() => {
         onClose();
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        setIsAddDisabled(false);
+      });
   };
 
   return (
@@ -74,6 +79,7 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
                       <TableCell>
                         {hoveredLine === a.id ? (
                           <Button
+                            disabled={isAddDisabled}
                             onClick={() => {
                               handleAddAsset(a.id);
                             }}

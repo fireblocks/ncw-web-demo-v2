@@ -90,12 +90,15 @@ export interface INewTransactionDTO {
   estimateFee: boolean;
 }
 
-const TX_POLL_INTERVAL = 5000;
+export const TX_POLL_INTERVAL = 5000;
 
-export const sleep = (ms: number = TX_POLL_INTERVAL) => new Promise((res) => setTimeout(res, ms));
+export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export const getTransactions = async (deviceId: string, token: string): Promise<Response> => {
-  const response = await getCall(`api/devices/${deviceId}/transactions?poll=true&startDate=0&details=true`, token);
+export const getTransactions = async (deviceId: string, startDate: number, token: string): Promise<Response> => {
+  const response = await getCall(
+    `api/devices/${deviceId}/transactions?poll=true&startDate=${startDate}&details=true`,
+    token,
+  );
   return response;
 };
 

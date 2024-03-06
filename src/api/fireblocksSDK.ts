@@ -4,5 +4,5 @@ import { postCall } from './utils';
 export type TFireblocksNCWStatus = 'sdk_not_ready' | 'initializing_sdk' | 'sdk_available' | 'sdk_initialization_failed';
 export type TKeysStatusRecord = Record<TMPCAlgorithm, IKeyDescriptor>;
 
-export const sendMessage = async (deviceId: string, token: string,  message: string,): Promise<any> =>
+export const sendMessage = async (deviceId: string, token: string, message: string): Promise<any> =>
   postCall(`api/devices/${deviceId}/rpc`, token, { message });

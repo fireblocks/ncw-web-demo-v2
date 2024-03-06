@@ -48,7 +48,7 @@ export const TransactionsList: React.FC = observer(function TransactionsList() {
     setTxMenuAnchorEl(null);
   };
 
-  if (transactionsStore.isLoading && !transactionsStore.transactions.length) {
+  if (transactionsStore.transactions.length === 0) {
     return (
       <Table>
         <Skeleton mode="TABLE" />
@@ -70,11 +70,15 @@ export const TransactionsList: React.FC = observer(function TransactionsList() {
         </RowStyled>
       </TableHead>
       <TableBody>
-        {transactionsStore.transactions.map((tx) => (
+        {transactionsStore.transactionsSortedByCreationDate.map((tx) => (
           <TableRow key={tx.id}>
             <RowStyled>
               <TableTitleCell
-                title={`${t(tx.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${tx.asset?.name}`}
+                title={
+                  tx.isSubmitted
+                    ? t('TRANSACTIONS.TABLE.SUBMITTED')
+                    : `${t(tx.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${tx.asset?.name}`
+                }
                 subtitle={tx.asset?.symbol || ''}
                 iconUrl={tx.asset?.iconUrl}
               />

@@ -36,6 +36,16 @@ export class AssetsStore {
     return localizedCurrencyView(balance);
   }
 
+  @computed
+  public get myAssetsSortedByBalanceInUSD(): AssetStore[] {
+    return this.myAssets.slice().sort((a, b) => {
+      if (a.assetData.rate && b.assetData.rate) {
+        return b.totalBalance * b.assetData.rate - a.totalBalance * a.assetData.rate;
+      }
+      return 0;
+    });
+  }
+
   @action
   public async init(): Promise<void> {
     this.setIsLoading(true);
