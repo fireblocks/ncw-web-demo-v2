@@ -1,36 +1,14 @@
 import React from 'react';
-import { ActionButton, IconButton, SearchInput, Typography, styled } from '@foundation';
-import IconRefresh from '@icons/refresh.svg';
+import { Typography, styled } from '@foundation';
 import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { AddAssetDialog } from './AddAssetDialog/AddAssetDialog';
 import { AssetsList } from './AssetsList';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-}));
-
-const ActionsAndSearchWrapperStyled = styled('div')(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  justifyContent: 'space-between',
-  backgroundColor: theme.palette.primary.light,
-  borderBottom: `2px solid ${theme.palette.secondary.main}`,
-  paddingRight: theme.spacing(5),
-}));
-
-const ActionsWrapperStyled = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: theme.spacing(2),
-}));
-
-const SearchWrapperStyled = styled('div')(() => ({
-  width: '50%',
 }));
 
 const BalanceStyled = styled('div')(({ theme }) => ({
@@ -48,17 +26,6 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
 
-  const [isAddAssetDialogOpen, setIsAddAssetDialogOpen] = React.useState(false);
-  const [query, setQuery] = React.useState('');
-
-  const onAddAssetDialogOpen = () => {
-    setIsAddAssetDialogOpen(true);
-  };
-
-  const onAddAssetDialogClose = () => {
-    setIsAddAssetDialogOpen(false);
-  };
-
   return (
     <RootStyled>
       <HeadingStyled>
@@ -74,27 +41,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
           </Typography>
         </BalanceStyled>
       </HeadingStyled>
-
-      <ActionsAndSearchWrapperStyled>
-        <SearchWrapperStyled>
-          <SearchInput query={query} setQuery={setQuery} placeholder={t('ASSETS.ADD_DIALOG.SEARCH')} />
-        </SearchWrapperStyled>
-        <ActionsWrapperStyled>
-          <ActionButton onClick={onAddAssetDialogOpen} caption={t('ASSETS.ADD_ASSET')} />
-          <IconButton
-            disabled={assetsStore.isLoading}
-            tooltip={t('ASSETS.REFRESH_BALANCES')}
-            onClick={() => {
-              assetsStore.refreshBalances();
-            }}
-          >
-            <img src={IconRefresh} />
-          </IconButton>
-        </ActionsWrapperStyled>
-      </ActionsAndSearchWrapperStyled>
-
-      <AssetsList query={query} />
-      <AddAssetDialog isOpen={isAddAssetDialogOpen} onClose={onAddAssetDialogClose} />
+      <AssetsList />
     </RootStyled>
   );
 });
