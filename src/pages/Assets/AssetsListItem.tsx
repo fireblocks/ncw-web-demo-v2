@@ -10,7 +10,7 @@ import {
   TableTransferCell,
   styled,
 } from '@foundation';
-import { useAssetsStore } from '@store';
+import { AssetStore } from '@store';
 import { observer } from 'mobx-react';
 
 export const RowStyled = styled('div')(() => ({
@@ -22,6 +22,7 @@ interface IProps {
   index: number;
   style: React.CSSProperties;
   selectedAssetId: string | null;
+  filteredAssets: AssetStore[];
   setSelectedAssetId: (id: string | null) => void;
   setTransactionDialogMode: (mode: TNewTransactionMode) => void;
   onNewTransactionDialogOpen: () => void;
@@ -31,13 +32,12 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
   index,
   style,
   selectedAssetId,
+  filteredAssets,
   setSelectedAssetId,
   setTransactionDialogMode,
   onNewTransactionDialogOpen,
 }) {
-  const assetsStore = useAssetsStore();
-
-  const currentAsset = assetsStore.myAssetsSortedByBalanceInUSD[index];
+  const currentAsset = filteredAssets[index];
 
   return (
     <div

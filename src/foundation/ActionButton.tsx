@@ -8,6 +8,7 @@ const ButtonStyled = styled(MUIButton)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'row',
     gap: theme.spacing(1),
+    padding: theme.spacing(1.5, 4),
   },
 }));
 
@@ -17,7 +18,6 @@ const ButtonDarkStyled = styled(MUIButton)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'row',
     gap: theme.spacing(1),
-    padding: theme.spacing(2, 4),
     fontSize: theme.typography.h5.fontSize,
   },
 }));

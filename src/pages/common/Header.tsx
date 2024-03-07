@@ -24,9 +24,12 @@ const NavLinkStyled = styled(NavLink)(({ theme }) => ({
   fontSize: 14,
   textTransform: 'uppercase',
   transition: 'color 0.3s',
-  color: theme.palette.text.primary,
+  color: theme.palette.text.secondary,
   '&:hover': {
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.primary,
+  },
+  '&.active': {
+    color: theme.palette.text.primary,
   },
 }));
 

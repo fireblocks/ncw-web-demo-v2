@@ -15,6 +15,10 @@ const TableWrapperStyled = styled('div')(() => ({
   height: 500,
 }));
 
+const SearchWrapperStyled = styled('div')(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.secondary.main}`,
+}));
+
 interface IProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,7 +50,9 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
           <Skeleton mode="TABLE" />
         ) : (
           <>
-            <SearchInput query={query} setQuery={setQuery} placeholder={t('ASSETS.ADD_DIALOG.SEARCH')} />
+            <SearchWrapperStyled>
+              <SearchInput query={query} setQuery={setQuery} placeholder={t('ASSETS.ADD_DIALOG.SEARCH')} />
+            </SearchWrapperStyled>
             <TableWrapperStyled>
               <Table>
                 <TableBody>

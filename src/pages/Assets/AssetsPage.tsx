@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActionButton, ContentSection, IconButton, Typography, styled } from '@foundation';
+import { ActionButton, IconButton, SearchInput, Typography, styled } from '@foundation';
 import IconRefresh from '@icons/refresh.svg';
 import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
@@ -13,11 +13,24 @@ const RootStyled = styled('div')(() => ({
   flex: 1,
 }));
 
-const ActionsWrapperStyled = styled('div')(({ theme }) => ({
+const ActionsAndSearchWrapperStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   width: '100%',
-  justifyContent: 'flex-end',
+  justifyContent: 'space-between',
+  backgroundColor: theme.palette.primary.light,
+  borderBottom: `2px solid ${theme.palette.secondary.main}`,
+  paddingRight: theme.spacing(5),
+}));
+
+const ActionsWrapperStyled = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
   gap: theme.spacing(2),
+}));
+
+const SearchWrapperStyled = styled('div')(() => ({
+  width: '50%',
 }));
 
 const BalanceStyled = styled('div')(({ theme }) => ({
@@ -36,6 +49,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
   const assetsStore = useAssetsStore();
 
   const [isAddAssetDialogOpen, setIsAddAssetDialogOpen] = React.useState(false);
+  const [query, setQuery] = React.useState('');
 
   const onAddAssetDialogOpen = () => {
     setIsAddAssetDialogOpen(true);
@@ -60,7 +74,11 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
           </Typography>
         </BalanceStyled>
       </HeadingStyled>
-      <ContentSection>
+
+      <ActionsAndSearchWrapperStyled>
+        <SearchWrapperStyled>
+          <SearchInput query={query} setQuery={setQuery} placeholder={t('ASSETS.ADD_DIALOG.SEARCH')} />
+        </SearchWrapperStyled>
         <ActionsWrapperStyled>
           <ActionButton onClick={onAddAssetDialogOpen} caption={t('ASSETS.ADD_ASSET')} />
           <IconButton
@@ -73,8 +91,9 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
             <img src={IconRefresh} />
           </IconButton>
         </ActionsWrapperStyled>
-      </ContentSection>
-      <AssetsList />
+      </ActionsAndSearchWrapperStyled>
+
+      <AssetsList query={query} />
       <AddAssetDialog isOpen={isAddAssetDialogOpen} onClose={onAddAssetDialogClose} />
     </RootStyled>
   );

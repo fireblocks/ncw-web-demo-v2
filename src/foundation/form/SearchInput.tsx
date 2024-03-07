@@ -5,7 +5,6 @@ import styled from '@mui/material/styles/styled';
 
 export const InputStyled = styled(Input)(({ theme }) => ({
   '&.MuiInput-root': {
-    borderBottom: `2px solid ${theme.palette.secondary.main}`,
     padding: theme.spacing(3, 6),
     width: '100%',
     boxSizing: 'border-box',

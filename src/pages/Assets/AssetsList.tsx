@@ -11,7 +11,11 @@ import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialo
 
 const TABLE_ROW_HEIGHT = 106;
 
-export const AssetsList: React.FC = observer(function AssetsList() {
+interface IProps {
+  query: string;
+}
+
+export const AssetsList: React.FC<IProps> = observer(function AssetsList({ query }) {
   const assetsStore = useAssetsStore();
   const { t } = useTranslation();
 
@@ -20,6 +24,10 @@ export const AssetsList: React.FC = observer(function AssetsList() {
 
   const [isNewTransactionDialogOpen, setIsNewTransactionDialogOpen] = React.useState(false);
   const [transactionDialogMode, setTransactionDialogMode] = React.useState<TNewTransactionMode>(null);
+
+  const filteredAssets = assetsStore.myAssetsSortedByBalanceInUSD.filter(
+    (a) => a.name.toLowerCase().includes(query.toLowerCase()) || a.symbol.toLowerCase().includes(query.toLowerCase()),
+  );
 
   const onNewTransactionDialogOpen = () => {
     setIsNewTransactionDialogOpen(true);
@@ -32,7 +40,7 @@ export const AssetsList: React.FC = observer(function AssetsList() {
     setIsNewTransactionDialogOpen(false);
   };
 
-  if (assetsStore.isLoading && !assetsStore.myAssets.length) {
+  if (assetsStore.isLoading && !assetsStore.myAssetsSortedByBalanceInUSD.length) {
     return (
       <Table>
         <Skeleton mode="TABLE" />
@@ -54,14 +62,10 @@ export const AssetsList: React.FC = observer(function AssetsList() {
       <TableBody>
         <AutoSizer>
           {({ height, width }) => (
-            <FixedSizeList
-              height={height}
-              width={width}
-              itemCount={assetsStore.myAssetsSortedByBalanceInUSD.length}
-              itemSize={TABLE_ROW_HEIGHT}
-            >
+            <FixedSizeList height={height} width={width} itemCount={filteredAssets.length} itemSize={TABLE_ROW_HEIGHT}>
               {({ index, style }) => (
                 <AssetsListItem
+                  filteredAssets={filteredAssets}
                   index={index}
                   style={style}
                   selectedAssetId={selectedAssetId}
