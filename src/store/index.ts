@@ -7,3 +7,4 @@ export * from './Assets.store';
 export * from './Asset.store';
 export * from './FireblocksSDK.store';
 export * from './Transaction.store';
+export * from './NFT.store';

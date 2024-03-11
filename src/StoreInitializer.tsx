@@ -4,6 +4,7 @@ import {
   useAssetsStore,
   useDeviceStore,
   useFireblocksSDKStore,
+  useNFTStore,
   useTransactionsStore,
   useUserStore,
 } from '@store';
@@ -16,6 +17,7 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
   const userStore = useUserStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
   const transactionsStore = useTransactionsStore();
+  const NFTStore = useNFTStore();
 
   // Load device and accounts data
   React.useEffect(() => {
@@ -37,6 +39,7 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
     const fetchAssets = async () => {
       await assetsStore.init();
       await fireblocksSDKStore.init();
+      await NFTStore.init();
     };
 
     if (accountsStore.currentAccount) {

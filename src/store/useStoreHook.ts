@@ -41,3 +41,8 @@ export function useFireblocksSDKStore() {
   const rootStore = useRootStore();
   return rootStore.fireblocksSDKStore;
 }
+
+export function useNFTStore() {
+  const rootStore = useRootStore();
+  return rootStore.nftStore;
+}

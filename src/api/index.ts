@@ -4,3 +4,4 @@ export * from './device';
 export * from './assets';
 export * from './accounts';
 export * from './fireblocksSDK';
+export * from './nft';
