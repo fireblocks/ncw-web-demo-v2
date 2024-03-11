@@ -107,6 +107,16 @@ export const translationToEnglish = {
       },
     },
   },
+  LOGIN: {
+    WELCOME: 'Welcome to the NCW web demo',
+    DESCRIPTION: 'Securely store, send and receive digital assets on the go.',
+    EXISTING_USER_TITLE: 'Existing user',
+    EXISTING_USER_DESCRIPTION: 'Sign in to your existing wallet.',
+    NEW_USER_TITLE: 'New user',
+    NEW_USER_DESCRIPTION: 'Create a NCW wallet.',
+    SIGN_IN_WITH_GOOGLE: 'Sign in with Google',
+    SIGN_IN_WITH_APPLE: 'Sign in with Apple',
+  },
   COMMON: {
     LOADING: 'Loading...',
     COPIED: 'Copied!',
