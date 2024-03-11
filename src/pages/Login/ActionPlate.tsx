@@ -20,6 +20,7 @@ const IconStyled = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
   borderRadius: 4,
   marginBottom: theme.spacing(2),
+  transition: 'background-color 0.3s',
 }));
 
 const TextStyled = styled('div')(({ theme }) => ({
