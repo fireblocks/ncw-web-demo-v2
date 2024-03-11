@@ -1,11 +1,12 @@
-import { INFTAssetDTO, INFTCollectionDTO, INFTTokenDTO, getNFTAssets, getNFTCollections, getNFTTokens } from '@api';
+import { getNFTAssets, getNFTCollections, getNFTTokens } from '@api';
+import { CollectionOwnership, Token, TokenWithBalance } from 'fireblocks-sdk';
 import { action, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
 export class NFTStore {
-  @observable public collections: INFTCollectionDTO[];
-  @observable public tokens: INFTTokenDTO[];
-  @observable public assets: INFTAssetDTO[];
+  @observable public collections: CollectionOwnership[];
+  @observable public tokens: TokenWithBalance[];
+  @observable public assets: Token[];
 
   private _rootStore: RootStore;
 
@@ -37,17 +38,17 @@ export class NFTStore {
   }
 
   @action
-  public setCollections(dto: INFTCollectionDTO[]): void {
+  public setCollections(dto: CollectionOwnership[]): void {
     this.collections = dto;
   }
 
   @action
-  public setTokens(dto: INFTTokenDTO[]): void {
+  public setTokens(dto: TokenWithBalance[]): void {
     this.tokens = dto;
   }
 
   @action
-  public setAssets(dto: INFTAssetDTO[]): void {
+  public setAssets(dto: Token[]): void {
     this.assets = dto;
   }
 }
