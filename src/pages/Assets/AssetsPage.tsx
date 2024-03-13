@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, styled } from '@foundation';
+import { Skeleton, Table, Typography, styled } from '@foundation';
 import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,14 @@ const HeadingStyled = styled('div')(({ theme }) => ({
 export const AssetsPage: React.FC = observer(function AssetsPage() {
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
+
+  if (assetsStore.isLoading && !assetsStore.myAssetsSortedByBalanceInUSD.length) {
+    return (
+      <Table>
+        <Skeleton mode="TABLE" />
+      </Table>
+    );
+  }
 
   return (
     <RootStyled>

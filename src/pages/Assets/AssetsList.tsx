@@ -4,7 +4,6 @@ import {
   ActionButton,
   IconButton,
   SearchInput,
-  Skeleton,
   Table,
   TableBody,
   TableHead,
@@ -79,14 +78,6 @@ export const AssetsList: React.FC = observer(function AssetsList() {
   const onNewTransactionDialogClose = () => {
     setIsNewTransactionDialogOpen(false);
   };
-
-  if (assetsStore.isLoading && !assetsStore.myAssetsSortedByBalanceInUSD.length) {
-    return (
-      <Table>
-        <Skeleton mode="TABLE" />
-      </Table>
-    );
-  }
 
   return (
     <>
