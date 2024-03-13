@@ -19,8 +19,8 @@ const MUIDialogMediumStyled = styled(MUIDialog)(() => ({
 
 const MUIDialogSmallStyled = styled(MUIDialog)(() => ({
   '.MuiDialog-paper': {
-    width: 550,
-    maxWidth: 550,
+    width: 650,
+    maxWidth: 650,
   },
 }));
 
