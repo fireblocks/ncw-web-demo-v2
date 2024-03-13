@@ -174,4 +174,19 @@ export class TransactionsStore {
       this.addTransaction(newTxData);
     }
   }
+
+  @computed
+  public get completedAmount(): number {
+    return this.transactions.filter((tx) => tx.status === 'COMPLETED').length;
+  }
+
+  @computed
+  public get failedOrCanceledAmount(): number {
+    return this.transactions.filter((tx) => tx.status === 'FAILED' || tx.status === 'CANCELLED').length;
+  }
+
+  @computed
+  public get inProgressAmount(): number {
+    return this.transactions.length - this.completedAmount - this.failedOrCanceledAmount;
+  }
 }

@@ -2,6 +2,7 @@ import { Skeleton, Table, Typography, styled } from '@foundation';
 import { useNFTStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
+import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { NFTsList } from './Table/NFTsList';
 
 const RootStyled = styled('div')(() => ({
@@ -11,21 +12,8 @@ const RootStyled = styled('div')(() => ({
 }));
 
 const HeadingStyled = styled('div')(({ theme }) => ({
-  marginTop: theme.spacing(8),
+  marginTop: theme.spacing(7),
   height: 204,
-}));
-
-const AmountsStyled = styled('div')(({ theme }) => ({
-  marginTop: theme.spacing(5),
-  display: 'flex',
-  flexDirection: 'row',
-  gap: theme.spacing(4),
-}));
-
-const AmountStyled = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(2),
 }));
 
 export const NFTsPage: React.FC = observer(function NFTsPage() {
@@ -47,22 +35,8 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
           {t('NFT.TITLE')}
         </Typography>
         <AmountsStyled>
-          <AmountStyled>
-            <Typography variant="h6" color="text.secondary">
-              {t('NFT.ITEMS')}
-            </Typography>
-            <Typography variant="h1" color="text.primary">
-              {NFTStore.tokens.length}
-            </Typography>
-          </AmountStyled>
-          <AmountStyled>
-            <Typography variant="h6" color="text.secondary">
-              {t('NFT.COLLECTIONS')}
-            </Typography>
-            <Typography variant="h1" color="text.primary">
-              {NFTStore.collections.length}
-            </Typography>
-          </AmountStyled>
+          <HeadingAmount title={t('NFT.ITEMS')} titleColor="text.secondary" value={NFTStore.tokens.length} />
+          <HeadingAmount title={t('NFT.COLLECTIONS')} titleColor="text.secondary" value={NFTStore.collections.length} />
         </AmountsStyled>
       </HeadingStyled>
       <NFTsList />

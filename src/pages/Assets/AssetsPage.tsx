@@ -3,6 +3,7 @@ import { Typography, styled } from '@foundation';
 import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
+import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { AssetsList } from './AssetsList';
 
 const RootStyled = styled('div')(() => ({
@@ -11,15 +12,9 @@ const RootStyled = styled('div')(() => ({
   flex: 1,
 }));
 
-const BalanceStyled = styled('div')(({ theme }) => ({
-  marginTop: theme.spacing(5),
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(3),
-}));
-
 const HeadingStyled = styled('div')(({ theme }) => ({
-  margin: theme.spacing(5, 0, 8, 0),
+  marginTop: theme.spacing(7),
+  height: 204,
 }));
 
 export const AssetsPage: React.FC = observer(function AssetsPage() {
@@ -32,14 +27,13 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
         <Typography variant="h5" color="text.primary">
           {t('ASSETS.TITLE')}
         </Typography>
-        <BalanceStyled>
-          <Typography variant="h6" color="text.secondary">
-            {t('ASSETS.CURRENT_BALANCE')}
-          </Typography>
-          <Typography variant="h1" color="text.primary">
-            {assetsStore.isLoading ? t('COMMON.LOADING') : assetsStore.totalAvailableBalanceInUSD}
-          </Typography>
-        </BalanceStyled>
+        <AmountsStyled>
+          <HeadingAmount
+            title={t('ASSETS.CURRENT_BALANCE')}
+            titleColor="text.secondary"
+            value={assetsStore.isLoading ? t('COMMON.LOADING') : assetsStore.totalAvailableBalanceInUSD}
+          />
+        </AmountsStyled>
       </HeadingStyled>
       <AssetsList />
     </RootStyled>

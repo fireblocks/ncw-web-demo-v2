@@ -1,5 +1,5 @@
 import React from 'react';
-import { Skeleton, Table, TableBody, TableHead, TableHeaderCell } from '@foundation';
+import { Table, TableBody, TableHead, TableHeaderCell } from '@foundation';
 import { useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -12,14 +12,6 @@ const TABLE_ROW_HEIGHT = 106;
 export const TransactionsList: React.FC = observer(function TransactionsList() {
   const transactionsStore = useTransactionsStore();
   const { t } = useTranslation();
-
-  if (transactionsStore.transactions.length === 0) {
-    return (
-      <Table>
-        <Skeleton mode="TABLE" />
-      </Table>
-    );
-  }
 
   return (
     <Table>

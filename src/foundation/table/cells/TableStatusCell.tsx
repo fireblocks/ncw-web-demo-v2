@@ -35,6 +35,7 @@ const statusColor = (status: TTransactionStatus) => {
     case 'SUBMITTED':
     case 'PENDING_SIGNATURE':
     case 'CONFIRMING':
+    case 'QUEUED':
       return 'primary.dark';
 
     case 'COMPLETED':
@@ -45,7 +46,6 @@ const statusColor = (status: TTransactionStatus) => {
     case 'FAILED':
       return 'error.main';
 
-    case 'QUEUED':
     default:
       return 'text.primary';
   }

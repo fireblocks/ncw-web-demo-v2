@@ -13,6 +13,10 @@ export const translationToEnglish = {
   },
   TRANSACTIONS: {
     TITLE: 'Transactions history',
+    TOTAL_TRANSACTIONS_AMOUNT: 'Total transactions amount',
+    COMPLETED: 'Completed',
+    FAILED_AND_CANCELED: 'Failed & canceled',
+    IN_PROGRESS: 'In progress',
     TABLE: {
       CANCEL: 'Cancel',
       SIGN: 'Sign',
