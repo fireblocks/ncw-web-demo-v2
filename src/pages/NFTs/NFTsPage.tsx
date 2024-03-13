@@ -1,7 +1,9 @@
-import { Skeleton, Table, Typography, styled } from '@foundation';
+import React from 'react';
+import { ModeSwitcher, Skeleton, TViewMode, Table, Typography, styled } from '@foundation';
 import { useNFTStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
+import { ActionsBoxWrapperStyled, ActionsWrapperStyled } from '../common/ActionsBox';
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { NFTsList } from './Table/NFTsList';
 
@@ -16,9 +18,14 @@ const HeadingStyled = styled('div')(({ theme }) => ({
   height: 204,
 }));
 
+const ModeAndGroupingWrapperStyled = styled('div')(({ theme }) => ({
+  padding: theme.spacing(1.1, 0),
+}));
+
 export const NFTsPage: React.FC = observer(function NFTsPage() {
   const NFTStore = useNFTStore();
   const { t } = useTranslation();
+  const [mode, setMode] = React.useState<TViewMode>('TABLE');
 
   if (NFTStore.isLoading) {
     return (
@@ -39,6 +46,14 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
           <HeadingAmount title={t('NFT.COLLECTIONS')} titleColor="text.secondary" value={NFTStore.collections.length} />
         </AmountsStyled>
       </HeadingStyled>
+      <ActionsBoxWrapperStyled>
+        <div />
+        <ActionsWrapperStyled>
+          <ModeAndGroupingWrapperStyled>
+            <ModeSwitcher value={mode} onChange={setMode} />
+          </ModeAndGroupingWrapperStyled>
+        </ActionsWrapperStyled>
+      </ActionsBoxWrapperStyled>
       <NFTsList />
     </RootStyled>
   );

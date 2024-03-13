@@ -1,46 +1,18 @@
 import React from 'react';
 import { TNewTransactionMode } from '@api';
-import {
-  ActionButton,
-  IconButton,
-  SearchInput,
-  Table,
-  TableBody,
-  TableHead,
-  TableHeaderCell,
-  styled,
-} from '@foundation';
+import { ActionButton, IconButton, SearchInput, Table, TableBody, TableHead, TableHeaderCell } from '@foundation';
 import IconRefresh from '@icons/refresh.svg';
 import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
+import { ActionsBoxWrapperStyled, ActionsWrapperStyled, SearchWrapperStyled } from '../common/ActionsBox';
 import { AddAssetDialog } from './AddAssetDialog/AddAssetDialog';
 import { AssetsListItem, RowStyled } from './AssetsListItem';
 import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
 
 const TABLE_ROW_HEIGHT = 106;
-
-const ActionsAndSearchWrapperStyled = styled('div')(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  justifyContent: 'space-between',
-  backgroundColor: theme.palette.primary.light,
-  borderBottom: `2px solid ${theme.palette.secondary.main}`,
-  paddingRight: theme.spacing(5),
-}));
-
-const ActionsWrapperStyled = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: theme.spacing(2),
-}));
-
-const SearchWrapperStyled = styled('div')(() => ({
-  width: '50%',
-}));
 
 export const AssetsList: React.FC = observer(function AssetsList() {
   const assetsStore = useAssetsStore();
@@ -81,7 +53,7 @@ export const AssetsList: React.FC = observer(function AssetsList() {
 
   return (
     <>
-      <ActionsAndSearchWrapperStyled>
+      <ActionsBoxWrapperStyled>
         <SearchWrapperStyled>
           <SearchInput query={query} setQuery={setQuery} placeholder={t('ASSETS.ADD_DIALOG.SEARCH')} />
         </SearchWrapperStyled>
@@ -97,7 +69,7 @@ export const AssetsList: React.FC = observer(function AssetsList() {
             <img src={IconRefresh} />
           </IconButton>
         </ActionsWrapperStyled>
-      </ActionsAndSearchWrapperStyled>
+      </ActionsBoxWrapperStyled>
       <Table>
         <TableHead>
           <RowStyled>
