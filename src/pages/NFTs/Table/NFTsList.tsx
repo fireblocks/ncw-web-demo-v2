@@ -22,7 +22,6 @@ export const NFTsList: React.FC = observer(function NFTsList() {
           <TableHeaderCell title={t('NFT.TABLE.HEADERS.DATE')} />
           <TableHeaderCell title={t('NFT.TABLE.HEADERS.STANDARD')} />
           <TableHeaderCell title={t('NFT.TABLE.HEADERS.TOKEN_ID')} />
-          <TableHeaderCell title="" />
         </RowStyled>
       </TableHead>
       <TableBody>
