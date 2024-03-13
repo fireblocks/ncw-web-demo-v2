@@ -1,19 +1,20 @@
-import { getNFTAssets, getNFTCollections, getNFTTokens } from '@api';
-import { CollectionOwnership, Token, TokenWithBalance } from 'fireblocks-sdk';
-import { action, makeObservable, observable } from 'mobx';
+import { getNFTCollections, getNFTTokens } from '@api';
+import { CollectionOwnership } from 'fireblocks-sdk';
+import { action, makeObservable, observable, runInAction } from 'mobx';
+import { NFTTokenStore } from './NFTToken.store';
 import { RootStore } from './Root.store';
 
 export class NFTStore {
   @observable public collections: CollectionOwnership[];
-  @observable public tokens: TokenWithBalance[];
-  @observable public assets: Token[];
+  @observable public tokens: NFTTokenStore[];
+  @observable public isLoading: boolean;
 
   private _rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
     this.collections = [];
     this.tokens = [];
-    this.assets = [];
+    this.isLoading = true;
 
     this._rootStore = rootStore;
 
@@ -22,6 +23,7 @@ export class NFTStore {
 
   @action
   public async init(): Promise<void> {
+    this.setIsLoading(true);
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accessToken = this._rootStore.userStore.accessToken;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
@@ -29,12 +31,18 @@ export class NFTStore {
     if (deviceId && accountId !== undefined && accessToken) {
       const myCollections = await getNFTCollections(deviceId, accessToken);
       const myTokens = await getNFTTokens(deviceId, accountId, accessToken);
-      const myAssets = await getNFTAssets(deviceId, accessToken);
 
       this.setCollections(myCollections);
-      this.setTokens(myTokens);
-      this.setAssets(myAssets);
+
+      myTokens.map((t) => {
+        const tokenStore = new NFTTokenStore(t, this._rootStore);
+        runInAction(() => {
+          this.tokens.push(tokenStore);
+        });
+      });
     }
+
+    this.setIsLoading(false);
   }
 
   @action
@@ -43,12 +51,7 @@ export class NFTStore {
   }
 
   @action
-  public setTokens(dto: TokenWithBalance[]): void {
-    this.tokens = dto;
-  }
-
-  @action
-  public setAssets(dto: Token[]): void {
-    this.assets = dto;
+  public setIsLoading(isLoading: boolean): void {
+    this.isLoading = isLoading;
   }
 }

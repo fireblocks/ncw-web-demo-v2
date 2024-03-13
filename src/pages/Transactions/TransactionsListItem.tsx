@@ -58,7 +58,7 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
             title={
               transaction.isSubmitted
                 ? t('TRANSACTIONS.TABLE.SUBMITTED')
-                : `${t(transaction.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${transaction.asset?.name}`
+                : `${t(transaction.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${transaction.asset?.name || ''}`
             }
             subtitle={transaction.asset?.symbol || ''}
             iconUrl={transaction.asset?.iconUrl}

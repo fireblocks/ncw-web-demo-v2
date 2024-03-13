@@ -4,6 +4,9 @@ const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
+  overflow: 'hidden',
+  width: '100%',
+  maxWidth: '100%',
 }));
 
 interface IProps {

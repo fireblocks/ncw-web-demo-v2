@@ -117,6 +117,20 @@ export const translationToEnglish = {
     SIGN_IN_WITH_GOOGLE: 'Sign in with Google',
     SIGN_IN_WITH_APPLE: 'Sign in with Apple',
   },
+  NFT: {
+    TITLE: 'My NFTs',
+    ITEMS: 'NFT Items',
+    COLLECTIONS: 'NFT Collections',
+    TABLE: {
+      HEADERS: {
+        NFT: 'NFT',
+        COLLECTION: 'Collection',
+        DATE: 'Date',
+        STANDARD: 'Standard',
+        TOKEN_ID: 'Token ID',
+      },
+    },
+  },
   COMMON: {
     LOADING: 'Loading...',
     COPIED: 'Copied!',
