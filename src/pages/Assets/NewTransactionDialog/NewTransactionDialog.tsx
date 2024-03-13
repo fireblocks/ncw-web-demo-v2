@@ -100,7 +100,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
         <SelectedAsset asset={asset} />
         {mode === 'SEND' ? (
           <>
-            <TxType setType={setTxType} />
+            <TxType setType={setTxType} type={txType} />
             {txType === 'TRANSFER' && (
               <>
                 <AssetAmountInput
@@ -117,7 +117,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
                   value={address}
                   setValue={setAddress}
                 />
-                <FeeLevel setLevel={setFeeLevel} />
+                <FeeLevel setLevel={setFeeLevel} level={feeLevel} />
               </>
             )}
           </>

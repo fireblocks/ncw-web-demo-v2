@@ -15,6 +15,14 @@ const TableStyled = styled('div')(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
+const TableHeaderStyled = styled('div')(({ theme }) => ({
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  padding: theme.spacing(1, 0),
+}));
+
 const CardsStyled = styled('div')(() => ({
   width: '100%',
   display: 'flex',
@@ -30,10 +38,19 @@ export const Skeleton: React.FC<IProps> = ({ mode }) => (
   <RootStyled>
     {mode === 'TABLE' && (
       <TableStyled>
-        <MUISkeleton variant="rounded" width="100%" height={40} />
-        <MUISkeleton variant="rounded" width="100%" height={40} />
-        <MUISkeleton variant="rounded" width="100%" height={40} />
-        <MUISkeleton variant="rounded" width="100%" height={40} />
+        <TableHeaderStyled>
+          <MUISkeleton variant="rounded" width="8%" height={25} />
+          <MUISkeleton variant="rounded" width="11%" height={25} />
+          <MUISkeleton variant="rounded" width="15%" height={25} />
+          <MUISkeleton variant="rounded" width="16%" height={25} />
+          <MUISkeleton variant="rounded" width="13%" height={25} />
+        </TableHeaderStyled>
+        <MUISkeleton variant="rounded" width="100%" height={50} />
+        <MUISkeleton variant="rounded" width="100%" height={50} />
+        <MUISkeleton variant="rounded" width="100%" height={50} />
+        <MUISkeleton variant="rounded" width="100%" height={50} />
+        <MUISkeleton variant="rounded" width="100%" height={50} />
+        <MUISkeleton variant="rounded" width="100%" height={50} />
       </TableStyled>
     )}
 
