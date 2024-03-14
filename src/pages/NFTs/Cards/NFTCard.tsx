@@ -11,7 +11,7 @@ const RowStyled = styled('div')(({ theme }) => ({
   boxSizing: 'border-box',
   backgroundColor: theme.palette.primary.light,
   border: `1px solid ${theme.palette.secondary.main}`,
-  borderBottom: 0,
+  borderTop: 0,
   cursor: 'pointer',
   '&:hover': {
     backgroundColor: theme.palette.secondary.main,
