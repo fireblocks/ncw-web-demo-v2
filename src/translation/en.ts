@@ -70,6 +70,7 @@ export const translationToEnglish = {
     CURRENT_BALANCE: 'Current balance',
     ADD_ASSET: 'Add asset',
     REFRESH_BALANCES: 'Refresh balances',
+    REFRESHING_BALANCES: 'Refreshing balances',
     RECEIVE: 'Receive',
     SEND: 'Send',
     TABLE: {
