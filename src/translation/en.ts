@@ -125,6 +125,8 @@ export const translationToEnglish = {
     TITLE: 'My NFTs',
     ITEMS: 'NFT Items',
     COLLECTIONS: 'NFT Collections',
+    TOKEN_ID: 'Token ID',
+    SEARCH: 'Search for NFTs',
     TABLE: {
       HEADERS: {
         NFT: 'NFT',

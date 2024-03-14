@@ -65,7 +65,7 @@ const theme: ThemeOptions = {
     h6: {
       fontSize: 14,
       lineHeight: '20px',
-      fontWeight: 500,
+      fontWeight: 600,
       textTransform: 'uppercase',
     },
   },

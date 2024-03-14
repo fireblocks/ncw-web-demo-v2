@@ -1,11 +1,12 @@
 import React from 'react';
-import { ModeSwitcher, Skeleton, TViewMode, Table, Typography, styled } from '@foundation';
+import { ModeSwitcher, SearchInput, Skeleton, TViewMode, Table, Typography, styled } from '@foundation';
 import { useNFTStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { ActionsBoxWrapperStyled, ActionsWrapperStyled } from '../common/ActionsBox';
+import { ActionsBoxWrapperStyled, ActionsWrapperStyled, SearchWrapperStyled } from '../common/ActionsBox';
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { NFTsList } from './Table/NFTsList';
+import { NFTCards } from './Cards/NFTCards';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -26,6 +27,7 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
   const NFTStore = useNFTStore();
   const { t } = useTranslation();
   const [mode, setMode] = React.useState<TViewMode>('TABLE');
+  const [query, setQuery] = React.useState('');
 
   if (NFTStore.isLoading) {
     return (
@@ -47,14 +49,16 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
         </AmountsStyled>
       </HeadingStyled>
       <ActionsBoxWrapperStyled>
-        <div />
+        <SearchWrapperStyled>
+          <SearchInput query={query} setQuery={setQuery} placeholder={t('NFT.SEARCH')} />
+        </SearchWrapperStyled>
         <ActionsWrapperStyled>
           <ModeAndGroupingWrapperStyled>
             <ModeSwitcher value={mode} onChange={setMode} />
           </ModeAndGroupingWrapperStyled>
         </ActionsWrapperStyled>
       </ActionsBoxWrapperStyled>
-      <NFTsList />
+      {mode === 'TABLE' ? <NFTsList query={query} /> : <NFTCards query={query} />}
     </RootStyled>
   );
 });

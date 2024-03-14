@@ -1,6 +1,6 @@
 import React from 'react';
 import { TableRow, TableTextCell, TableTitleCell, styled } from '@foundation';
-import { useNFTStore } from '@store';
+import { NFTTokenStore } from '@store';
 import { observer } from 'mobx-react';
 
 export const RowStyled = styled('div')(() => ({
@@ -11,12 +11,11 @@ export const RowStyled = styled('div')(() => ({
 interface IProps {
   index: number;
   style: React.CSSProperties;
+  filteredTokens: NFTTokenStore[];
 }
 
-export const NFTsListItem: React.FC<IProps> = observer(function NFTsListItem({ index, style }) {
-  const NFTStore = useNFTStore();
-
-  const token = NFTStore.tokens[index];
+export const NFTsListItem: React.FC<IProps> = observer(function NFTsListItem({ filteredTokens, index, style }) {
+  const token = filteredTokens[index];
 
   const date = new Date(token.ownershipStartTime).toLocaleString();
 

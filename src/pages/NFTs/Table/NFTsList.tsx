@@ -9,9 +9,17 @@ import { RowStyled, NFTsListItem } from './NFTsListItem';
 
 const TABLE_ROW_HEIGHT = 106;
 
-export const NFTsList: React.FC = observer(function NFTsList() {
+interface IProps {
+  query: string;
+}
+
+export const NFTsList: React.FC<IProps> = observer(function NFTsList({ query }) {
   const NFTStore = useNFTStore();
   const { t } = useTranslation();
+
+  const filteredTokens = NFTStore.tokens.filter(
+    (t) => t.name.toLowerCase().includes(query.toLowerCase()) || t.tokenId.toLowerCase().includes(query.toLowerCase()),
+  );
 
   return (
     <Table>
@@ -27,8 +35,8 @@ export const NFTsList: React.FC = observer(function NFTsList() {
       <TableBody>
         <AutoSizer>
           {({ height, width }) => (
-            <FixedSizeList height={height} width={width} itemCount={NFTStore.tokens.length} itemSize={TABLE_ROW_HEIGHT}>
-              {({ index, style }) => <NFTsListItem index={index} style={style} />}
+            <FixedSizeList height={height} width={width} itemCount={filteredTokens.length} itemSize={TABLE_ROW_HEIGHT}>
+              {({ index, style }) => <NFTsListItem filteredTokens={filteredTokens} index={index} style={style} />}
             </FixedSizeList>
           )}
         </AutoSizer>

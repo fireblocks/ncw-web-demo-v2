@@ -27,7 +27,7 @@ export const SearchInput: React.FC<IProps> = ({ query, placeholder, setQuery }) 
   <InputStyled
     startAdornment={<StartAdornmentStyled src={IconSearch} />}
     disableUnderline
-    placeholder={placeholder}
+    placeholder={placeholder.toUpperCase()}
     id={placeholder}
     value={query}
     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
