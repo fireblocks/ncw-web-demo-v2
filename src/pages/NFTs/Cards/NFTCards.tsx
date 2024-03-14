@@ -26,7 +26,7 @@ export const NFTCards: React.FC<IProps> = observer(function NFTCards({ query }) 
   );
 
   const columnsCount =
-    filteredTokens.length < COLUMN_COUNT ? filteredTokens.length : Math.ceil(filteredTokens.length / COLUMN_COUNT);
+    filteredTokens.length < COLUMN_COUNT ? filteredTokens.length : COLUMN_COUNT;
 
   return (
     <RootStyled>
