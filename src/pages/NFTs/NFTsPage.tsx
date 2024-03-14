@@ -1,5 +1,5 @@
 import React from 'react';
-import { ModeSwitcher, SearchInput, Skeleton, TViewMode, Table, Typography, styled } from '@foundation';
+import { IconButton, ModeSwitcher, SearchInput, Skeleton, TViewMode, Table, Typography, styled } from '@foundation';
 import { useNFTStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { ActionsBoxWrapperStyled, ActionsWrapperStyled, SearchWrapperStyled } fr
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { NFTsList } from './Table/NFTsList';
 import { NFTCards } from './Cards/NFTCards';
+import IconRefresh from '@icons/refresh.svg';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -26,13 +27,13 @@ const ModeAndGroupingWrapperStyled = styled('div')(({ theme }) => ({
 export const NFTsPage: React.FC = observer(function NFTsPage() {
   const NFTStore = useNFTStore();
   const { t } = useTranslation();
-  const [mode, setMode] = React.useState<TViewMode>('TABLE');
+  const [mode, setMode] = React.useState<TViewMode>('CARD');
   const [query, setQuery] = React.useState('');
 
   if (NFTStore.isLoading) {
     return (
       <Table>
-        <Skeleton mode="TABLE" />
+        <Skeleton mode="CARDS" />
       </Table>
     );
   }
@@ -56,6 +57,15 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
           <ModeAndGroupingWrapperStyled>
             <ModeSwitcher value={mode} onChange={setMode} />
           </ModeAndGroupingWrapperStyled>
+          <IconButton
+            disabled={NFTStore.isLoading}
+            tooltip={t('NFT.REFRESH_GALLERY')}
+            onClick={() => {
+              NFTStore.getTokens();
+            }}
+          >
+            <img src={IconRefresh} />
+          </IconButton>
         </ActionsWrapperStyled>
       </ActionsBoxWrapperStyled>
       {mode === 'TABLE' ? <NFTsList query={query} /> : <NFTCards query={query} />}

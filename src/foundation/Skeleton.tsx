@@ -23,11 +23,12 @@ const TableHeaderStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(1, 0),
 }));
 
-const CardsStyled = styled('div')(() => ({
+const CardsStyled = styled('div')(({ theme }) => ({
   width: '100%',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-around',
+  marginBottom: theme.spacing(1.3),
 }));
 
 interface IProps {
@@ -55,11 +56,20 @@ export const Skeleton: React.FC<IProps> = ({ mode }) => (
     )}
 
     {mode === 'CARDS' && (
-      <CardsStyled>
-        <MUISkeleton variant="rounded" width={175} height={175} />
-        <MUISkeleton variant="rounded" width={175} height={175} />
-        <MUISkeleton variant="rounded" width={175} height={175} />
-      </CardsStyled>
+      <div>
+        <CardsStyled>
+          <MUISkeleton variant="rounded" width={350} height={350} />
+          <MUISkeleton variant="rounded" width={350} height={350} />
+          <MUISkeleton variant="rounded" width={350} height={350} />
+          <MUISkeleton variant="rounded" width={350} height={350} />
+        </CardsStyled>
+        <CardsStyled>
+          <MUISkeleton variant="rounded" width={350} height={350} />
+          <MUISkeleton variant="rounded" width={350} height={350} />
+          <MUISkeleton variant="rounded" width={350} height={350} />
+          <MUISkeleton variant="rounded" width={350} height={350} />
+        </CardsStyled>
+      </div>
     )}
   </RootStyled>
 );

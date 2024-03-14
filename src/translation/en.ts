@@ -128,6 +128,7 @@ export const translationToEnglish = {
     COLLECTIONS: 'NFT Collections',
     TOKEN_ID: 'Token ID',
     SEARCH: 'Search for NFTs',
+    REFRESH_GALLERY: 'Refresh gallery',
     TABLE: {
       HEADERS: {
         NFT: 'NFT',
