@@ -15,6 +15,8 @@ const RootStyled = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   height: '100%',
   paddingTop: theme.spacing(10),
+  width: '90%',
+  margin: '0 auto',
 }));
 
 const ContentWrapperStyled = styled('div')(({ theme }) => ({
