@@ -13,6 +13,7 @@ const RowStyled = styled('div')(({ theme }) => ({
   border: `1px solid ${theme.palette.secondary.main}`,
   borderTop: 0,
   cursor: 'pointer',
+  transition: 'background-color 0.3s',
   '&:hover': {
     backgroundColor: theme.palette.secondary.main,
   },
