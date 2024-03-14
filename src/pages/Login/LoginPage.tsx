@@ -2,6 +2,8 @@ import { Typography, styled } from '@foundation';
 import IconApple from '@icons/apple.svg';
 import IconGoogle from '@icons/google.svg';
 import IconLogo from '@icons/logo.svg';
+import IconBG from '@icons/login_background.svg';
+import IconAssets from '@icons/login_assets.svg';
 import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +31,41 @@ const IllustrationBlockStyled = styled('div')(() => ({
   justifyItems: 'center',
   alignItems: 'center',
   width: '50%',
+  background: `url(${IconBG}) top left no-repeat`,
+}));
+
+const IllustrationContentStyled = styled('div')(() => ({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  justifyContent: 'center',
+  width: '70%',
+  textAlign: 'center',
+}));
+
+const IllustrationBlockchainsStyled = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: theme.spacing(2),
+}));
+
+const HeaderTextStyled = styled(Typography)(({ theme }) => ({
+  fontSize: 44,
+  color: theme.palette.text.primary,
+  fontWeight: 300,
+  lineHeight: '57px',
+  letterSpacing: 2.5,
+}));
+
+const HeaderDescriptionStyled = styled(Typography)(({ theme }) => ({
+  fontSize: 16,
+  color: theme.palette.text.secondary,
+  fontWeight: 400,
+  lineHeight: '24px',
+  margin: theme.spacing(6, 'auto', 4, 'auto'),
+  width: 330,
 }));
 
 const ActionsBlockStyled = styled('div')(({ theme }) => ({
@@ -78,7 +115,18 @@ export const LoginPage: React.FC = observer(function LoginPage() {
   return (
     <RootStyled>
       <ContentWrapperStyled>
-        <IllustrationBlockStyled></IllustrationBlockStyled>
+        <IllustrationBlockStyled>
+          <IllustrationContentStyled>
+            <HeaderTextStyled>{t('LOGIN.ILLUSTRATION.HEADER')}</HeaderTextStyled>
+            <HeaderDescriptionStyled>{t('LOGIN.ILLUSTRATION.DESCRIPTION')}</HeaderDescriptionStyled>
+            <IllustrationBlockchainsStyled>
+              <img src={IconAssets} />
+              <Typography variant="subtitle1" color="text.secondary">
+                {t('LOGIN.ILLUSTRATION.BLOCKCHAINS')}
+              </Typography>
+            </IllustrationBlockchainsStyled>
+          </IllustrationContentStyled>
+        </IllustrationBlockStyled>
         <ActionsBlockStyled>
           <ActionsContentStyled>
             <ActionsHeadingStyled>

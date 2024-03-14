@@ -113,7 +113,7 @@ export const translationToEnglish = {
     },
   },
   LOGIN: {
-    WELCOME: 'Welcome to the NCW web demo',
+    WELCOME: 'welcome to bitvault',
     DESCRIPTION: 'Securely store, send and receive digital assets on the go.',
     EXISTING_USER_TITLE: 'Existing user',
     EXISTING_USER_DESCRIPTION: 'Sign in to your existing wallet.',
@@ -121,6 +121,11 @@ export const translationToEnglish = {
     NEW_USER_DESCRIPTION: 'Create a NCW wallet.',
     SIGN_IN_WITH_GOOGLE: 'Sign in with Google',
     SIGN_IN_WITH_APPLE: 'Sign in with Apple',
+    ILLUSTRATION: {
+      HEADER: 'Securely access the world of Web3',
+      DESCRIPTION: 'Bitvault is the most secure self-custody wallet store your crypto and NFTs.',
+      BLOCKCHAINS: '+30 more blockchains',
+    },
   },
   NFT: {
     TITLE: 'My NFTs',
