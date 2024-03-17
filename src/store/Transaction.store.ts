@@ -119,6 +119,7 @@ export class TransactionStore {
   @action
   public updateStatus(status: TTransactionStatus) {
     this.status = status;
+    this._rootStore.assetsStore.refreshBalances();
   }
 
   @action
@@ -166,7 +167,7 @@ export class TransactionStore {
 
   @action
   public update(dto: ITransactionDTO) {
-    this.status = dto.status;
+    this.updateStatus(dto.status);
     this.createdAt = dto.createdAt || null;
     this.lastUpdated = dto.lastUpdated || null;
     this.details = dto.details || null;

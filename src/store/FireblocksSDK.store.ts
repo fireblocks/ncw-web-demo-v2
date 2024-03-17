@@ -23,6 +23,7 @@ export class FireblocksSDKStore {
   @observable public joinWalletEventDescriptor: string;
   @observable public isMPCReady: boolean;
   @observable public isMPCGenerating: boolean;
+  @observable public error: string;
 
   private _rootStore: RootStore;
   private _unsubscribeTransactionsPolling: (() => void) | null;
@@ -36,6 +37,7 @@ export class FireblocksSDKStore {
     this.joinWalletEventDescriptor = '';
     this.isMPCReady = false;
     this.isMPCGenerating = false;
+    this.error = '';
 
     this._unsubscribeTransactionsPolling = null;
     this._rootStore = rootStore;
@@ -136,26 +138,62 @@ export class FireblocksSDKStore {
   }
 
   @action
-  public async clearSDKStorage() {
-    if (!this.sdkInstance) {
-      throw new Error('fireblocksNCW is not initialized');
-    }
-    localStorage.clear();
-    await this.sdkInstance.clearAllStorage();
-    const keyStatus = await this.sdkInstance.getKeysStatus();
-    this.setKeysStatus(keyStatus);
+  public setError(error: string): void {
+    this.error = error;
   }
 
   @action
-  public async generateMPCKeys() {
+  public async clearSDKStorage() {
     if (!this.sdkInstance) {
-      throw new Error('fireblocksNCW is not initialized');
+      this.setError('fireblocksNCW is not initialized');
+    } else {
+      localStorage.clear();
+      await this.sdkInstance.clearAllStorage();
+      this.setIsMPCGenerating(true);
+      const keyStatus = await this.sdkInstance.getKeysStatus();
+      this.setIsMPCGenerating(false);
+      this.setKeysStatus(keyStatus);
     }
+  }
 
-    this.setIsMPCReady(false);
-    const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1']);
-    await this.sdkInstance.generateMPCKeys(ALGORITHMS);
-    this.setIsMPCReady(true);
+  @action
+  public generateMPCKeys(): void {
+    if (!this.sdkInstance) {
+      this.setError('fireblocksNCW is not initialized');
+    } else {
+      this.setIsMPCReady(false);
+      this.setIsMPCGenerating(true);
+      const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1']);
+      this.sdkInstance
+        .generateMPCKeys(ALGORITHMS)
+        .then(() => {
+          this.setIsMPCReady(true);
+          this.setIsMPCGenerating(false);
+        })
+        .catch((error) => {
+          this.setError(error.message);
+        });
+    }
+  }
+
+  public async checkMPCKeys() {
+    if (!this.sdkInstance) {
+      this.setError('fireblocksNCW is not initialized');
+    } else {
+      this.setIsMPCReady(false);
+      this.setIsMPCGenerating(true);
+      const keysStatus = await this.sdkInstance.getKeysStatus();
+
+      const secP256K1Status = keysStatus.MPC_CMP_ECDSA_SECP256K1?.keyStatus ?? null;
+      const ed25519Status = keysStatus.MPC_EDDSA_ED25519?.keyStatus ?? null;
+
+      if (secP256K1Status === 'READY' || ed25519Status === 'READY') {
+        this.setIsMPCReady(true);
+      } else {
+        this.setIsMPCReady(false);
+      }
+      this.setIsMPCGenerating(false);
+    }
   }
 
   @action

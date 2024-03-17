@@ -1,13 +1,23 @@
 import React from 'react';
-import { IconButton, ModeSwitcher, SearchInput, Skeleton, TViewMode, Table, Typography, styled } from '@foundation';
+import {
+  CircularProgress,
+  IconButton,
+  ModeSwitcher,
+  SearchInput,
+  Skeleton,
+  TViewMode,
+  Table,
+  Typography,
+  styled,
+} from '@foundation';
+import IconRefresh from '@icons/refresh.svg';
 import { useNFTStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { ActionsBoxWrapperStyled, ActionsWrapperStyled, SearchWrapperStyled } from '../common/ActionsBox';
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
-import { NFTsList } from './Table/NFTsList';
 import { NFTCards } from './Cards/NFTCards';
-import IconRefresh from '@icons/refresh.svg';
+import { NFTsList } from './Table/NFTsList';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -58,13 +68,23 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
             <ModeSwitcher value={mode} onChange={setMode} />
           </ModeAndGroupingWrapperStyled>
           <IconButton
-            disabled={NFTStore.isLoading}
+            disabled={NFTStore.isRefreshingGallery}
             tooltip={t('NFT.REFRESH_GALLERY')}
             onClick={() => {
               NFTStore.getTokens();
             }}
           >
-            <img src={IconRefresh} />
+            {NFTStore.isRefreshingGallery ? (
+              <CircularProgress
+                sx={{
+                  color: (theme) => theme.palette.text.primary,
+                }}
+                size={14}
+                thickness={6}
+              />
+            ) : (
+              <img src={IconRefresh} />
+            )}
           </IconButton>
         </ActionsWrapperStyled>
       </ActionsBoxWrapperStyled>

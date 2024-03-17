@@ -1,5 +1,5 @@
 import React from 'react';
-import { Skeleton, Table, Typography, styled } from '@foundation';
+import { Typography, styled } from '@foundation';
 import { useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -20,14 +20,6 @@ const HeadingStyled = styled('div')(({ theme }) => ({
 export const TransactionsPage: React.FC = observer(function TransactionsPage() {
   const { t } = useTranslation();
   const transactionsStore = useTransactionsStore();
-
-  if (transactionsStore.transactions.length === 0) {
-    return (
-      <Table>
-        <Skeleton mode="TABLE" />
-      </Table>
-    );
-  }
 
   return (
     <RootStyled>

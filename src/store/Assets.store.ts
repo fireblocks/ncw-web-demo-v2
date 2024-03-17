@@ -16,6 +16,7 @@ export class AssetsStore {
   @observable public myAssets: AssetStore[];
   @observable public supportedAssets: AssetStore[];
   @observable public isLoading: boolean;
+  @observable public isGettingBalances: boolean;
   @observable public error: string;
 
   private _rootStore: RootStore;
@@ -25,6 +26,7 @@ export class AssetsStore {
     this.supportedAssets = [];
     this._rootStore = rootStore;
     this.isLoading = true;
+    this.isGettingBalances = false;
     this.error = '';
 
     makeObservable(this);
@@ -87,6 +89,11 @@ export class AssetsStore {
   }
 
   @action
+  public setIsGettingBalances(state: boolean): void {
+    this.isGettingBalances = state;
+  }
+
+  @action
   public setError(error: string): void {
     this.error = error;
   }
@@ -113,7 +120,7 @@ export class AssetsStore {
   }
 
   public refreshBalances(): void {
-    this.setIsLoading(true);
+    this.setIsGettingBalances(true);
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
     const accessToken = this._rootStore.userStore.accessToken;
@@ -132,7 +139,7 @@ export class AssetsStore {
           this.setError(e.message);
         })
         .finally(() => {
-          this.setIsLoading(false);
+          this.setIsGettingBalances(false);
         });
     }
   }

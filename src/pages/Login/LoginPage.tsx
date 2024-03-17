@@ -1,6 +1,5 @@
+import React from 'react';
 import { Typography, styled } from '@foundation';
-import IconApple from '@icons/apple.svg';
-import IconGoogle from '@icons/google.svg';
 import IconAssets from '@icons/login_assets.svg';
 import IconBG from '@icons/login_background.svg';
 import IconLogo from '@icons/logo.svg';
@@ -8,13 +7,13 @@ import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { redirect } from 'react-router-dom';
-import { ActionPlate } from './ActionPlate';
+import { Actions } from './Actions';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-  paddingTop: theme.spacing(10),
+  paddingTop: theme.spacing(15),
   width: '90%',
   margin: '0 auto',
 }));
@@ -99,18 +98,11 @@ const ActionsContentStyled = styled('div')(() => ({
   margin: '0 auto',
 }));
 
-const ActionsStyled = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(4),
-  marginTop: theme.spacing(7),
-}));
-
 export const LoginPage: React.FC = observer(function LoginPage() {
-  const userStore = useUserStore();
   const { t } = useTranslation();
+  const userStore = useUserStore();
 
-  if (userStore.loggedUser) {
+  if (userStore.accessToken) {
     redirect('/assets');
   }
 
@@ -142,22 +134,7 @@ export const LoginPage: React.FC = observer(function LoginPage() {
                 {t('LOGIN.DESCRIPTION')}
               </Typography>
             </ActionsHeadingStyled>
-            <ActionsStyled>
-              <ActionPlate
-                iconSrc={IconApple}
-                caption={t('LOGIN.SIGN_IN_WITH_APPLE')}
-                onClick={() => {
-                  userStore.login('APPLE');
-                }}
-              />
-              <ActionPlate
-                iconSrc={IconGoogle}
-                caption={t('LOGIN.SIGN_IN_WITH_GOOGLE')}
-                onClick={() => {
-                  userStore.login('GOOGLE');
-                }}
-              />
-            </ActionsStyled>
+            <Actions />
           </ActionsContentStyled>
         </ActionsBlockStyled>
       </ContentWrapperStyled>

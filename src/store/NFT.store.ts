@@ -8,6 +8,7 @@ export class NFTStore {
   @observable public collections: CollectionOwnership[];
   @observable public tokens: NFTTokenStore[];
   @observable public isLoading: boolean;
+  @observable public isRefreshingGallery: boolean;
 
   private _rootStore: RootStore;
 
@@ -15,6 +16,7 @@ export class NFTStore {
     this.collections = [];
     this.tokens = [];
     this.isLoading = true;
+    this.isRefreshingGallery = false;
 
     this._rootStore = rootStore;
 
@@ -23,11 +25,12 @@ export class NFTStore {
 
   @action
   public async init(): Promise<void> {
-    await this.getTokens();
+    await this.getTokens(true);
   }
 
-  public async getTokens(): Promise<void> {
-    this.setIsLoading(true);
+  public async getTokens(initMode?: boolean): Promise<void> {
+    initMode ? this.setIsLoading(true) : this.setIsRefreshingGallery(true);
+
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accessToken = this._rootStore.userStore.accessToken;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
@@ -40,7 +43,7 @@ export class NFTStore {
       this.setTokens(myTokens);
     }
 
-    this.setIsLoading(false);
+    initMode ? this.setIsLoading(false) : this.setIsRefreshingGallery(false);
   }
 
   @action
@@ -61,5 +64,10 @@ export class NFTStore {
   @action
   public setIsLoading(isLoading: boolean): void {
     this.isLoading = isLoading;
+  }
+
+  @action
+  public setIsRefreshingGallery(isRefreshingGallery: boolean): void {
+    this.isRefreshingGallery = isRefreshingGallery;
   }
 }

@@ -21,7 +21,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
 
-  if (assetsStore.isLoading && !assetsStore.myAssetsSortedByBalanceInUSD.length) {
+  if (assetsStore.isLoading) {
     return (
       <Table>
         <Skeleton mode="TABLE" />
@@ -39,7 +39,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
           <HeadingAmount
             title={t('ASSETS.CURRENT_BALANCE')}
             titleColor="text.secondary"
-            value={assetsStore.isLoading ? t('ASSETS.REFRESHING_BALANCES') : assetsStore.totalAvailableBalanceInUSD}
+            value={assetsStore.totalAvailableBalanceInUSD}
           />
         </AmountsStyled>
       </HeadingStyled>

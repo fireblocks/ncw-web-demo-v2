@@ -19,7 +19,7 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
   const transactionsStore = useTransactionsStore();
   const NFTStore = useNFTStore();
 
-  // Load device and accounts data
+  // Load device and accounts data -------------------
   React.useEffect(() => {
     if (userStore.userId) {
       deviceStore.init();
@@ -30,18 +30,16 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
       await accountsStore.init();
     };
 
-    if (userStore.accessToken && deviceStore.deviceId) {
+    if (userStore.accessToken && deviceStore.deviceId && userStore.userId) {
       fetchData().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userStore.accessToken, deviceStore.deviceId, userStore.userId]);
 
-  // Load assets data only after accounts are loaded
+  // Initialize Fireblocks SDK -------------------
   React.useEffect(() => {
     const fetchAssets = async () => {
-      await assetsStore.init();
       await fireblocksSDKStore.init();
-      await NFTStore.init();
     };
 
     if (accountsStore.currentAccount) {
@@ -49,6 +47,19 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountsStore.currentAccount]);
+
+  // Load assets and NFTs when sdk is ready -------------------
+  React.useEffect(() => {
+    const fetchAssets = async () => {
+      await assetsStore.init();
+      await NFTStore.init();
+    };
+
+    if (fireblocksSDKStore.isMPCReady) {
+      fetchAssets().catch(() => {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fireblocksSDKStore.isMPCReady]);
 
   React.useEffect(
     () => () => {

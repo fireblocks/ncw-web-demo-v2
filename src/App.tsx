@@ -1,6 +1,6 @@
 import { styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Header, SettingsPage, TransactionsPage } from '@pages';
-import { useUserStore } from '@store';
+import { useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { StoreInitializer } from './StoreInitializer';
@@ -25,6 +25,7 @@ const ContentStyled = styled('div')(() => ({
 
 export const App: React.FC = observer(function App() {
   const userStore = useUserStore();
+  const fireblocksSDKStore = useFireblocksSDKStore();
 
   if (!userStore.storeIsReady) {
     return null;
@@ -34,9 +35,9 @@ export const App: React.FC = observer(function App() {
     <RootStyled>
       <ContentStyled>
         {userStore.loggedUser && <StoreInitializer />}
-        <Header />
+        {fireblocksSDKStore.isMPCReady && <Header />}
         <Routes>
-          {userStore.loggedUser ? (
+          {userStore.loggedUser && fireblocksSDKStore.isMPCReady ? (
             <>
               <Route path="assets" element={<AssetsPage />} />
               <Route path="transactions" element={<TransactionsPage />} />

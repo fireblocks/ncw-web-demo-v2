@@ -1,6 +1,15 @@
 import React from 'react';
 import { TNewTransactionMode } from '@api';
-import { ActionButton, IconButton, SearchInput, Table, TableBody, TableHead, TableHeaderCell } from '@foundation';
+import {
+  ActionButton,
+  CircularProgress,
+  IconButton,
+  SearchInput,
+  Table,
+  TableBody,
+  TableHead,
+  TableHeaderCell,
+} from '@foundation';
 import IconRefresh from '@icons/refresh.svg';
 import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
@@ -60,13 +69,23 @@ export const AssetsList: React.FC = observer(function AssetsList() {
         <ActionsWrapperStyled>
           <ActionButton onClick={onAddAssetDialogOpen} caption={t('ASSETS.ADD_ASSET')} />
           <IconButton
-            disabled={assetsStore.isLoading}
+            disabled={assetsStore.isGettingBalances}
             tooltip={t('ASSETS.REFRESH_BALANCES')}
             onClick={() => {
               assetsStore.refreshBalances();
             }}
           >
-            <img src={IconRefresh} />
+            {assetsStore.isGettingBalances ? (
+              <CircularProgress
+                sx={{
+                  color: (theme) => theme.palette.text.primary,
+                }}
+                size={14}
+                thickness={6}
+              />
+            ) : (
+              <img src={IconRefresh} />
+            )}
           </IconButton>
         </ActionsWrapperStyled>
       </ActionsBoxWrapperStyled>
