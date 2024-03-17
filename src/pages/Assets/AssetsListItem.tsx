@@ -15,7 +15,7 @@ import { observer } from 'mobx-react';
 
 export const RowStyled = styled('div')(() => ({
   display: 'grid',
-  gridTemplateColumns: '1.5fr 1fr 0.7fr 1fr 1fr',
+  gridTemplateColumns: '1.5fr 1fr 0.7fr 1fr 0.6fr',
 }));
 
 interface IProps {

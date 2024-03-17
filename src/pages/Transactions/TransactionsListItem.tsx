@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 
 export const RowStyled = styled('div')(() => ({
   display: 'grid',
-  gridTemplateColumns: '1.5fr 1fr 1fr 0.7fr 1fr 1fr 0.7fr',
+  gridTemplateColumns: '1.6fr 1fr 1fr 0.7fr 1fr 1fr 0.3fr',
 }));
 
 const ActionsStyled = styled('div')(() => ({
