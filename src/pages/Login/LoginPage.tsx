@@ -1,9 +1,9 @@
 import { Typography, styled } from '@foundation';
 import IconApple from '@icons/apple.svg';
 import IconGoogle from '@icons/google.svg';
-import IconLogo from '@icons/logo.svg';
-import IconBG from '@icons/login_background.svg';
 import IconAssets from '@icons/login_assets.svg';
+import IconBG from '@icons/login_background.svg';
+import IconLogo from '@icons/logo.svg';
 import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';

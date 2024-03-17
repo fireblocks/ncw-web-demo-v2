@@ -21,7 +21,9 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
 
   // Load device and accounts data
   React.useEffect(() => {
-    deviceStore.init();
+    if (userStore.userId) {
+      deviceStore.init();
+    }
 
     const fetchData = async () => {
       await deviceStore.assignDeviceToNewWallet();
@@ -32,7 +34,7 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
       fetchData().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userStore.accessToken, deviceStore.deviceId]);
+  }, [userStore.accessToken, deviceStore.deviceId, userStore.userId]);
 
   // Load assets data only after accounts are loaded
   React.useEffect(() => {
