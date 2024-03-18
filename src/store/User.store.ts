@@ -106,7 +106,7 @@ export class UserStore {
     this.setAccessToken('');
     this.setUserId('');
     this.setError('');
-    this._rootStore.fireblocksSDKStore.dispose();
+    localStorage.removeItem('VISITED_PAGE');
   }
 
   @computed

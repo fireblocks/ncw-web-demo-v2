@@ -2,7 +2,7 @@ import { styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Header, SettingsPage, TransactionsPage } from '@pages';
 import { useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
-import { Routes, Route, Navigate, redirect } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { StoreInitializer } from './StoreInitializer';
 
 const RootStyled = styled('div')(({ theme }) => ({
@@ -28,14 +28,6 @@ export const App: React.FC = observer(function App() {
   const fireblocksSDKStore = useFireblocksSDKStore();
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
 
-  if (!userStore.storeIsReady) {
-    return null;
-  }
-
-  if (fireblocksSDKStore.keysAreReady) {
-    redirect(lastVisitedPage ? lastVisitedPage : '/assets');
-  }
-
   return (
     <RootStyled>
       <ContentStyled>
@@ -48,10 +40,12 @@ export const App: React.FC = observer(function App() {
               <Route path="/transactions" element={<TransactionsPage />} />
               <Route path="/nfts" element={<NFTsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="*" element={<Navigate to={lastVisitedPage ? lastVisitedPage : '/assets'} />} />
             </>
           ) : (
             <>
               <Route path="login" element={<LoginPage />} />
+              <Route path="*" element={<Navigate to="/login" />} />
             </>
           )}
         </Routes>

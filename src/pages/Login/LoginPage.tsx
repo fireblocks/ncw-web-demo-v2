@@ -6,6 +6,8 @@ import IconLogo from '@icons/logo.svg';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { Actions } from './Actions';
+import { redirect } from 'react-router-dom';
+import { useFireblocksSDKStore } from '@store';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -98,6 +100,12 @@ const ActionsContentStyled = styled('div')(() => ({
 
 export const LoginPage: React.FC = observer(function LoginPage() {
   const { t } = useTranslation();
+  const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
+  const fireblocksSDKStore = useFireblocksSDKStore();
+
+  if (fireblocksSDKStore.keysAreReady) {
+    redirect(lastVisitedPage ? lastVisitedPage : '/assets');
+  }
 
   return (
     <RootStyled>

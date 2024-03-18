@@ -6,7 +6,7 @@ import IconSettings from '@icons/settings.svg';
 import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, redirect, useLocation, useNavigate } from 'react-router-dom';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -83,11 +83,8 @@ export const Header: React.FC = observer(function Header() {
   const onLogoutClick = () => {
     userStore.logout();
     setUserMenuAnchorEl(null);
+    redirect('/login');
   };
-
-  if (!userStore.loggedUser) {
-    return null;
-  }
 
   return (
     <RootStyled>
