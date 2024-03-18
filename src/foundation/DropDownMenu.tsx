@@ -24,6 +24,7 @@ export const DropDownMenu: React.FC<IProps> = ({ anchorEl, isOpen, children, onC
     onClose={onClose}
     transformOrigin={{ horizontal: 'right', vertical: 'top' }}
     anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+    autoFocus={false}
   >
     {children}
   </MenuStyled>

@@ -70,4 +70,8 @@ export class NFTStore {
   public setIsRefreshingGallery(isRefreshingGallery: boolean): void {
     this.isRefreshingGallery = isRefreshingGallery;
   }
+
+  public get(id: string): NFTTokenStore | undefined {
+    return this.tokens.find((t) => t.id === id);
+  }
 }

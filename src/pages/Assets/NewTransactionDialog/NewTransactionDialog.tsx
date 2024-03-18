@@ -4,7 +4,7 @@ import { AddressField, AssetAmountInput, Dialog, QRField, TextInput, styled } fr
 import { AssetStore, localizedCurrencyView, useAccountsStore, useDeviceStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { FeeLevel } from './FeeLevel';
+import { FeeLevel } from '../../common/FeeLevel';
 import { SelectedAsset } from './SelectedAsset';
 import { TxType } from './TxType';
 

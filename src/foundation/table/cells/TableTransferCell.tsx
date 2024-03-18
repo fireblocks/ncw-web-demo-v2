@@ -22,12 +22,16 @@ export const TableTransferCell: React.FC<IProps> = ({ totalBalance, onReceive, o
 
   return (
     <RootStyled>
-      <IconButton tooltip={t('ASSETS.RECEIVE')} large onClick={onReceive}>
-        <img src={IconReceive} />
-      </IconButton>
-      <IconButton disabled={totalBalance === 0} tooltip={t('ASSETS.SEND')} large onClick={onSend}>
-        <img src={IconSend} />
-      </IconButton>
+      {onReceive && (
+        <IconButton tooltip={t('ASSETS.RECEIVE')} large onClick={onReceive}>
+          <img src={IconReceive} />
+        </IconButton>
+      )}
+      {onSend && (
+        <IconButton disabled={totalBalance === 0} tooltip={t('ASSETS.SEND')} large onClick={onSend}>
+          <img src={IconSend} />
+        </IconButton>
+      )}
     </RootStyled>
   );
 };

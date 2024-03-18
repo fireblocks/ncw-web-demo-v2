@@ -136,6 +136,12 @@ export const translationToEnglish = {
     TOKEN_ID: 'Token ID',
     SEARCH: 'Search for NFTs',
     REFRESH_GALLERY: 'Refresh gallery',
+    NEW_TRANSACTION_DIALOG: {
+      TITLE: 'Send NFT',
+      DESCRIPTION: 'Some dialog explanation',
+      ACTION: 'Send NFT',
+      RECEIVING_ADDRESS: 'Receiving address',
+    },
     TABLE: {
       HEADERS: {
         NFT: 'NFT',

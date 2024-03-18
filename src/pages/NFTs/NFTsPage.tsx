@@ -11,13 +11,14 @@ import {
   styled,
 } from '@foundation';
 import IconRefresh from '@icons/refresh.svg';
-import { useNFTStore } from '@store';
+import { NFTTokenStore, useNFTStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { ActionsBoxWrapperStyled, ActionsWrapperStyled, SearchWrapperStyled } from '../common/ActionsBox';
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { NFTCards } from './Cards/NFTCards';
 import { NFTsList } from './Table/NFTsList';
+import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -39,7 +40,22 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
   const { t } = useTranslation();
   const [mode, setMode] = React.useState<TViewMode>('CARD');
   const [query, setQuery] = React.useState('');
+  const [selectedTokenId, setSelectedTokenId] = React.useState<string | null>(null);
+  const [selectedTokenStore, setSelectedTokenStore] = React.useState<NFTTokenStore | undefined>(undefined);
+  const [isNewTransactionDialogOpen, setIsNewTransactionDialogOpen] = React.useState(false);
+
   localStorage.setItem('VISITED_PAGE', '/nfts');
+
+  const onNewTransactionDialogClose = () => {
+    setIsNewTransactionDialogOpen(false);
+  };
+
+  const onNewTransactionDialogOpen = () => {
+    setIsNewTransactionDialogOpen(true);
+    if (selectedTokenId) {
+      setSelectedTokenStore(NFTStore.get(selectedTokenId));
+    }
+  };
 
   if (NFTStore.isLoading) {
     return (
@@ -89,7 +105,26 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
           </IconButton>
         </ActionsWrapperStyled>
       </ActionsBoxWrapperStyled>
-      {mode === 'TABLE' ? <NFTsList query={query} /> : <NFTCards query={query} />}
+      {mode === 'TABLE' ? (
+        <NFTsList
+          onNewTransactionDialogOpen={onNewTransactionDialogOpen}
+          selectedTokenId={selectedTokenId}
+          setSelectedTokenId={setSelectedTokenId}
+          query={query}
+        />
+      ) : (
+        <NFTCards
+          onNewTransactionDialogOpen={onNewTransactionDialogOpen}
+          setSelectedTokenId={setSelectedTokenId}
+          query={query}
+        />
+      )}
+
+      <NewTransactionDialog
+        isOpen={isNewTransactionDialogOpen}
+        onClose={onNewTransactionDialogClose}
+        token={selectedTokenStore}
+      />
     </RootStyled>
   );
 });

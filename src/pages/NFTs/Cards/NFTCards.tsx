@@ -16,17 +16,22 @@ const RootStyled = styled('div')(() => ({
 
 interface IProps {
   query: string;
+  setSelectedTokenId: (id: string | null) => void;
+  onNewTransactionDialogOpen: () => void;
 }
 
-export const NFTCards: React.FC<IProps> = observer(function NFTCards({ query }) {
+export const NFTCards: React.FC<IProps> = observer(function NFTCards({
+  query,
+  setSelectedTokenId,
+  onNewTransactionDialogOpen,
+}) {
   const NFTStore = useNFTStore();
 
   const filteredTokens = NFTStore.tokens.filter(
     (t) => t.name.toLowerCase().includes(query.toLowerCase()) || t.tokenId.toLowerCase().includes(query.toLowerCase()),
   );
 
-  const columnsCount =
-    filteredTokens.length < COLUMN_COUNT ? filteredTokens.length : COLUMN_COUNT;
+  const columnsCount = filteredTokens.length < COLUMN_COUNT ? filteredTokens.length : COLUMN_COUNT;
 
   return (
     <RootStyled>
@@ -41,7 +46,14 @@ export const NFTCards: React.FC<IProps> = observer(function NFTCards({ query }) 
             rowCount={Math.ceil(filteredTokens.length / COLUMN_COUNT)}
           >
             {({ columnIndex, rowIndex, style }) => (
-              <NFTCard filteredTokens={filteredTokens} columnIndex={columnIndex} rowIndex={rowIndex} style={style} />
+              <NFTCard
+                setSelectedTokenId={setSelectedTokenId}
+                onNewTransactionDialogOpen={onNewTransactionDialogOpen}
+                filteredTokens={filteredTokens}
+                columnIndex={columnIndex}
+                rowIndex={rowIndex}
+                style={style}
+              />
             )}
           </FixedSizeGrid>
         )}

@@ -45,15 +45,35 @@ interface IProps {
   columnIndex: number;
   rowIndex: number;
   style: React.CSSProperties;
+  setSelectedTokenId: (id: string | null) => void;
+  onNewTransactionDialogOpen: () => void;
 }
 
-export const NFTCard: React.FC<IProps> = observer(function NFTCard({ filteredTokens, columnIndex, rowIndex, style }) {
+export const NFTCard: React.FC<IProps> = observer(function NFTCard({
+  setSelectedTokenId,
+  onNewTransactionDialogOpen,
+  filteredTokens,
+  columnIndex,
+  rowIndex,
+  style,
+}) {
   const { t } = useTranslation();
 
   const token = filteredTokens[columnIndex * rowIndex + columnIndex];
 
   return (
-    <RowStyled style={style}>
+    <RowStyled
+      style={style}
+      onMouseEnter={() => {
+        setSelectedTokenId(token.id);
+      }}
+      onMouseLeave={() => {
+        setSelectedTokenId(null);
+      }}
+      onClick={() => {
+        onNewTransactionDialogOpen();
+      }}
+    >
       <ContentStyled>
         <ImgStyled src={token.imageUrl || ''} alt={token.name} />
         <TextWrapperStyled>
