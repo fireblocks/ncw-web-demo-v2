@@ -43,6 +43,11 @@ export class TransactionStore {
   }
 
   @computed
+  public get isNFT(): boolean {
+    return this.assetId.includes('NFT-');
+  }
+
+  @computed
   public get sourceAddress(): string {
     return this.details?.sourceAddress || '';
   }
@@ -119,6 +124,9 @@ export class TransactionStore {
   @action
   public updateStatus(status: TTransactionStatus) {
     this.status = status;
+    if (this.isNFT) {
+      this._rootStore.nftStore.getTokens();
+    }
     this._rootStore.assetsStore.refreshBalances();
   }
 
