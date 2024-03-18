@@ -12,7 +12,7 @@ const TABLE_ROW_HEIGHT = 106;
 const TableWrapperStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
-  height: 500,
+  height: 450,
 }));
 
 const SearchWrapperStyled = styled('div')(({ theme }) => ({
@@ -44,6 +44,7 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
       description={t('ASSETS.ADD_DIALOG.DESCRIPTION')}
       isOpen={isOpen}
       onClose={handleDialogClose}
+      size='small'
     >
       <div>
         {assetsStore.isLoading ? (

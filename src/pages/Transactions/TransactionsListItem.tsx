@@ -71,16 +71,14 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
             {transaction.destinationAddress ? <CopyText text={transaction.destinationAddress} /> : null}
           </TableCell>
           <TableCell>
-            {transaction.isFinal ? null : (
-              <ActionsStyled
-                onClick={(e) => {
-                  setSelectedTx(transaction);
-                  onOpenTxMenuClick(e);
-                }}
-              >
-                <img src={IconDots} />
-              </ActionsStyled>
-            )}
+            <ActionsStyled
+              onClick={(e) => {
+                setSelectedTx(transaction);
+                onOpenTxMenuClick(e);
+              }}
+            >
+              <img src={IconDots} />
+            </ActionsStyled>
           </TableCell>
         </RowStyled>
       </TableRow>
@@ -104,6 +102,15 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
           }}
         >
           {t('TRANSACTIONS.TABLE.CANCEL')}
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            navigator.clipboard.writeText(selectedTx?.id || '');
+            onCloseTxMenuClick();
+          }}
+        >
+          {t('TRANSACTIONS.TABLE.COPY_TX_ID')}
         </MenuItem>
       </DropDownMenu>
     </div>

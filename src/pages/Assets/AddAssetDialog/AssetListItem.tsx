@@ -1,12 +1,12 @@
 import React from 'react';
-import { Button, TableCell, TableRow, TableTextCell, TableTitleCell, styled } from '@foundation';
+import { Button, TableCell, TableRow, TableTitleCell, styled } from '@foundation';
 import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 
 const RowStyled = styled('div')(() => ({
   display: 'grid',
-  gridTemplateColumns: '1.7fr 1fr 130px',
+  gridTemplateColumns: '1fr 130px',
 }));
 
 interface IProps {
@@ -56,7 +56,6 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
       <TableRow>
         <RowStyled>
           <TableTitleCell title={currentAsset.name} subtitle={currentAsset.symbol} iconUrl={currentAsset.iconUrl} />
-          <TableTextCell text={currentAsset.rate} />
           <TableCell>
             {hoveredLine === currentAsset.id ? (
               <Button

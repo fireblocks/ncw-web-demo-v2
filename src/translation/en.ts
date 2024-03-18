@@ -23,6 +23,7 @@ export const translationToEnglish = {
       RECEIVED: 'Received',
       SENT: 'Sent',
       SUBMITTED: 'Submitted',
+      COPY_TX_ID: 'Copy tx ID',
       HEADERS: {
         ACTION: 'Action',
         AMOUNT: 'Amount',
