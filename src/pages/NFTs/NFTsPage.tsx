@@ -39,6 +39,7 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
   const { t } = useTranslation();
   const [mode, setMode] = React.useState<TViewMode>('CARD');
   const [query, setQuery] = React.useState('');
+  localStorage.setItem('VISITED_PAGE', '/nfts');
 
   if (NFTStore.isLoading) {
     return (

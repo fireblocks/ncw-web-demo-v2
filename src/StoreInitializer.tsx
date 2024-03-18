@@ -55,11 +55,11 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
       await NFTStore.init();
     };
 
-    if (fireblocksSDKStore.isMPCReady) {
+    if (fireblocksSDKStore.keysAreReady) {
       fetchAssets().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fireblocksSDKStore.isMPCReady]);
+  }, [fireblocksSDKStore.keysAreReady]);
 
   React.useEffect(
     () => () => {

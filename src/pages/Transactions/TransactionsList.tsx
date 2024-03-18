@@ -13,6 +13,8 @@ export const TransactionsList: React.FC = observer(function TransactionsList() {
   const transactionsStore = useTransactionsStore();
   const { t } = useTranslation();
 
+  const transactionsToShow = transactionsStore.transactionsSortedByCreationDate;
+
   return (
     <Table>
       <TableHead>
@@ -32,7 +34,7 @@ export const TransactionsList: React.FC = observer(function TransactionsList() {
             <FixedSizeList
               height={height}
               width={width}
-              itemCount={transactionsStore.transactionsSortedByCreationDate.length}
+              itemCount={transactionsToShow.length}
               itemSize={TABLE_ROW_HEIGHT}
             >
               {({ index, style }) => <TransactionsListItem index={index} style={style} />}

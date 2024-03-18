@@ -11,7 +11,7 @@ import {
 } from '@fireblocks/ncw-js-sdk';
 import { secureStorageProviderFactory } from '@services';
 import { ENV_CONFIG } from 'env_config';
-import { action, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
 export class FireblocksSDKStore {
@@ -58,6 +58,7 @@ export class FireblocksSDKStore {
 
     await this.sdkInstance.dispose();
     this.setSDKInstance(null);
+    this.setKeysStatus(null);
     this.setSDKStatus('sdk_not_ready');
   }
 
@@ -239,5 +240,14 @@ export class FireblocksSDKStore {
   @action
   private setUnsubscribeTransactionsPolling(callBack: () => void) {
     this._unsubscribeTransactionsPolling = callBack;
+  }
+
+  @computed
+  public get keysAreReady(): boolean {
+    if (this.keysStatus) {
+      return Object.values(this.keysStatus).every((key) => key.keyStatus === 'READY');
+    }
+
+    return false;
   }
 }

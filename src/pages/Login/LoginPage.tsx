@@ -3,17 +3,15 @@ import { Typography, styled } from '@foundation';
 import IconAssets from '@icons/login_assets.svg';
 import IconBG from '@icons/login_background.svg';
 import IconLogo from '@icons/logo.svg';
-import { useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { redirect } from 'react-router-dom';
 import { Actions } from './Actions';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-  paddingTop: theme.spacing(15),
+  paddingTop: theme.spacing(10),
   width: '90%',
   margin: '0 auto',
 }));
@@ -100,11 +98,6 @@ const ActionsContentStyled = styled('div')(() => ({
 
 export const LoginPage: React.FC = observer(function LoginPage() {
   const { t } = useTranslation();
-  const userStore = useUserStore();
-
-  if (userStore.accessToken) {
-    redirect('/assets');
-  }
 
   return (
     <RootStyled>

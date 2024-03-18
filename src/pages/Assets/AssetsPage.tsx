@@ -20,6 +20,7 @@ const HeadingStyled = styled('div')(({ theme }) => ({
 export const AssetsPage: React.FC = observer(function AssetsPage() {
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
+  localStorage.setItem('VISITED_PAGE', '/assets');
 
   if (assetsStore.isLoading) {
     return (

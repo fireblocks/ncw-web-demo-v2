@@ -16,6 +16,7 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
   const deviceStore = useDeviceStore();
   const accountsStore = useAccountsStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
+  localStorage.setItem('VISITED_PAGE', '/settings');
 
   const renderMPCKeysSection = () => {
     if (!fireblocksSDKStore.sdkInstance) {

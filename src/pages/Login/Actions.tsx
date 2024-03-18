@@ -6,7 +6,6 @@ import IconKey from '@icons/key.svg';
 import { useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { redirect } from 'react-router-dom';
 import { ActionPlate } from './ActionPlate';
 
 const RootStyled = styled('div')(({ theme }) => ({
@@ -21,8 +20,6 @@ export const Actions: React.FC = observer(function Actions() {
   const fireblocksSDKStore = useFireblocksSDKStore();
   const { t } = useTranslation();
 
-  const canShowDashboard = fireblocksSDKStore.isMPCReady;
-
   const working = userStore.loggedUser && fireblocksSDKStore.isMPCGenerating;
 
   const needToGenerateKeys =
@@ -30,10 +27,6 @@ export const Actions: React.FC = observer(function Actions() {
     fireblocksSDKStore.sdkInstance &&
     !fireblocksSDKStore.isMPCGenerating &&
     !fireblocksSDKStore.isMPCReady;
-
-  if (canShowDashboard) {
-    redirect('/assets');
-  }
 
   if (working) {
     return (
