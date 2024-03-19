@@ -31,7 +31,7 @@ const theme: ThemeOptions = {
       lineHeight: 1,
     },
     body1: {
-      fontSize: 13,
+      fontSize: 14,
       lineHeight: '24px',
       fontWeight: 500,
     },

@@ -16,6 +16,4 @@ interface IProps {
   style?: React.CSSProperties;
 }
 
-export const TableRow: React.FC<IProps> = ({ children, style }) => {
-  return <RootStyled style={style}>{children}</RootStyled>;
-};
+export const TableRow: React.FC<IProps> = ({ children, style }) => <RootStyled style={style}>{children}</RootStyled>;

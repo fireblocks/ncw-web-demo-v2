@@ -13,6 +13,8 @@ export const translationToEnglish = {
     LOGIN: 'Log in',
   },
   TRANSACTIONS: {
+    EMPTY_PAGE_TITLE: 'You don’t have transactions',
+    EMPTY_PAGE_DESCRIPTION: 'In order to use the platform and see data of this and that please add an asset',
     TITLE: 'Transactions history',
     TOTAL_TRANSACTIONS_AMOUNT: 'Total transactions amount',
     COMPLETED: 'Completed',
@@ -68,6 +70,8 @@ export const translationToEnglish = {
     },
   },
   ASSETS: {
+    EMPTY_PAGE_TITLE: 'Welcome! add your first asset',
+    EMPTY_PAGE_DESCRIPTION: 'In order to use the platform and see data of this and that please add an asset',
     TITLE: 'My Assets',
     CURRENT_BALANCE: 'Current balance',
     ADD_ASSET: 'Add asset',
@@ -135,6 +139,8 @@ export const translationToEnglish = {
     },
   },
   NFT: {
+    EMPTY_PAGE_TITLE: 'You don’t have NFTs',
+    EMPTY_PAGE_DESCRIPTION: 'In order to use the platform and see data of this and that please add an asset',
     TITLE: 'My NFTs',
     ITEMS: 'NFT Items',
     COLLECTIONS: 'NFT Collections',

@@ -31,7 +31,7 @@ export const Actions: React.FC = observer(function Actions() {
   if (working) {
     return (
       <RootStyled>
-        <Progress size="large" />
+        <Progress size="medium" />
       </RootStyled>
     );
   }

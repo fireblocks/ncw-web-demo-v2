@@ -1,5 +1,5 @@
 export { styled } from '@mui/material/styles';
-export { CssBaseline, Typography, Button, MenuItem, useTheme, Tooltip } from '@mui/material';
+export { CssBaseline, Typography, Button, MenuItem, useTheme, Tooltip, Skeleton } from '@mui/material';
 export * from './theme';
 export * from './table/Table';
 export * from './table/TableHead';
@@ -17,7 +17,7 @@ export * from './ModeSwitcher';
 export * from './ContentSection';
 export * from './Dialog';
 export * from './IconButton';
-export * from './Skeleton';
+export * from './LoadingPage';
 export * from './ActionButton';
 export * from './DropDownMenu';
 export * from './CopyText';

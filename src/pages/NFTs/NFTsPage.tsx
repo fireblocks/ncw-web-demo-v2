@@ -4,17 +4,17 @@ import {
   ModeSwitcher,
   Progress,
   SearchInput,
-  Skeleton,
   TViewMode,
-  Table,
   Typography,
   styled,
+  LoadingPage,
 } from '@foundation';
 import IconRefresh from '@icons/refresh.svg';
 import { NFTTokenStore, useNFTStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { ActionsBoxWrapperStyled, ActionsWrapperStyled, SearchWrapperStyled } from '../common/ActionsBox';
+import { EmptyPage } from '../common/EmptyPage';
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { NFTCards } from './Cards/NFTCards';
 import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
@@ -64,63 +64,69 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
   };
 
   if (NFTStore.isLoading) {
-    return (
-      <Table>
-        <Skeleton mode="CARDS" />
-      </Table>
-    );
+    return <LoadingPage />;
   }
 
   return (
     <RootStyled>
-      <HeadingStyled>
-        <Typography variant="h5" color="text.primary">
-          {t('NFT.TITLE')}
-        </Typography>
-        <AmountsStyled>
-          <HeadingAmount title={t('NFT.ITEMS')} titleColor="text.secondary" value={NFTStore.tokens.length} />
-          <HeadingAmount title={t('NFT.COLLECTIONS')} titleColor="text.secondary" value={NFTStore.collections.length} />
-        </AmountsStyled>
-      </HeadingStyled>
-      <ActionsBoxWrapperStyled>
-        <SearchWrapperStyled>
-          <SearchInput query={query} setQuery={setQuery} placeholder={t('NFT.SEARCH')} />
-        </SearchWrapperStyled>
-        <ActionsWrapperStyled>
-          <ModeAndGroupingWrapperStyled>
-            <ModeSwitcher value={mode} onChange={onSetMode} />
-          </ModeAndGroupingWrapperStyled>
-          <IconButton
-            disabled={NFTStore.isRefreshingGallery}
-            tooltip={t('NFT.REFRESH_GALLERY')}
-            onClick={() => {
-              NFTStore.getTokens().catch(() => {});
-            }}
-          >
-            {NFTStore.isRefreshingGallery ? <Progress size="small" /> : <img src={IconRefresh} />}
-          </IconButton>
-        </ActionsWrapperStyled>
-      </ActionsBoxWrapperStyled>
-      {mode === 'TABLE' ? (
-        <NFTsList
-          onNewTransactionDialogOpen={onNewTransactionDialogOpen}
-          selectedTokenId={selectedTokenId}
-          setSelectedTokenId={setSelectedTokenId}
-          query={query}
-        />
+      {NFTStore.tokens.length === 0 && !NFTStore.isLoading ? (
+        <EmptyPage page="NFT" />
       ) : (
-        <NFTCards
-          onNewTransactionDialogOpen={onNewTransactionDialogOpen}
-          setSelectedTokenId={setSelectedTokenId}
-          query={query}
-        />
-      )}
+        <>
+          <HeadingStyled>
+            <Typography variant="h5" color="text.primary">
+              {t('NFT.TITLE')}
+            </Typography>
+            <AmountsStyled>
+              <HeadingAmount title={t('NFT.ITEMS')} titleColor="text.secondary" value={NFTStore.tokens.length} />
+              <HeadingAmount
+                title={t('NFT.COLLECTIONS')}
+                titleColor="text.secondary"
+                value={NFTStore.collections.length}
+              />
+            </AmountsStyled>
+          </HeadingStyled>
+          <ActionsBoxWrapperStyled>
+            <SearchWrapperStyled>
+              <SearchInput query={query} setQuery={setQuery} placeholder={t('NFT.SEARCH')} />
+            </SearchWrapperStyled>
+            <ActionsWrapperStyled>
+              <ModeAndGroupingWrapperStyled>
+                <ModeSwitcher value={mode} onChange={onSetMode} />
+              </ModeAndGroupingWrapperStyled>
+              <IconButton
+                disabled={NFTStore.isRefreshingGallery}
+                tooltip={t('NFT.REFRESH_GALLERY')}
+                onClick={() => {
+                  NFTStore.getTokens().catch(() => {});
+                }}
+              >
+                {NFTStore.isRefreshingGallery ? <Progress size="small" /> : <img src={IconRefresh} />}
+              </IconButton>
+            </ActionsWrapperStyled>
+          </ActionsBoxWrapperStyled>
+          {mode === 'TABLE' ? (
+            <NFTsList
+              onNewTransactionDialogOpen={onNewTransactionDialogOpen}
+              selectedTokenId={selectedTokenId}
+              setSelectedTokenId={setSelectedTokenId}
+              query={query}
+            />
+          ) : (
+            <NFTCards
+              onNewTransactionDialogOpen={onNewTransactionDialogOpen}
+              setSelectedTokenId={setSelectedTokenId}
+              query={query}
+            />
+          )}
 
-      <NewTransactionDialog
-        isOpen={isNewTransactionDialogOpen}
-        onClose={onNewTransactionDialogClose}
-        token={selectedTokenStore}
-      />
+          <NewTransactionDialog
+            isOpen={isNewTransactionDialogOpen}
+            onClose={onNewTransactionDialogClose}
+            token={selectedTokenStore}
+          />
+        </>
+      )}
     </RootStyled>
   );
 });

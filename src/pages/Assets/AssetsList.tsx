@@ -17,33 +17,27 @@ import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import { ActionsBoxWrapperStyled, ActionsWrapperStyled, SearchWrapperStyled } from '../common/ActionsBox';
-import { AddAssetDialog } from './AddAssetDialog/AddAssetDialog';
 import { AssetsListItem, RowStyled } from './AssetsListItem';
 import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
 
 const TABLE_ROW_HEIGHT = 106;
 
-export const AssetsList: React.FC = observer(function AssetsList() {
+interface IProps {
+  onAddAssetDialogOpen: () => void;
+}
+
+export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAddAssetDialogOpen }) {
   const assetsStore = useAssetsStore();
   const { t } = useTranslation();
 
   const [selectedAssetId, setSelectedAssetId] = React.useState<string | null>(null);
   const [selectedAssetStore, setSelectedAssetStore] = React.useState<AssetStore | undefined>(undefined);
 
-  const [isNewTransactionDialogOpen, setIsNewTransactionDialogOpen] = React.useState(false);
   const [transactionDialogMode, setTransactionDialogMode] = React.useState<TNewTransactionMode>(null);
 
   const [query, setQuery] = React.useState('');
 
-  const [isAddAssetDialogOpen, setIsAddAssetDialogOpen] = React.useState(false);
-
-  const onAddAssetDialogOpen = () => {
-    setIsAddAssetDialogOpen(true);
-  };
-
-  const onAddAssetDialogClose = () => {
-    setIsAddAssetDialogOpen(false);
-  };
+  const [isNewTransactionDialogOpen, setIsNewTransactionDialogOpen] = React.useState(false);
 
   const filteredAssets = assetsStore.myAssetsSortedByBalanceInUSD.filter(
     (a) => a.name.toLowerCase().includes(query.toLowerCase()) || a.symbol.toLowerCase().includes(query.toLowerCase()),
@@ -121,8 +115,6 @@ export const AssetsList: React.FC = observer(function AssetsList() {
           asset={selectedAssetStore}
         />
       </Table>
-
-      <AddAssetDialog isOpen={isAddAssetDialogOpen} onClose={onAddAssetDialogClose} />
     </>
   );
 });

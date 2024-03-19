@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, SearchInput, Skeleton, Table, TableBody, styled } from '@foundation';
+import { Dialog, SearchInput, Table, TableBody, styled, LoadingPage } from '@foundation';
 import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +48,7 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
     >
       <div>
         {assetsStore.isLoading ? (
-          <Skeleton mode="TABLE" />
+          <LoadingPage />
         ) : (
           <>
             <SearchWrapperStyled>

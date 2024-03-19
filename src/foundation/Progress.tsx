@@ -2,8 +2,8 @@ import CircularProgress from '@mui/material/CircularProgress/CircularProgress';
 
 const sizeMap = {
   small: 14,
-  medium: 24,
-  large: 40,
+  medium: 40,
+  large: 90,
 };
 
 interface IProps {
