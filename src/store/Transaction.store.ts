@@ -125,9 +125,10 @@ export class TransactionStore {
   public updateStatus(status: TTransactionStatus) {
     this.status = status;
     if (this.isNFT) {
-      this._rootStore.nftStore.getTokens();
+      this._rootStore.nftStore.getTokens().catch(() => {});
+    } else {
+      this._rootStore.assetsStore.refreshBalances();
     }
-    this._rootStore.assetsStore.refreshBalances();
   }
 
   @action
