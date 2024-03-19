@@ -34,6 +34,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   const [address, setAddress] = React.useState('');
   const [feeLevel, setFeeLevel] = React.useState('LOW');
   const [txType, setTxType] = React.useState('TRANSFER');
+  const [isCreatingTransfer, setIsCreatingTransfer] = React.useState(false);
 
   const clearState = () => {
     setAmount('');
@@ -42,9 +43,10 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
     setTxType('TRANSFER');
   };
 
-  const shouldDisableTransaction = txType === 'TRANSFER' && mode === 'SEND' && (!amount || !address);
+  const shouldDisableAction = (txType === 'TRANSFER' && mode === 'SEND' && (!amount || !address)) || isCreatingTransfer;
 
   const createNewTransaction = () => {
+    setIsCreatingTransfer(true);
     if (txType === 'TRANSFER') {
       transactionsStore
         .createTransaction({
@@ -59,6 +61,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
         .then(() => {
           onClose();
           clearState();
+          setIsCreatingTransfer(false);
         })
         .catch(() => {});
     } else {
@@ -67,6 +70,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
         .then(() => {
           onClose();
           clearState();
+          setIsCreatingTransfer(false);
         })
         .catch(() => {});
     }
@@ -96,7 +100,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       isOpen={isOpen}
       onClose={onClose}
       doAction={mode === 'SEND' ? createNewTransaction : undefined}
-      disableAction={shouldDisableTransaction}
+      disableAction={shouldDisableAction}
       actionCaption={t('ASSETS.NEW_TRANSACTION_DIALOG.ACTION')}
     >
       <RootStyled>
