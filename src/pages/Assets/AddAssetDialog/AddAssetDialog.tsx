@@ -44,7 +44,7 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
       description={t('ASSETS.ADD_DIALOG.DESCRIPTION')}
       isOpen={isOpen}
       onClose={handleDialogClose}
-      size='small'
+      size="small"
     >
       <div>
         {assetsStore.isLoading ? (

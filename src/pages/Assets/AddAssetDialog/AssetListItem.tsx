@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, TableCell, TableRow, TableTitleCell, styled } from '@foundation';
+import { Button, Progress, TableCell, TableRow, TableTitleCell, styled } from '@foundation';
 import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -25,20 +25,20 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
   const [hoveredLine, setHoveredLine] = React.useState<string | null>(null);
-  const [isAddingDisabled, setIsAddingDisabled] = React.useState(false);
+  const [isAddingAsset, setIsAddingAsset] = React.useState(false);
 
   const currentAsset = filteredAssets[index];
 
   const handleAddAsset = (assetId: string) => {
-    setIsAddingDisabled(true);
+    setIsAddingAsset(true);
     assetsStore
       .addAsset(assetId)
       .then(() => {
         onDialogClose();
+        setIsAddingAsset(false);
       })
-      .catch(() => {})
-      .finally(() => {
-        setIsAddingDisabled(false);
+      .catch(() => {
+        setIsAddingAsset(false);
       });
   };
 
@@ -58,15 +58,20 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
           <TableTitleCell title={currentAsset.name} subtitle={currentAsset.symbol} iconUrl={currentAsset.iconUrl} />
           <TableCell>
             {hoveredLine === currentAsset.id ? (
-              <Button
-                disabled={isAddingDisabled}
-                onClick={() => {
-                  handleAddAsset(currentAsset.id);
-                }}
-                variant="contained"
-              >
-                {t('ASSETS.ADD_ASSET')}
-              </Button>
+              <>
+                {isAddingAsset ? (
+                  <Progress size="small" />
+                ) : (
+                  <Button
+                    onClick={() => {
+                      handleAddAsset(currentAsset.id);
+                    }}
+                    variant="contained"
+                  >
+                    {t('ASSETS.ADD_ASSET')}
+                  </Button>
+                )}
+              </>
             ) : null}
           </TableCell>
         </RowStyled>
