@@ -92,6 +92,8 @@ export const translationToEnglish = {
       TITLE: 'Add an Asset',
       DESCRIPTION: 'Select an asset from the list or search for a new asset',
       SEARCH: 'SEARCH FOR AN ASSET',
+      ERROR_MESSAGE: 'Asset not added',
+      SUCCESS_MESSAGE: 'Asset added successfully',
     },
     NEW_TRANSACTION_DIALOG: {
       RECEIVE_TITLE: 'Receive Asset',
@@ -99,6 +101,8 @@ export const translationToEnglish = {
       DESCRIPTION: 'Some dialog explanation',
       AMOUNT: 'Select amount of',
       RECEIVING_ADDRESS: 'Receiving address',
+      ERROR_MESSAGE: 'Transaction failed',
+      SUCCESS_MESSAGE: 'Transaction queued successfully',
       FEE_LEVEL: {
         LOW: 'Low',
         MEDIUM: 'Medium',
@@ -142,6 +146,8 @@ export const translationToEnglish = {
       DESCRIPTION: 'Some dialog explanation',
       ACTION: 'Send NFT',
       RECEIVING_ADDRESS: 'Receiving address',
+      ERROR_MESSAGE: 'Transaction failed',
+      SUCCESS_MESSAGE: 'Transaction queued successfully',
     },
     TABLE: {
       HEADERS: {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Progress, TableCell, TableRow, TableTitleCell, styled } from '@foundation';
 import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 
 const RowStyled = styled('div')(() => ({
@@ -24,6 +25,7 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
 }) {
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
+  const { enqueueSnackbar } = useSnackbar();
   const [hoveredLine, setHoveredLine] = React.useState<string | null>(null);
   const [isAddingAsset, setIsAddingAsset] = React.useState(false);
 
@@ -36,9 +38,11 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
       .then(() => {
         onDialogClose();
         setIsAddingAsset(false);
+        enqueueSnackbar(t('ASSETS.ADD_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
       })
       .catch(() => {
         setIsAddingAsset(false);
+        enqueueSnackbar(t('ASSETS.ADD_DIALOG.ERROR_MESSAGE'), { variant: 'error' });
       });
   };
 

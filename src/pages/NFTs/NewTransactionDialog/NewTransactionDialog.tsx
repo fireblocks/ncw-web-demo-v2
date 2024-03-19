@@ -3,6 +3,7 @@ import { TFeeLevel } from '@api';
 import { Dialog, TextInput, styled } from '@foundation';
 import { NFTTokenStore, useAccountsStore, useDeviceStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { FeeLevel } from '../../common/FeeLevel';
 import { SelectedToken } from './SelectedToken';
@@ -26,9 +27,11 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   const transactionsStore = useTransactionsStore();
   const deviceStore = useDeviceStore();
   const accountsStore = useAccountsStore();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [address, setAddress] = React.useState('');
   const [feeLevel, setFeeLevel] = React.useState('LOW');
+  const [isCreatingTransfer, setIsCreatingTransfer] = React.useState(false);
 
   const clearState = () => {
     setAddress('');
@@ -36,6 +39,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   };
 
   const createNewTransaction = () => {
+    setIsCreatingTransfer(true);
     transactionsStore
       .createTransaction({
         note: `API Transaction by ${deviceStore.deviceId}`,
@@ -49,8 +53,13 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       .then(() => {
         onClose();
         clearState();
+        setIsCreatingTransfer(false);
+        enqueueSnackbar(t('NFT.NEW_TRANSACTION_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
       })
-      .catch(() => {});
+      .catch(() => {
+        setIsCreatingTransfer(false);
+        enqueueSnackbar(t('NFT.NEW_TRANSACTION_DIALOG.ERROR_MESSAGE'), { variant: 'error' });
+      });
   };
 
   if (!token) {
@@ -66,7 +75,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       onClose={onClose}
       doAction={createNewTransaction}
       actionCaption={t('NFT.NEW_TRANSACTION_DIALOG.ACTION')}
-      disableAction={!address}
+      disableAction={!address || isCreatingTransfer}
     >
       <RootStyled>
         <SelectedToken token={token} />

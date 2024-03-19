@@ -1,10 +1,11 @@
-import { CssBaseline, webDemoTheme } from '@foundation';
+import { CssBaseline, webDemoTheme, Notification } from '@foundation';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { RootStore } from '@store';
 import i18n from '@translation';
 import { App } from 'App';
 import { configure } from 'mobx';
 import { Provider } from 'mobx-react';
+import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -20,7 +21,20 @@ export const Initializer: React.FC = () => {
         <I18nextProvider i18n={i18n}>
           <Provider rootStore={rootStore}>
             <ThemeProvider theme={webDemoTheme}>
-              <App />
+              <SnackbarProvider
+                maxSnack={3}
+                autoHideDuration={5000}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+                Components={{
+                  error: Notification,
+                  success: Notification,
+                }}
+              >
+                <App />
+              </SnackbarProvider>
             </ThemeProvider>
           </Provider>
         </I18nextProvider>

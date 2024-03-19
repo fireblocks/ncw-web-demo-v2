@@ -3,6 +3,7 @@ import { TNewTransactionMode, TFeeLevel } from '@api';
 import { AddressField, AssetAmountInput, Dialog, QRField, TextInput, styled } from '@foundation';
 import { AssetStore, localizedCurrencyView, useAccountsStore, useDeviceStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { FeeLevel } from '../../common/FeeLevel';
 import { SelectedAsset } from './SelectedAsset';
@@ -29,6 +30,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   const transactionsStore = useTransactionsStore();
   const deviceStore = useDeviceStore();
   const accountsStore = useAccountsStore();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [amount, setAmount] = React.useState('');
   const [address, setAddress] = React.useState('');
@@ -62,17 +64,25 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
           onClose();
           clearState();
           setIsCreatingTransfer(false);
+          enqueueSnackbar(t('ASSETS.NEW_TRANSACTION_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
         })
-        .catch(() => {});
+        .catch(() => {
+          setIsCreatingTransfer(false);
+          enqueueSnackbar(t('ASSETS.NEW_TRANSACTION_DIALOG.ERROR_MESSAGE'), { variant: 'error' });
+        });
     } else {
       transactionsStore
         .createTransaction()
         .then(() => {
           onClose();
-          clearState();
           setIsCreatingTransfer(false);
+          clearState();
+          enqueueSnackbar(t('ASSETS.NEW_TRANSACTION_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
         })
-        .catch(() => {});
+        .catch(() => {
+          setIsCreatingTransfer(false);
+          enqueueSnackbar(t('ASSETS.NEW_TRANSACTION_DIALOG.ERROR_MESSAGE'), { variant: 'error' });
+        });
     }
   };
 

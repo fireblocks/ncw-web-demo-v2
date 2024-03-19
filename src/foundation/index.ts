@@ -28,3 +28,4 @@ export * from './form/QRField';
 export * from './form/AddressField';
 export * from './form/SearchInput';
 export * from './Progress';
+export * from './Notification';
