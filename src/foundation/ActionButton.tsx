@@ -27,15 +27,16 @@ const ButtonDarkStyled = styled(MUIButton)(({ theme }) => ({
 interface IProps {
   onClick?: () => void;
   caption: string;
+  disabled?: boolean;
   icon?: string;
   isDialog?: boolean;
 }
 
-export const ActionButton: React.FC<IProps> = ({ onClick, caption, icon, isDialog }) => {
+export const ActionButton: React.FC<IProps> = ({ onClick, disabled, caption, icon, isDialog }) => {
   const Button = isDialog ? ButtonDarkStyled : ButtonStyled;
 
   return (
-    <Button size="large" variant="contained" onClick={onClick}>
+    <Button disabled={disabled} size="large" variant="contained" onClick={onClick}>
       {icon ? <img src={icon} /> : null}
       {caption}
     </Button>

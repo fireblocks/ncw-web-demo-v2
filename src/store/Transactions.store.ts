@@ -177,17 +177,21 @@ export class TransactionsStore {
 
   @computed
   public get completedAmount(): number {
-    return this.transactionsSortedByCreationDate.filter((tx) => tx.status === 'COMPLETED').length;
+    return this.transactions.filter((tx) => tx.status === 'COMPLETED').length;
   }
 
   @computed
   public get failedOrCanceledAmount(): number {
-    return this.transactionsSortedByCreationDate.filter((tx) => tx.status === 'FAILED' || tx.status === 'CANCELLED')
-      .length;
+    return this.transactions.filter((tx) => tx.status === 'FAILED' || tx.status === 'CANCELLED').length;
+  }
+
+  @computed
+  public get hasPendingSignature(): boolean {
+    return !!this.transactions.filter((tx) => tx.status === 'PENDING_SIGNATURE').length;
   }
 
   @computed
   public get inProgressAmount(): number {
-    return this.transactionsSortedByCreationDate.length - this.completedAmount - this.failedOrCanceledAmount;
+    return this.transactions.length - this.completedAmount - this.failedOrCanceledAmount;
   }
 }

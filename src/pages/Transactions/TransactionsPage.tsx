@@ -20,7 +20,7 @@ const HeadingStyled = styled('div')(({ theme }) => ({
 export const TransactionsPage: React.FC = observer(function TransactionsPage() {
   const { t } = useTranslation();
   const transactionsStore = useTransactionsStore();
-  localStorage.setItem('VISITED_PAGE', '/transactions');
+  localStorage.setItem('VISITED_PAGE', location.pathname);
 
   return (
     <RootStyled>

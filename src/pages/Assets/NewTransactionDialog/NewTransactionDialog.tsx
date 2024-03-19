@@ -42,6 +42,8 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
     setTxType('TRANSFER');
   };
 
+  const shouldDisableTransaction = txType === 'TRANSFER' && mode === 'SEND' && (!amount || !address);
+
   const createNewTransaction = () => {
     if (txType === 'TRANSFER') {
       transactionsStore
@@ -94,6 +96,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       isOpen={isOpen}
       onClose={onClose}
       doAction={mode === 'SEND' ? createNewTransaction : undefined}
+      disableAction={shouldDisableTransaction}
       actionCaption={t('ASSETS.NEW_TRANSACTION_DIALOG.ACTION')}
     >
       <RootStyled>

@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  CircularProgress,
   IconButton,
   ModeSwitcher,
+  Progress,
   SearchInput,
   Skeleton,
   TViewMode,
@@ -17,8 +17,8 @@ import { useTranslation } from 'react-i18next';
 import { ActionsBoxWrapperStyled, ActionsWrapperStyled, SearchWrapperStyled } from '../common/ActionsBox';
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { NFTCards } from './Cards/NFTCards';
-import { NFTsList } from './Table/NFTsList';
 import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
+import { NFTsList } from './Table/NFTsList';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -36,15 +36,21 @@ const ModeAndGroupingWrapperStyled = styled('div')(({ theme }) => ({
 }));
 
 export const NFTsPage: React.FC = observer(function NFTsPage() {
+  const preselectedViewMode = localStorage.getItem('NFT_VIEW_MODE') ?? 'CARD';
   const NFTStore = useNFTStore();
   const { t } = useTranslation();
-  const [mode, setMode] = React.useState<TViewMode>('CARD');
+  const [mode, setMode] = React.useState<TViewMode>(preselectedViewMode as TViewMode);
   const [query, setQuery] = React.useState('');
   const [selectedTokenId, setSelectedTokenId] = React.useState<string | null>(null);
   const [selectedTokenStore, setSelectedTokenStore] = React.useState<NFTTokenStore | undefined>(undefined);
   const [isNewTransactionDialogOpen, setIsNewTransactionDialogOpen] = React.useState(false);
 
-  localStorage.setItem('VISITED_PAGE', '/nfts');
+  localStorage.setItem('VISITED_PAGE', location.pathname);
+
+  const onSetMode = (viewMode: TViewMode) => {
+    setMode(viewMode);
+    localStorage.setItem('NFT_VIEW_MODE', viewMode);
+  };
 
   const onNewTransactionDialogClose = () => {
     setIsNewTransactionDialogOpen(false);
@@ -82,26 +88,16 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
         </SearchWrapperStyled>
         <ActionsWrapperStyled>
           <ModeAndGroupingWrapperStyled>
-            <ModeSwitcher value={mode} onChange={setMode} />
+            <ModeSwitcher value={mode} onChange={onSetMode} />
           </ModeAndGroupingWrapperStyled>
           <IconButton
             disabled={NFTStore.isRefreshingGallery}
             tooltip={t('NFT.REFRESH_GALLERY')}
             onClick={() => {
-              NFTStore.getTokens();
+              NFTStore.getTokens().catch(() => {});
             }}
           >
-            {NFTStore.isRefreshingGallery ? (
-              <CircularProgress
-                sx={{
-                  color: (theme) => theme.palette.text.primary,
-                }}
-                size={14}
-                thickness={6}
-              />
-            ) : (
-              <img src={IconRefresh} />
-            )}
+            {NFTStore.isRefreshingGallery ? <Progress size="small" /> : <img src={IconRefresh} />}
           </IconButton>
         </ActionsWrapperStyled>
       </ActionsBoxWrapperStyled>

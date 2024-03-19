@@ -1,5 +1,5 @@
 import React from 'react';
-import { CircularProgress, styled } from '@foundation';
+import { Progress, styled } from '@foundation';
 import IconApple from '@icons/apple.svg';
 import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
@@ -31,15 +31,7 @@ export const Actions: React.FC = observer(function Actions() {
   if (working) {
     return (
       <RootStyled>
-        <div>
-          <CircularProgress
-            sx={{
-              color: (theme) => theme.palette.text.primary,
-            }}
-            size={40}
-            thickness={5}
-          />
-        </div>
+        <Progress size="large" />
       </RootStyled>
     );
   }

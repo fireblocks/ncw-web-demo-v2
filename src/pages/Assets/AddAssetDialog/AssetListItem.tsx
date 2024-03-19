@@ -25,12 +25,12 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
   const [hoveredLine, setHoveredLine] = React.useState<string | null>(null);
-  const [isAddDisabled, setIsAddDisabled] = React.useState(false);
+  const [isAddingDisabled, setIsAddingDisabled] = React.useState(false);
 
   const currentAsset = filteredAssets[index];
 
   const handleAddAsset = (assetId: string) => {
-    setIsAddDisabled(true);
+    setIsAddingDisabled(true);
     assetsStore
       .addAsset(assetId)
       .then(() => {
@@ -38,7 +38,7 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
       })
       .catch(() => {})
       .finally(() => {
-        setIsAddDisabled(false);
+        setIsAddingDisabled(false);
       });
   };
 
@@ -59,7 +59,7 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
           <TableCell>
             {hoveredLine === currentAsset.id ? (
               <Button
-                disabled={isAddDisabled}
+                disabled={isAddingDisabled}
                 onClick={() => {
                   handleAddAsset(currentAsset.id);
                 }}

@@ -1,9 +1,9 @@
 import React from 'react';
-import { DropDownMenu, IconButton, MenuItem, Typography, styled } from '@foundation';
+import { DropDownMenu, IconButton, MenuItem, Tooltip, Typography, styled } from '@foundation';
 import IconArrowLeft from '@icons/arrow-left.svg';
 import IconLogo from '@icons/logo.svg';
 import IconSettings from '@icons/settings.svg';
-import { useUserStore } from '@store';
+import { useTransactionsStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, redirect, useLocation, useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ const RootStyled = styled('div')(({ theme }) => ({
 }));
 
 const NavLinkStyled = styled(NavLink)(({ theme }) => ({
+  position: 'relative',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -33,8 +34,18 @@ const NavLinkStyled = styled(NavLink)(({ theme }) => ({
   },
 }));
 
+const NotificationBadgeStyled = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  width: 8,
+  height: 8,
+  top: 6,
+  right: -14,
+  backgroundColor: theme.palette.error.main,
+  borderRadius: '50%',
+}));
+
 const LinkMarkerStyled = styled('div')(({ theme }) => ({
-  width: 28,
+  width: '50%',
   height: 2,
   backgroundColor: theme.palette.text.primary,
 }));
@@ -63,6 +74,7 @@ export const Header: React.FC = observer(function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const userStore = useUserStore();
+  const transactionsStore = useTransactionsStore();
 
   const [userMenuAnchorEl, setUserMenuAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -71,6 +83,7 @@ export const Header: React.FC = observer(function Header() {
   const isTransactionsPage = location.pathname === '/transactions';
   const isNftsPage = location.pathname === '/nfts';
   const isUserMenuOpen = Boolean(userMenuAnchorEl);
+  const showTransactionsNotification = transactionsStore.hasPendingSignature;
 
   const onOpenUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setUserMenuAnchorEl(event.currentTarget);
@@ -127,6 +140,11 @@ export const Header: React.FC = observer(function Header() {
                 {t('NAVIGATION.TRANSACTIONS')}
               </Typography>
               {isTransactionsPage && <LinkMarkerStyled />}
+              {showTransactionsNotification && (
+                <Tooltip title={t('NAVIGATION.TRANSACTIONS_NOTIFICATION')} arrow placement="right">
+                  <NotificationBadgeStyled />
+                </Tooltip>
+              )}
             </NavLinkStyled>
           </>
         )}

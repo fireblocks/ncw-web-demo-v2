@@ -53,6 +53,7 @@ interface IProps {
   description: string;
   isOpen: boolean;
   actionCaption?: string;
+  disableAction?: boolean;
   onClose: () => void;
   doAction?: () => void;
   children: JSX.Element;
@@ -67,6 +68,7 @@ export const Dialog: React.FC<IProps> = ({
   onClose,
   doAction,
   children,
+  disableAction,
   size = 'medium',
 }) => {
   let DialogComponent = null;
@@ -101,7 +103,7 @@ export const Dialog: React.FC<IProps> = ({
         <DialogContentStyled>{children}</DialogContentStyled>
         {doAction && actionCaption && (
           <DialogActionsStyled>
-            <ActionButton isDialog onClick={doAction} caption={actionCaption} />
+            <ActionButton disabled={disableAction} isDialog onClick={doAction} caption={actionCaption} />
           </DialogActionsStyled>
         )}
       </RootStyled>

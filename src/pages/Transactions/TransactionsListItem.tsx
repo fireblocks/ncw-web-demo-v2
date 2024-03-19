@@ -6,6 +6,7 @@ import {
   TableBalanceCell,
   TableCell,
   TableRow,
+  TableSignCell,
   TableStatusCell,
   TableTextCell,
   TableTitleCell,
@@ -18,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 
 export const RowStyled = styled('div')(() => ({
   display: 'grid',
-  gridTemplateColumns: '1.6fr 1fr 1fr 0.7fr 1fr 1fr 0.3fr',
+  gridTemplateColumns: '1.6fr 0.9fr 1fr 0.7fr 1fr 1fr 0.8fr',
 }));
 
 const ActionsStyled = styled('div')(() => ({
@@ -71,42 +72,34 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
             {transaction.destinationAddress ? <CopyText text={transaction.destinationAddress} /> : null}
           </TableCell>
           <TableCell>
-            <ActionsStyled
-              onClick={(e) => {
-                setSelectedTx(transaction);
-                onOpenTxMenuClick(e);
-              }}
-            >
-              <img src={IconDots} />
-            </ActionsStyled>
+            {transaction.status === 'PENDING_SIGNATURE' ? (
+              <TableSignCell
+                isSigning={transaction.isSigning}
+                onSign={() => {
+                  transaction.signTransaction();
+                }}
+                onCancel={() => {
+                  transaction.cancelTransaction();
+                }}
+              />
+            ) : (
+              <ActionsStyled
+                onClick={(e) => {
+                  setSelectedTx(transaction);
+                  onOpenTxMenuClick(e);
+                }}
+              >
+                <img src={IconDots} />
+              </ActionsStyled>
+            )}
           </TableCell>
         </RowStyled>
       </TableRow>
 
       <DropDownMenu anchorEl={txMenuAnchorEl} isOpen={isTxMenuOpen} onClose={onCloseTxMenuClick}>
         <MenuItem
-          disabled={!!selectedTx && (selectedTx.status !== 'PENDING_SIGNATURE' || selectedTx.isSigning)}
           onClick={() => {
-            selectedTx?.signTransaction();
-            onCloseTxMenuClick();
-          }}
-        >
-          {t('TRANSACTIONS.TABLE.SIGN')}
-        </MenuItem>
-
-        <MenuItem
-          disabled={!!selectedTx && selectedTx.cantBeCanceled}
-          onClick={() => {
-            selectedTx?.cancelTransaction();
-            onCloseTxMenuClick();
-          }}
-        >
-          {t('TRANSACTIONS.TABLE.CANCEL')}
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            navigator.clipboard.writeText(selectedTx?.id || '');
+            navigator.clipboard.writeText(selectedTx?.id || '').catch(() => {});
             onCloseTxMenuClick();
           }}
         >

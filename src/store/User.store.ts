@@ -106,7 +106,6 @@ export class UserStore {
     this.setAccessToken('');
     this.setUserId('');
     this.setError('');
-    localStorage.removeItem('VISITED_PAGE');
   }
 
   @computed

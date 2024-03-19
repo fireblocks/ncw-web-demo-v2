@@ -3,6 +3,7 @@ export const translationToEnglish = {
     ASSETS: 'Assets',
     NFTs: 'NFTs',
     TRANSACTIONS: 'Transactions',
+    TRANSACTIONS_NOTIFICATION: 'You need to sign a transaction',
   },
   PAGE_NAME: {
     ASSETS: 'Assets Page',
@@ -30,7 +31,7 @@ export const translationToEnglish = {
         FEE: 'Fee',
         STATUS: 'Status',
         DATE: 'Date',
-        ADDRESS: 'Address',
+        RECEIVING_ADDRESS: 'Receiving address',
         ACTIONS: 'Actions',
         OPERATION: 'Operation',
       },

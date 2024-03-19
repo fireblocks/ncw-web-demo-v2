@@ -2,8 +2,8 @@ import React from 'react';
 import { TNewTransactionMode } from '@api';
 import {
   ActionButton,
-  CircularProgress,
   IconButton,
+  Progress,
   SearchInput,
   Table,
   TableBody,
@@ -75,17 +75,7 @@ export const AssetsList: React.FC = observer(function AssetsList() {
               assetsStore.refreshBalances();
             }}
           >
-            {assetsStore.isGettingBalances ? (
-              <CircularProgress
-                sx={{
-                  color: (theme) => theme.palette.text.primary,
-                }}
-                size={14}
-                thickness={6}
-              />
-            ) : (
-              <img src={IconRefresh} />
-            )}
+            {assetsStore.isGettingBalances ? <Progress size="small" /> : <img src={IconRefresh} />}
           </IconButton>
         </ActionsWrapperStyled>
       </ActionsBoxWrapperStyled>

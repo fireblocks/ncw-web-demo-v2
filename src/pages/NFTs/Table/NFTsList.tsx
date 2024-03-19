@@ -26,7 +26,9 @@ export const NFTsList: React.FC<IProps> = observer(function NFTsList({
   const { t } = useTranslation();
 
   const filteredTokens = NFTStore.tokens.filter(
-    (t) => t.name.toLowerCase().includes(query.toLowerCase()) || t.tokenId.toLowerCase().includes(query.toLowerCase()),
+    (token) =>
+      token.name.toLowerCase().includes(query.toLowerCase()) ||
+      token.tokenId.toLowerCase().includes(query.toLowerCase()),
   );
 
   return (

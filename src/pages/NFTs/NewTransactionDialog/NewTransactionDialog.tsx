@@ -66,6 +66,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       onClose={onClose}
       doAction={createNewTransaction}
       actionCaption={t('NFT.NEW_TRANSACTION_DIALOG.ACTION')}
+      disableAction={!address}
     >
       <RootStyled>
         <SelectedToken token={token} />
