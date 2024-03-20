@@ -27,14 +27,15 @@ export const App: React.FC = observer(function App() {
   const userStore = useUserStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
+  const canShowDashboard = fireblocksSDKStore.keysAreReady && userStore.loggedUser;
 
   return (
     <RootStyled>
       <ContentStyled>
         {userStore.loggedUser && <StoreInitializer />}
-        {fireblocksSDKStore.keysAreReady && <Header />}
+        {canShowDashboard && <Header />}
         <Routes>
-          {fireblocksSDKStore.keysAreReady ? (
+          {canShowDashboard ? (
             <>
               <Route path="/assets" element={<AssetsPage />} />
               <Route path="/transactions" element={<TransactionsPage />} />
@@ -44,7 +45,7 @@ export const App: React.FC = observer(function App() {
             </>
           ) : (
             <>
-              <Route path="login" element={<LoginPage />} />
+              <Route path="/login" element={<LoginPage />} />
               <Route path="*" element={<Navigate to="/login" />} />
             </>
           )}
