@@ -1,10 +1,7 @@
 import React from 'react';
 import { styled } from '@foundation';
-import IconCloud from '@icons/cloud_upload.svg';
 import IconInfo from '@icons/info.svg';
 import IconKey from '@icons/key.svg';
-import IconNewDevice from '@icons/new_device.svg';
-import IconRecover from '@icons/recover.svg';
 import IconLogs from '@icons/share_logs.svg';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +23,7 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
 
   return (
     <RootStyled>
-      <ActionPlate
+      {/* <ActionPlate
         iconSrc={IconCloud}
         caption={t('SETTINGS.ITEMS.CREATE_A_KEY_BACKUP.TITLE')}
         description={t('SETTINGS.ITEMS.CREATE_A_KEY_BACKUP.DESCRIPTION')}
@@ -38,12 +35,26 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         caption={t('SETTINGS.ITEMS.RECOVER_WALLET.TITLE')}
         description={t('SETTINGS.ITEMS.RECOVER_WALLET.DESCRIPTION')}
         onClick={() => {}}
-      />
+      /> */}
 
       <ActionPlate
         iconSrc={IconKey}
         caption={t('SETTINGS.ITEMS.EXPORT_PRIVATE_KEY.TITLE')}
         description={t('SETTINGS.ITEMS.EXPORT_PRIVATE_KEY.DESCRIPTION')}
+        onClick={() => {}}
+      />
+
+      {/* <ActionPlate
+        iconSrc={IconNewDevice}
+        caption={t('SETTINGS.ITEMS.ADD_NEW_DEVICE.TITLE')}
+        description={t('SETTINGS.ITEMS.ADD_NEW_DEVICE.DESCRIPTION')}
+        onClick={() => {}}
+      /> */}
+
+      <ActionPlate
+        iconSrc={IconLogs}
+        caption={t('SETTINGS.ITEMS.SHARE_LOGS.TITLE')}
+        description={t('SETTINGS.ITEMS.SHARE_LOGS.DESCRIPTION')}
         onClick={() => {}}
       />
 
@@ -54,20 +65,6 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         onClick={() => {
           setIsAdvancedInfoDialogOpen(true);
         }}
-      />
-
-      <ActionPlate
-        iconSrc={IconNewDevice}
-        caption={t('SETTINGS.ITEMS.ADD_NEW_DEVICE.TITLE')}
-        description={t('SETTINGS.ITEMS.ADD_NEW_DEVICE.DESCRIPTION')}
-        onClick={() => {}}
-      />
-
-      <ActionPlate
-        iconSrc={IconLogs}
-        caption={t('SETTINGS.ITEMS.SHARE_LOGS.TITLE')}
-        description={t('SETTINGS.ITEMS.SHARE_LOGS.DESCRIPTION')}
-        onClick={() => {}}
       />
 
       <AdvancedInfoDialog

@@ -7,7 +7,7 @@ import { CustomContentProps } from 'notistack';
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(1.5, 2),
+  padding: theme.spacing(3, 4),
   borderRadius: 8,
   overflow: 'hidden',
   gap: theme.spacing(1),

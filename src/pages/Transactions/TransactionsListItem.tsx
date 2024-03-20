@@ -66,7 +66,7 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
           />
           <TableBalanceCell balance={transaction.amount} balanceInUsd={transaction.amountInUSD} />
           <TableTextCell text={transaction.fee} />
-          <TableStatusCell status={transaction.status} />
+          <TableStatusCell status={transaction.status} isSigning={transaction.isSigning} />
           <TableTextCell text={transaction.createdAt ? new Date(transaction.createdAt).toLocaleString() : ''} />
           <TableCell>
             {transaction.destinationAddress ? <CopyText text={transaction.destinationAddress} /> : null}

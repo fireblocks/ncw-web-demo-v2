@@ -7,7 +7,7 @@ const RootStyled = styled('div')(() => ({
   justifyContent: 'center',
 }));
 
-const statusFormatter = (status: TTransactionStatus) => {
+const statusFormatter = (status: TTransactionStatus | 'SIGNING') => {
   switch (status) {
     case 'PENDING_SIGNATURE':
       return 'Pending signature';
@@ -23,6 +23,8 @@ const statusFormatter = (status: TTransactionStatus) => {
       return 'Confirming';
     case 'QUEUED':
       return 'Queued';
+    case 'SIGNING':
+      return 'Signing';
     case 'FAILED':
       return 'Failed';
     default:
@@ -30,12 +32,13 @@ const statusFormatter = (status: TTransactionStatus) => {
   }
 };
 
-const statusColor = (status: TTransactionStatus) => {
+const statusColor = (status: TTransactionStatus | 'SIGNING') => {
   switch (status) {
     case 'SUBMITTED':
     case 'PENDING_SIGNATURE':
     case 'CONFIRMING':
     case 'QUEUED':
+    case 'SIGNING':
       return 'primary.dark';
 
     case 'COMPLETED':
@@ -53,13 +56,14 @@ const statusColor = (status: TTransactionStatus) => {
 
 interface IProps {
   status: TTransactionStatus | null;
+  isSigning?: boolean;
 }
 
-export const TableStatusCell: React.FC<IProps> = ({ status }) => (
+export const TableStatusCell: React.FC<IProps> = ({ status, isSigning }) => (
   <RootStyled>
     {status && (
-      <Typography component="p" variant="body1" color={statusColor(status)}>
-        {statusFormatter(status)}
+      <Typography component="p" variant="body1" color={statusColor(isSigning ? 'SIGNING' : status)}>
+        {statusFormatter(isSigning ? 'SIGNING' : status)}
       </Typography>
     )}
   </RootStyled>
