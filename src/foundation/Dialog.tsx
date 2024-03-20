@@ -31,12 +31,12 @@ const DialogContentStyled = styled(DialogContent)(({ theme }) => ({
 
 const DialogActionsStyled = styled(DialogActions)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.light,
-  padding: theme.spacing(0, 3, 4, 0),
+  padding: theme.spacing(0, 3, 3, 0),
 }));
 
 const DialogHeaderStyled = styled('div')(({ theme }) => ({
   position: 'relative',
-  padding: theme.spacing(5, 4),
+  padding: theme.spacing(4),
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1),
@@ -44,7 +44,7 @@ const DialogHeaderStyled = styled('div')(({ theme }) => ({
 
 const CloseButtonStyled = styled('div')(({ theme }) => ({
   position: 'absolute',
-  top: theme.spacing(5),
+  top: theme.spacing(4),
   right: theme.spacing(4),
 }));
 

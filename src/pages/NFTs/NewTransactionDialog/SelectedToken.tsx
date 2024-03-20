@@ -8,7 +8,7 @@ const RootStyled = styled('div')(({ theme }) => ({
   justifyContent: 'space-between',
   borderRadius: 8,
   padding: theme.spacing(2, 0),
-  marginBottom: theme.spacing(3),
+  marginBottom: theme.spacing(2),
 }));
 
 const ImageStyled = styled('div')(({ theme }) => ({

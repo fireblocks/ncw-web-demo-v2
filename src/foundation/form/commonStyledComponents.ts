@@ -3,7 +3,7 @@ import Input from '@mui/material/Input/Input';
 import InputLabel from '@mui/material/InputLabel/InputLabel';
 
 export const FormControlRootStyled = styled('div')(({ theme }) => ({
-  padding: theme.spacing(2, 0),
+  padding: theme.spacing(1.5, 0),
 }));
 
 export const InputLabelStyled = styled(InputLabel)(({ theme }) => ({
@@ -19,7 +19,7 @@ export const InputLabelStyled = styled(InputLabel)(({ theme }) => ({
 
 export const InputStyled = styled(Input)(({ theme }) => ({
   '&.MuiInput-root': {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(1),
     border: `2px solid ${theme.palette.secondary.main}`,
     borderRadius: 8,
     padding: theme.spacing(2, 3),
