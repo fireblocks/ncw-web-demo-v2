@@ -5,13 +5,6 @@ export const translationToEnglish = {
     TRANSACTIONS: 'Transactions',
     TRANSACTIONS_NOTIFICATION: 'You need to sign a transaction',
   },
-  PAGE_NAME: {
-    ASSETS: 'Assets Page',
-    NFTs: 'NFTs Page',
-    TRANSACTIONS: 'Transactions Page',
-    SETTINGS: 'Settings Page',
-    LOGIN: 'Log in',
-  },
   TRANSACTIONS: {
     EMPTY_PAGE_TITLE: 'You don’t have transactions',
     EMPTY_PAGE_DESCRIPTION: 'In order to use the platform and see data of this and that please add an asset',
@@ -42,6 +35,12 @@ export const translationToEnglish = {
   SETTINGS: {
     NAME: 'Settings',
     DESCRIPTION: 'Description',
+    DIALOGS: {
+      ADVANCED_INFO: {
+        TITLE: 'Advanced info',
+        DESCRIPTION: 'Advanced info about your things',
+      },
+    },
     ITEMS: {
       CREATE_A_KEY_BACKUP: {
         TITLE: 'Create a key backup',
