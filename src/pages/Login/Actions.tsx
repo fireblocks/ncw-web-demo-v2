@@ -1,5 +1,5 @@
 import React from 'react';
-import { Progress, styled } from '@foundation';
+import { Progress, Typography, styled } from '@foundation';
 import IconApple from '@icons/apple.svg';
 import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
@@ -15,12 +15,22 @@ const RootStyled = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(7),
 }));
 
+const ProcessingStyled = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(1),
+  marginTop: theme.spacing(7),
+}));
+
 export const Actions: React.FC = observer(function Actions() {
   const userStore = useUserStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
   const { t } = useTranslation();
 
-  const preparingWorkspace = !userStore.storeIsReady || fireblocksSDKStore.isMPCGenerating;
+  const preparingWorkspace =
+    !userStore.storeIsReady ||
+    (userStore.loggedUser && !fireblocksSDKStore.sdkInstance) ||
+    fireblocksSDKStore.isMPCGenerating;
 
   const needToGenerateKeys =
     userStore.loggedUser &&
@@ -30,9 +40,12 @@ export const Actions: React.FC = observer(function Actions() {
 
   if (preparingWorkspace) {
     return (
-      <RootStyled>
+      <ProcessingStyled>
         <Progress size="medium" />
-      </RootStyled>
+        <Typography variant="body1" color="text.primary">
+          {t('LOGIN.CHECKING_WORKSPACE')}
+        </Typography>
+      </ProcessingStyled>
     );
   }
 

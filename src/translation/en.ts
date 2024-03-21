@@ -144,6 +144,7 @@ export const translationToEnglish = {
     SIGN_IN_WITH_GOOGLE: 'Sign in with Google',
     SIGN_IN_WITH_APPLE: 'Sign in with Apple',
     GENERATE_MPC_KEYS: 'Generate MPC keys',
+    CHECKING_WORKSPACE: 'Checking workspace...',
     ILLUSTRATION: {
       HEADER: 'Securely access the world of Web3',
       DESCRIPTION: 'Bitvault is the most secure self-custody wallet store your crypto and NFTs.',
