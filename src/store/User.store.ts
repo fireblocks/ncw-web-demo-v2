@@ -106,6 +106,7 @@ export class UserStore {
     this.setAccessToken('');
     this.setUserId('');
     this.setError('');
+    localStorage.clear();
   }
 
   @computed

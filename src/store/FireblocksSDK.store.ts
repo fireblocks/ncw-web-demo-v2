@@ -135,8 +135,10 @@ export class FireblocksSDKStore {
       );
       if (this.sdkInstance) {
         const keyStatus = await this.sdkInstance.getKeysStatus();
-        this.setKeysStatus(keyStatus);
-        this.setSDKStatus('sdk_available');
+        if (Object.keys(keyStatus).length > 0) {
+          this.setKeysStatus(keyStatus);
+          this.setSDKStatus('sdk_available');
+        }
       }
     } catch (error) {
       this.setSDKStatus('sdk_initialization_failed');
