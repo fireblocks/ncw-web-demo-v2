@@ -43,6 +43,7 @@ export const translationToEnglish = {
         USER_NAME: 'User name',
         DEVICE_ID: 'Device ID',
         WALLET_ID: 'Wallet ID',
+        SDK_VERSION: 'SDK version',
       },
       LOGS: {
         TITLE: 'Log actions',

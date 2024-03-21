@@ -1,4 +1,5 @@
 import React from 'react';
+import { version } from '@fireblocks/ncw-js-sdk';
 import { CopyText, Dialog, Typography, styled } from '@foundation';
 import { useDeviceStore, useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
@@ -58,6 +59,13 @@ export const AdvancedInfoDialog: React.FC<IProps> = observer(function AdvancedIn
           {t('SETTINGS.DIALOGS.ADVANCED_INFO.WALLET_ID')}
         </Typography>
         <CopyText size="large" text={deviceStore.walletId} />
+      </DataBlockStyled>
+
+      <DataBlockStyled>
+        <Typography variant="h6" color="text.secondary">
+          {t('SETTINGS.DIALOGS.ADVANCED_INFO.SDK_VERSION')}
+        </Typography>
+        <CopyText size="large" text={version} />
       </DataBlockStyled>
 
       <>
