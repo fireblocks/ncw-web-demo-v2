@@ -96,7 +96,7 @@ export const Header: React.FC = observer(function Header() {
   const onLogoutClick = () => {
     userStore.logout();
     setUserMenuAnchorEl(null);
-    redirect('/login');
+    redirect('login');
   };
 
   return (
