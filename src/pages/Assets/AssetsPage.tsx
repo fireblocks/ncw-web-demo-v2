@@ -24,7 +24,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
   const assetsStore = useAssetsStore();
   const [isAddAssetDialogOpen, setIsAddAssetDialogOpen] = React.useState(false);
 
-  localStorage.setItem('VISITED_PAGE', location.pathname);
+  localStorage.setItem('VISITED_PAGE', 'assets');
 
   if (assetsStore.isLoading) {
     return <LoadingPage />;

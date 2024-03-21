@@ -45,7 +45,7 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
   const [selectedTokenStore, setSelectedTokenStore] = React.useState<NFTTokenStore | undefined>(undefined);
   const [isNewTransactionDialogOpen, setIsNewTransactionDialogOpen] = React.useState(false);
 
-  localStorage.setItem('VISITED_PAGE', location.pathname);
+  localStorage.setItem('VISITED_PAGE', 'nfts');
 
   const onSetMode = (viewMode: TViewMode) => {
     setMode(viewMode);
