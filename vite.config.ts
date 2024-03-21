@@ -17,5 +17,5 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['@fireblocks/ncw-js-sdk', 'tsl-apple-cloudkit'],
   },
-  base: './',
+  base: './ncw-web-demo-v2/',
 });
