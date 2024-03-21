@@ -1,7 +1,6 @@
 import React from 'react';
 import { styled } from '@foundation';
 import IconInfo from '@icons/info.svg';
-import IconKey from '@icons/key.svg';
 import IconLogs from '@icons/share_logs.svg';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -39,12 +38,12 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         onClick={() => {}}
       /> */}
 
-      <ActionPlate
+      {/* <ActionPlate
         iconSrc={IconKey}
         caption={t('SETTINGS.ITEMS.EXPORT_PRIVATE_KEY.TITLE')}
         description={t('SETTINGS.ITEMS.EXPORT_PRIVATE_KEY.DESCRIPTION')}
         onClick={() => {}}
-      />
+      /> */}
 
       {/* <ActionPlate
         iconSrc={IconNewDevice}

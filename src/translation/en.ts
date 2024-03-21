@@ -39,6 +39,10 @@ export const translationToEnglish = {
       ADVANCED_INFO: {
         TITLE: 'Advanced info',
         DESCRIPTION: 'Advanced info about your things',
+        USER_ID: 'User ID',
+        USER_NAME: 'User name',
+        DEVICE_ID: 'Device ID',
+        WALLET_ID: 'Wallet ID',
       },
       LOGS: {
         TITLE: 'Log actions',

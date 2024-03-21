@@ -1,8 +1,16 @@
 import React from 'react';
-import { Dialog, Typography } from '@foundation';
-import { useAccountsStore, useDeviceStore, useFireblocksSDKStore, useUserStore } from '@store';
+import { CopyText, Dialog, Typography, styled } from '@foundation';
+import { useDeviceStore, useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
+
+const DataBlockStyled = styled('div')(({ theme }) => ({
+  borderTop: `2px solid ${theme.palette.secondary.main}`,
+  padding: theme.spacing(3, 4),
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(1),
+}));
 
 interface IProps {
   isOpen: boolean;
@@ -14,24 +22,7 @@ export const AdvancedInfoDialog: React.FC<IProps> = observer(function AdvancedIn
 
   const userStore = useUserStore();
   const deviceStore = useDeviceStore();
-  const accountsStore = useAccountsStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
-
-  const renderMPCKeysSection = () => {
-    if (!fireblocksSDKStore.sdkInstance) {
-      return null;
-    }
-
-    if (fireblocksSDKStore.isMPCGenerating) {
-      return 'MPS keys status: Generating';
-    }
-
-    if (fireblocksSDKStore.isMPCReady) {
-      return 'MPS keys status: Ready';
-    }
-
-    return null;
-  };
 
   return (
     <Dialog
@@ -41,19 +32,53 @@ export const AdvancedInfoDialog: React.FC<IProps> = observer(function AdvancedIn
       onClose={onClose}
       size="small"
     >
-      <Typography variant="body1" color="text.secondary">
-        User name: {userStore.loggedUser?.displayName}
-        <br />
-        User id: {userStore.userId}
-        <br />
-        Device id: {deviceStore.deviceId}
-        <br />
-        Wallet id: {deviceStore.walletId}
-        <br />
-        Account id: {accountsStore.accounts.length > 0 && accountsStore.accounts[0].data.accountId}
-        <br />
-        {renderMPCKeysSection()}
-      </Typography>
+      <DataBlockStyled>
+        <Typography variant="h6" color="text.secondary">
+          {t('SETTINGS.DIALOGS.ADVANCED_INFO.USER_NAME')}
+        </Typography>
+        <CopyText size="large" text={userStore.loggedUser?.displayName || ''} />
+      </DataBlockStyled>
+
+      <DataBlockStyled>
+        <Typography variant="h6" color="text.secondary">
+          {t('SETTINGS.DIALOGS.ADVANCED_INFO.USER_ID')}
+        </Typography>
+        <CopyText size="large" text={userStore.userId} />
+      </DataBlockStyled>
+
+      <DataBlockStyled>
+        <Typography variant="h6" color="text.secondary">
+          {t('SETTINGS.DIALOGS.ADVANCED_INFO.DEVICE_ID')}
+        </Typography>
+        <CopyText size="large" text={deviceStore.deviceId} />
+      </DataBlockStyled>
+
+      <DataBlockStyled>
+        <Typography variant="h6" color="text.secondary">
+          {t('SETTINGS.DIALOGS.ADVANCED_INFO.WALLET_ID')}
+        </Typography>
+        <CopyText size="large" text={deviceStore.walletId} />
+      </DataBlockStyled>
+
+      <>
+        {fireblocksSDKStore.keysStatus?.MPC_CMP_ECDSA_SECP256K1?.keyId && (
+          <DataBlockStyled>
+            <Typography variant="h6" color="text.secondary">
+              Key (MPC_CMP_ECDSA_SECP256K1)
+            </Typography>
+            <CopyText size="large" text={fireblocksSDKStore.keysStatus.MPC_CMP_ECDSA_SECP256K1.keyId} />
+          </DataBlockStyled>
+        )}
+
+        {fireblocksSDKStore.keysStatus?.MPC_EDDSA_ED25519?.keyId && (
+          <DataBlockStyled>
+            <Typography variant="h6" color="text.secondary">
+              Key (MPC_EDDSA_ED25519)
+            </Typography>
+            <CopyText size="large" text={fireblocksSDKStore.keysStatus.MPC_EDDSA_ED25519.keyId} />
+          </DataBlockStyled>
+        )}
+      </>
     </Dialog>
   );
 });

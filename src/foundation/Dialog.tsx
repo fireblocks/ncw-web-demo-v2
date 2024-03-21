@@ -63,7 +63,7 @@ interface IProps {
   disableAction?: boolean;
   onClose: () => void;
   doAction?: () => void;
-  children: JSX.Element;
+  children: JSX.Element | JSX.Element[];
   size?: 'small' | 'medium' | 'large';
 }
 
