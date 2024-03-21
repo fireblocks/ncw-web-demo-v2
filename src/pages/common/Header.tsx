@@ -105,7 +105,7 @@ export const Header: React.FC = observer(function Header() {
         {isNotSettingsPage ? (
           <IconButton
             onClick={() => {
-              navigate('/assets');
+              navigate('assets');
             }}
           >
             <img src={IconLogo} />
@@ -123,19 +123,19 @@ export const Header: React.FC = observer(function Header() {
       <TreasuryPagesStyled>
         {isNotSettingsPage && (
           <>
-            <NavLinkStyled to="/assets">
+            <NavLinkStyled to="assets">
               <Typography variant="inherit" color="inherit">
                 {t('NAVIGATION.ASSETS')}
               </Typography>
               {isAssetsPage && <LinkMarkerStyled />}
             </NavLinkStyled>
-            <NavLinkStyled to="/nfts">
+            <NavLinkStyled to="nfts">
               <Typography variant="inherit" color="inherit">
                 {t('NAVIGATION.NFTs')}{' '}
               </Typography>
               {isNftsPage && <LinkMarkerStyled />}
             </NavLinkStyled>
-            <NavLinkStyled to="/transactions">
+            <NavLinkStyled to="transactions">
               <Typography variant="inherit" color="inherit">
                 {t('NAVIGATION.TRANSACTIONS')}
               </Typography>
@@ -153,7 +153,7 @@ export const Header: React.FC = observer(function Header() {
         <IconButton
           tooltip={t('SETTINGS.NAME')}
           onClick={() => {
-            navigate('/settings');
+            navigate('settings');
           }}
         >
           <img src={IconSettings} />
