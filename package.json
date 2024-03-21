@@ -67,8 +67,9 @@
     "vite": "^5.1.6",
     "vite-plugin-mkcert": "^1.17.4",
     "vite-plugin-svgr": "^4.2.0"
+    
   },
   "resolutions": {
-    "rollup": "npm:@rollup/wasm-node"
+    "@rollup/rollup-linux-x64-gnu": "4.6.1"
   }
 }
