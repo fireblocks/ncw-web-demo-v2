@@ -6,7 +6,7 @@
   "homepage" : "https://fireblocks.github.io/ncw-web-demo-v2/",
   "scripts": {
     "dev": "vite --host",
-    "build": "tsc && vite build --base=/ncw-web-demo-v2/",
+    "build": "tsc && vite build --base=/ncw-web-demo-v2",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
