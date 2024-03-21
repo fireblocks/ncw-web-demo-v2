@@ -165,6 +165,7 @@ export const Header: React.FC = observer(function Header() {
         </IconButton>
       </SettingsAndProfileStyled>
       <DropDownMenu anchorEl={userMenuAnchorEl} isOpen={isUserMenuOpen} onClose={onCloseUserMenuClick}>
+        <MenuItem disabled>{userStore.loggedUser?.email}</MenuItem>
         <MenuItem onClick={onLogoutClick}>Logout</MenuItem>
       </DropDownMenu>
     </RootStyled>
