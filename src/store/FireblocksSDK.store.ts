@@ -139,12 +139,12 @@ export class FireblocksSDKStore {
           this.setKeysStatus(keyStatus);
           this.setSDKStatus('sdk_available');
         }
+        this.setIsMPCGenerating(false);
       }
     } catch (error) {
+      this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
       throw error;
-    } finally {
-      this.setIsMPCGenerating(false);
     }
   }
 
@@ -159,16 +159,12 @@ export class FireblocksSDKStore {
   }
 
   @action
-  public async clearSDKStorage() {
+  public clearSDKStorage() {
     if (!this.sdkInstance) {
       this.setError('fireblocksNCW is not initialized');
     } else {
+      this.setKeysStatus(null);
       localStorage.clear();
-      await this.sdkInstance.clearAllStorage();
-      this.setIsMPCGenerating(true);
-      const keyStatus = await this.sdkInstance.getKeysStatus();
-      this.setIsMPCGenerating(false);
-      this.setKeysStatus(keyStatus);
     }
   }
 
