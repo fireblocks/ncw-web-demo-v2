@@ -34,19 +34,19 @@ export const App: React.FC = observer(function App() {
       <ContentStyled>
         {userStore.loggedUser && <StoreInitializer />}
         {canShowDashboard && <Header />}
-        <Routes location={location}>
+        <Routes>
           {canShowDashboard ? (
             <>
-              <Route path="assets" element={<AssetsPage />} />
-              <Route path="transactions" element={<TransactionsPage />} />
-              <Route path="nfts" element={<NFTsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="*" element={<Navigate to={lastVisitedPage ? lastVisitedPage : 'assets'} />} />
+              <Route path="/assets" element={<AssetsPage />} />
+              <Route path="/transactions" element={<TransactionsPage />} />
+              <Route path="/nfts" element={<NFTsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="*" element={<Navigate to={lastVisitedPage ? lastVisitedPage : '/assets'} />} />
             </>
           ) : (
             <>
-              <Route path="login" element={<LoginPage />} />
-              <Route path="*" element={<Navigate to="login" />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="*" element={<Navigate to="/login" />} />
             </>
           )}
         </Routes>

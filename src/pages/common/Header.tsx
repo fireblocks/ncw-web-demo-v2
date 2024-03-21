@@ -105,7 +105,7 @@ export const Header: React.FC = observer(function Header() {
         {isNotSettingsPage ? (
           <IconButton
             onClick={() => {
-              navigate('assets');
+              navigate('/assets');
             }}
           >
             <img src={IconLogo} />

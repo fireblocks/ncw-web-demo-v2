@@ -107,6 +107,7 @@ export class UserStore {
     this.setAccessToken('');
     this.setUserId('');
     this.setError('');
+    localStorage.deleteItem('VISITED_PAGE');
     this._rootStore.fireblocksSDKStore.clearData();
   }
 
