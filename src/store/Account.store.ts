@@ -1,7 +1,7 @@
 import { IAccountDTO } from '@api';
 import { computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
-
+  /* tslint:disable:no-unused-variable */
 export class AccountStore {
   @observable public data: IAccountDTO;
 
