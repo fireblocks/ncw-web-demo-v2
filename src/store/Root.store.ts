@@ -4,6 +4,7 @@ import { AssetsStore } from './Assets.store';
 import { DeviceStore } from './Device.store';
 import { FireblocksSDKStore } from './FireblocksSDK.store';
 import { NFTStore } from './NFT.store';
+import { SettingsStore } from './Settings.store';
 import { TransactionsStore } from './Transactions.store';
 import { UserStore } from './User.store';
 
@@ -15,6 +16,7 @@ export class RootStore {
   @observable public transactionsStore: TransactionsStore;
   @observable public fireblocksSDKStore: FireblocksSDKStore;
   @observable public nftStore: NFTStore;
+  @observable public settingsStore: SettingsStore;
 
   constructor() {
     this.userStore = new UserStore(this);
@@ -24,6 +26,7 @@ export class RootStore {
     this.transactionsStore = new TransactionsStore(this);
     this.fireblocksSDKStore = new FireblocksSDKStore(this);
     this.nftStore = new NFTStore(this);
+    this.settingsStore = new SettingsStore(this);
 
     makeObservable(this);
   }

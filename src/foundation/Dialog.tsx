@@ -10,6 +10,13 @@ const RootStyled = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.secondary.main,
 }));
 
+const MUIDialogLargeStyled = styled(MUIDialog)(() => ({
+  '.MuiDialog-paper': {
+    width: 850,
+    maxWidth: 850,
+  },
+}));
+
 const MUIDialogMediumStyled = styled(MUIDialog)(() => ({
   '.MuiDialog-paper': {
     width: 750,
@@ -79,6 +86,9 @@ export const Dialog: React.FC<IProps> = ({
       break;
     case 'medium':
       DialogComponent = MUIDialogMediumStyled;
+      break;
+    case 'large':
+      DialogComponent = MUIDialogLargeStyled;
       break;
     default:
       DialogComponent = MUIDialogMediumStyled;

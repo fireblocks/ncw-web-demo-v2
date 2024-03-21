@@ -9,7 +9,7 @@ import {
   TEvent,
   TMPCAlgorithm,
 } from '@fireblocks/ncw-js-sdk';
-import { secureStorageProviderFactory } from '@services';
+import { IndexedDBLogger, IndexedDBLoggerFactory, secureStorageProviderFactory } from '@services';
 import { ENV_CONFIG } from 'env_config';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
@@ -24,6 +24,7 @@ export class FireblocksSDKStore {
   @observable public isMPCReady: boolean;
   @observable public isMPCGenerating: boolean;
   @observable public error: string;
+  @observable public logger: IndexedDBLogger | null;
 
   private _rootStore: RootStore;
   private _unsubscribeTransactionsPolling: (() => void) | null;
@@ -32,6 +33,7 @@ export class FireblocksSDKStore {
     this.sdkStatus = 'sdk_not_ready';
     this.keysStatus = null;
     this.sdkInstance = null;
+    this.logger = null;
     this.keysBackupStatus = '';
     this.keysRecoveryStatus = '';
     this.joinWalletEventDescriptor = '';
@@ -108,6 +110,11 @@ export class FireblocksSDKStore {
         },
       };
 
+      const logger = await IndexedDBLoggerFactory({
+        deviceId: this._rootStore.deviceStore.deviceId,
+        logger: ConsoleLoggerFactory(),
+      });
+
       const sdkInstance = await FireblocksNCWFactory({
         env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
         logLevel: 'INFO',
@@ -115,9 +122,10 @@ export class FireblocksSDKStore {
         messagesHandler,
         eventsHandler,
         secureStorageProvider: secureStorageProviderFactory(this._rootStore.deviceStore.deviceId),
-        logger: ConsoleLoggerFactory(),
+        logger,
       });
 
+      this.setLogger(logger);
       this.setSDKInstance(sdkInstance);
 
       this.setUnsubscribeTransactionsPolling(
@@ -136,6 +144,11 @@ export class FireblocksSDKStore {
     } finally {
       this.setIsMPCGenerating(false);
     }
+  }
+
+  @action
+  public setLogger(logger: IndexedDBLogger | null): void {
+    this.logger = logger;
   }
 
   @action
@@ -249,5 +262,22 @@ export class FireblocksSDKStore {
     }
 
     return false;
+  }
+
+  public async clearLogs(): Promise<void> {
+    if (this.logger) {
+      await this.logger.clear(null);
+    }
+  }
+
+  public async collectLogs(): Promise<string> {
+    if (this.logger) {
+      const logs = await this.logger.collect(null);
+      const logsString = logs.map((log) => JSON.stringify(log)).join('\n');
+
+      return logsString;
+    }
+
+    return '';
   }
 }

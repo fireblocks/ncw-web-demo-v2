@@ -4,7 +4,6 @@ const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0, 0, 8),
   cursor: 'pointer',
   backgroundColor: theme.palette.secondary.light,
-  borderRadius: 4,
   boxSizing: 'border-box',
   '&:hover .IconStyled': {
     backgroundColor: theme.palette.primary.dark,
@@ -42,7 +41,7 @@ export const ActionPlate: React.FC<IProps> = ({ onClick, caption, description, i
       <img src={iconSrc} width={16} />
     </IconStyled>
     <TextStyled>
-      <Typography variant="h2" color="text.primary">
+      <Typography variant="h3" color="text.primary">
         {caption}
       </Typography>
       {description && (

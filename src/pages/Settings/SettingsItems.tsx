@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { ActionPlate } from './ActionPlate';
 import { AdvancedInfoDialog } from './Dialogs/AdvancedInfoDialog';
+import { LogsDialog } from './Dialogs/LogsDialog';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -20,6 +21,7 @@ const RootStyled = styled('div')(({ theme }) => ({
 export const SettingsItems: React.FC = observer(function SettingsItems() {
   const { t } = useTranslation();
   const [isAdvancedInfoDialogOpen, setIsAdvancedInfoDialogOpen] = React.useState(false);
+  const [isLogsDialogOpen, setIsLogsDialogOpen] = React.useState(false);
 
   return (
     <RootStyled>
@@ -55,7 +57,9 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         iconSrc={IconLogs}
         caption={t('SETTINGS.ITEMS.SHARE_LOGS.TITLE')}
         description={t('SETTINGS.ITEMS.SHARE_LOGS.DESCRIPTION')}
-        onClick={() => {}}
+        onClick={() => {
+          setIsLogsDialogOpen(true);
+        }}
       />
 
       <ActionPlate
@@ -71,6 +75,13 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         isOpen={isAdvancedInfoDialogOpen}
         onClose={() => {
           setIsAdvancedInfoDialogOpen(false);
+        }}
+      />
+
+      <LogsDialog
+        isOpen={isLogsDialogOpen}
+        onClose={() => {
+          setIsLogsDialogOpen(false);
         }}
       />
     </RootStyled>

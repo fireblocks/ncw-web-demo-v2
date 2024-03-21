@@ -40,6 +40,14 @@ export const translationToEnglish = {
         TITLE: 'Advanced info',
         DESCRIPTION: 'Advanced info about your things',
       },
+      LOGS: {
+        TITLE: 'Log actions',
+        DESCRIPTION: 'Share logs with support',
+        DELETE: 'Delete logs',
+        DOWNLOAD: 'Download logs',
+        DELETED: 'Logs deleted',
+        DOWNLOADED: 'Logs downloaded',
+      },
     },
     ITEMS: {
       CREATE_A_KEY_BACKUP: {
