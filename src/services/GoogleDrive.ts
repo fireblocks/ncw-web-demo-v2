@@ -76,6 +76,7 @@ export const gdriveBackup = (token: string, passphrase: string, passphraseId: st
               body: passphrase,
             },
           );
+          console.log(res)
 
           resolve();
         } catch (e) {
@@ -87,4 +88,5 @@ export const gdriveBackup = (token: string, passphrase: string, passphraseId: st
       timeout: 5_000,
     });
   });
+  
 };
