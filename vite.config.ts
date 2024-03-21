@@ -4,7 +4,7 @@ import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  base: './',
+  base: '/ncw-web-demo-v2/',
   plugins: [react(), svgr(), tsconfigPaths(), splitVendorChunkPlugin()],
   server: {
     open: true,

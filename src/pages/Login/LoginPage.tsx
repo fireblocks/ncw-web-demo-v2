@@ -104,7 +104,7 @@ export const LoginPage: React.FC = observer(function LoginPage() {
   const fireblocksSDKStore = useFireblocksSDKStore();
 
   if (fireblocksSDKStore.keysAreReady) {
-    redirect(lastVisitedPage ? lastVisitedPage : '/assets');
+    redirect(lastVisitedPage ? lastVisitedPage : 'assets');
   }
 
   return (
