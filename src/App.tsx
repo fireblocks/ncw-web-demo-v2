@@ -34,7 +34,7 @@ export const App: React.FC = observer(function App() {
       <ContentStyled>
         {userStore.loggedUser && <StoreInitializer />}
         {canShowDashboard && <Header />}
-        <Routes>
+        <Routes location={location}>
           {canShowDashboard ? (
             <>
               <Route path="assets" element={<AssetsPage />} />
