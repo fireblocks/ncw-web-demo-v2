@@ -253,6 +253,20 @@ export class FireblocksSDKStore {
     this._unsubscribeTransactionsPolling = callBack;
   }
 
+  @action
+  public clearData() {
+    this.sdkStatus = 'sdk_not_ready';
+    this.keysStatus = null;
+    this.sdkInstance = null;
+    this.logger = null;
+    this.keysBackupStatus = '';
+    this.keysRecoveryStatus = '';
+    this.joinWalletEventDescriptor = '';
+    this.isMPCReady = false;
+    this.isMPCGenerating = false;
+    this.error = '';
+  }
+
   @computed
   public get keysAreReady(): boolean {
     if (this.keysStatus) {

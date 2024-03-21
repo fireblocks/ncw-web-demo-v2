@@ -19,6 +19,7 @@ export class UserStore {
     this.accessToken = '';
     this.error = '';
     this.userId = '';
+
     this._rootStore = rootStore;
 
     this._authManager = new FirebaseAuthManager();
@@ -106,7 +107,7 @@ export class UserStore {
     this.setAccessToken('');
     this.setUserId('');
     this.setError('');
-    this._rootStore.fireblocksSDKStore.clearSDKStorage();
+    this._rootStore.fireblocksSDKStore.clearData();
   }
 
   @computed

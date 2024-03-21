@@ -20,7 +20,7 @@ export const Actions: React.FC = observer(function Actions() {
   const fireblocksSDKStore = useFireblocksSDKStore();
   const { t } = useTranslation();
 
-  const working = userStore.loggedUser && fireblocksSDKStore.isMPCGenerating;
+  const preparingWorkspace = !userStore.storeIsReady || fireblocksSDKStore.isMPCGenerating;
 
   const needToGenerateKeys =
     userStore.loggedUser &&
@@ -28,7 +28,7 @@ export const Actions: React.FC = observer(function Actions() {
     !fireblocksSDKStore.isMPCGenerating &&
     !fireblocksSDKStore.isMPCReady;
 
-  if (working) {
+  if (preparingWorkspace) {
     return (
       <RootStyled>
         <Progress size="medium" />
