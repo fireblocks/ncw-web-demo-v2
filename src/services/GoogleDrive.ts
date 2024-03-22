@@ -1,8 +1,8 @@
-import { DISCOVERY_DOC } from "../auth/providers";
+import { DISCOVERY_DOC } from '../auth/providers';
 
-export const gdriveRecover = (token: string, passphraseId: string) => {
-  return new Promise<string>((resolve, reject) => {
-    gapi.load("client", {
+export const gdriveRecover = (token: string, passphraseId: string) =>
+  new Promise<string>((resolve, reject) => {
+    gapi.load('client', {
       callback: async () => {
         try {
           const filename = `passphrase_${passphraseId}.txt`;
@@ -11,7 +11,7 @@ export const gdriveRecover = (token: string, passphraseId: string) => {
           });
 
           const list = await gapi.client.drive.files.list({
-            spaces: "appDataFolder",
+            spaces: 'appDataFolder',
             oauth_token: token,
             q: `name='${filename}'`,
           });
@@ -24,9 +24,10 @@ export const gdriveRecover = (token: string, passphraseId: string) => {
               },
             });
             const content = await res.text();
-            return resolve(content);
+            resolve(content);
+            return;
           } else {
-            throw new Error("not found");
+            throw new Error('not found');
           }
         } catch (e) {
           reject(e);
@@ -37,11 +38,10 @@ export const gdriveRecover = (token: string, passphraseId: string) => {
       timeout: 5_000,
     });
   });
-};
 
-export const gdriveBackup = (token: string, passphrase: string, passphraseId: string) => {
-  return new Promise<void>((resolve, reject) => {
-    gapi.load("client", {
+export const gdriveBackup = (token: string, passphrase: string, passphraseId: string) =>
+  new Promise<void>((resolve, reject) => {
+    gapi.load('client', {
       callback: async () => {
         try {
           await gapi.client.init({
@@ -50,33 +50,33 @@ export const gdriveBackup = (token: string, passphrase: string, passphraseId: st
 
           const filename = `passphrase_${passphraseId}.txt`;
 
-          const file = new Blob([passphrase], { type: "text/plain" });
+          const file = new Blob([passphrase], { type: 'text/plain' });
           const metadata: gapi.client.drive.File = {
             name: filename,
-            mimeType: "text/plain",
-            parents: ["appDataFolder"],
+            mimeType: 'text/plain',
+            parents: ['appDataFolder'],
           };
 
           const create = await gapi.client.drive.files.create({
             oauth_token: token,
-            uploadType: "media",
+            uploadType: 'media',
             resource: metadata,
-            fields: "id",
+            fields: 'id',
           });
 
           const res = await fetch(
             `https://www.googleapis.com/upload/drive/v3/files/${create.result.id}?uploadType=media`,
             {
-              method: "PATCH",
+              method: 'PATCH',
               headers: {
                 Authorization: `Bearer ${token}`,
-                "Content-Type": metadata.mimeType!,
-                "Content-Length": file.size.toString(),
+                'Content-Type': metadata.mimeType!,
+                'Content-Length': file.size.toString(),
               },
               body: passphrase,
             },
           );
-          console.log(res)
+          console.log(res);
 
           resolve();
         } catch (e) {
@@ -88,5 +88,3 @@ export const gdriveBackup = (token: string, passphrase: string, passphraseId: st
       timeout: 5_000,
     });
   });
-  
-};
