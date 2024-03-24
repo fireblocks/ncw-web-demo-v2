@@ -1,6 +1,8 @@
 import React from 'react';
 import { ActionButton, Skeleton, Typography, styled } from '@foundation';
-import IconEmptyPage from '@icons/empty_page.svg';
+import IconEmptyPageNoAssets from '@icons/empty_page_no_assets.svg';
+import IconEmptyPageNoNft from '@icons/empty_page_no_nft.svg';
+import IconEmptyPageNoTx from '@icons/empty_page_no_tx.svg';
 import { useTranslation } from 'react-i18next';
 
 const RootStyled = styled('div')(() => ({
@@ -116,11 +118,25 @@ const TableTextCell: React.FC = () => (
 export const EmptyPage: React.FC<IProps> = ({ page, onAddAsset }) => {
   const { t } = useTranslation();
 
+  let icon = '';
+
+  switch (page) {
+    case 'ASSETS':
+      icon = IconEmptyPageNoAssets;
+      break;
+    case 'NFT':
+      icon = IconEmptyPageNoNft;
+      break;
+    case 'TRANSACTIONS':
+      icon = IconEmptyPageNoTx;
+      break;
+  }
+
   return (
     <RootStyled>
       <HeadingStyled>
         <PageNameStyled>{t(`${page}.TITLE`)}</PageNameStyled>
-        <img width={72} height={72} src={IconEmptyPage} alt={page} />
+        <img width={72} height={72} src={icon} alt={page} />
         <HeadingTextStyled>
           <Typography color="text.primary" variant="h2" component="h2">
             {t(`${page}.EMPTY_PAGE_TITLE`)}

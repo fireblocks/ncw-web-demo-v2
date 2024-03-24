@@ -10,6 +10,7 @@ import {
   TableTransferCell,
   styled,
 } from '@foundation';
+import IconNoAsset from '@icons/no_asset_image.svg';
 import { AssetStore } from '@store';
 import { observer } from 'mobx-react';
 
@@ -52,7 +53,11 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
     >
       <TableRow>
         <RowStyled>
-          <TableTitleCell title={currentAsset.name} subtitle={currentAsset.symbol} iconUrl={currentAsset.iconUrl} />
+          <TableTitleCell
+            title={currentAsset.name}
+            subtitle={currentAsset.symbol}
+            iconUrl={currentAsset.iconUrl || IconNoAsset}
+          />
           <TableBalanceCell balance={currentAsset.totalBalance} balanceInUsd={currentAsset.totalBalanceInUSD} />
           <TableTextCell text={currentAsset.rate} />
           <TableCell>

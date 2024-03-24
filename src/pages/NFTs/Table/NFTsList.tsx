@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
+import { EmptySearch } from '../../common/EmptySearch';
 import { RowStyled, NFTsListItem } from './NFTsListItem';
 
 const TABLE_ROW_HEIGHT = 106;
@@ -44,20 +45,31 @@ export const NFTsList: React.FC<IProps> = observer(function NFTsList({
       </TableHead>
       <TableBody>
         <AutoSizer>
-          {({ height, width }) => (
-            <FixedSizeList height={height} width={width} itemCount={filteredTokens.length} itemSize={TABLE_ROW_HEIGHT}>
-              {({ index, style }) => (
-                <NFTsListItem
-                  selectedTokenId={selectedTokenId}
-                  setSelectedTokenId={setSelectedTokenId}
-                  onNewTransactionDialogOpen={onNewTransactionDialogOpen}
-                  filteredTokens={filteredTokens}
-                  index={index}
-                  style={style}
-                />
-              )}
-            </FixedSizeList>
-          )}
+          {({ height, width }) => {
+            if (filteredTokens.length === 0) {
+              return <EmptySearch height={height} width={width} />;
+            }
+
+            return (
+              <FixedSizeList
+                height={height}
+                width={width}
+                itemCount={filteredTokens.length}
+                itemSize={TABLE_ROW_HEIGHT}
+              >
+                {({ index, style }) => (
+                  <NFTsListItem
+                    selectedTokenId={selectedTokenId}
+                    setSelectedTokenId={setSelectedTokenId}
+                    onNewTransactionDialogOpen={onNewTransactionDialogOpen}
+                    filteredTokens={filteredTokens}
+                    index={index}
+                    style={style}
+                  />
+                )}
+              </FixedSizeList>
+            );
+          }}
         </AutoSizer>
       </TableBody>
     </Table>

@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
+import { EmptySearch } from '../../common/EmptySearch';
 import { AssetListItem } from './AssetListItem';
 
 const TABLE_ROW_HEIGHT = 106;
@@ -58,23 +59,29 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
               <Table>
                 <TableBody>
                   <AutoSizer>
-                    {({ height, width }) => (
-                      <FixedSizeList
-                        height={height}
-                        width={width}
-                        itemCount={filteredAssets.length}
-                        itemSize={TABLE_ROW_HEIGHT}
-                      >
-                        {({ index, style }) => (
-                          <AssetListItem
-                            filteredAssets={filteredAssets}
-                            index={index}
-                            style={style}
-                            onDialogClose={onClose}
-                          />
-                        )}
-                      </FixedSizeList>
-                    )}
+                    {({ height, width }) => {
+                      if (filteredAssets.length === 0) {
+                        return <EmptySearch height={height} width={width} />;
+                      }
+
+                      return (
+                        <FixedSizeList
+                          height={height}
+                          width={width}
+                          itemCount={filteredAssets.length}
+                          itemSize={TABLE_ROW_HEIGHT}
+                        >
+                          {({ index, style }) => (
+                            <AssetListItem
+                              filteredAssets={filteredAssets}
+                              index={index}
+                              style={style}
+                              onDialogClose={onClose}
+                            />
+                          )}
+                        </FixedSizeList>
+                      );
+                    }}
                   </AutoSizer>
                 </TableBody>
               </Table>

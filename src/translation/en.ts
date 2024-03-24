@@ -84,6 +84,8 @@ export const translationToEnglish = {
   ASSETS: {
     EMPTY_PAGE_TITLE: 'No assets to display',
     EMPTY_PAGE_DESCRIPTION: 'Get started by adding your first asset.',
+    EMPTY_SEARCH_TITLE: 'No results found',
+    EMPTY_SEARCH_DESCRIPTION: 'Try revising your search.',
     TITLE: 'My assets',
     CURRENT_BALANCE: 'Balance',
     ADD_ASSET: 'Add asset',
@@ -184,5 +186,9 @@ export const translationToEnglish = {
   USER_MENU: {
     RESTART_WALLET: 'Restart wallet',
     LOG_OUT: 'Log out',
+  },
+  EMPTY_SEARCH: {
+    TITLE: 'No results found',
+    DESCRIPTION: 'Try revising your search.',
   },
 };

@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import { ActionsBoxWrapperStyled, ActionsWrapperStyled, SearchWrapperStyled } from '../common/ActionsBox';
+import { EmptySearch } from '../common/EmptySearch';
 import { AssetsListItem, RowStyled } from './AssetsListItem';
 import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
 
@@ -85,26 +86,32 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
         </TableHead>
         <TableBody>
           <AutoSizer>
-            {({ height, width }) => (
-              <FixedSizeList
-                height={height}
-                width={width}
-                itemCount={filteredAssets.length}
-                itemSize={TABLE_ROW_HEIGHT}
-              >
-                {({ index, style }) => (
-                  <AssetsListItem
-                    filteredAssets={filteredAssets}
-                    index={index}
-                    style={style}
-                    selectedAssetId={selectedAssetId}
-                    setSelectedAssetId={setSelectedAssetId}
-                    setTransactionDialogMode={setTransactionDialogMode}
-                    onNewTransactionDialogOpen={onNewTransactionDialogOpen}
-                  />
-                )}
-              </FixedSizeList>
-            )}
+            {({ height, width }) => {
+              if (filteredAssets.length === 0) {
+                return <EmptySearch height={height} width={width} />;
+              }
+
+              return (
+                <FixedSizeList
+                  height={height}
+                  width={width}
+                  itemCount={filteredAssets.length}
+                  itemSize={TABLE_ROW_HEIGHT}
+                >
+                  {({ index, style }) => (
+                    <AssetsListItem
+                      filteredAssets={filteredAssets}
+                      index={index}
+                      style={style}
+                      selectedAssetId={selectedAssetId}
+                      setSelectedAssetId={setSelectedAssetId}
+                      setTransactionDialogMode={setTransactionDialogMode}
+                      onNewTransactionDialogOpen={onNewTransactionDialogOpen}
+                    />
+                  )}
+                </FixedSizeList>
+              );
+            }}
           </AutoSizer>
         </TableBody>
 

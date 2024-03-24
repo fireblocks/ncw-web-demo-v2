@@ -1,10 +1,11 @@
 import React from 'react';
+import { styled } from '@foundation';
 import { useNFTStore } from '@store';
 import { observer } from 'mobx-react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid } from 'react-window';
+import { EmptySearch } from '../../common/EmptySearch';
 import { CARD_HEIGHT, CARD_WIDTH, NFTCard } from './NFTCard';
-import { styled } from '@foundation';
 
 const COLUMN_COUNT = 4;
 
@@ -36,27 +37,33 @@ export const NFTCards: React.FC<IProps> = observer(function NFTCards({
   return (
     <RootStyled>
       <AutoSizer>
-        {({ height, width }) => (
-          <FixedSizeGrid
-            height={height}
-            width={width}
-            rowHeight={CARD_HEIGHT}
-            columnCount={columnsCount}
-            columnWidth={CARD_WIDTH}
-            rowCount={Math.ceil(filteredTokens.length / COLUMN_COUNT)}
-          >
-            {({ columnIndex, rowIndex, style }) => (
-              <NFTCard
-                setSelectedTokenId={setSelectedTokenId}
-                onNewTransactionDialogOpen={onNewTransactionDialogOpen}
-                filteredTokens={filteredTokens}
-                columnIndex={columnIndex}
-                rowIndex={rowIndex}
-                style={style}
-              />
-            )}
-          </FixedSizeGrid>
-        )}
+        {({ height, width }) => {
+          if (filteredTokens.length === 0) {
+            return <EmptySearch height={height} width={width} />;
+          }
+
+          return (
+            <FixedSizeGrid
+              height={height}
+              width={width}
+              rowHeight={CARD_HEIGHT}
+              columnCount={columnsCount}
+              columnWidth={CARD_WIDTH}
+              rowCount={Math.ceil(filteredTokens.length / COLUMN_COUNT)}
+            >
+              {({ columnIndex, rowIndex, style }) => (
+                <NFTCard
+                  setSelectedTokenId={setSelectedTokenId}
+                  onNewTransactionDialogOpen={onNewTransactionDialogOpen}
+                  filteredTokens={filteredTokens}
+                  columnIndex={columnIndex}
+                  rowIndex={rowIndex}
+                  style={style}
+                />
+              )}
+            </FixedSizeGrid>
+          );
+        }}
       </AutoSizer>
     </RootStyled>
   );

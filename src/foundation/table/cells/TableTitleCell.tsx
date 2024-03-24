@@ -28,19 +28,13 @@ const TextStyled = styled('div')(() => ({
 interface IProps {
   title: string;
   subtitle: string;
-  iconUrl?: string;
+  iconUrl: string;
 }
 
 export const TableTitleCell: React.FC<IProps> = ({ title, subtitle, iconUrl }) => (
   <RootStyled>
     <ImageStyled>
-      {iconUrl ? (
-        <img width="24px" height="24px" src={iconUrl} alt={title} />
-      ) : (
-        <Typography component="p" color="text.primary" variant="subtitle2">
-          {title[0]}
-        </Typography>
-      )}
+      <img width="24px" height="24px" src={iconUrl} alt={title} />
     </ImageStyled>
     <TextStyled>
       <Typography component="p" color="text.primary" variant="subtitle2">

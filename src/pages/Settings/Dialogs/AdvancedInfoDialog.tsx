@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 const DataBlockStyled = styled('div')(({ theme }) => ({
   borderTop: `2px solid ${theme.palette.secondary.main}`,
-  padding: theme.spacing(3, 4),
+  padding: theme.spacing(2, 4),
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1),

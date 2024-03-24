@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
-  gap: theme.spacing(0.5),
+  gap: theme.spacing(1),
   alignItems: 'center',
   maxWidth: '100%',
 }));
