@@ -11,7 +11,6 @@ const RootStyled = styled('div')(({ theme }) => ({
   flex: 1,
   width: '100%',
   backgroundColor: theme.palette.primary.main,
-  paddingBottom: theme.spacing(4),
 }));
 
 const ContentStyled = styled('div')(() => ({

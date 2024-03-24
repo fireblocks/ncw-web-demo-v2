@@ -9,17 +9,16 @@ import { useTranslation } from 'react-i18next';
 import { redirect } from 'react-router-dom';
 import { Actions } from './Actions';
 
-const RootStyled = styled('div')(({ theme }) => ({
+const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-  paddingTop: theme.spacing(10),
   width: '90%',
   margin: '0 auto',
+  justifyContent: 'center',
 }));
 
-const ContentWrapperStyled = styled('div')(({ theme }) => ({
-  marginTop: theme.spacing(6),
+const ContentWrapperStyled = styled('div')(() => ({
   backgroundColor: '#19191A',
   display: 'flex',
   flexDirection: 'row',
