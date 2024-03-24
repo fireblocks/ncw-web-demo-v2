@@ -35,7 +35,7 @@ const HeadingStyled = styled('div')(({ theme }) => ({
   alignItems: 'center',
   textAlign: 'center',
   gap: theme.spacing(3),
-  height: 500,
+  height: 420,
   boxSizing: 'border-box',
 }));
 
