@@ -84,13 +84,13 @@ const HeaderDescriptionStyled = styled(Typography)(({ theme }) => ({
 const ActionsBlockStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'center',
   backgroundColor: '#1C1C1D',
   width: '48%',
   height: 700,
   minHeight: 700,
   boxSizing: 'border-box',
   margin: theme.spacing(3, 3, 3, 0),
+  paddingTop: theme.spacing(12),
 }));
 
 const ActionsHeadingStyled = styled('div')(({ theme }) => ({
