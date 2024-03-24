@@ -49,6 +49,14 @@ export class AssetsStore {
   }
 
   @action
+  public setSupportedAssets(assets: IAssetDTO[]): void {
+    this.supportedAssets = [];
+    assets.map((a) => {
+      this.addSupportedAsset(a);
+    });
+  }
+
+  @action
   public async init(): Promise<void> {
     this.setIsLoading(true);
     const deviceId = this._rootStore.deviceStore.deviceId;
@@ -63,9 +71,7 @@ export class AssetsStore {
         this.addMyAsset(a);
       });
 
-      supportedAssets.map((a) => {
-        this.addSupportedAsset(a);
-      });
+      this.setSupportedAssets(supportedAssets);
     }
     this.setIsLoading(false);
   }
@@ -114,8 +120,10 @@ export class AssetsStore {
       const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken);
       const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken);
       const addressDTO = await getAddress(deviceId, accountId, assetId, accessToken);
+      const supportedAssets = await getSupportedAssets(deviceId, accountId, accessToken);
 
       this.addMyAsset({ asset: assetDTO, balance: balanceDTO, address: addressDTO });
+      this.setSupportedAssets(supportedAssets);
     }
   }
 

@@ -126,7 +126,7 @@ export const EmptyPage: React.FC<IProps> = ({ page, onAddAsset }) => {
             {t(`${page}.EMPTY_PAGE_TITLE`)}
           </Typography>
           <Typography color="text.secondary" variant="body2">
-            {t(`${page}.EMPTY_PAGE_TITLE`)}
+            {t(`${page}.EMPTY_PAGE_DESCRIPTION`)}
           </Typography>
           {onAddAsset && <ActionButton onClick={onAddAsset} caption={t('ASSETS.ADD_ASSET')} />}
         </HeadingTextStyled>
