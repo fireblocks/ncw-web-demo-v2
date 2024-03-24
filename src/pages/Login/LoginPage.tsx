@@ -13,7 +13,7 @@ const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-  width: '90%',
+  width: '80%',
   margin: '0 auto',
   justifyContent: 'center',
 }));
@@ -31,7 +31,14 @@ const IllustrationBlockStyled = styled('div')(() => ({
   justifyItems: 'center',
   alignItems: 'center',
   width: '50%',
-  background: `url(${IconBG}) top left no-repeat`,
+  position: 'relative',
+  overflow: 'hidden',
+}));
+
+const IllustrationBlockBGStyled = styled('img')(() => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
 }));
 
 const IllustrationContentStyled = styled('div')(() => ({
@@ -41,6 +48,12 @@ const IllustrationContentStyled = styled('div')(() => ({
   justifyContent: 'center',
   width: '70%',
   textAlign: 'center',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  bottom: 0,
+  right: 0,
+  margin: '0 auto',
 }));
 
 const IllustrationBlockchainsStyled = styled('div')(({ theme }) => ({
@@ -74,8 +87,8 @@ const ActionsBlockStyled = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   backgroundColor: '#1C1C1D',
   width: '48%',
-  height: 784,
-  minHeight: 784,
+  height: 700,
+  minHeight: 700,
   boxSizing: 'border-box',
   margin: theme.spacing(3, 3, 3, 0),
 }));
@@ -110,6 +123,7 @@ export const LoginPage: React.FC = observer(function LoginPage() {
     <RootStyled>
       <ContentWrapperStyled>
         <IllustrationBlockStyled>
+          <IllustrationBlockBGStyled src={IconBG} />
           <IllustrationContentStyled>
             <HeaderTextStyled>{t('LOGIN.ILLUSTRATION.HEADER')}</HeaderTextStyled>
             <HeaderDescriptionStyled>{t('LOGIN.ILLUSTRATION.DESCRIPTION')}</HeaderDescriptionStyled>
