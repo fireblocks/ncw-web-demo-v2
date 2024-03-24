@@ -13,6 +13,7 @@ import {
   styled,
 } from '@foundation';
 import IconDots from '@icons/dots.svg';
+import IconNoAsset from '@icons/no_asset_image.svg';
 import { TransactionStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -62,7 +63,7 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
                 : `${t(transaction.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${transaction.asset?.name || ''}`
             }
             subtitle={transaction.asset?.symbol || ''}
-            iconUrl={transaction.asset?.iconUrl}
+            iconUrl={transaction.asset?.iconUrl || IconNoAsset}
           />
           <TableBalanceCell balance={transaction.amount} balanceInUsd={transaction.amountInUSD} />
           <TableTextCell text={transaction.fee} />
