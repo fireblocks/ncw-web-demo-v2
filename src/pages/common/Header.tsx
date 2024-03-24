@@ -129,19 +129,19 @@ export const Header: React.FC = observer(function Header() {
         {isNotSettingsPage && (
           <>
             <NavLinkStyled to="assets">
-              <Typography variant="inherit" color="inherit">
+              <Typography variant="h6" color="inherit">
                 {t('NAVIGATION.ASSETS')}
               </Typography>
               {isAssetsPage && <LinkMarkerStyled />}
             </NavLinkStyled>
             <NavLinkStyled to="nfts">
-              <Typography variant="inherit" color="inherit">
+              <Typography variant="h6" color="inherit">
                 {t('NAVIGATION.NFTs')}{' '}
               </Typography>
               {isNftsPage && <LinkMarkerStyled />}
             </NavLinkStyled>
             <NavLinkStyled to="transactions">
-              <Typography variant="inherit" color="inherit">
+              <Typography variant="h6" color="inherit">
                 {t('NAVIGATION.TRANSACTIONS')}
               </Typography>
               {isTransactionsPage && <LinkMarkerStyled />}
