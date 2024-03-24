@@ -179,7 +179,10 @@ export const translationToEnglish = {
     },
   },
   COMMON: {
-    LOADING: 'Loading...',
     COPIED: 'Copied',
+  },
+  USER_MENU: {
+    RESTART_WALLET: 'Restart wallet',
+    LOG_OUT: 'Log out',
   },
 };

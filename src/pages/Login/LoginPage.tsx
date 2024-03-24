@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, styled } from '@foundation';
 import IconAssets from '@icons/login_assets.svg';
-import IconBG from '@icons/login_background.svg';
+import IconBG from '@icons/login_bg.svg';
 import IconLogo from '@icons/logo.svg';
 import { useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';

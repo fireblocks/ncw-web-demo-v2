@@ -6,7 +6,7 @@ import IconSettings from '@icons/settings.svg';
 import { useTransactionsStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { NavLink, redirect, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -96,7 +96,12 @@ export const Header: React.FC = observer(function Header() {
   const onLogoutClick = () => {
     userStore.logout();
     setUserMenuAnchorEl(null);
-    redirect('login');
+  };
+
+  const onRestartClick = () => {
+    userStore.restartWallet();
+    setUserMenuAnchorEl(null);
+    window.location.reload();
   };
 
   return (
@@ -166,7 +171,8 @@ export const Header: React.FC = observer(function Header() {
       </SettingsAndProfileStyled>
       <DropDownMenu anchorEl={userMenuAnchorEl} isOpen={isUserMenuOpen} onClose={onCloseUserMenuClick}>
         <MenuItem disabled>{userStore.loggedUser?.email}</MenuItem>
-        <MenuItem onClick={onLogoutClick}>Logout</MenuItem>
+        <MenuItem onClick={onRestartClick}>{t('USER_MENU.RESTART_WALLET')}</MenuItem>
+        <MenuItem onClick={onLogoutClick}>{t('USER_MENU.LOG_OUT')}</MenuItem>
       </DropDownMenu>
     </RootStyled>
   );

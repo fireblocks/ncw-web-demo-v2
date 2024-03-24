@@ -1,4 +1,4 @@
-import { getUserId } from '@api';
+import { generateNewDeviceId, getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
@@ -39,8 +39,8 @@ export class UserStore {
           this.setUser(this._authManager.loggedUser);
         }
       })
-      .catch((error) => {
-        this.setError(error.message);
+      .catch((e) => {
+        this.setError(e.message);
       });
   }
 
@@ -50,9 +50,13 @@ export class UserStore {
       .then(() => {
         this.clearStoreData();
       })
-      .catch((error) => {
-        this.setError(error.message);
+      .catch((e) => {
+        this.setError(e.message);
       });
+  }
+
+  public restartWallet(): void {
+    generateNewDeviceId(this.userId);
   }
 
   public getAccessToken(): Promise<string> {
@@ -107,7 +111,7 @@ export class UserStore {
     this.setAccessToken('');
     this.setUserId('');
     this.setError('');
-    localStorage.deleteItem('VISITED_PAGE');
+    localStorage.removeItem('VISITED_PAGE');
     this._rootStore.fireblocksSDKStore.clearData();
   }
 
