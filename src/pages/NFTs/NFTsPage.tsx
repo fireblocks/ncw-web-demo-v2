@@ -27,8 +27,7 @@ const RootStyled = styled('div')(() => ({
 }));
 
 const HeadingStyled = styled('div')(({ theme }) => ({
-  marginTop: theme.spacing(7),
-  height: 204,
+  padding: theme.spacing(4, 0, 9, 0),
 }));
 
 const ModeAndGroupingWrapperStyled = styled('div')(({ theme }) => ({

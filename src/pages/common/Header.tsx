@@ -66,7 +66,7 @@ const SettingsAndProfileStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
-  gap: theme.spacing(3),
+  gap: theme.spacing(2),
 }));
 
 export const Header: React.FC = observer(function Header() {

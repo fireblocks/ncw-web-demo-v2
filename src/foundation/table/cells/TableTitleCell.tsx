@@ -11,18 +11,19 @@ const ImageStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-around',
   alignItems: 'center',
-  minWidth: 56,
-  minHeight: 56,
-  maxWidth: 56,
-  maxHeight: 56,
+  minWidth: 64,
+  minHeight: 64,
+  maxWidth: 64,
+  maxHeight: 64,
   overflow: 'hidden',
   backgroundColor: theme.palette.secondary.main,
-  borderRadius: 12,
+  borderRadius: 8,
 }));
 
-const TextStyled = styled('div')(() => ({
+const TextStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
+  gap: theme.spacing(0.5),
 }));
 
 interface IProps {

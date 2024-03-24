@@ -8,12 +8,12 @@ import { FixedSizeList } from 'react-window';
 import { EmptySearch } from '../../common/EmptySearch';
 import { AssetListItem } from './AssetListItem';
 
-const TABLE_ROW_HEIGHT = 106;
+const TABLE_ROW_HEIGHT = 114;
 
 const TableWrapperStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
-  height: 450,
+  height: 340,
 }));
 
 const SearchWrapperStyled = styled('div')(({ theme }) => ({

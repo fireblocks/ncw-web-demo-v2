@@ -5,7 +5,7 @@ import styled from '@mui/material/styles/styled';
 
 export const InputStyled = styled(Input)(({ theme }) => ({
   '&.MuiInput-root': {
-    padding: theme.spacing(3, 6),
+    padding: theme.spacing(2, 5),
     width: '100%',
     boxSizing: 'border-box',
     fontSize: theme.typography.h5.fontSize,

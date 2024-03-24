@@ -11,9 +11,9 @@ import { ActionPlate } from '../ActionPlate';
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  gridTemplateRows: '300px',
   columnGap: '2px',
   backgroundColor: theme.palette.secondary.main,
+  alignItems: 'center',
 }));
 
 interface IProps {

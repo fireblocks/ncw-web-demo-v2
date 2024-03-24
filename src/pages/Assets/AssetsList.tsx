@@ -21,7 +21,7 @@ import { EmptySearch } from '../common/EmptySearch';
 import { AssetsListItem, RowStyled } from './AssetsListItem';
 import { NewTransactionDialog } from './NewTransactionDialog/NewTransactionDialog';
 
-const TABLE_ROW_HEIGHT = 106;
+const TABLE_ROW_HEIGHT = 114;
 
 interface IProps {
   onAddAssetDialogOpen: () => void;

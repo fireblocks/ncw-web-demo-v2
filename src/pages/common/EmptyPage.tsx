@@ -23,7 +23,7 @@ const PageNameStyled = styled(Typography)(({ theme }) => ({
   fontSize: 16,
   fontWeight: 600,
   textTransform: 'uppercase',
-  marginTop: theme.spacing(7),
+  marginTop: theme.spacing(4),
   marginBottom: theme.spacing(10),
   lineHeight: '20px',
 }));

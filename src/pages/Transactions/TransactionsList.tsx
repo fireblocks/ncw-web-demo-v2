@@ -7,7 +7,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import { RowStyled, TransactionsListItem } from './TransactionsListItem';
 
-const TABLE_ROW_HEIGHT = 106;
+const TABLE_ROW_HEIGHT = 114;
 
 export const TransactionsList: React.FC = observer(function TransactionsList() {
   const transactionsStore = useTransactionsStore();

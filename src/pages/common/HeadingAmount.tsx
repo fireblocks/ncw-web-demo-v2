@@ -2,16 +2,16 @@ import React from 'react';
 import { Typography, styled } from '@foundation';
 
 export const AmountsStyled = styled('div')(({ theme }) => ({
-  marginTop: theme.spacing(5),
+  marginTop: theme.spacing(4),
   display: 'flex',
   flexDirection: 'row',
-  gap: theme.spacing(10),
+  gap: theme.spacing(15),
 }));
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(2),
+  gap: theme.spacing(3),
 }));
 
 interface IProps {

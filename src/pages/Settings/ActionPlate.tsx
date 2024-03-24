@@ -1,7 +1,7 @@
 import { Typography, styled } from '@foundation';
 
 const RootStyled = styled('div')(({ theme }) => ({
-  padding: theme.spacing(12, 0, 0, 8),
+  padding: theme.spacing(8, 5),
   cursor: 'pointer',
   backgroundColor: theme.palette.secondary.light,
   boxSizing: 'border-box',

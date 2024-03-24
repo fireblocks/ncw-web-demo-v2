@@ -13,7 +13,7 @@ const PageHeadingStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
-  margin: theme.spacing(4, 0),
+  padding: theme.spacing(4, 0, 9, 0),
 }));
 
 export const SettingsPage: React.FC = observer(function SettingsPage() {

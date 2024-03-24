@@ -22,6 +22,7 @@ const TextStyled = styled('p')(({ theme }) => ({
   color: theme.palette.text.primary,
   fontSize: theme.typography.body1.fontSize,
   fontWeight: theme.typography.body1.fontWeight,
+  fontFamily: theme.typography.fontFamily,
   margin: 0,
   padding: 0,
 }));
@@ -35,6 +36,7 @@ const TextLargeStyled = styled('p')(({ theme }) => ({
   maxWidth: '95%',
   fontSize: theme.typography.h5.fontSize,
   fontWeight: theme.typography.h6.fontWeight,
+  fontFamily: theme.typography.fontFamily,
   margin: 0,
   padding: 0,
 }));
