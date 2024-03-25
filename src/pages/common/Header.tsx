@@ -110,6 +110,7 @@ export const Header: React.FC = observer(function Header() {
       <LogoStyled>
         {isNotSettingsPage ? (
           <IconButton
+            large
             onClick={() => {
               navigate('assets');
             }}
@@ -118,6 +119,7 @@ export const Header: React.FC = observer(function Header() {
           </IconButton>
         ) : (
           <IconButton
+            large
             onClick={() => {
               navigate(-1);
             }}
@@ -157,6 +159,7 @@ export const Header: React.FC = observer(function Header() {
       </TreasuryPagesStyled>
       <SettingsAndProfileStyled>
         <IconButton
+          large
           tooltip={t('SETTINGS.NAME')}
           onClick={() => {
             navigate('settings');
@@ -164,7 +167,7 @@ export const Header: React.FC = observer(function Header() {
         >
           <img src={IconSettings} />
         </IconButton>
-        <IconButton onClick={onOpenUserMenuClick}>
+        <IconButton onClick={onOpenUserMenuClick} large>
           <Typography variant="subtitle2" component="span">
             {userStore.userShortDisplayName}
           </Typography>

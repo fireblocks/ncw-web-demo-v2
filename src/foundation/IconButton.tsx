@@ -19,10 +19,21 @@ const IconButtonStyled = styled(MUIIconButton)(({ theme }) => ({
   },
 }));
 
-const LargeStyled = styled('div')(({ theme }) => ({
-  margin: theme.spacing(0, 2.5),
-  width: 24,
-  height: 24,
+const IconButtonLargeStyled = styled(MUIIconButton)(({ theme }) => ({
+  backgroundColor: theme.palette.secondary.dark,
+  padding: 0,
+  borderRadius: 4,
+  minWidth: 50,
+  height: 50,
+  boxSizing: 'border-box',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-around',
+  alignContent: 'center',
+  alignItems: 'center',
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
 }));
 
 interface IProps {
@@ -33,18 +44,22 @@ interface IProps {
   disabled?: boolean;
 }
 
-export const IconButton: React.FC<IProps> = ({ onClick, children, large, tooltip, disabled }) => (
-  <>
-    {tooltip && !disabled ? (
-      <Tooltip title={tooltip} arrow placement="top">
-        <IconButtonStyled size="small" onClick={onClick}>
-          {large ? <LargeStyled>{children}</LargeStyled> : children}
-        </IconButtonStyled>
-      </Tooltip>
-    ) : (
-      <IconButtonStyled size="small" onClick={onClick} disabled={disabled}>
-        {large ? <LargeStyled>{children}</LargeStyled> : children}
-      </IconButtonStyled>
-    )}
-  </>
-);
+export const IconButton: React.FC<IProps> = ({ onClick, children, large, tooltip, disabled }) => {
+  const ButtonComponent = large ? IconButtonLargeStyled : IconButtonStyled;
+
+  return (
+    <>
+      {tooltip && !disabled ? (
+        <Tooltip title={tooltip} arrow placement="top">
+          <ButtonComponent size="small" onClick={onClick}>
+            {children}
+          </ButtonComponent>
+        </Tooltip>
+      ) : (
+        <ButtonComponent size="small" onClick={onClick} disabled={disabled}>
+          {children}
+        </ButtonComponent>
+      )}
+    </>
+  );
+};

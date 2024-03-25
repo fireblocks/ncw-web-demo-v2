@@ -63,7 +63,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
           <TableCell>
             <CopyText text={currentAsset.address} />
           </TableCell>
-          {selectedAssetId === currentAsset.id ? (
+          {true ? (
             <TableTransferCell
               onSend={() => {
                 setTransactionDialogMode('SEND');
