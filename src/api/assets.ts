@@ -63,7 +63,7 @@ export const addAsset = async (
   assetId: string,
   token: string,
 ): Promise<IAssetAddressDTO> => {
-  const response = await postCall(`api/devices/${deviceId}/accounts/${accountId}/assets/${assetId}`, token);
+  const response = await postCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}`, token);
   return response;
 };
 
@@ -73,12 +73,12 @@ export const getAsset = async (
   assetId: string,
   token: string,
 ): Promise<IAssetDTO> => {
-  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId}/assets/${assetId}`, token);
+  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}`, token);
   return response.json();
 };
 
 export const getAssets = async (deviceId: string, accountId: number, token: string): Promise<IAssetDTO[]> => {
-  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId}/assets`, token);
+  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets`, token);
   return response.json();
 };
 
@@ -87,13 +87,16 @@ export const getAssetsSummary = async (
   accountId: number,
   token: string,
 ): Promise<IAssetsSummaryDTO[]> => {
-  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId}/assets/summary`, token);
+  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets/summary`, token);
   const assetsMap = await response.json();
   return Object.values(assetsMap);
 };
 
 export const getSupportedAssets = async (deviceId: string, accountId: number, token: string): Promise<IAssetDTO[]> => {
-  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId}/assets/supported_assets`, token);
+  const response = await getCall(
+    `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/supported_assets`,
+    token,
+  );
   return response.json();
 };
 
@@ -103,7 +106,10 @@ export const getAddress = async (
   assetId: string,
   token: string,
 ): Promise<IAssetAddressDTO> => {
-  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId}/assets/${assetId}/address`, token);
+  const response = await getCall(
+    `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}/address`,
+    token,
+  );
   return response.json();
 };
 
@@ -113,6 +119,9 @@ export const getBalance = async (
   assetId: string,
   token: string,
 ): Promise<IAssetBalanceDTO> => {
-  const response = await getCall(`api/devices/${deviceId}/accounts/${accountId}/assets/${assetId}/balance`, token);
+  const response = await getCall(
+    `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}/balance`,
+    token,
+  );
   return response.json();
 };

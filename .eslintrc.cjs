@@ -53,6 +53,7 @@ module.exports = {
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
       "no-shadow": "off",
       "max-params": ["error", 6],
       "no-nested-ternary": "error",

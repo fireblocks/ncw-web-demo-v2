@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage" : "https://fireblocks.github.io/ncw-web-demo-v2/",
+  "homepage": "https://fireblocks.github.io/ncw-web-demo-v2/",
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build --base=/ncw-web-demo-v2",

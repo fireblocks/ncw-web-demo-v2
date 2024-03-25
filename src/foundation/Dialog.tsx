@@ -38,10 +38,11 @@ const DialogContentStyled = styled(DialogContent)(({ theme }) => ({
 
 const DialogActionsStyled = styled(DialogActions)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.light,
-  padding: theme.spacing(0, 3, 3, 0),
+  padding: theme.spacing(3),
   display: 'flex',
   flexDirection: 'row',
   gap: theme.spacing(2),
+  borderTop: `1px solid ${theme.palette.secondary.main}`,
 }));
 
 const DialogHeaderStyled = styled('div')(({ theme }) => ({

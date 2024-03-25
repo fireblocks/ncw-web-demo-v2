@@ -53,6 +53,14 @@ export const translationToEnglish = {
         DELETED: 'Audit log deleted',
         DOWNLOADED: 'Audit log downloaded',
       },
+      BACKUP: {
+        TITLE: 'Create key backup',
+        DESCRIPTION: 'Back up for key for future recovery.',
+        SUCCESS_MESSAGE: 'Backup created',
+        ERROR_MESSAGE: 'Backup not created',
+        DRIVE: 'Backup to Drive',
+        ICLOUD: 'Backup to iCloud',
+      },
     },
     ITEMS: {
       CREATE_A_KEY_BACKUP: {
@@ -190,7 +198,7 @@ export const translationToEnglish = {
         TITLE: 'Restart wallet',
         WARNING: 'Are you sure?',
         TEXT: 'You will lose access to your existing wallet after you restart your wallet.',
-        RESTART: 'Restart',
+        RESTART: 'Restart Wallet',
         CANCEL: 'Cancel',
       },
     },

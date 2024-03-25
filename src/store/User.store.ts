@@ -79,12 +79,12 @@ export class UserStore {
             .then((userId) => {
               this.setUserId(userId);
             })
-            .catch((error) => {
-              this.setError(error.message);
+            .catch((e) => {
+              this.setError(e.message);
             });
         })
-        .catch((error) => {
-          this.setError(error.message);
+        .catch((e) => {
+          this.setError(e.message);
         });
     }
     this.storeIsReady = true;
@@ -123,5 +123,13 @@ export class UserStore {
   @computed
   public get userShortDisplayName(): string {
     return this.userDisplayName[0];
+  }
+
+  public getGoogleDriveCredentials(): Promise<string> {
+    if (!this.loggedUser) {
+      this.setError('User is not logged in');
+    }
+
+    return this._authManager.getGoogleDriveCredentials();
   }
 }

@@ -2,11 +2,11 @@ import { useContext } from 'react';
 import { MobXProviderContext } from 'mobx-react';
 import { AccountsStore } from './Accounts.store';
 import { AssetsStore } from './Assets.store';
+import { BackupStore } from './Backup.store';
 import { DeviceStore } from './Device.store';
 import { FireblocksSDKStore } from './FireblocksSDK.store';
 import { NFTStore } from './NFT.store';
 import { RootStore } from './Root.store';
-import { SettingsStore } from './Settings.store';
 import { TransactionsStore } from './Transactions.store';
 import { UserStore } from './User.store';
 
@@ -50,7 +50,7 @@ export function useNFTStore(): NFTStore {
   return rootStore.nftStore;
 }
 
-export function useSettingsStore(): SettingsStore {
+export function useBackupStore(): BackupStore {
   const rootStore = useRootStore();
-  return rootStore.settingsStore;
+  return rootStore.backupStore;
 }

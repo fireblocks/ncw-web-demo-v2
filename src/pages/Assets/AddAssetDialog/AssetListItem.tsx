@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Progress, TableCell, TableRow, TableTitleCell, styled } from '@foundation';
+import IconNoAsset from '@icons/no_asset_image.svg';
 import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
@@ -59,7 +60,11 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
     >
       <TableRow>
         <RowStyled>
-          <TableTitleCell title={currentAsset.name} subtitle={currentAsset.symbol} iconUrl={currentAsset.iconUrl} />
+          <TableTitleCell
+            title={currentAsset.name}
+            subtitle={currentAsset.symbol}
+            iconUrl={currentAsset.iconUrl || IconNoAsset}
+          />
           <TableCell>
             {hoveredLine === currentAsset.id ? (
               <>
