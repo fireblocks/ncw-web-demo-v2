@@ -39,6 +39,9 @@ const DialogContentStyled = styled(DialogContent)(({ theme }) => ({
 const DialogActionsStyled = styled(DialogActions)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.light,
   padding: theme.spacing(0, 3, 3, 0),
+  display: 'flex',
+  flexDirection: 'row',
+  gap: theme.spacing(2),
 }));
 
 const DialogHeaderStyled = styled('div')(({ theme }) => ({
@@ -57,9 +60,10 @@ const CloseButtonStyled = styled('div')(({ theme }) => ({
 
 interface IProps {
   title: string;
-  description: string;
+  description?: string;
   isOpen: boolean;
   actionCaption?: string;
+  cancelCaption?: string;
   disableAction?: boolean;
   onClose: () => void;
   doAction?: () => void;
@@ -76,6 +80,7 @@ export const Dialog: React.FC<IProps> = ({
   doAction,
   children,
   disableAction,
+  cancelCaption,
   size = 'medium',
 }) => {
   let DialogComponent = null;
@@ -100,9 +105,11 @@ export const Dialog: React.FC<IProps> = ({
           <Typography variant="h2" component="p">
             {title}
           </Typography>
-          <Typography variant="subtitle1" color="text.secondary">
-            {description}
-          </Typography>
+          {description && (
+            <Typography variant="subtitle1" color="text.secondary">
+              {description}
+            </Typography>
+          )}
           <CloseButtonStyled>
             <IconButton onClick={onClose}>
               <img src={IconClose} />
@@ -113,6 +120,7 @@ export const Dialog: React.FC<IProps> = ({
         <DialogContentStyled>{children}</DialogContentStyled>
         {doAction && actionCaption && (
           <DialogActionsStyled>
+            {cancelCaption && <ActionButton isDialog onClick={onClose} caption={cancelCaption} secondary />}
             <ActionButton disabled={disableAction} isDialog onClick={doAction} caption={actionCaption} />
           </DialogActionsStyled>
         )}

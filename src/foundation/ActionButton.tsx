@@ -11,6 +11,14 @@ const ButtonStyled = styled(MUIButton)(({ theme }) => ({
     padding: theme.spacing(0, 4),
     height: 40,
   },
+  '&.MuiButton-outlined': {
+    border: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    gap: theme.spacing(1),
+    padding: theme.spacing(0, 4),
+    height: 40,
+  },
 }));
 
 const ButtonDarkStyled = styled(MUIButton)(({ theme }) => ({
@@ -24,6 +32,17 @@ const ButtonDarkStyled = styled(MUIButton)(({ theme }) => ({
     fontSize: theme.typography.h5.fontSize,
     textTransform: 'capitalize',
   },
+  '&.MuiButton-outlined': {
+    border: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    gap: theme.spacing(1),
+    padding: theme.spacing(1.5, 4),
+    fontWeight: 600,
+    fontSize: theme.typography.h5.fontSize,
+    textTransform: 'capitalize',
+    color: theme.palette.text.primary,
+  },
 }));
 
 interface IProps {
@@ -32,13 +51,14 @@ interface IProps {
   disabled?: boolean;
   icon?: string;
   isDialog?: boolean;
+  secondary?: boolean;
 }
 
-export const ActionButton: React.FC<IProps> = ({ onClick, disabled, caption, icon, isDialog }) => {
+export const ActionButton: React.FC<IProps> = ({ onClick, disabled, caption, icon, isDialog, secondary }) => {
   const Button = isDialog ? ButtonDarkStyled : ButtonStyled;
 
   return (
-    <Button disabled={disabled} size="large" variant="contained" onClick={onClick}>
+    <Button disabled={disabled} size="large" variant={secondary ? 'outlined' : 'contained'} onClick={onClick}>
       {icon ? <img src={icon} /> : null}
       {caption}
     </Button>

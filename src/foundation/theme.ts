@@ -48,8 +48,9 @@ const theme: ThemeOptions = {
     },
     h1: {
       fontSize: 60,
-      lineHeight: 1,
+      lineHeight: '72px',
       fontWeight: 500,
+      letterSpacing: 2.5,
     },
     h2: {
       fontSize: 36,

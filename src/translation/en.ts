@@ -184,7 +184,15 @@ export const translationToEnglish = {
     COPIED: 'Copied',
   },
   USER_MENU: {
-    RESTART_WALLET: 'Restart wallet',
+    RESTART_WALLET: {
+      MENU_ITEM: 'Restart wallet',
+      DIALOG: {
+        TITLE: 'Restart wallet',
+        DESCRIPTION: 'Restart your wallet to apply changes.',
+        RESTART: 'Restart',
+        CANCEL: 'Cancel',
+      },
+    },
     LOG_OUT: 'Log out',
   },
   EMPTY_SEARCH: {

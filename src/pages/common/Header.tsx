@@ -7,6 +7,7 @@ import { useTransactionsStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { RestartWalletDialog } from './Dialogs/RestartWalletDialog';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -77,6 +78,7 @@ export const Header: React.FC = observer(function Header() {
   const transactionsStore = useTransactionsStore();
 
   const [userMenuAnchorEl, setUserMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isRestartWalletDialogOpen, setIsRestartWalletDialogOpen] = React.useState(false);
 
   const isNotSettingsPage = location.pathname !== '/settings';
   const isAssetsPage = location.pathname === '/assets';
@@ -99,9 +101,8 @@ export const Header: React.FC = observer(function Header() {
   };
 
   const onRestartClick = () => {
-    userStore.restartWallet();
+    setIsRestartWalletDialogOpen(true);
     setUserMenuAnchorEl(null);
-    window.location.reload();
   };
 
   return (
@@ -171,9 +172,15 @@ export const Header: React.FC = observer(function Header() {
       </SettingsAndProfileStyled>
       <DropDownMenu anchorEl={userMenuAnchorEl} isOpen={isUserMenuOpen} onClose={onCloseUserMenuClick}>
         <MenuItem disabled>{userStore.loggedUser?.email}</MenuItem>
-        <MenuItem onClick={onRestartClick}>{t('USER_MENU.RESTART_WALLET')}</MenuItem>
+        <MenuItem onClick={onRestartClick}>{t('USER_MENU.RESTART_WALLET.MENU_ITEM')}</MenuItem>
         <MenuItem onClick={onLogoutClick}>{t('USER_MENU.LOG_OUT')}</MenuItem>
       </DropDownMenu>
+      <RestartWalletDialog
+        isOpen={isRestartWalletDialogOpen}
+        onClose={() => {
+          setIsRestartWalletDialogOpen(false);
+        }}
+      />
     </RootStyled>
   );
 });
