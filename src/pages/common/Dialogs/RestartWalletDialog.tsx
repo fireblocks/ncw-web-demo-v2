@@ -5,8 +5,13 @@ import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 
 const RootStyled = styled('div')(({ theme }) => ({
-  textAlignLast: 'center',
+  textAlign: 'center',
   padding: theme.spacing(10, 0),
+  width: '80%',
+  margin: '0 auto',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(2),
 }));
 
 interface IProps {
@@ -38,7 +43,8 @@ export const RestartWalletDialog: React.FC<IProps> = observer(function RestartWa
       size="small"
     >
       <RootStyled>
-        <Typography variant="h3">{t('USER_MENU.RESTART_WALLET.DIALOG.DESCRIPTION')}</Typography>
+        <Typography variant="h3">{t('USER_MENU.RESTART_WALLET.DIALOG.WARNING')}</Typography>
+        <Typography variant="body1">{t('USER_MENU.RESTART_WALLET.DIALOG.TEXT')}</Typography>
       </RootStyled>
     </Dialog>
   );

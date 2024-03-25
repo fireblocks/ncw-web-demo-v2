@@ -188,7 +188,8 @@ export const translationToEnglish = {
       MENU_ITEM: 'Restart wallet',
       DIALOG: {
         TITLE: 'Restart wallet',
-        DESCRIPTION: 'Restart your wallet to apply changes.',
+        WARNING: 'Are you sure?',
+        TEXT: 'You will lose access to your existing wallet after you restart your wallet.',
         RESTART: 'Restart',
         CANCEL: 'Cancel',
       },
