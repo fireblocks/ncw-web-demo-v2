@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 const RootStyled = styled('div')(({ theme }) => ({
   textAlign: 'center',
-  padding: theme.spacing(10, 0),
+  padding: theme.spacing(10, 0, 14, 0),
   width: '80%',
   margin: '0 auto',
   display: 'flex',
