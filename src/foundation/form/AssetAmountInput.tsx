@@ -42,7 +42,7 @@ export const AssetAmountInput: React.FC<IProps> = ({ value, placeholder, label, 
       <InputLabelStyled htmlFor={label} shrink={false}>
         {label} {assetSymbol}
       </InputLabelStyled>
-      <NumericFormat value={value} customInput={InputStyled} {...materialUIInputProps} />
+      <NumericFormat allowNegative={false} value={value} customInput={InputStyled} {...materialUIInputProps} />
     </FormControlRootStyled>
   );
 };

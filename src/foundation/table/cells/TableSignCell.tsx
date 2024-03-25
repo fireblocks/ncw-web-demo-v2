@@ -1,4 +1,4 @@
-import { IconButton, styled } from '@foundation';
+import { IconButton, Progress, styled } from '@foundation';
 import IconCancel from '@icons/cancel.svg';
 import IconSign from '@icons/sign.svg';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +27,7 @@ export const TableSignCell: React.FC<IProps> = ({ isSigning, onSign, onCancel })
         <img src={IconCancel} />
       </IconButton>
       <IconButton disabled={isSigning} tooltip={t('TRANSACTIONS.TABLE.SIGN')} large onClick={onSign}>
-        <img src={IconSign} />
+        {isSigning ? <Progress size="small" /> : <img src={IconSign} />}
       </IconButton>
     </RootStyled>
   );

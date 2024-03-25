@@ -9,10 +9,11 @@ import { CARD_HEIGHT, CARD_WIDTH, NFTCard } from './NFTCard';
 
 const COLUMN_COUNT = 4;
 
-const RootStyled = styled('div')(() => ({
+const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
+  backgroundColor: theme.palette.primary.light,
 }));
 
 interface IProps {

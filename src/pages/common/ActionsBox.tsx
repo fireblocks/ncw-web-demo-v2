@@ -4,6 +4,7 @@ export const ActionsBoxWrapperStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   width: '100%',
   justifyContent: 'space-between',
+  alignItems: 'center',
   backgroundColor: theme.palette.primary.light,
   borderBottom: `2px solid ${theme.palette.secondary.main}`,
   paddingRight: theme.spacing(5),
