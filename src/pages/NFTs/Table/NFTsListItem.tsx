@@ -28,6 +28,10 @@ export const NFTsListItem: React.FC<IProps> = observer(function NFTsListItem({
 }) {
   const token = filteredTokens[index];
 
+  if (!token) {
+    return null;
+  }
+
   const date = new Date(token.ownershipStartTime).toLocaleString();
 
   return (

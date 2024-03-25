@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, styled } from '@foundation';
+import IconNoNft from '@icons/no_nft_image.svg';
 import { NFTTokenStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -61,6 +62,10 @@ export const NFTCard: React.FC<IProps> = observer(function NFTCard({
 
   const token = filteredTokens[columnIndex * rowIndex + columnIndex];
 
+  if (!token) {
+    return null;
+  }
+
   return (
     <RowStyled
       style={style}
@@ -75,7 +80,7 @@ export const NFTCard: React.FC<IProps> = observer(function NFTCard({
       }}
     >
       <ContentStyled>
-        <ImgStyled src={token.imageUrl || ''} alt={token.name} />
+        <ImgStyled src={token.imageUrl || IconNoNft} alt={token.name} />
         <TextWrapperStyled>
           <TokenNameStyled variant="h5" color="text.primary">
             {token.name}
