@@ -14,6 +14,7 @@ import {
 } from '@foundation';
 import IconDots from '@icons/dots.svg';
 import IconNoAsset from '@icons/no_asset_image.svg';
+import IconNoNft from '@icons/no_nft_image.svg';
 import { TransactionStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -52,6 +53,8 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
 
   const transaction = transactionsStore.transactionsSortedByCreationDate[index];
 
+  const iconPlaceholder = transaction.isNFT ? IconNoNft : IconNoAsset;
+
   return (
     <div key={transaction.id} style={style}>
       <TableRow>
@@ -63,7 +66,7 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
                 : `${t(transaction.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${transaction.asset?.name || ''}`
             }
             subtitle={transaction.asset?.symbol || ''}
-            iconUrl={transaction.asset?.iconUrl || IconNoAsset}
+            iconUrl={transaction.asset?.iconUrl || iconPlaceholder}
           />
           <TableBalanceCell balance={transaction.amount} balanceInUsd={transaction.amountInUSD} />
           <TableTextCell text={transaction.fee} />
