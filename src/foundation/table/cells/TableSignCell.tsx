@@ -23,10 +23,10 @@ export const TableSignCell: React.FC<IProps> = ({ isSigning, onSign, onCancel })
 
   return (
     <RootStyled>
-      <IconButton tooltip={t('TRANSACTIONS.TABLE.CANCEL')} large onClick={onCancel}>
+      <IconButton tooltip={t('TRANSACTIONS.TABLE.CANCEL')} onClick={onCancel}>
         <img src={IconCancel} />
       </IconButton>
-      <IconButton disabled={isSigning} tooltip={t('TRANSACTIONS.TABLE.SIGN')} large onClick={onSign}>
+      <IconButton disabled={isSigning} tooltip={t('TRANSACTIONS.TABLE.SIGN')} onClick={onSign}>
         {isSigning ? <Progress size="small" /> : <img src={IconSign} />}
       </IconButton>
     </RootStyled>
