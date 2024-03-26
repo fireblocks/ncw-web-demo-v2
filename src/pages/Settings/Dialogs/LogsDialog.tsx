@@ -54,7 +54,7 @@ export const LogsDialog: React.FC<IProps> = observer(function LogsDialog({ isOpe
       description={t('SETTINGS.DIALOGS.LOGS.DESCRIPTION')}
       isOpen={isOpen}
       onClose={onClose}
-      size="medium"
+      size="large"
     >
       <RootStyled>
         <ActionPlate iconSrc={IconDownload} caption={t('SETTINGS.DIALOGS.LOGS.DOWNLOAD')} onClick={onDownloadLogs} />

@@ -59,7 +59,9 @@ export const translationToEnglish = {
         SUCCESS_MESSAGE: 'Backup created',
         ERROR_MESSAGE: 'Backup not created',
         DRIVE: 'Backup to Drive',
+        DRIVE_DESCRIPTION: 'Back up your key to Google Drive.',
         ICLOUD: 'Backup to iCloud',
+        ICLOUD_DESCRIPTION: 'Back up your key to iCloud.',
       },
     },
     ITEMS: {
@@ -97,6 +99,7 @@ export const translationToEnglish = {
     TITLE: 'My assets',
     CURRENT_BALANCE: 'Balance',
     ADD_ASSET: 'Add asset',
+    ADD: 'Add',
     REFRESH_BALANCES: 'Refresh balance',
     REFRESHING_BALANCES: 'Refreshing balance',
     RECEIVE: 'Receive',

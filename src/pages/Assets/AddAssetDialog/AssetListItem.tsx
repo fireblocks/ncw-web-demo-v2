@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 const RowStyled = styled('div')(() => ({
   display: 'grid',
-  gridTemplateColumns: '1fr 160px',
+  gridTemplateColumns: '1fr 130px',
 }));
 
 interface IProps {
@@ -73,7 +73,7 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
                 ) : (
                   <ActionButton
                     isDialog
-                    caption={t('ASSETS.ADD_ASSET')}
+                    caption={t('ASSETS.ADD')}
                     onClick={() => {
                       handleAddAsset(currentAsset.id);
                     }}

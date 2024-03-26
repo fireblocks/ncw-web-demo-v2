@@ -13,7 +13,7 @@ const PageHeadingStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
-  padding: theme.spacing(4, 0, 9, 0),
+  padding: theme.spacing(2, 0, 8, 0),
 }));
 
 export const SettingsPage: React.FC = observer(function SettingsPage() {
@@ -22,10 +22,10 @@ export const SettingsPage: React.FC = observer(function SettingsPage() {
   return (
     <RootStyled>
       <PageHeadingStyled>
-        <Typography variant="h3" color="text.primary">
+        <Typography variant="h5" color="text.primary">
           {t('SETTINGS.NAME')}
         </Typography>
-        <Typography variant="h5" color="text.secondary">
+        <Typography variant="body2" color="text.secondary">
           {t('SETTINGS.DESCRIPTION')}
         </Typography>
       </PageHeadingStyled>

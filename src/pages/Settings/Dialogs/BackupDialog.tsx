@@ -28,11 +28,21 @@ export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ i
       description={t('SETTINGS.DIALOGS.BACKUP.DESCRIPTION')}
       isOpen={isOpen}
       onClose={onClose}
-      size="medium"
+      size="large"
     >
       <RootStyled>
-        <ActionPlate iconSrc={IconGoogle} caption={t('SETTINGS.DIALOGS.BACKUP.DRIVE')} onClick={() => {}} />
-        <ActionPlate iconSrc={IconApple} caption={t('SETTINGS.DIALOGS.BACKUP.ICLOUD')} onClick={() => {}} />
+        <ActionPlate
+          iconSrc={IconGoogle}
+          caption={t('SETTINGS.DIALOGS.BACKUP.DRIVE')}
+          description={t('SETTINGS.DIALOGS.BACKUP.DRIVE_DESCRIPTION')}
+          onClick={() => {}}
+        />
+        <ActionPlate
+          iconSrc={IconApple}
+          caption={t('SETTINGS.DIALOGS.BACKUP.ICLOUD')}
+          description={t('SETTINGS.DIALOGS.BACKUP.ICLOUD_DESCRIPTION')}
+          onClick={() => {}}
+        />
       </RootStyled>
     </Dialog>
   );

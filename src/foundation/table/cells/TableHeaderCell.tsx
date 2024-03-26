@@ -10,7 +10,7 @@ interface IProps {
 
 export const TableHeaderCell: React.FC<IProps> = ({ title }) => (
   <RootStyled>
-    <Typography component="p" variant="subtitle1" color="text.secondary">
+    <Typography component="p" variant="caption" color="text.secondary">
       {title}
     </Typography>
   </RootStyled>

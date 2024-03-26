@@ -23,7 +23,7 @@ const PageNameStyled = styled(Typography)(({ theme }) => ({
   fontSize: 16,
   fontWeight: 600,
   textTransform: 'uppercase',
-  marginTop: theme.spacing(4),
+  marginTop: theme.spacing(2),
   marginBottom: theme.spacing(10),
   lineHeight: '20px',
 }));
@@ -35,7 +35,7 @@ const HeadingStyled = styled('div')(({ theme }) => ({
   alignItems: 'center',
   textAlign: 'center',
   gap: theme.spacing(3),
-  height: 420,
+  height: 350,
   boxSizing: 'border-box',
 }));
 
@@ -46,7 +46,7 @@ const HeadingTextStyled = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   textAlign: 'center',
-  gap: theme.spacing(3),
+  gap: theme.spacing(1),
 }));
 
 const TableStyled = styled('div')(({ theme }) => ({
@@ -138,7 +138,7 @@ export const EmptyPage: React.FC<IProps> = ({ page, onAddAsset }) => {
         <PageNameStyled>{t(`${page}.TITLE`)}</PageNameStyled>
         <img width={72} height={72} src={icon} alt={page} />
         <HeadingTextStyled>
-          <Typography color="text.primary" variant="h2" component="h2">
+          <Typography color="text.primary" variant="h5" component="h5">
             {t(`${page}.EMPTY_PAGE_TITLE`)}
           </Typography>
           <Typography color="text.secondary" variant="body2">

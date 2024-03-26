@@ -27,7 +27,7 @@ const RootStyled = styled('div')(() => ({
 }));
 
 const HeadingStyled = styled('div')(({ theme }) => ({
-  padding: theme.spacing(4, 0, 9, 0),
+  padding: theme.spacing(2, 0, 8, 0),
 }));
 
 export const NFTsPage: React.FC = observer(function NFTsPage() {

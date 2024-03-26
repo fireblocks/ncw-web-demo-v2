@@ -10,8 +10,9 @@ const ButtonGroupStyled = styled(ButtonGroup)(({ theme }) => ({
 }));
 
 const ButtonStyled = styled(Button)(({ theme }) => ({
-  fontSize: 16,
-  fontWeight: 600,
+  fontSize: theme.typography.body1.fontSize,
+  lineHeight: theme.typography.body1.lineHeight,
+  letterSpacing: theme.typography.body1.letterSpacing,
   color: theme.palette.text.secondary,
   '&.MuiButton-root': {
     padding: theme.spacing(1.5, 3),

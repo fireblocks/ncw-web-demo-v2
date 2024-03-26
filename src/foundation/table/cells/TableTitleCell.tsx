@@ -38,7 +38,7 @@ export const TableTitleCell: React.FC<IProps> = ({ title, subtitle, iconUrl }) =
       <img width="24px" height="24px" src={iconUrl} alt={title} />
     </ImageStyled>
     <TextStyled>
-      <Typography component="p" color="text.primary" variant="subtitle2">
+      <Typography component="p" color="text.primary" variant="body1">
         {title}
       </Typography>
       <Typography component="p" color="text.secondary" variant="body1">

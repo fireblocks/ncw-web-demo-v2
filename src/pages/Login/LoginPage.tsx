@@ -65,18 +65,15 @@ const IllustrationBlockchainsStyled = styled('div')(({ theme }) => ({
 }));
 
 const HeaderTextStyled = styled(Typography)(({ theme }) => ({
-  fontSize: 44,
+  fontSize: theme.typography.h2.fontSize,
   color: theme.palette.text.primary,
   fontWeight: 300,
-  lineHeight: '57px',
-  letterSpacing: 2.5,
+  lineHeight: '56px',
+  letterSpacing: theme.typography.h2.letterSpacing,
 }));
 
 const HeaderDescriptionStyled = styled(Typography)(({ theme }) => ({
-  fontSize: 16,
   color: theme.palette.text.secondary,
-  fontWeight: 400,
-  lineHeight: '24px',
   margin: theme.spacing(6, 'auto', 4, 'auto'),
   width: 330,
 }));
@@ -125,7 +122,7 @@ export const LoginPage: React.FC = observer(function LoginPage() {
           <IllustrationBlockBGStyled src={IconBG} />
           <IllustrationContentStyled>
             <HeaderTextStyled>{t('LOGIN.ILLUSTRATION.HEADER')}</HeaderTextStyled>
-            <HeaderDescriptionStyled>{t('LOGIN.ILLUSTRATION.DESCRIPTION')}</HeaderDescriptionStyled>
+            <HeaderDescriptionStyled variant="subtitle1">{t('LOGIN.ILLUSTRATION.DESCRIPTION')}</HeaderDescriptionStyled>
             <IllustrationBlockchainsStyled>
               <img src={IconAssets} />
               <Typography variant="subtitle1" color="text.secondary">
@@ -140,10 +137,10 @@ export const LoginPage: React.FC = observer(function LoginPage() {
               <LogoWrapperStyled>
                 <img src={IconLogo} />
               </LogoWrapperStyled>
-              <Typography variant="h5" color="text.primary">
+              <Typography variant="h3" color="text.primary">
                 {t('LOGIN.WELCOME')}
               </Typography>
-              <Typography variant="subtitle1" color="text.secondary">
+              <Typography variant="h6" color="text.secondary">
                 {t('LOGIN.DESCRIPTION')}
               </Typography>
             </ActionsHeadingStyled>

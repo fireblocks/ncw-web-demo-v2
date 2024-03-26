@@ -11,7 +11,7 @@ export const AmountsStyled = styled('div')(({ theme }) => ({
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(3),
+  gap: theme.spacing(1),
 }));
 
 interface IProps {
@@ -25,7 +25,7 @@ export const HeadingAmount: React.FC<IProps> = ({ title, titleColor, value }) =>
     <Typography variant="h6" color={titleColor}>
       {title}
     </Typography>
-    <Typography variant="h1" color="text.primary">
+    <Typography variant="h2" color="text.primary">
       {value}
     </Typography>
   </RootStyled>

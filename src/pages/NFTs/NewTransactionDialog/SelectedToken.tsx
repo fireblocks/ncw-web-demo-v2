@@ -1,4 +1,5 @@
 import { Typography, styled } from '@foundation';
+import IconNoNft from '@icons/no_nft_image.svg';
 import { NFTTokenStore } from '@store';
 
 const RootStyled = styled('div')(({ theme }) => ({
@@ -23,7 +24,7 @@ const TextStyled = styled('div')(() => ({
 const TokenNameStyled = styled(Typography)(({ theme }) => ({
   fontSize: 24,
   fontWeight: 600,
-  marginBottom: theme.spacing(1.5),
+  marginBottom: theme.spacing(1),
 }));
 
 interface IProps {
@@ -34,19 +35,13 @@ export const SelectedToken: React.FC<IProps> = ({ token }) => (
   <RootStyled>
     <div>
       <ImageStyled>
-        {token.imageUrl ? (
-          <img width="224px" height="224px" src={token.imageUrl} alt={token.name} />
-        ) : (
-          <Typography component="p" color="text.primary" variant="h1">
-            NFT
-          </Typography>
-        )}
+        <img width="224px" height="224px" src={token.imageUrl ? token.imageUrl : IconNoNft} alt={token.name} />
       </ImageStyled>
       <TextStyled>
-        <TokenNameStyled variant="h5" color="text.primary">
+        <TokenNameStyled variant="h3" color="text.primary">
           {token.name}
         </TokenNameStyled>
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant="body2" color="text.secondary">
           {token.collectionName}
         </Typography>
       </TextStyled>

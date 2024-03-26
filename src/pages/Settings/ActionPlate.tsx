@@ -1,9 +1,10 @@
 import { Typography, styled } from '@foundation';
 
 const RootStyled = styled('div')(({ theme }) => ({
-  padding: theme.spacing(8, 5),
   cursor: 'pointer',
+  padding: theme.spacing(15, 3, 3, 8),
   backgroundColor: theme.palette.secondary.light,
+  height: 360,
   boxSizing: 'border-box',
   '&:hover .IconStyled': {
     backgroundColor: theme.palette.primary.dark,
@@ -25,7 +26,7 @@ const IconStyled = styled('div')(({ theme }) => ({
 const TextStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(3),
+  gap: theme.spacing(1),
 }));
 
 interface IProps {
@@ -41,11 +42,11 @@ export const ActionPlate: React.FC<IProps> = ({ onClick, caption, description, i
       <img src={iconSrc} width={16} />
     </IconStyled>
     <TextStyled>
-      <Typography variant="h3" color="text.primary">
+      <Typography variant="h4" color="text.primary">
         {caption}
       </Typography>
       {description && (
-        <Typography variant="h5" color="text.secondary">
+        <Typography variant="body2" color="text.secondary">
           {description}
         </Typography>
       )}

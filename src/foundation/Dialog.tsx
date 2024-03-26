@@ -111,7 +111,7 @@ export const Dialog: React.FC<IProps> = ({
     >
       <RootStyled>
         <DialogHeaderStyled>
-          <Typography variant="h2" component="p">
+          <Typography variant="h5" component="p">
             {title}
           </Typography>
           {description && (

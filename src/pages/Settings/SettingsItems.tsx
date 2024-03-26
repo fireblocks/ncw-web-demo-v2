@@ -13,10 +13,9 @@ import { LogsDialog } from './Dialogs/LogsDialog';
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr 1fr',
-  gridTemplateRows: '360px 360px 360px',
   columnGap: '2px',
   rowGap: '2px',
-  marginTop: theme.spacing(8),
+  marginTop: theme.spacing(4),
 }));
 
 export const SettingsItems: React.FC = observer(function SettingsItems() {

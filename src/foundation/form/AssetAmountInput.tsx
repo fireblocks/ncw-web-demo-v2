@@ -6,8 +6,9 @@ import { InputLabelStyled, FormControlRootStyled, InputStyled } from './commonSt
 
 const InputAdornmentStyled = styled(InputAdornment)(({ theme }) => ({
   '&.MuiInputAdornment-root .MuiTypography-root': {
-    fontSize: theme.typography.h5.fontSize,
-    fontWeight: theme.typography.h6.fontWeight,
+    fontSize: theme.typography.body1.fontSize,
+    fontWeight: theme.typography.body1.fontWeight,
+    letterSpacing: theme.typography.body1.letterSpacing,
     maxWidth: 250,
     textWrap: 'nowrap',
     overflow: 'hidden',

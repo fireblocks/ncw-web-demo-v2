@@ -39,7 +39,7 @@ const TextWrapperStyled = styled('div')(({ theme }) => ({
 const TokenNameStyled = styled(Typography)(({ theme }) => ({
   fontSize: 24,
   fontWeight: 600,
-  marginBottom: theme.spacing(1.5),
+  marginBottom: theme.spacing(1),
 }));
 
 interface IProps {
@@ -83,10 +83,10 @@ export const NFTCard: React.FC<IProps> = observer(function NFTCard({
       <ContentStyled>
         <ImgStyled src={token.imageUrl || IconNoNft} alt={token.name} />
         <TextWrapperStyled>
-          <TokenNameStyled variant="h5" color="text.primary">
+          <TokenNameStyled variant="h3" color="text.primary">
             {token.name}
           </TokenNameStyled>
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="body2" color="text.secondary">
             {`${t('NFT.TOKEN_ID')} ${token.tokenId}`}
           </Typography>
         </TextWrapperStyled>

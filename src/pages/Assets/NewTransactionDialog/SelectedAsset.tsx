@@ -1,4 +1,5 @@
 import { Typography, styled } from '@foundation';
+import IconNoAsset from '@icons/no_asset_image.svg';
 import { AssetStore } from '@store';
 
 const RootStyled = styled('div')(({ theme }) => ({
@@ -50,16 +51,10 @@ export const SelectedAsset: React.FC<IProps> = ({ asset }) => (
   <RootStyled>
     <AssetInfoStyled>
       <ImageStyled>
-        {asset.iconUrl ? (
-          <img width="24px" height="24px" src={asset.iconUrl} alt={asset.name} />
-        ) : (
-          <Typography component="p" color="text.primary" variant="subtitle2">
-            {asset.name[0]}
-          </Typography>
-        )}
+        <img width="24px" height="24px" src={asset.iconUrl ? asset.iconUrl : IconNoAsset} alt={asset.name} />
       </ImageStyled>
       <TextStyled>
-        <Typography component="p" color="text.primary" variant="subtitle2">
+        <Typography component="p" color="text.primary" variant="body1">
           {asset.name}
         </Typography>
         <Typography component="p" color="text.secondary" variant="body1">
@@ -68,7 +63,7 @@ export const SelectedAsset: React.FC<IProps> = ({ asset }) => (
       </TextStyled>
     </AssetInfoStyled>
     <AssetValueStyled>
-      <Typography variant="subtitle2">{asset.totalBalance}</Typography>
+      <Typography variant="body1">{asset.totalBalance}</Typography>
       <Typography color="text.secondary" variant="body1">
         {asset.totalBalanceInUSD}
       </Typography>

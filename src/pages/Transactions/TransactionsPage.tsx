@@ -14,7 +14,7 @@ const RootStyled = styled('div')(() => ({
 }));
 
 const HeadingStyled = styled('div')(({ theme }) => ({
-  padding: theme.spacing(4, 0, 9, 0),
+  padding: theme.spacing(2, 0, 8, 0),
 }));
 
 export const TransactionsPage: React.FC = observer(function TransactionsPage() {
@@ -29,7 +29,7 @@ export const TransactionsPage: React.FC = observer(function TransactionsPage() {
       ) : (
         <>
           <HeadingStyled>
-            <Typography variant="h5" color="text.primary">
+            <Typography variant="h6" color="text.primary">
               {t('TRANSACTIONS.TITLE')}
             </Typography>
             <AmountsStyled>
