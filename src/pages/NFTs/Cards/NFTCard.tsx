@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 export const CARD_HEIGHT = 410;
 export const CARD_WIDTH = 360;
+export const COLUMN_COUNT = 4;
 
 const RowStyled = styled('div')(({ theme }) => ({
   boxSizing: 'border-box',
@@ -60,7 +61,7 @@ export const NFTCard: React.FC<IProps> = observer(function NFTCard({
 }) {
   const { t } = useTranslation();
 
-  const token = filteredTokens[columnIndex * rowIndex + columnIndex];
+  const token = filteredTokens[COLUMN_COUNT * rowIndex + columnIndex];
 
   if (!token) {
     return null;

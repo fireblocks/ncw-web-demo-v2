@@ -5,9 +5,7 @@ import { observer } from 'mobx-react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid } from 'react-window';
 import { EmptySearch } from '../../common/EmptySearch';
-import { CARD_HEIGHT, CARD_WIDTH, NFTCard } from './NFTCard';
-
-const COLUMN_COUNT = 4;
+import { CARD_HEIGHT, CARD_WIDTH, COLUMN_COUNT, NFTCard } from './NFTCard';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',

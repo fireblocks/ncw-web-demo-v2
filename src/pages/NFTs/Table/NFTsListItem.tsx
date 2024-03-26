@@ -60,7 +60,6 @@ export const NFTsListItem: React.FC<IProps> = observer(function NFTsListItem({
               onSend={() => {
                 onNewTransactionDialogOpen();
               }}
-              totalBalance={1}
             />
           ) : (
             <TableTextCell text={token.standard} />
