@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Progress, TableCell, TableRow, TableTitleCell, styled } from '@foundation';
+import { ActionButton, Progress, TableCell, TableRow, TableTitleCell, styled } from '@foundation';
 import IconNoAsset from '@icons/no_asset_image.svg';
 import { AssetStore, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 const RowStyled = styled('div')(() => ({
   display: 'grid',
-  gridTemplateColumns: '1fr 130px',
+  gridTemplateColumns: '1fr 160px',
 }));
 
 interface IProps {
@@ -71,14 +71,13 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
                 {isAddingAsset ? (
                   <Progress size="small" />
                 ) : (
-                  <Button
+                  <ActionButton
+                    isDialog
+                    caption={t('ASSETS.ADD_ASSET')}
                     onClick={() => {
                       handleAddAsset(currentAsset.id);
                     }}
-                    variant="contained"
-                  >
-                    {t('ASSETS.ADD_ASSET')}
-                  </Button>
+                  />
                 )}
               </>
             ) : null}

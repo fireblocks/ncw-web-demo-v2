@@ -18,6 +18,7 @@ const TableWrapperStyled = styled('div')(() => ({
 
 const SearchWrapperStyled = styled('div')(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.secondary.main}`,
+  backgroundColor: theme.palette.background.paper,
 }));
 
 interface IProps {

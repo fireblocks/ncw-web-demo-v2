@@ -10,7 +10,7 @@ const RootStyled = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   flex: 1,
   width: '100%',
-  backgroundColor: theme.palette.primary.main,
+  backgroundColor: theme.palette.background.default,
 }));
 
 const ContentStyled = styled('div')(() => ({

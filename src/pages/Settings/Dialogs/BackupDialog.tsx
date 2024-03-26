@@ -10,7 +10,7 @@ const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
   columnGap: '2px',
-  backgroundColor: theme.palette.secondary.main,
+  backgroundColor: theme.palette.background.default,
   alignItems: 'center',
 }));
 

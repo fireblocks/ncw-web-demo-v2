@@ -10,6 +10,7 @@ const ButtonStyled = styled(MUIButton)(({ theme }) => ({
     gap: theme.spacing(1),
     padding: theme.spacing(0, 4),
     height: 40,
+    textTransform: 'capitalize',
   },
   '&.MuiButton-outlined': {
     border: 0,
@@ -18,12 +19,13 @@ const ButtonStyled = styled(MUIButton)(({ theme }) => ({
     gap: theme.spacing(1),
     padding: theme.spacing(0, 4),
     height: 40,
+    textTransform: 'capitalize',
   },
 }));
 
 const ButtonDarkStyled = styled(MUIButton)(({ theme }) => ({
   '&.MuiButton-contained': {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
     display: 'flex',
     flexDirection: 'row',
     gap: theme.spacing(1),

@@ -3,8 +3,8 @@ import { Typography, styled } from '@foundation';
 const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(4, 3),
   cursor: 'pointer',
-  backgroundColor: theme.palette.secondary.light,
   borderRadius: 4,
+  backgroundColor: theme.palette.primary.light,
   boxSizing: 'border-box',
   '&:hover .IconStyled': {
     backgroundColor: theme.palette.primary.dark,
@@ -17,7 +17,7 @@ const IconStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: theme.palette.primary.light,
+  backgroundColor: theme.palette.secondary.main,
   borderRadius: 4,
   marginBottom: theme.spacing(2),
   transition: 'background-color 0.3s',

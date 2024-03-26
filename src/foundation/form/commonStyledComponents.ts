@@ -20,7 +20,7 @@ export const InputLabelStyled = styled(InputLabel)(({ theme }) => ({
 export const InputStyled = styled(Input)(({ theme }) => ({
   '&.MuiInput-root': {
     marginTop: theme.spacing(1),
-    border: `2px solid ${theme.palette.secondary.main}`,
+    border: `2px solid ${theme.palette.background.default}`,
     borderRadius: 8,
     padding: theme.spacing(2, 3),
     width: '100%',

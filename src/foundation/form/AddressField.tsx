@@ -4,7 +4,7 @@ import styled from '@mui/material/styles/styled';
 import { InputLabelStyled, FormControlRootStyled } from './commonStyledComponents';
 
 const AddressWrapperStyled = styled('div')(({ theme }) => ({
-  border: `2px solid ${theme.palette.secondary.main}`,
+  border: `2px solid ${theme.palette.background.default}`,
   borderRadius: 8,
   marginTop: theme.spacing(2),
   padding: theme.spacing(2, 3),

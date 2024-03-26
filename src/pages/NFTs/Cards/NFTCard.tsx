@@ -12,7 +12,7 @@ export const COLUMN_COUNT = 4;
 const RowStyled = styled('div')(({ theme }) => ({
   boxSizing: 'border-box',
   backgroundColor: theme.palette.primary.light,
-  border: `1px solid ${theme.palette.secondary.main}`,
+  border: `1px solid ${theme.palette.background.default}`,
   borderTop: 0,
   cursor: 'pointer',
   transition: 'background-color 0.3s',

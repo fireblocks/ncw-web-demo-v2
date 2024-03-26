@@ -22,12 +22,12 @@ export const TableTransferCell: React.FC<IProps> = ({ onReceive, onSend }) => {
   return (
     <RootStyled>
       {onReceive && (
-        <IconButton tooltip={t('ASSETS.RECEIVE')} large onClick={onReceive}>
+        <IconButton tooltip={t('ASSETS.RECEIVE')} onClick={onReceive}>
           <img src={IconReceive} />
         </IconButton>
       )}
       {onSend && (
-        <IconButton tooltip={t('ASSETS.SEND')} large onClick={onSend}>
+        <IconButton tooltip={t('ASSETS.SEND')} onClick={onSend}>
           <img src={IconSend} />
         </IconButton>
       )}

@@ -5,8 +5,8 @@ export const ActionsBoxWrapperStyled = styled('div')(({ theme }) => ({
   width: '100%',
   justifyContent: 'space-between',
   alignItems: 'center',
-  backgroundColor: theme.palette.primary.light,
-  borderBottom: `2px solid ${theme.palette.secondary.main}`,
+  backgroundColor: theme.palette.background.paper,
+  borderBottom: `2px solid ${theme.palette.background.default}`,
   paddingRight: theme.spacing(5),
 }));
 

@@ -4,9 +4,9 @@ const theme: ThemeOptions = {
   palette: {
     mode: 'dark',
     primary: {
-      main: '#000000',
-      light: '#2a2a2a',
+      main: '#121213',
       dark: '#2D68FF',
+      light: '#2a2a2a',
     },
     secondary: {
       main: '#1B1B1B',
@@ -22,6 +22,11 @@ const theme: ThemeOptions = {
     text: {
       primary: '#FFFFFF',
       secondary: '#767676',
+      disabled: '#767676',
+    },
+    background: {
+      default: '#1B1B1B',
+      paper: '#2a2a2a',
     },
   },
   typography: {

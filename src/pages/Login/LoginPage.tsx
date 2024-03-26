@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, styled } from '@foundation';
+import { Typography, alpha, styled } from '@foundation';
 import IconAssets from '@icons/login_assets.svg';
 import IconBG from '@icons/login_bg.svg';
 import IconLogo from '@icons/logo.svg';
@@ -18,8 +18,8 @@ const RootStyled = styled('div')(() => ({
   justifyContent: 'center',
 }));
 
-const ContentWrapperStyled = styled('div')(() => ({
-  backgroundColor: '#19191A',
+const ContentWrapperStyled = styled('div')(({ theme }) => ({
+  backgroundColor: alpha(theme.palette.secondary.light, 0.4),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
@@ -84,7 +84,6 @@ const HeaderDescriptionStyled = styled(Typography)(({ theme }) => ({
 const ActionsBlockStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  backgroundColor: '#1C1C1D',
   width: '48%',
   height: 700,
   minHeight: 700,

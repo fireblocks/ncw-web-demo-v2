@@ -7,7 +7,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 const RootStyled = styled('div')(({ theme }) => ({
-  backgroundColor: theme.palette.secondary.main,
+  backgroundColor: theme.palette.background.default,
 }));
 
 const MUIDialogLargeStyled = styled(MUIDialog)(() => ({
@@ -104,6 +104,7 @@ export const Dialog: React.FC<IProps> = ({
   return (
     <DialogComponent
       open={isOpen}
+      slotProps={{ backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.8)' } } }}
       keepMounted
       onClose={onClose}
       TransitionProps={{ onExited: onExited ? onExited : () => {} }}
@@ -119,7 +120,7 @@ export const Dialog: React.FC<IProps> = ({
             </Typography>
           )}
           <CloseButtonStyled>
-            <IconButton onClick={onClose}>
+            <IconButton onClick={onClose} large>
               <img src={IconClose} />
             </IconButton>
           </CloseButtonStyled>

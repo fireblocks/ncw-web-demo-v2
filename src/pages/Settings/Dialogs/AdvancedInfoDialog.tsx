@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 
 const DataBlockStyled = styled('div')(({ theme }) => ({
-  borderTop: `2px solid ${theme.palette.secondary.main}`,
+  borderTop: `2px solid ${theme.palette.background.default}`,
   padding: theme.spacing(2, 4),
   display: 'flex',
   flexDirection: 'column',

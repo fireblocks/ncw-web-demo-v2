@@ -6,7 +6,7 @@ const ButtonGroupStyled = styled(ButtonGroup)(({ theme }) => ({
   marginTop: theme.spacing(2),
   borderRadius: 8,
   overflow: 'hidden',
-  border: `2px solid ${theme.palette.secondary.main}`,
+  border: `2px solid ${theme.palette.background.default}`,
 }));
 
 const ButtonStyled = styled(Button)(({ theme }) => ({

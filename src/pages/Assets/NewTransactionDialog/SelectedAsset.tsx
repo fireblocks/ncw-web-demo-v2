@@ -6,7 +6,7 @@ const RootStyled = styled('div')(({ theme }) => ({
   alignContent: 'center',
   alignItems: 'center',
   justifyContent: 'space-between',
-  border: `2px solid ${theme.palette.secondary.main}`,
+  border: `2px solid ${theme.palette.background.default}`,
   borderRadius: 8,
   padding: theme.spacing(2, 3),
   marginBottom: theme.spacing(2),

@@ -6,7 +6,7 @@ import { InputLabelStyled, FormControlRootStyled } from './commonStyledComponent
 const QRWrapperStyled = styled('div')(({ theme }) => ({
   width: 250,
   height: 250,
-  border: `2px solid ${theme.palette.secondary.main}`,
+  border: `2px solid ${theme.palette.background.default}`,
   borderRadius: 8,
   marginTop: theme.spacing(2),
   display: 'flex',

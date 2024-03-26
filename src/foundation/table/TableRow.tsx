@@ -4,7 +4,7 @@ import { styled } from '@foundation';
 const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(3, 5),
   backgroundColor: theme.palette.primary.light,
-  borderBottom: `2px solid ${theme.palette.secondary.main}`,
+  borderBottom: `2px solid ${theme.palette.background.default}`,
   transition: 'background-color 0.3s',
   boxSizing: 'border-box',
   '&:hover': {
