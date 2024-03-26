@@ -66,11 +66,11 @@ export class PasswordEncryptedLocalStorage extends BrowserLocalStorageProvider i
 
   private async _generateEncryptionKey(): Promise<string> {
     let key = await this._getPassword();
-    const md5 = md.md5.create();
+    const sha256 = md.sha256.create();
 
     for (let i = 0; i < 1000; ++i) {
-      md5.update(key);
-      key = md5.digest().toHex();
+      sha256.update(key);
+      key = sha256.digest().toHex();
     }
 
     return key;
