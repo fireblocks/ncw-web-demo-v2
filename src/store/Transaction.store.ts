@@ -127,9 +127,9 @@ export class TransactionStore {
     if (this.isNFT) {
       this._rootStore.nftStore.getTokens().catch(() => {});
     } else {
-      this.setIsSigning(false);
       this._rootStore.assetsStore.refreshBalances();
     }
+    this.setIsSigning(false);
   }
 
   @action
