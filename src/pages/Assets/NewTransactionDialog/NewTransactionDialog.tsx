@@ -115,7 +115,10 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       )}
       description={t('ASSETS.NEW_TRANSACTION_DIALOG.DESCRIPTION')}
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        clearState();
+      }}
       doAction={mode === 'SEND' ? createNewTransaction : undefined}
       disableAction={shouldDisableAction}
       actionCaption={t('ASSETS.NEW_TRANSACTION_DIALOG.ACTION')}

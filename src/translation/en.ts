@@ -34,7 +34,7 @@ export const translationToEnglish = {
   },
   SETTINGS: {
     NAME: 'Settings',
-    DESCRIPTION: 'Description',
+    DESCRIPTION: 'Manage your account settings.',
     DIALOGS: {
       ADVANCED_INFO: {
         TITLE: 'Advanced info',
