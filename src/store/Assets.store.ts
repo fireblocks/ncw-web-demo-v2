@@ -57,22 +57,18 @@ export class AssetsStore {
   }
 
   @action
+  public setMyAssets(assets: IAssetsSummaryDTO[]): void {
+    this.myAssets = [];
+    assets.map((a) => {
+      this.addMyAsset(a);
+    });
+  }
+
+  @action
   public async init(): Promise<void> {
     this.setIsLoading(true);
-    const deviceId = this._rootStore.deviceStore.deviceId;
-    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-    const accessToken = this._rootStore.userStore.accessToken;
-
-    if (deviceId && accountId !== undefined && accessToken) {
-      const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken);
-      const supportedAssets = await getSupportedAssets(deviceId, accountId, accessToken);
-
-      assetsSummary.map((a) => {
-        this.addMyAsset(a);
-      });
-
-      this.setSupportedAssets(supportedAssets);
-    }
+    await this.getMyAssets();
+    await this.getSupported();
     this.setIsLoading(false);
   }
 
@@ -120,10 +116,8 @@ export class AssetsStore {
       const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken);
       const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken);
       const addressDTO = await getAddress(deviceId, accountId, assetId, accessToken);
-      const supportedAssets = await getSupportedAssets(deviceId, accountId, accessToken);
 
       this.addMyAsset({ asset: assetDTO, balance: balanceDTO, address: addressDTO });
-      this.setSupportedAssets(supportedAssets);
     }
   }
 
@@ -149,6 +143,28 @@ export class AssetsStore {
         .finally(() => {
           this.setIsGettingBalances(false);
         });
+    }
+  }
+
+  public async getSupported(): Promise<void> {
+    const deviceId = this._rootStore.deviceStore.deviceId;
+    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+    const accessToken = this._rootStore.userStore.accessToken;
+
+    if (deviceId && accountId !== undefined && accessToken) {
+      const assets = await getSupportedAssets(deviceId, accountId, accessToken);
+      this.setSupportedAssets(assets);
+    }
+  }
+
+  public async getMyAssets(): Promise<void> {
+    const deviceId = this._rootStore.deviceStore.deviceId;
+    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+    const accessToken = this._rootStore.userStore.accessToken;
+
+    if (deviceId && accountId !== undefined && accessToken) {
+      const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken);
+      this.setMyAssets(assetsSummary);
     }
   }
 

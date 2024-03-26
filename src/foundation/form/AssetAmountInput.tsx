@@ -22,10 +22,19 @@ interface IProps {
   placeholder: string;
   adornment: string;
   assetSymbol: string;
+  disabled?: boolean;
   setValue: (value: string) => void;
 }
 
-export const AssetAmountInput: React.FC<IProps> = ({ value, placeholder, label, adornment, assetSymbol, setValue }) => {
+export const AssetAmountInput: React.FC<IProps> = ({
+  value,
+  placeholder,
+  label,
+  adornment,
+  assetSymbol,
+  disabled,
+  setValue,
+}) => {
   const materialUIInputProps = {
     id: label,
     disableUnderline: true,
@@ -35,6 +44,7 @@ export const AssetAmountInput: React.FC<IProps> = ({ value, placeholder, label, 
     },
     label,
     placeholder,
+    disabled,
   };
 
   return (

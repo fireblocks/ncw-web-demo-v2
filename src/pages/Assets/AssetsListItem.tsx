@@ -73,7 +73,6 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
                 setTransactionDialogMode('RECEIVE');
                 onNewTransactionDialogOpen();
               }}
-              totalBalance={currentAsset.totalBalance}
             />
           ) : (
             <TableTextCell text={currentAsset.baseAsset} />

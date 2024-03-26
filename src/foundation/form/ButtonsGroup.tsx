@@ -51,21 +51,23 @@ interface IButton {
 }
 
 interface IProps {
+  disabled?: boolean;
   caption: string;
   currentValue: string;
   onChange: (value: string) => void;
   buttons: IButton[];
 }
 
-export const ButtonsGroup: React.FC<IProps> = ({ caption, currentValue, buttons, onChange }) => (
+export const ButtonsGroup: React.FC<IProps> = ({ caption, currentValue, buttons, disabled, onChange }) => (
   <FormControlRootStyled>
     <InputLabelStyled>{caption}</InputLabelStyled>
-    <ButtonGroupStyled aria-label="Basic button group">
+    <ButtonGroupStyled aria-label="Basic button group" disabled={disabled}>
       {buttons.map((button) => {
         const buttonVariant = currentValue === button.value ? 'contained' : 'outlined';
 
         return (
           <ButtonStyled
+            disabled={disabled}
             disableRipple
             size="large"
             variant={buttonVariant}

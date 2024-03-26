@@ -30,10 +30,6 @@ const HeadingStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(4, 0, 9, 0),
 }));
 
-const ModeAndGroupingWrapperStyled = styled('div')(({ theme }) => ({
-  padding: theme.spacing(1.1, 0),
-}));
-
 export const NFTsPage: React.FC = observer(function NFTsPage() {
   const preselectedViewMode = localStorage.getItem('NFT_VIEW_MODE') ?? 'CARD';
   const NFTStore = useNFTStore();
@@ -90,9 +86,7 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
               <SearchInput query={query} setQuery={setQuery} placeholder={t('NFT.SEARCH')} />
             </SearchWrapperStyled>
             <ActionsWrapperStyled>
-              <ModeAndGroupingWrapperStyled>
-                <ModeSwitcher value={mode} onChange={onSetMode} />
-              </ModeAndGroupingWrapperStyled>
+              <ModeSwitcher value={mode} onChange={onSetMode} />
               <IconButton
                 disabled={NFTStore.isRefreshingGallery}
                 tooltip={t('NFT.REFRESH_GALLERY')}

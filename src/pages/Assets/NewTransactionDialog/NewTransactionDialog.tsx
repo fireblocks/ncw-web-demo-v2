@@ -38,11 +38,18 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   const [txType, setTxType] = React.useState('TRANSFER');
   const [isCreatingTransfer, setIsCreatingTransfer] = React.useState(false);
 
+  React.useEffect(() => {
+    if (asset?.totalBalance === 0) {
+      setTxType('TYPED_MESSAGE');
+    } else {
+      setTxType('TRANSFER');
+    }
+  }, [asset]);
+
   const clearState = () => {
     setAmount('');
     setAddress('');
     setFeeLevel('LOW');
-    setTxType('TRANSFER');
   };
 
   const shouldDisableAction = (txType === 'TRANSFER' && mode === 'SEND' && (!amount || !address)) || isCreatingTransfer;
@@ -53,8 +60,8 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       transactionsStore
         .createTransaction({
           note: `API Transaction by ${deviceStore.deviceId}`,
-          accountId: `${accountsStore.currentAccount?.accountId}`,
-          assetId: `${asset?.id}`,
+          accountId: accountsStore.currentAccount?.accountId.toString() || '0',
+          assetId: asset?.id || '',
           destAddress: address,
           estimateFee: false,
           feeLevel: feeLevel as TFeeLevel,
@@ -117,26 +124,24 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
         <SelectedAsset asset={asset} />
         {mode === 'SEND' ? (
           <>
-            <TxType setType={setTxType} type={txType} />
-            {txType === 'TRANSFER' && (
-              <>
-                <AssetAmountInput
-                  placeholder="0"
-                  label={t('ASSETS.NEW_TRANSACTION_DIALOG.AMOUNT')}
-                  value={amount}
-                  setValue={setAmount}
-                  assetSymbol={asset.symbol}
-                  adornment={convertedAmount}
-                />
-                <TextInput
-                  placeholder={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
-                  label={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
-                  value={address}
-                  setValue={setAddress}
-                />
-                <FeeLevel setLevel={setFeeLevel} level={feeLevel} />
-              </>
-            )}
+            <TxType setType={setTxType} type={txType} disabled={asset?.totalBalance === 0} />
+            <AssetAmountInput
+              disabled={txType !== 'TRANSFER'}
+              placeholder="0"
+              label={t('ASSETS.NEW_TRANSACTION_DIALOG.AMOUNT')}
+              value={amount}
+              setValue={setAmount}
+              assetSymbol={asset.symbol}
+              adornment={convertedAmount}
+            />
+            <TextInput
+              disabled={txType !== 'TRANSFER'}
+              placeholder={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
+              label={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
+              value={address}
+              setValue={setAddress}
+            />
+            <FeeLevel setLevel={setFeeLevel} level={feeLevel} disabled={txType !== 'TRANSFER'} />
           </>
         ) : (
           <>

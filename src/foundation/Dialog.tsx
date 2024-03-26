@@ -68,6 +68,7 @@ interface IProps {
   disableAction?: boolean;
   onClose: () => void;
   doAction?: () => void;
+  onExited?: () => void;
   children: JSX.Element | JSX.Element[];
   size?: 'small' | 'medium' | 'large';
 }
@@ -78,6 +79,7 @@ export const Dialog: React.FC<IProps> = ({
   isOpen,
   actionCaption,
   onClose,
+  onExited,
   doAction,
   children,
   disableAction,
@@ -100,7 +102,12 @@ export const Dialog: React.FC<IProps> = ({
       DialogComponent = MUIDialogMediumStyled;
   }
   return (
-    <DialogComponent open={isOpen} keepMounted onClose={onClose}>
+    <DialogComponent
+      open={isOpen}
+      keepMounted
+      onClose={onClose}
+      TransitionProps={{ onExited: onExited ? onExited : () => {} }}
+    >
       <RootStyled>
         <DialogHeaderStyled>
           <Typography variant="h2" component="p">

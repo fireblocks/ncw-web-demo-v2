@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 interface IProps {
   setLevel: (level: string) => void;
+  disabled?: boolean;
   level: string;
 }
 
-export const FeeLevel: React.FC<IProps> = ({ setLevel, level }) => {
+export const FeeLevel: React.FC<IProps> = ({ setLevel, disabled, level }) => {
   const { t } = useTranslation();
 
   const buttons = [
@@ -17,6 +18,7 @@ export const FeeLevel: React.FC<IProps> = ({ setLevel, level }) => {
 
   return (
     <ButtonsGroup
+      disabled={disabled}
       buttons={buttons}
       onChange={setLevel}
       currentValue={level}

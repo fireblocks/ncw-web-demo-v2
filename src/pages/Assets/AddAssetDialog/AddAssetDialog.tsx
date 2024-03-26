@@ -34,9 +34,13 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
     (a) => a.name.toLowerCase().includes(query.toLowerCase()) || a.symbol.toLowerCase().includes(query.toLowerCase()),
   );
 
-  const handleDialogClose = () => {
-    onClose();
-    setQuery('');
+  const handleDialogExited = () => {
+    assetsStore
+      .getSupported()
+      .then(() => {
+        setQuery('');
+      })
+      .catch(() => {});
   };
 
   return (
@@ -44,8 +48,9 @@ export const AddAssetDialog: React.FC<IProps> = observer(function AddAssetDialog
       title={t('ASSETS.ADD_DIALOG.TITLE')}
       description={t('ASSETS.ADD_DIALOG.DESCRIPTION')}
       isOpen={isOpen}
-      onClose={handleDialogClose}
+      onClose={onClose}
       size="small"
+      onExited={handleDialogExited}
     >
       <div>
         {assetsStore.isLoading ? (
