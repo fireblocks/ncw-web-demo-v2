@@ -69,7 +69,7 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
       ) : (
         <>
           <HeadingStyled>
-            <Typography variant="h5" color="text.primary">
+            <Typography variant="h6" color="text.primary">
               {t('NFT.TITLE')}
             </Typography>
             <AmountsStyled>
