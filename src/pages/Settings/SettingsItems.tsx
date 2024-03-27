@@ -1,6 +1,5 @@
 import React from 'react';
 import { styled } from '@foundation';
-import IconCloud from '@icons/cloud_upload.svg';
 import IconInfo from '@icons/info.svg';
 import IconLogs from '@icons/share_logs.svg';
 import { observer } from 'mobx-react';
@@ -26,14 +25,14 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
 
   return (
     <RootStyled>
-      <ActionPlate
+      {/* <ActionPlate
         iconSrc={IconCloud}
         caption={t('SETTINGS.ITEMS.CREATE_A_KEY_BACKUP.TITLE')}
         description={t('SETTINGS.ITEMS.CREATE_A_KEY_BACKUP.DESCRIPTION')}
         onClick={() => {
           setIsBackupDialogOpen(true);
         }}
-      />
+      /> */}
 
       {/* <ActionPlate
         iconSrc={IconRecover}
