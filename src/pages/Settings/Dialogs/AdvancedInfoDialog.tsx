@@ -10,7 +10,7 @@ const DataBlockStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 4),
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(1),
+  gap: theme.spacing(0.5),
 }));
 
 interface IProps {

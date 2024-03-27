@@ -32,7 +32,7 @@ export const LogsDialog: React.FC<IProps> = observer(function LogsDialog({ isOpe
       .then((logs) => {
         const downloadLink = document.createElement('a');
         downloadLink.href = URL.createObjectURL(new Blob([logs], { type: 'text/plain' }));
-        downloadLink.download = `${Date.now()}_ncw-sdk-logs.log`;
+        downloadLink.download = `${Date.now().toString()}_ncw-sdk-logs.log`;
         downloadLink.click();
         enqueueSnackbar(t('SETTINGS.DIALOGS.LOGS.DOWNLOADED'), { variant: 'success' });
       })
