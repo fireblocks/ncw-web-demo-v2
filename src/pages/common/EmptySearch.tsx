@@ -16,9 +16,9 @@ const TextStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  gap: theme.spacing(2),
+  gap: theme.spacing(1),
   alignItems: 'center',
-  marginTop: theme.spacing(3),
+  marginTop: theme.spacing(2),
   textAlign: 'center',
 }));
 
@@ -32,9 +32,9 @@ export const EmptySearch: React.FC<IProps> = ({ height, width }) => {
 
   return (
     <RootStyled style={{ height, width }}>
-      <img width={72} height={72} src={IconEmpty} alt={t('EMPTY_SEARCH.TITLE')} />
+      <img width={56} height={56} src={IconEmpty} alt={t('EMPTY_SEARCH.TITLE')} />
       <TextStyled>
-        <Typography color="text.secondary" variant="h2" component="h2">
+        <Typography color="text.secondary" variant="h3" component="h3">
           {t('EMPTY_SEARCH.TITLE')}
         </Typography>
         <Typography color="text.secondary" variant="body2">

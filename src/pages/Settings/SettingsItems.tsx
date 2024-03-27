@@ -1,7 +1,9 @@
 import React from 'react';
 import { styled } from '@foundation';
+import IconGoogle from '@icons/google.svg';
 import IconInfo from '@icons/info.svg';
 import IconLogs from '@icons/share_logs.svg';
+import { useBackupStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { ActionPlate } from './ActionPlate';
@@ -19,27 +21,25 @@ const RootStyled = styled('div')(({ theme }) => ({
 
 export const SettingsItems: React.FC = observer(function SettingsItems() {
   const { t } = useTranslation();
+  const backupStore = useBackupStore();
   const [isAdvancedInfoDialogOpen, setIsAdvancedInfoDialogOpen] = React.useState(false);
   const [isLogsDialogOpen, setIsLogsDialogOpen] = React.useState(false);
   const [isBackupDialogOpen, setIsBackupDialogOpen] = React.useState(false);
 
   return (
     <RootStyled>
-      {/* <ActionPlate
-        iconSrc={IconCloud}
-        caption={t('SETTINGS.ITEMS.CREATE_A_KEY_BACKUP.TITLE')}
+      <ActionPlate
+        iconSrc={IconGoogle}
+        caption={t(
+          backupStore.latestBackup
+            ? 'SETTINGS.ITEMS.CREATE_A_KEY_BACKUP.TITLE_BACKUP'
+            : 'SETTINGS.ITEMS.CREATE_A_KEY_BACKUP.TITLE_NO_BACKUP',
+        )}
         description={t('SETTINGS.ITEMS.CREATE_A_KEY_BACKUP.DESCRIPTION')}
         onClick={() => {
           setIsBackupDialogOpen(true);
         }}
-      /> */}
-
-      {/* <ActionPlate
-        iconSrc={IconRecover}
-        caption={t('SETTINGS.ITEMS.RECOVER_WALLET.TITLE')}
-        description={t('SETTINGS.ITEMS.RECOVER_WALLET.DESCRIPTION')}
-        onClick={() => {}}
-      /> */}
+      />
 
       {/* <ActionPlate
         iconSrc={IconKey}

@@ -1,45 +1,108 @@
-import { IPassphraseInfo, TPassphraseLocation, TPassphrases, createPassphraseInfo, getPassphraseInfos } from '@api';
-import { action, makeObservable } from 'mobx';
+import {
+  IBackupInfo,
+  IPassphrase,
+  IPassphraseInfo,
+  TPassphraseLocation,
+  TPassphrases,
+  createPassphraseInfo,
+  getLatestBackup,
+  getPassphraseInfos,
+} from '@api';
+import { IUser } from '@auth';
+import { cloudkitBackup, cloudkitRecover, googleDriveBackup, googleDriveRecover, randomPassPhrase } from '@services';
+import { action, makeObservable, observable } from 'mobx';
 import CloudKit from 'tsl-apple-cloudkit';
-import { DISCOVERY_DOC } from '../auth/providers';
 import { RootStore } from './Root.store';
 
 export class BackupStore {
-  public passPhrases: TPassphrases | null;
-  public cloudkit: CloudKit.CloudKit | null;
-  public appleSignedIn: boolean;
-
-  public error: string | null;
+  @observable public passPhrases: TPassphrases | null;
+  @observable public latestBackup: IBackupInfo | null;
+  @observable public cloudkit: CloudKit.CloudKit | null;
+  @observable public appleSignedIn: boolean | null;
+  @observable public isBackupCompleted: boolean;
+  @observable public isBackupInProgress: boolean;
+  @observable public isRecoverCompleted: boolean;
+  @observable public isRecoverInProgress: boolean;
+  @observable public googleDriveUser: IUser | null;
+  @observable public error: string | null;
 
   private _rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
     this.passPhrases = null;
+    this.latestBackup = null;
     this.cloudkit = null;
     this.appleSignedIn = false;
     this.error = null;
+    this.isBackupCompleted = false;
+    this.isRecoverCompleted = false;
+    this.isBackupInProgress = false;
+    this.isRecoverInProgress = false;
+    this.googleDriveUser = null;
+
     this._rootStore = rootStore;
 
     makeObservable(this);
   }
 
-  public init() {
-    getPassphraseInfos(this._rootStore.userStore.accessToken)
-      .then((response) => {
-        this.setPassPhrases(response.passphrases);
-      })
-      .catch((e) => {
-        this.setError(e.message);
-      });
+  public async init() {
+    try {
+      const response = await getPassphraseInfos(this._rootStore.userStore.accessToken);
+      this.setPassPhrases(response.passphrases);
+      const latestBackup = await getLatestBackup(
+        this._rootStore.deviceStore.walletId,
+        this._rootStore.userStore.accessToken,
+      );
+      this.setLatestBackup(latestBackup);
+    } catch (e: any) {
+      this.setError(e.message);
+    }
+  }
+
+  public clearProgress() {
+    this.setError('');
+    this.setIsBackupCompleted(false);
+    this.setIsRecoverCompleted(false);
+    this.setIsBackupInProgress(false);
   }
 
   @action
-  setCloudKit(cloudkit: CloudKit.CloudKit) {
+  setGoogleDriveUser(user: IUser) {
+    this.googleDriveUser = user;
+  }
+
+  @action
+  setLatestBackup(backup: IBackupInfo | null) {
+    this.latestBackup = backup;
+  }
+
+  @action
+  setIsBackupCompleted(isCompleted: boolean) {
+    this.isBackupCompleted = isCompleted;
+  }
+
+  @action
+  setIsRecoverCompleted(isCompleted: boolean) {
+    this.isRecoverCompleted = isCompleted;
+  }
+
+  @action
+  setIsRecoverInProgress(isInProgress: boolean) {
+    this.isRecoverInProgress = isInProgress;
+  }
+
+  @action
+  setIsBackupInProgress(isInProgress: boolean) {
+    this.isBackupInProgress = isInProgress;
+  }
+
+  @action
+  setCloudKit(cloudkit: CloudKit.CloudKit | null) {
     this.cloudkit = cloudkit;
   }
 
   @action
-  setAppleSignedIn(signedIn: boolean) {
+  setAppleSignedIn(signedIn: boolean | null) {
     this.appleSignedIn = signedIn;
   }
 
@@ -54,19 +117,18 @@ export class BackupStore {
   }
 
   @action
-  public addPassPhrases(passphraseId: string, location: TPassphraseLocation) {
+  public addPassPhrases(passphraseId: string, location: TPassphraseLocation): void {
     this.passPhrases = { ...this.passPhrases, [passphraseId]: { passphraseId, location } };
   }
 
   @action
-  public createPassphraseInfo(passphraseId: string, location: TPassphraseLocation) {
-    createPassphraseInfo(passphraseId, location, this._rootStore.userStore.accessToken)
-      .then(() => {
-        this.addPassPhrases(passphraseId, location);
-      })
-      .catch((e) => {
-        this.setError(e.message);
-      });
+  public async createPassphraseInfo(passphraseId: string, location: TPassphraseLocation): Promise<void> {
+    try {
+      await createPassphraseInfo(passphraseId, location, this._rootStore.userStore.accessToken);
+      this.addPassPhrases(passphraseId, location);
+    } catch (e: any) {
+      this.setError(e.message);
+    }
   }
 
   @action
@@ -80,146 +142,155 @@ export class BackupStore {
     });
   }
 
-  public backupGoogleDrive(passphrase: string, passphraseId: string) {
-    this._rootStore.userStore
-      .getGoogleDriveCredentials()
-      .then((token) => this._gDriveBackup(token, passphrase, passphraseId))
-      .catch((e) => {
-        this.setError(e.message);
-      });
+  public async backupGoogleDrive(passphrase: string, passphraseId: string) {
+    try {
+      const token = await this._rootStore.userStore.getGoogleDriveCredentials();
+      await googleDriveBackup(token, passphrase, passphraseId);
+    } catch (e: any) {
+      this.setError(e.message);
+    }
   }
 
-  public recoverGoogleDrive(passphraseId: string) {
-    this._rootStore.userStore
-      .getGoogleDriveCredentials()
-      .then((token) => this._gDriveRecover(token, passphraseId))
-      .catch((e) => {
-        this.setError(e.message);
-      });
+  public async recoverGoogleDrive(passphraseId: string): Promise<string> {
+    try {
+      const token = await this._rootStore.userStore.getGoogleDriveCredentials();
+      return googleDriveRecover(token, passphraseId);
+    } catch (e: any) {
+      this.setError(e.message);
+    }
+    return '';
   }
 
-  private _gDriveRecover(token: string, passphraseId: string) {
-    return new Promise<string>((resolve, reject) => {
-      gapi.load('client', {
-        callback: () => {
-          const filename = `passphrase_${passphraseId}.txt`;
-          gapi.client
-            .init({
-              discoveryDocs: [DISCOVERY_DOC],
-            })
-            .then(() => {
-              gapi.client.drive.files
-                .list({
-                  spaces: 'appDataFolder',
-                  oauth_token: token,
-                  q: `name='${filename}'`,
-                })
-                .then((list) => {
-                  const file = list.result.files?.find((f) => f.name === filename);
-                  if (file?.id) {
-                    fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                      },
-                    })
-                      .then((res) => {
-                        res
-                          .text()
-                          .then((t) => {
-                            resolve(t);
-                          })
-                          .catch((e) => {
-                            this.setError(e.message);
-                            reject(new Error('Failed to download from Google Drive'));
-                          });
+  public async passphraseRecover(location: TPassphraseLocation): Promise<IPassphrase> {
+    if (this.passPhrases === null) {
+      throw new Error();
+    }
 
-                        return;
-                      })
-                      .catch((e) => {
-                        this.setError(e.message);
-                        reject(new Error('Failed to download from Google Drive'));
-                      });
-                  } else {
-                    throw new Error('not found');
-                  }
-                })
-                .catch((e) => {
-                  this.setError(e.message);
-                  reject(new Error('Failed to recover from Google Drive'));
-                });
-            })
-            .catch((e) => {
-              this.setError(e.message);
-              reject(new Error('Failed to initialize Google Drive'));
-            });
-        },
-        onerror: reject,
-        ontimeout: reject,
-        timeout: 5_000,
-      });
-    });
+    // try to reuse previous
+    for (const info of Object.values(this.passPhrases)) {
+      if (info.location === location) {
+        switch (location) {
+          case 'GoogleDrive': {
+            const passphrase = await this.recoverGoogleDrive(info.passphraseId);
+            return { passphraseId: info.passphraseId, passphrase };
+          }
+          case 'iCloud': {
+            if (!this.cloudkit || !this.appleSignedIn) {
+              throw new Error('Sign in with Apple ID required');
+            }
+
+            const passphrase = await cloudkitRecover(this.cloudkit, info.passphraseId);
+            return { passphraseId: info.passphraseId, passphrase };
+          }
+          default:
+            throw new Error(`Unsupported backup location ${location as string}`);
+        }
+      }
+    }
+
+    throw new Error(`Not found backup location ${location as string}`);
   }
 
-  private _gDriveBackup(token: string, passphrase: string, passphraseId: string) {
-    return new Promise<void>((resolve, reject) => {
-      gapi.load('client', {
-        callback: () => {
-          gapi.client
-            .init({
-              discoveryDocs: [DISCOVERY_DOC],
-            })
-            .then(() => {
-              const filename = `passphrase_${passphraseId}.txt`;
+  public async passphrasePersist(location: TPassphraseLocation): Promise<IPassphrase> {
+    if (this.passPhrases === null) {
+      throw new Error();
+    }
 
-              const file = new Blob([passphrase], { type: 'text/plain' });
+    try {
+      const recover = await this.passphraseRecover(location);
+      if (recover) {
+        return recover;
+      }
+    } catch (e: any) {
+      this.setError(e.message);
+    }
 
-              const metadata: gapi.client.drive.File = {
-                name: filename,
-                mimeType: 'text/plain',
-                parents: ['appDataFolder'],
-              };
+    // creating new
+    const passphrase = randomPassPhrase();
+    const passphraseId = crypto.randomUUID();
 
-              gapi.client.drive.files
-                .create({
-                  oauth_token: token,
-                  uploadType: 'media',
-                  resource: metadata,
-                  fields: 'id',
-                })
-                .then((create) => {
-                  if (create?.result?.id) {
-                    fetch(`https://www.googleapis.com/upload/drive/v3/files/${create.result.id}?uploadType=media`, {
-                      method: 'PATCH',
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': metadata.mimeType!,
-                        'Content-Length': file.size.toString(),
-                      },
-                      body: passphrase,
-                    })
-                      .then(() => {
-                        resolve();
-                      })
-                      .catch((e) => {
-                        this.setError(e.message);
-                        reject(new Error('Failed to upload to Google Drive'));
-                      });
-                  }
-                })
-                .catch((e) => {
-                  this.setError(e.message);
-                  reject(new Error('Failed to backup to Google Drive'));
-                });
-            })
-            .catch((e) => {
-              this.setError(e.message);
-              reject(new Error('Failed to initialize Google Drive'));
-            });
-        },
-        onerror: reject,
-        ontimeout: reject,
-        timeout: 5_000,
-      });
-    });
+    switch (location) {
+      case 'GoogleDrive': {
+        await this.backupGoogleDrive(passphrase, passphraseId);
+        await this.createPassphraseInfo(passphraseId, location);
+        return { passphraseId, passphrase };
+      }
+      case 'iCloud': {
+        if (!this.cloudkit || !this.appleSignedIn) {
+          throw new Error('Apple Sign in required');
+        }
+        await cloudkitBackup(this.cloudkit, passphrase, passphraseId);
+        await this.createPassphraseInfo(passphraseId, location);
+        return { passphraseId, passphrase };
+      }
+      default:
+        throw new Error(`Unsupported backup location ${location as string}`);
+    }
+  }
+
+  public async recoverPassphraseId(passphraseId: string): Promise<string> {
+    const { passphrases } = await getPassphraseInfos(this._rootStore.userStore.accessToken);
+
+    if (passphrases === null) {
+      throw new Error();
+    }
+
+    this.setPassPhrases(passphrases);
+
+    // try to reuse previous
+    for (const info of Object.values(passphrases)) {
+      if (info.passphraseId === passphraseId) {
+        switch (info.location) {
+          case 'GoogleDrive': {
+            return this.recoverGoogleDrive(info.passphraseId);
+          }
+          case 'iCloud': {
+            if (!this.cloudkit || !this.appleSignedIn) {
+              throw new Error('Sign in with Apple ID required');
+            }
+
+            return cloudkitRecover(this.cloudkit, info.passphraseId);
+          }
+          default:
+            throw new Error(`Unsupported backup location ${info.location as string}`);
+        }
+      }
+    }
+
+    throw new Error('Not found backup location');
+  }
+
+  public async saveKeysBackup(location: TPassphraseLocation) {
+    this.clearProgress();
+    this.setIsBackupInProgress(true);
+    try {
+      const { passphrase, passphraseId } = await this.passphrasePersist(location);
+      await this._rootStore.fireblocksSDKStore.sdkInstance?.backupKeys(passphrase, passphraseId);
+      this.setIsBackupCompleted(true);
+      this.setIsBackupInProgress(false);
+    } catch (e: any) {
+      this.setError(e.message);
+    } finally {
+      this.setIsBackupInProgress(false);
+    }
+    const latestBackup = await getLatestBackup(
+      this._rootStore.deviceStore.walletId,
+      this._rootStore.userStore.accessToken,
+    );
+    this.setLatestBackup(latestBackup);
+  }
+
+  public async recoverKeyBackup(passphraseId: string) {
+    this.clearProgress();
+    this.setIsRecoverInProgress(true);
+    try {
+      await this._rootStore.fireblocksSDKStore.sdkInstance?.recoverKeys(() => this.recoverPassphraseId(passphraseId));
+      this.setIsRecoverCompleted(true);
+      this.setIsRecoverInProgress(false);
+    } catch (error: any) {
+      this.setError(error.message);
+    } finally {
+      this.setIsRecoverInProgress(false);
+    }
   }
 }

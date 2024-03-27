@@ -132,4 +132,12 @@ export class UserStore {
 
     return this._authManager.getGoogleDriveCredentials();
   }
+
+  public getGoogleDriveUserInfo(): IUser | null {
+    if (!this.loggedUser) {
+      this.setError('User is not logged in');
+    }
+
+    return this._authManager.loggedUser;
+  }
 }
