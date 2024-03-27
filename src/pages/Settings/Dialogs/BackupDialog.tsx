@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, Typography, styled } from '@foundation';
+import { Dialog, Progress, Typography, styled } from '@foundation';
 import IconBackup from '@icons/backup_large.svg';
 import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
@@ -91,7 +91,11 @@ export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ i
     >
       <RootStyled>
         <IconWrapperStyled>
-          <img src={backupStore.latestBackup ? IconKey : IconBackup} alt="backup" width="44px" height="44px" />
+          {backupStore.isBackupInProgress ? (
+            <Progress size="medium" />
+          ) : (
+            <img src={backupStore.latestBackup ? IconKey : IconBackup} alt="backup" width="44px" height="44px" />
+          )}
         </IconWrapperStyled>
         {backupStore.latestBackup ? (
           <ParametersStyled>
