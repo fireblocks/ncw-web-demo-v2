@@ -2,6 +2,7 @@ import React from 'react';
 import { Dialog, Typography, styled } from '@foundation';
 import IconBackup from '@icons/backup_large.svg';
 import IconGoogle from '@icons/google.svg';
+import IconKey from '@icons/key.svg';
 import { useBackupStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
@@ -90,13 +91,13 @@ export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ i
     >
       <RootStyled>
         <IconWrapperStyled>
-          <img src={IconBackup} alt="backup" width="44px" height="44px" />
+          <img src={backupStore.latestBackup ? IconKey : IconBackup} alt="backup" width="44px" height="44px" />
         </IconWrapperStyled>
         {backupStore.latestBackup ? (
           <ParametersStyled>
             <ParameterStyled>
               <Typography variant="h6" color="text.secondary">
-                Created at
+                {t('SETTINGS.DIALOGS.BACKUP.CREATED_AT')}
               </Typography>
               <Typography variant="h6" color="text.primary">
                 {new Date(backupStore.latestBackup.createdAt).toLocaleString()}
@@ -105,7 +106,7 @@ export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ i
 
             <ParameterStyled>
               <Typography variant="h6" color="text.secondary">
-                Location
+                {t('SETTINGS.DIALOGS.BACKUP.LOCATION')}
               </Typography>
               <Typography variant="h6" color="text.primary">
                 <AlignerStyled>
@@ -116,7 +117,7 @@ export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ i
 
             <ParameterStyled>
               <Typography variant="h6" color="text.secondary">
-                PassPhrase Id
+                {t('SETTINGS.DIALOGS.BACKUP.PASSPHRASE_ID')}
               </Typography>
               <Typography variant="h6" color="text.primary">
                 {backupStore.latestBackup.passphraseId}
