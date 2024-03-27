@@ -1,4 +1,6 @@
+import React from 'react';
 import { Typography, styled } from '@foundation';
+import { useBackupStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { SettingsItems } from './SettingsItems';
@@ -18,6 +20,15 @@ const PageHeadingStyled = styled('div')(({ theme }) => ({
 
 export const SettingsPage: React.FC = observer(function SettingsPage() {
   const { t } = useTranslation();
+  const backupStore = useBackupStore();
+
+  React.useEffect(() => {
+    const init = async () => {
+      await backupStore.init();
+    };
+
+    init().catch(() => {});
+  }, [backupStore]);
 
   return (
     <RootStyled>

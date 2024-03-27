@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { ENV_CONFIG } from 'env_config';
 import type { CloudKit } from 'tsl-apple-cloudkit';
+import { ENV_CONFIG } from '../env_config';
 
 export function useCloudkit() {
   const [cloudkit, setCloudkit] = React.useState<CloudKit | null>(null);

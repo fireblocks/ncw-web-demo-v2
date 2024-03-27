@@ -8,6 +8,7 @@ import {
   getLatestBackup,
   getPassphraseInfos,
 } from '@api';
+import { IUser } from '@auth';
 import { cloudkitBackup, cloudkitRecover, googleDriveBackup, googleDriveRecover, randomPassPhrase } from '@services';
 import { action, makeObservable, observable } from 'mobx';
 import CloudKit from 'tsl-apple-cloudkit';
@@ -17,11 +18,12 @@ export class BackupStore {
   @observable public passPhrases: TPassphrases | null;
   @observable public latestBackup: IBackupInfo | null;
   @observable public cloudkit: CloudKit.CloudKit | null;
-  @observable public appleSignedIn: boolean;
+  @observable public appleSignedIn: boolean | null;
   @observable public isBackupCompleted: boolean;
   @observable public isBackupInProgress: boolean;
   @observable public isRecoverCompleted: boolean;
   @observable public isRecoverInProgress: boolean;
+  @observable public googleDriveUser: IUser | null;
   @observable public error: string | null;
 
   private _rootStore: RootStore;
@@ -36,6 +38,8 @@ export class BackupStore {
     this.isRecoverCompleted = false;
     this.isBackupInProgress = false;
     this.isRecoverInProgress = false;
+    this.googleDriveUser = null;
+
     this._rootStore = rootStore;
 
     makeObservable(this);
@@ -60,6 +64,11 @@ export class BackupStore {
     this.setIsBackupCompleted(false);
     this.setIsRecoverCompleted(false);
     this.setIsBackupInProgress(false);
+  }
+
+  @action
+  setGoogleDriveUser(user: IUser) {
+    this.googleDriveUser = user;
   }
 
   @action
@@ -88,12 +97,12 @@ export class BackupStore {
   }
 
   @action
-  setCloudKit(cloudkit: CloudKit.CloudKit) {
+  setCloudKit(cloudkit: CloudKit.CloudKit | null) {
     this.cloudkit = cloudkit;
   }
 
   @action
-  setAppleSignedIn(signedIn: boolean) {
+  setAppleSignedIn(signedIn: boolean | null) {
     this.appleSignedIn = signedIn;
   }
 

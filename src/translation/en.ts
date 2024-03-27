@@ -55,19 +55,23 @@ export const translationToEnglish = {
       },
       BACKUP: {
         TITLE: 'Create key backup',
-        DESCRIPTION: 'Back up for key for future recovery.',
+        DESCRIPTION: 'Back up your key for future recovery.',
         SUCCESS_MESSAGE: 'Backup created',
         ERROR_MESSAGE: 'Backup not created',
         DRIVE: 'Backup to Drive',
         DRIVE_DESCRIPTION: 'Back up your key to Google Drive.',
         ICLOUD: 'Backup to iCloud',
         ICLOUD_DESCRIPTION: 'Back up your key to iCloud.',
+        CANCEL: 'Cancel',
+        CREATE_KEY_BACKUP: 'Create key backup',
+        UPDATE_KEY_BACKUP: 'Update key backup',
+        CREATE_YOUR_FIRST_BACKUP_WITH: 'Create your first backup with',
       },
     },
     ITEMS: {
       CREATE_A_KEY_BACKUP: {
         TITLE: 'Create key backup',
-        DESCRIPTION: 'Back up for key for future recovery.',
+        DESCRIPTION: 'Back up your key for future recovery.',
       },
       RECOVER_WALLET: {
         TITLE: 'Recover wallet',
