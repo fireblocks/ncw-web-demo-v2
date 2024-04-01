@@ -3,7 +3,7 @@ import ButtonGroup from '@mui/material/ButtonGroup/ButtonGroup';
 import { FormControlRootStyled, InputLabelStyled } from './commonStyledComponents';
 
 const ButtonGroupStyled = styled(ButtonGroup)(({ theme }) => ({
-  marginTop: theme.spacing(2),
+  marginTop: theme.spacing(1),
   borderRadius: 8,
   overflow: 'hidden',
   border: `2px solid ${theme.palette.background.default}`,

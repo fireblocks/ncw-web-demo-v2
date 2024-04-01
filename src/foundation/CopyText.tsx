@@ -1,6 +1,7 @@
 import React from 'react';
-import { styled } from '@foundation';
+import { Typography, styled } from '@foundation';
 import IconCopy from '@icons/copy.svg';
+import IconEyeOff from '@icons/eye_off.svg';
 import IconButton from '@mui/material/IconButton/IconButton';
 import Tooltip from '@mui/material/Tooltip/Tooltip';
 import { useTranslation } from 'react-i18next';
@@ -13,32 +14,24 @@ const RootStyled = styled('div')(({ theme }) => ({
   maxWidth: '100%',
 }));
 
-const TextStyled = styled('p')(({ theme }) => ({
+const TextStyled = styled(Typography)(({ theme }) => ({
   textWrap: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
   maxWidth: 130,
   color: theme.palette.text.primary,
-  fontSize: theme.typography.body1.fontSize,
-  fontWeight: theme.typography.body1.fontWeight,
-  letterSpacing: theme.typography.body1.letterSpacing,
-  fontFamily: theme.typography.fontFamily,
   margin: 0,
   padding: 0,
 }));
 
-const TextLargeStyled = styled('p')(({ theme }) => ({
+const TextLargeStyled = styled(Typography)(({ theme }) => ({
   textWrap: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
   color: theme.palette.text.primary,
   maxWidth: '95%',
-  fontSize: theme.typography.body1.fontSize,
-  fontWeight: theme.typography.body1.fontWeight,
-  letterSpacing: theme.typography.body1.letterSpacing,
-  fontFamily: theme.typography.fontFamily,
   margin: 0,
   padding: 0,
 }));
@@ -46,13 +39,16 @@ const TextLargeStyled = styled('p')(({ theme }) => ({
 interface IProps {
   text: string;
   size?: 'small' | 'large';
+  hidden?: boolean;
 }
 
-export const CopyText: React.FC<IProps> = ({ text, size = 'small' }) => {
+export const CopyText: React.FC<IProps> = ({ text, size = 'small', hidden = false }) => {
   const { t } = useTranslation();
   const [isTooltipOpen, setIsTooltipOpen] = React.useState(false);
+  const [isHiddenText, setIsHiddenText] = React.useState(hidden);
 
   const Text = size === 'small' ? TextStyled : TextLargeStyled;
+  const hiddenText = '•'.repeat(text.length);
 
   const showTooltip = () => {
     setIsTooltipOpen(true);
@@ -73,7 +69,17 @@ export const CopyText: React.FC<IProps> = ({ text, size = 'small' }) => {
 
   return (
     <RootStyled>
-      <Text>{text}</Text>
+      <Text variant="body1">{isHiddenText ? hiddenText : text}</Text>
+      {hidden && (
+        <IconButton
+          size="small"
+          onClick={() => {
+            setIsHiddenText(!isHiddenText);
+          }}
+        >
+          <img src={IconEyeOff} />
+        </IconButton>
+      )}
       <Tooltip arrow placement="top" title={t('COMMON.COPIED')} open={isTooltipOpen} onClose={hideTooltip}>
         <IconButton
           onMouseLeave={hideTooltip}

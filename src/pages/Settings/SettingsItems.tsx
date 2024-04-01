@@ -2,13 +2,15 @@ import React from 'react';
 import { styled } from '@foundation';
 import IconGoogle from '@icons/google.svg';
 import IconInfo from '@icons/info.svg';
+import IconKey from '@icons/key.svg';
 import IconLogs from '@icons/share_logs.svg';
-import { useBackupStore } from '@store';
+import { useAssetsStore, useBackupStore, useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { ActionPlate } from './ActionPlate';
 import { AdvancedInfoDialog } from './Dialogs/AdvancedInfoDialog';
 import { BackupDialog } from './Dialogs/BackupDialog';
+import { ExportPrivateKeysDialog } from './Dialogs/ExportKeys/ExportPrivateKeysDialog';
 import { LogsDialog } from './Dialogs/LogsDialog';
 
 const RootStyled = styled('div')(({ theme }) => ({
@@ -22,9 +24,13 @@ const RootStyled = styled('div')(({ theme }) => ({
 export const SettingsItems: React.FC = observer(function SettingsItems() {
   const { t } = useTranslation();
   const backupStore = useBackupStore();
+  const fireblocksSDKStore = useFireblocksSDKStore();
+  const assetsStore = useAssetsStore();
+
   const [isAdvancedInfoDialogOpen, setIsAdvancedInfoDialogOpen] = React.useState(false);
   const [isLogsDialogOpen, setIsLogsDialogOpen] = React.useState(false);
   const [isBackupDialogOpen, setIsBackupDialogOpen] = React.useState(false);
+  const [isExportPrivateKeysDialogOpen, setIsExportPrivateKeysDialogOpen] = React.useState(false);
 
   return (
     <RootStyled>
@@ -41,12 +47,22 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         }}
       />
 
-      {/* <ActionPlate
-        iconSrc={IconKey}
-        caption={t('SETTINGS.ITEMS.EXPORT_PRIVATE_KEY.TITLE')}
-        description={t('SETTINGS.ITEMS.EXPORT_PRIVATE_KEY.DESCRIPTION')}
-        onClick={() => {}}
-      /> */}
+      {assetsStore.myBaseAssets.length > 0 && (
+        <ActionPlate
+          iconSrc={IconKey}
+          isLoading={fireblocksSDKStore.isKeysExportInProcess}
+          caption={t('SETTINGS.ITEMS.EXPORT_PRIVATE_KEY.TITLE')}
+          description={t('SETTINGS.ITEMS.EXPORT_PRIVATE_KEY.DESCRIPTION')}
+          onClick={() => {
+            fireblocksSDKStore
+              .takeover()
+              .then(() => {
+                setIsExportPrivateKeysDialogOpen(true);
+              })
+              .catch(() => {});
+          }}
+        />
+      )}
 
       {/* <ActionPlate
         iconSrc={IconNewDevice}
@@ -91,6 +107,13 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         isOpen={isBackupDialogOpen}
         onClose={() => {
           setIsBackupDialogOpen(false);
+        }}
+      />
+
+      <ExportPrivateKeysDialog
+        isOpen={isExportPrivateKeysDialogOpen}
+        onClose={() => {
+          setIsExportPrivateKeysDialogOpen(false);
         }}
       />
     </RootStyled>

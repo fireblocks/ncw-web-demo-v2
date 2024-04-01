@@ -36,6 +36,10 @@ export const translationToEnglish = {
     NAME: 'Settings',
     DESCRIPTION: 'Manage your account settings.',
     DIALOGS: {
+      EXPORT_PRIVATE_KEYS: {
+        TITLE: 'Export private key',
+        DESCRIPTION: 'Move your private key to another device.',
+      },
       ADVANCED_INFO: {
         TITLE: 'Advanced info',
         DESCRIPTION: 'Access your device ID and keys.',

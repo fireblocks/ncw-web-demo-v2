@@ -4,6 +4,7 @@ import {
   FireblocksNCWFactory,
   IEventsHandler,
   IFireblocksNCW,
+  IFullKey,
   IMessagesHandler,
   TEnv,
   TEvent,
@@ -23,6 +24,8 @@ export class FireblocksSDKStore {
   @observable public joinWalletEventDescriptor: string;
   @observable public isMPCReady: boolean;
   @observable public isMPCGenerating: boolean;
+  @observable public isKeysExportInProcess: boolean;
+  @observable public exportedKeys: IFullKey[] | null;
   @observable public error: string;
   @observable public logger: IndexedDBLogger | null;
 
@@ -40,6 +43,8 @@ export class FireblocksSDKStore {
     this.isMPCReady = false;
     this.isMPCGenerating = false;
     this.error = '';
+    this.isKeysExportInProcess = false;
+    this.exportedKeys = null;
 
     this._unsubscribeTransactionsPolling = null;
     this._rootStore = rootStore;
@@ -159,6 +164,16 @@ export class FireblocksSDKStore {
   }
 
   @action
+  public setIsKeysExportInProcess(isExportInProcess: boolean): void {
+    this.isKeysExportInProcess = isExportInProcess;
+  }
+
+  @action
+  public setExportedKeys(keys: IFullKey[] | null): void {
+    this.exportedKeys = keys;
+  }
+
+  @action
   public clearSDKStorage() {
     if (!this.sdkInstance) {
       this.setError('fireblocksNCW is not initialized');
@@ -205,6 +220,32 @@ export class FireblocksSDKStore {
         this.setIsMPCReady(false);
       }
       this.setIsMPCGenerating(false);
+    }
+  }
+
+  public async takeover() {
+    if (!this.sdkInstance) {
+      this.setError('fireblocksNCW is not initialized');
+    } else {
+      this.setIsKeysExportInProcess(true);
+      const keys = await this.sdkInstance.takeover();
+      this.setExportedKeys(keys);
+      this.setIsKeysExportInProcess(false);
+    }
+  }
+
+  public deriveAssetKey(
+    extendedPrivateKey: string,
+    coinType: number,
+    account: number,
+    change: number,
+    index: number,
+  ): string {
+    if (!this.sdkInstance) {
+      this.setError('fireblocksNCW is not initialized');
+      return '';
+    } else {
+      return this.sdkInstance.deriveAssetKey(extendedPrivateKey, coinType, account, change, index);
     }
   }
 

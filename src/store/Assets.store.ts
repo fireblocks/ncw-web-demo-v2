@@ -48,6 +48,11 @@ export class AssetsStore {
     });
   }
 
+  @computed
+  public get myBaseAssets(): AssetStore[] {
+    return this.myAssets.filter((a) => a.assetData.type === 'BASE_ASSET');
+  }
+
   @action
   public setSupportedAssets(assets: IAssetDTO[]): void {
     this.supportedAssets = [];

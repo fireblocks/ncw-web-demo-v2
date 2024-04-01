@@ -6,9 +6,12 @@ import { InputLabelStyled, FormControlRootStyled } from './commonStyledComponent
 const AddressWrapperStyled = styled('div')(({ theme }) => ({
   border: `2px solid ${theme.palette.background.default}`,
   borderRadius: 8,
-  marginTop: theme.spacing(2),
   padding: theme.spacing(2, 3),
   boxSizing: 'border-box',
+}));
+
+const LabelStyled = styled('div')(({ theme }) => ({
+  marginBottom: theme.spacing(1),
 }));
 
 interface IProps {
@@ -18,9 +21,11 @@ interface IProps {
 
 export const AddressField: React.FC<IProps> = ({ address, label }) => (
   <FormControlRootStyled>
-    <InputLabelStyled htmlFor={label} shrink={false}>
-      {label}
-    </InputLabelStyled>
+    <LabelStyled>
+      <InputLabelStyled htmlFor={label} shrink={false}>
+        {label}
+      </InputLabelStyled>
+    </LabelStyled>
     <AddressWrapperStyled>
       <CopyText size="large" text={address} />
     </AddressWrapperStyled>

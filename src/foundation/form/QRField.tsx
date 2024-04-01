@@ -8,7 +8,7 @@ const QRWrapperStyled = styled('div')(({ theme }) => ({
   height: 250,
   border: `2px solid ${theme.palette.background.default}`,
   borderRadius: 8,
-  marginTop: theme.spacing(2),
+  marginTop: theme.spacing(1),
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
