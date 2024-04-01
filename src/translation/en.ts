@@ -39,6 +39,7 @@ export const translationToEnglish = {
       EXPORT_PRIVATE_KEYS: {
         TITLE: 'Export private key',
         DESCRIPTION: 'Move your private key to another device.',
+        ERROR_MESSAGE: 'Private key not exported',
       },
       ADVANCED_INFO: {
         TITLE: 'Advanced info',

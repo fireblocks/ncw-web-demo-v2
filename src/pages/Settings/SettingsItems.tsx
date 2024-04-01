@@ -6,6 +6,7 @@ import IconKey from '@icons/key.svg';
 import IconLogs from '@icons/share_logs.svg';
 import { useAssetsStore, useBackupStore, useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ActionPlate } from './ActionPlate';
 import { AdvancedInfoDialog } from './Dialogs/AdvancedInfoDialog';
@@ -26,6 +27,7 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
   const backupStore = useBackupStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
   const assetsStore = useAssetsStore();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isAdvancedInfoDialogOpen, setIsAdvancedInfoDialogOpen] = React.useState(false);
   const [isLogsDialogOpen, setIsLogsDialogOpen] = React.useState(false);
@@ -59,7 +61,9 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
               .then(() => {
                 setIsExportPrivateKeysDialogOpen(true);
               })
-              .catch(() => {});
+              .catch(() => {
+                enqueueSnackbar(t('SETTINGS.DIALOGS.EXPORT_PRIVATE_KEY.ERROR_MESSAGE'), { variant: 'error' });
+              });
           }}
         />
       )}

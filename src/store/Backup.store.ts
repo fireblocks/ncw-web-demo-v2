@@ -269,7 +269,7 @@ export class BackupStore {
       this.setIsBackupCompleted(true);
       this.setIsBackupInProgress(false);
     } catch (e: any) {
-      this.setError(e.message);
+      throw new Error(e.message);
     } finally {
       this.setIsBackupInProgress(false);
     }

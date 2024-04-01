@@ -228,9 +228,14 @@ export class FireblocksSDKStore {
       this.setError('fireblocksNCW is not initialized');
     } else {
       this.setIsKeysExportInProcess(true);
-      const keys = await this.sdkInstance.takeover();
-      this.setExportedKeys(keys);
-      this.setIsKeysExportInProcess(false);
+      try {
+        const keys = await this.sdkInstance.takeover();
+        this.setExportedKeys(keys);
+      } catch (error: any) {
+        throw new Error(error.message);
+      } finally {
+        this.setIsKeysExportInProcess(false);
+      }
     }
   }
 
