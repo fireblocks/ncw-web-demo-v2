@@ -62,7 +62,7 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
                 setIsExportPrivateKeysDialogOpen(true);
               })
               .catch(() => {
-                enqueueSnackbar(t('SETTINGS.DIALOGS.EXPORT_PRIVATE_KEY.ERROR_MESSAGE'), { variant: 'error' });
+                enqueueSnackbar(t('SETTINGS.DIALOGS.EXPORT_PRIVATE_KEYS.ERROR_MESSAGE'), { variant: 'error' });
               });
           }}
         />
