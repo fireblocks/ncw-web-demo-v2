@@ -15,7 +15,7 @@ export const postCall = async (path: string, token: string, body?: unknown): Pro
   });
 
   if (!response.ok) {
-    throw new Error(`A call to "${path}" failed with status ${response.status}`);
+    throw new Error(`A call to "${path}" failed with status ${response.status.toString()}`);
   }
   const responseJson = await response.json();
   return responseJson;

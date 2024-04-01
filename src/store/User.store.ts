@@ -67,6 +67,17 @@ export class UserStore {
     return this._authManager.getAccessToken();
   }
 
+  public async resetAccessToken() {
+    if (this.loggedUser) {
+      try {
+        const token = await this._authManager.getAccessToken();
+        this.setAccessToken(token);
+      } catch (error: any) {
+        this.setError(error.message);
+      }
+    }
+  }
+
   @action
   public setUser(user: IUser | null) {
     this.loggedUser = user;

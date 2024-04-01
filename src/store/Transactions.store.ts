@@ -114,6 +114,7 @@ export class TransactionsStore {
 
     while (!this._disposed) {
       try {
+        await this._rootStore.userStore.resetAccessToken();
         const response = await getTransactions(
           this._rootStore.deviceStore.deviceId,
           startDate,

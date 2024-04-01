@@ -96,7 +96,7 @@ export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const getTransactions = async (deviceId: string, startDate: number, token: string): Promise<Response> => {
   const response = await getCall(
-    `api/devices/${deviceId}/transactions?poll=true&startDate=${startDate}&details=true`,
+    `api/devices/${deviceId}/transactions?poll=true&startDate=${startDate.toString()}&details=true`,
     token,
   );
   return response;
