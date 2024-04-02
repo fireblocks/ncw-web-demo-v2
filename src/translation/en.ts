@@ -40,6 +40,8 @@ export const translationToEnglish = {
         TITLE: 'Export private key',
         DESCRIPTION: 'Move your private key to another device.',
         ERROR_MESSAGE: 'Private key not exported',
+        SHOW_KEY: 'Show key',
+        HIDE_KEY: 'Hide key',
       },
       ADVANCED_INFO: {
         TITLE: 'Advanced info',

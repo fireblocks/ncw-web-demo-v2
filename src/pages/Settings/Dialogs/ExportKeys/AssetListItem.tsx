@@ -1,8 +1,9 @@
 import React from 'react';
-import { CopyText, TableRow, Typography, styled } from '@foundation';
+import { TableRow, Typography, styled } from '@foundation';
 import IconNoAsset from '@icons/no_asset_image.svg';
 import { useAssetsStore, useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';
+import { Key } from './Key';
 
 const RowStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -72,7 +73,7 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
             <Typography variant="body2">{currentAsset.name}</Typography>
           </AssetBoxStyled>
           <KeyBoxStyled>
-            <CopyText size="large" text={derivedAssetKey} />
+            <Key assetKey={derivedAssetKey} />
           </KeyBoxStyled>
         </RowStyled>
       </TableRow>

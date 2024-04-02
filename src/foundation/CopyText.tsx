@@ -1,8 +1,6 @@
 import React from 'react';
-import { Typography, styled } from '@foundation';
+import { SecondaryIconButton, Typography, styled } from '@foundation';
 import IconCopy from '@icons/copy.svg';
-import IconEyeOff from '@icons/eye_off.svg';
-import IconButton from '@mui/material/IconButton/IconButton';
 import Tooltip from '@mui/material/Tooltip/Tooltip';
 import { useTranslation } from 'react-i18next';
 
@@ -39,16 +37,13 @@ const TextLargeStyled = styled(Typography)(({ theme }) => ({
 interface IProps {
   text: string;
   size?: 'small' | 'large';
-  hidden?: boolean;
 }
 
-export const CopyText: React.FC<IProps> = ({ text, size = 'small', hidden = false }) => {
+export const CopyText: React.FC<IProps> = ({ text, size = 'small' }) => {
   const { t } = useTranslation();
   const [isTooltipOpen, setIsTooltipOpen] = React.useState(false);
-  const [isHiddenText, setIsHiddenText] = React.useState(hidden);
 
   const Text = size === 'small' ? TextStyled : TextLargeStyled;
-  const hiddenText = '•'.repeat(text.length);
 
   const showTooltip = () => {
     setIsTooltipOpen(true);
@@ -69,27 +64,17 @@ export const CopyText: React.FC<IProps> = ({ text, size = 'small', hidden = fals
 
   return (
     <RootStyled>
-      <Text variant="body1">{isHiddenText ? hiddenText : text}</Text>
-      {hidden && (
-        <IconButton
-          size="small"
-          onClick={() => {
-            setIsHiddenText(!isHiddenText);
-          }}
-        >
-          <img src={IconEyeOff} />
-        </IconButton>
-      )}
+      <Text variant="body1">{text}</Text>
       <Tooltip arrow placement="top" title={t('COMMON.COPIED')} open={isTooltipOpen} onClose={hideTooltip}>
-        <IconButton
-          onMouseLeave={hideTooltip}
-          size="small"
-          onClick={() => {
-            copyTextHandler();
-          }}
-        >
-          <img src={IconCopy} />
-        </IconButton>
+        <div>
+          <SecondaryIconButton
+            iconSrc={IconCopy}
+            onMouseLeave={hideTooltip}
+            onClick={() => {
+              copyTextHandler();
+            }}
+          />
+        </div>
       </Tooltip>
     </RootStyled>
   );

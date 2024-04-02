@@ -12,7 +12,7 @@ const TABLE_ROW_HEIGHT = 136;
 const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
-  height: 543,
+  height: 545,
 }));
 
 interface IProps {
@@ -34,7 +34,7 @@ export const ExportPrivateKeysDialog: React.FC<IProps> = observer(function Expor
       description={t('SETTINGS.DIALOGS.EXPORT_PRIVATE_KEYS.DESCRIPTION')}
       isOpen={isOpen}
       onClose={onClose}
-      size="medium"
+      size="large"
     >
       <RootStyled>
         <Table>
