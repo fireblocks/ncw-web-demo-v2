@@ -1,4 +1,4 @@
-import { generateNewDeviceId, getUserId } from '@api';
+import { IDeviceDTO, generateNewDeviceId, getMyDevices, getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
@@ -8,6 +8,7 @@ export class UserStore {
   @observable public storeIsReady: boolean;
   @observable public accessToken: string;
   @observable public userId: string;
+  @observable public myDevices: IDeviceDTO[];
   @observable public error: string;
 
   private _authManager: IAuthManager;
@@ -19,6 +20,7 @@ export class UserStore {
     this.accessToken = '';
     this.error = '';
     this.userId = '';
+    this.myDevices = [];
 
     this._rootStore = rootStore;
 
@@ -89,6 +91,7 @@ export class UserStore {
           getUserId(token)
             .then((userId) => {
               this.setUserId(userId);
+              this.getMyDevices();
             })
             .catch((e) => {
               this.setError(e.message);
@@ -104,6 +107,11 @@ export class UserStore {
   @action
   public setError(error: string) {
     this.error = error;
+  }
+
+  @action
+  public setMyDevices(devices: IDeviceDTO[]) {
+    this.myDevices = devices;
   }
 
   @action
@@ -136,6 +144,11 @@ export class UserStore {
     return this.userDisplayName[0];
   }
 
+  @computed
+  public get myLatestActiveDevice(): IDeviceDTO | null {
+    return this.myDevices[0] || null;
+  }
+
   public getGoogleDriveCredentials(): Promise<string> {
     if (!this.loggedUser) {
       this.setError('User is not logged in');
@@ -150,5 +163,19 @@ export class UserStore {
     }
 
     return this._authManager.loggedUser;
+  }
+
+  public getMyDevices(): void {
+    if (!this.loggedUser) {
+      this.setError('User is not logged in');
+    }
+
+    getMyDevices(this.accessToken)
+      .then((devices) => {
+        this.setMyDevices(devices);
+      })
+      .catch((e) => {
+        this.setError(e.message);
+      });
   }
 }
