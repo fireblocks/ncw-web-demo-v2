@@ -25,7 +25,7 @@ export const Initializer: React.FC = () => {
                 maxSnack={3}
                 autoHideDuration={5000}
                 anchorOrigin={{
-                  vertical: 'top',
+                  vertical: 'bottom',
                   horizontal: 'center',
                 }}
                 Components={{

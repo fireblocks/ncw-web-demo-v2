@@ -168,6 +168,7 @@ export const translationToEnglish = {
     EXISTING_USER_TITLE: 'Existing user',
     EXISTING_USER_DESCRIPTION: 'Sign in to your existing wallet.',
     NEW_USER_TITLE: 'New user',
+    GENERATE_MPC_KEYS_ERROR: 'Failed to generate MPC keys',
     NEW_USER_DESCRIPTION: 'Create a new wallet.',
     SIGN_IN_WITH_GOOGLE: 'Sign in with Google',
     SIGN_IN_WITH_APPLE: 'Sign in with Apple',

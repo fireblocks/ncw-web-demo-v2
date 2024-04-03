@@ -11,7 +11,7 @@ const RootStyled = styled('div')(({ theme }) => ({
   borderRadius: 8,
   overflow: 'hidden',
   gap: theme.spacing(1),
-  backgroundColor: theme.palette.primary.light,
+  backgroundColor: theme.palette.text.primary,
   minWidth: 'fit-content',
   width: 'fit-content',
   margin: '0 auto',
@@ -19,7 +19,7 @@ const RootStyled = styled('div')(({ theme }) => ({
 
 const MessageStyled = styled(Typography)(({ theme }) => ({
   fontSize: 16,
-  color: theme.palette.text.primary,
+  color: theme.palette.primary.main,
 }));
 
 export const Notification = React.forwardRef<HTMLDivElement, CustomContentProps>((props, ref) => {

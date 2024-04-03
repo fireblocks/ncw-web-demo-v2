@@ -4,8 +4,9 @@ import IconApple from '@icons/apple.svg';
 import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
 import IconRecovery from '@icons/recover.svg';
-import { useFireblocksSDKStore, useRootStore, useUserStore } from '@store';
+import { useRootStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ActionPlate } from './ActionPlate';
 import { LoginVM } from './LoginVM';
@@ -26,14 +27,16 @@ const ProcessingStyled = styled('div')(({ theme }) => ({
 
 export const Actions: React.FC = observer(function Actions() {
   const userStore = useUserStore();
-  const fireblocksSDKStore = useFireblocksSDKStore();
   const { t } = useTranslation();
   const rootStore = useRootStore();
+  const { enqueueSnackbar } = useSnackbar();
 
   const vm = React.useMemo(() => new LoginVM(rootStore), [rootStore]);
 
   const generateMPCKeys = () => {
-    vm.generateMPCKeys().catch(() => {});
+    vm.generateMPCKeys().catch(() => {
+      enqueueSnackbar(t('LOGIN.GENERATE_MPC_KEYS_ERROR'), { variant: 'error' });
+    });
   };
 
   if (vm.preparingWorkspace) {
@@ -52,13 +55,7 @@ export const Actions: React.FC = observer(function Actions() {
       <>
         {userStore.hasBackup && (
           <RootStyled>
-            <ActionPlate
-              iconSrc={IconRecovery}
-              caption={t('LOGIN.RECOVERY_FROM_BACKUP')}
-              onClick={() => {
-                fireblocksSDKStore.generateMPCKeys();
-              }}
-            />
+            <ActionPlate iconSrc={IconRecovery} caption={t('LOGIN.RECOVERY_FROM_BACKUP')} onClick={() => {}} />
           </RootStyled>
         )}
 
