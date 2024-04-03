@@ -172,6 +172,7 @@ export const translationToEnglish = {
     SIGN_IN_WITH_GOOGLE: 'Sign in with Google',
     SIGN_IN_WITH_APPLE: 'Sign in with Apple',
     GENERATE_MPC_KEYS: 'Generate MPC keys',
+    RECOVERY_FROM_BACKUP: 'Recovery from backup',
     CHECKING_WORKSPACE: 'Checking workspace...',
     ILLUSTRATION: {
       HEADER: 'Securely store and access your digital assets',

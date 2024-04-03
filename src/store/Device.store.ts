@@ -1,16 +1,18 @@
-import { assignDeviceToNewWallet, generateNewDeviceId, getOrGenerateDeviceId } from '@api';
+import { assignDeviceToNewWallet, generateNewDeviceId, getDeviceIdFromLocalStorage } from '@api';
 import { action, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
 export class DeviceStore {
-  @observable public deviceId: string;
+  @observable public deviceId: string | null;
   @observable public walletId: string;
+  @observable public automaticMode: boolean;
 
   private _rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
     this.deviceId = '';
     this.walletId = '';
+    this.automaticMode = false;
 
     this._rootStore = rootStore;
 
@@ -19,7 +21,12 @@ export class DeviceStore {
 
   @action
   public init(): void {
-    this.deviceId = getOrGenerateDeviceId(this._rootStore.userStore.userId);
+    this.deviceId = getDeviceIdFromLocalStorage(this._rootStore.userStore.userId);
+    if (!this.deviceId) {
+      this.automaticMode = false;
+    } else {
+      this.automaticMode = true;
+    }
   }
 
   @action

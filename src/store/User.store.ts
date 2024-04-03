@@ -1,4 +1,4 @@
-import { IDeviceDTO, generateNewDeviceId, getMyDevices, getUserId } from '@api';
+import { IDeviceDTO, generateNewDeviceId, getDevices, getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
@@ -194,7 +194,7 @@ export class UserStore {
       this.setError('User is not logged in');
     }
 
-    getMyDevices(this.accessToken)
+    getDevices(this.accessToken)
       .then((devices) => {
         this.setMyDevices(devices);
         if (devices?.length) {

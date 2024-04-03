@@ -30,7 +30,7 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
       await accountsStore.init();
     };
 
-    if (userStore.accessToken && deviceStore.deviceId && userStore.userId) {
+    if (userStore.accessToken && deviceStore.deviceId && userStore.userId && deviceStore.automaticMode) {
       fetchData().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,7 +42,7 @@ export const StoreInitializer: React.FC = observer(function StoreInitializer() {
       await fireblocksSDKStore.init();
     };
 
-    if (accountsStore.currentAccount) {
+    if (accountsStore.currentAccount && deviceStore.automaticMode) {
       fetchAssets().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

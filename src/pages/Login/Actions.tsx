@@ -3,10 +3,12 @@ import { Progress, Typography, styled } from '@foundation';
 import IconApple from '@icons/apple.svg';
 import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
-import { useFireblocksSDKStore, useUserStore } from '@store';
+import IconRecovery from '@icons/recover.svg';
+import { useFireblocksSDKStore, useRootStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { ActionPlate } from './ActionPlate';
+import { LoginVM } from './LoginVM';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -26,19 +28,15 @@ export const Actions: React.FC = observer(function Actions() {
   const userStore = useUserStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
   const { t } = useTranslation();
+  const rootStore = useRootStore();
 
-  const preparingWorkspace =
-    !userStore.storeIsReady ||
-    (userStore.loggedUser && !fireblocksSDKStore.sdkInstance) ||
-    fireblocksSDKStore.isMPCGenerating;
+  const vm = React.useMemo(() => new LoginVM(rootStore), [rootStore]);
 
-  const needToGenerateKeys =
-    userStore.loggedUser &&
-    fireblocksSDKStore.sdkInstance &&
-    !fireblocksSDKStore.isMPCGenerating &&
-    !fireblocksSDKStore.isMPCReady;
+  const generateMPCKeys = () => {
+    vm.generateMPCKeys().catch(() => {});
+  };
 
-  if (preparingWorkspace) {
+  if (vm.preparingWorkspace) {
     return (
       <ProcessingStyled>
         <Progress size="medium" />
@@ -49,17 +47,25 @@ export const Actions: React.FC = observer(function Actions() {
     );
   }
 
-  if (needToGenerateKeys) {
+  if (vm.needToGenerateKeys) {
     return (
-      <RootStyled>
-        <ActionPlate
-          iconSrc={IconKey}
-          caption={t('LOGIN.GENERATE_MPC_KEYS')}
-          onClick={() => {
-            fireblocksSDKStore.generateMPCKeys();
-          }}
-        />
-      </RootStyled>
+      <>
+        {userStore.hasBackup && (
+          <RootStyled>
+            <ActionPlate
+              iconSrc={IconRecovery}
+              caption={t('LOGIN.RECOVERY_FROM_BACKUP')}
+              onClick={() => {
+                fireblocksSDKStore.generateMPCKeys();
+              }}
+            />
+          </RootStyled>
+        )}
+
+        <RootStyled>
+          <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
+        </RootStyled>
+      </>
     );
   }
 

@@ -9,7 +9,7 @@ export interface IDeviceDTO {
   createdAt: number;
 }
 
-const getDeviceIdFromLocalStorage = (userId: string) => localStorage.getItem(`${DEVICE_ID_KEY}-${userId}`);
+export const getDeviceIdFromLocalStorage = (userId: string) => localStorage.getItem(`${DEVICE_ID_KEY}-${userId}`);
 
 const saveDeviceIdToLocalStorage = (deviceId: string, userId: string) => {
   localStorage.setItem(`${DEVICE_ID_KEY}-${userId}`, deviceId);
@@ -38,7 +38,7 @@ export const assignDeviceToNewWallet = async (deviceId: string, token: string): 
   return response.walletId;
 };
 
-export const getMyDevices = async (token: string): Promise<IDeviceDTO[]> => {
+export const getDevices = async (token: string): Promise<IDeviceDTO[]> => {
   const response = await getCall('api/devices/', token);
   const { devices } = await response.json();
   return devices;
