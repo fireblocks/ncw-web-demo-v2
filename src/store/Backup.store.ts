@@ -49,10 +49,7 @@ export class BackupStore {
     try {
       const response = await getPassphraseInfos(this._rootStore.userStore.accessToken);
       this.setPassPhrases(response.passphrases);
-      const latestBackup = await getLatestBackup(
-        this._rootStore.deviceStore.walletId,
-        this._rootStore.userStore.accessToken,
-      );
+      const latestBackup = await this.getMyLatestBackup();
       this.setLatestBackup(latestBackup);
     } catch (e: any) {
       this.setError(e.message);
@@ -148,6 +145,19 @@ export class BackupStore {
       await googleDriveBackup(token, passphrase, passphraseId);
     } catch (e: any) {
       this.setError(e.message);
+    }
+  }
+
+  public async getMyLatestBackup(walletId?: string): Promise<IBackupInfo | null> {
+    try {
+      const latestBackup = await getLatestBackup(
+        walletId ? walletId : this._rootStore.deviceStore.walletId,
+        this._rootStore.userStore.accessToken,
+      );
+      return latestBackup;
+    } catch (e: any) {
+      this.setError(e.message);
+      return null;
     }
   }
 
@@ -273,10 +283,7 @@ export class BackupStore {
     } finally {
       this.setIsBackupInProgress(false);
     }
-    const latestBackup = await getLatestBackup(
-      this._rootStore.deviceStore.walletId,
-      this._rootStore.userStore.accessToken,
-    );
+    const latestBackup = await this.getMyLatestBackup();
     this.setLatestBackup(latestBackup);
   }
 

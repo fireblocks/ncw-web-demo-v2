@@ -6,6 +6,7 @@ import { RootStore } from './Root.store';
 export class UserStore {
   @observable public loggedUser: IUser | null;
   @observable public storeIsReady: boolean;
+  @observable public hasBackup: boolean;
   @observable public accessToken: string;
   @observable public userId: string;
   @observable public myDevices: IDeviceDTO[];
@@ -17,6 +18,7 @@ export class UserStore {
   constructor(rootStore: RootStore) {
     this.loggedUser = null;
     this.storeIsReady = false;
+    this.hasBackup = false;
     this.accessToken = '';
     this.error = '';
     this.userId = '';
@@ -110,6 +112,11 @@ export class UserStore {
   }
 
   @action
+  public setHasBackup(hasBackup: boolean) {
+    this.hasBackup = hasBackup;
+  }
+
+  @action
   public setMyDevices(devices: IDeviceDTO[]) {
     this.myDevices = devices;
   }
@@ -146,7 +153,24 @@ export class UserStore {
 
   @computed
   public get myLatestActiveDevice(): IDeviceDTO | null {
-    return this.myDevices[0] || null;
+    if (this.myDevices.length > 0) {
+      return this.myDevices[this.myDevices.length - 1];
+    }
+    return null;
+  }
+
+  public checkLatestBackup(device: IDeviceDTO): void {
+    this._rootStore.backupStore
+      .getMyLatestBackup(device.walletId)
+      .then((result) => {
+        if (result) {
+          this.setHasBackup(true);
+        }
+      })
+      .catch((e) => {
+        this.setError(e.message);
+        return false;
+      });
   }
 
   public getGoogleDriveCredentials(): Promise<string> {
@@ -173,6 +197,9 @@ export class UserStore {
     getMyDevices(this.accessToken)
       .then((devices) => {
         this.setMyDevices(devices);
+        if (devices?.length) {
+          this.checkLatestBackup(devices[devices.length - 1]);
+        }
       })
       .catch((e) => {
         this.setError(e.message);
