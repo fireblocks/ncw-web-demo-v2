@@ -35,7 +35,7 @@ export class LoginVM {
       return false;
     }
 
-    if (this.generatingKeys || this.recoveringKeys) {
+    if (this.generatingKeys || this.recoveringKeys || userStore.isCheckingBackup) {
       return true;
     }
 
@@ -93,7 +93,7 @@ export class LoginVM {
         try {
           this._rootStore.deviceStore.setDeviceId(deviceInfo.deviceId);
           saveDeviceIdToLocalStorage(deviceInfo.deviceId, this._rootStore.userStore.userId);
-          await this.startRecovery(location);
+          await this._startRecovery(location);
         } catch (error) {
           throw new Error('Error while starting recovery process.');
         } finally {
@@ -108,7 +108,7 @@ export class LoginVM {
     }
   }
 
-  public async startRecovery(location: TPassphraseLocation): Promise<void> {
+  private async _startRecovery(location: TPassphraseLocation): Promise<void> {
     await this._rootStore.deviceStore.assignDeviceToNewWallet();
     await this._rootStore.accountsStore.init();
     await this._rootStore.fireblocksSDKStore.init();

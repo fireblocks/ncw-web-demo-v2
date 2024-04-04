@@ -7,6 +7,7 @@ export class UserStore {
   @observable public loggedUser: IUser | null;
   @observable public storeIsReady: boolean;
   @observable public hasBackup: boolean;
+  @observable public isCheckingBackup: boolean;
   @observable public accessToken: string;
   @observable public userId: string;
   @observable public myDevices: IDeviceDTO[];
@@ -19,6 +20,7 @@ export class UserStore {
     this.loggedUser = null;
     this.storeIsReady = false;
     this.hasBackup = false;
+    this.isCheckingBackup = false;
     this.accessToken = '';
     this.error = '';
     this.userId = '';
@@ -107,6 +109,11 @@ export class UserStore {
   }
 
   @action
+  public setIsCheckingBackup(isCheckingBackup: boolean) {
+    this.isCheckingBackup = isCheckingBackup;
+  }
+
+  @action
   public setError(error: string) {
     this.error = error;
   }
@@ -160,6 +167,7 @@ export class UserStore {
   }
 
   public checkLatestBackup(device: IDeviceDTO): void {
+    this.setIsCheckingBackup(true);
     this._rootStore.backupStore
       .getMyLatestBackup(device.walletId)
       .then((result) => {
@@ -168,8 +176,10 @@ export class UserStore {
         }
       })
       .catch((e) => {
-        this.setError(e.message);
-        return false;
+        throw new Error(e.message);
+      })
+      .finally(() => {
+        this.setIsCheckingBackup(false);
       });
   }
 

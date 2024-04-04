@@ -298,6 +298,7 @@ export class BackupStore {
         if (Object.keys(keysStatus).length > 0) {
           this._rootStore.fireblocksSDKStore.setKeysStatus(keysStatus);
           this._rootStore.fireblocksSDKStore.setSDKStatus('sdk_available');
+          this._rootStore.fireblocksSDKStore.setIsMPCReady(true);
         }
         this.setIsRecoverCompleted(true);
         this.setIsRecoverInProgress(false);
