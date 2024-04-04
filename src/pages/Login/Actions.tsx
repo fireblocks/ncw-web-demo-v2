@@ -39,6 +39,14 @@ export const Actions: React.FC = observer(function Actions() {
     });
   };
 
+  const recoverMPCKeys = () => {
+    try {
+      vm.recoverMPCKeys('GoogleDrive');
+    } catch (error) {
+      enqueueSnackbar(t('LOGIN.RECOVERY_FROM_BACKUP_ERROR'), { variant: 'error' });
+    }
+  };
+
   if (vm.preparingWorkspace) {
     return (
       <ProcessingStyled>
@@ -52,17 +60,12 @@ export const Actions: React.FC = observer(function Actions() {
 
   if (vm.needToGenerateKeys) {
     return (
-      <>
+      <RootStyled>
         {userStore.hasBackup && (
-          <RootStyled>
-            <ActionPlate iconSrc={IconRecovery} caption={t('LOGIN.RECOVERY_FROM_BACKUP')} onClick={() => {}} />
-          </RootStyled>
+          <ActionPlate iconSrc={IconRecovery} caption={t('LOGIN.RECOVERY_FROM_BACKUP')} onClick={recoverMPCKeys} />
         )}
-
-        <RootStyled>
-          <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
-        </RootStyled>
-      </>
+        <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
+      </RootStyled>
     );
   }
 

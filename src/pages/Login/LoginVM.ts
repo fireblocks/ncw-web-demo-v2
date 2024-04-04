@@ -1,11 +1,18 @@
+import { TPassphraseLocation, saveDeviceIdToLocalStorage } from '@api';
 import { RootStore } from '@store';
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, when } from 'mobx';
 
 export class LoginVM {
   @observable public generatingKeys: boolean;
+  @observable public recoveringKeys: boolean;
 
-  constructor(private _rootStore: RootStore) {
+  private _rootStore: RootStore;
+
+  constructor(rootStore: RootStore) {
     this.generatingKeys = false;
+    this.recoveringKeys = false;
+
+    this._rootStore = rootStore;
 
     makeObservable(this);
   }
@@ -13,6 +20,11 @@ export class LoginVM {
   @action
   public setGeneratingKeys(value: boolean): void {
     this.generatingKeys = value;
+  }
+
+  @action
+  public setRecoveringKeys(value: boolean): void {
+    this.recoveringKeys = value;
   }
 
   @computed
@@ -23,7 +35,7 @@ export class LoginVM {
       return false;
     }
 
-    if (this.generatingKeys) {
+    if (this.generatingKeys || this.recoveringKeys) {
       return true;
     }
 
@@ -71,5 +83,41 @@ export class LoginVM {
     } finally {
       this.setGeneratingKeys(false);
     }
+  }
+
+  public recoverMPCKeys(location: TPassphraseLocation): void {
+    try {
+      this.setRecoveringKeys(true);
+      const deviceInfo = this._rootStore.userStore.myLatestActiveDevice;
+      if (deviceInfo) {
+        this._rootStore.deviceStore.setDeviceId(deviceInfo.deviceId);
+        saveDeviceIdToLocalStorage(deviceInfo.deviceId, this._rootStore.userStore.userId);
+        when(
+          () => this._rootStore.deviceStore.deviceId === deviceInfo.deviceId,
+          () => {
+            this.startRecovery(location)
+              .then(() => {
+                this.setRecoveringKeys(false);
+              })
+              .catch(() => {
+                throw new Error('Error while starting recovery process.');
+              });
+          },
+        );
+      }
+    } catch (error: any) {
+      this.setRecoveringKeys(false);
+      throw new Error(error.message);
+    } finally {
+      this.setRecoveringKeys(false);
+    }
+  }
+
+  public async startRecovery(location: TPassphraseLocation): Promise<void> {
+    await this._rootStore.deviceStore.assignDeviceToNewWallet();
+    await this._rootStore.accountsStore.init();
+    await this._rootStore.fireblocksSDKStore.init();
+    await this._rootStore.backupStore.init();
+    await this._rootStore.backupStore.recoverKeyBackup(location);
   }
 }

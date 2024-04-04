@@ -203,7 +203,7 @@ export class BackupStore {
 
   public async passphrasePersist(location: TPassphraseLocation): Promise<IPassphrase> {
     if (this.passPhrases === null) {
-      throw new Error();
+      throw new Error('Passphrases not loaded');
     }
 
     try {
@@ -287,15 +287,16 @@ export class BackupStore {
     this.setLatestBackup(latestBackup);
   }
 
-  public async recoverKeyBackup(passphraseId: string) {
+  public async recoverKeyBackup(location: TPassphraseLocation) {
     this.clearProgress();
     this.setIsRecoverInProgress(true);
     try {
+      const { passphraseId } = await this.passphrasePersist(location);
       await this._rootStore.fireblocksSDKStore.sdkInstance?.recoverKeys(() => this.recoverPassphraseId(passphraseId));
       this.setIsRecoverCompleted(true);
       this.setIsRecoverInProgress(false);
     } catch (error: any) {
-      this.setError(error.message);
+      throw new Error(error.message);
     } finally {
       this.setIsRecoverInProgress(false);
     }

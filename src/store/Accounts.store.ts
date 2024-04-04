@@ -10,6 +10,7 @@ export class AccountsStore {
 
   constructor(rootStore: RootStore) {
     this.accounts = [];
+
     this._rootStore = rootStore;
 
     makeObservable(this);
@@ -20,11 +21,13 @@ export class AccountsStore {
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accessToken = this._rootStore.userStore.accessToken;
 
-    const myAccounts = await getAccounts(deviceId, accessToken);
+    if (deviceId) {
+      const myAccounts = await getAccounts(deviceId, accessToken);
 
-    myAccounts.map((a) => {
-      this.addAccount(a);
-    });
+      myAccounts.map((a) => {
+        this.addAccount(a);
+      });
+    }
   }
 
   @action

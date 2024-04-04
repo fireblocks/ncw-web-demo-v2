@@ -10,7 +10,7 @@ export class DeviceStore {
   private _rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
-    this.deviceId = '';
+    this.deviceId = null;
     this.walletId = '';
     this.automaticMode = false;
 
@@ -45,12 +45,16 @@ export class DeviceStore {
   }
 
   public async assignDeviceToNewWallet(): Promise<void> {
-    const deviceId = this._rootStore.deviceStore.deviceId;
+    const deviceId = this.deviceId;
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accessToken) {
-      const newWalletId = await assignDeviceToNewWallet(deviceId, accessToken);
-      this.setWalletId(newWalletId);
+      try {
+        const newWalletId = await assignDeviceToNewWallet(deviceId, accessToken);
+        this.setWalletId(newWalletId);
+      } catch (error: any) {
+        throw new Error(error.message);
+      }
     }
   }
 }

@@ -146,10 +146,10 @@ export class FireblocksSDKStore {
         }
         this.setIsMPCGenerating(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
-      throw error;
+      throw new Error(error.message);
     }
   }
 

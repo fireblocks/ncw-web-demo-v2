@@ -11,7 +11,7 @@ export interface IDeviceDTO {
 
 export const getDeviceIdFromLocalStorage = (userId: string) => localStorage.getItem(`${DEVICE_ID_KEY}-${userId}`);
 
-const saveDeviceIdToLocalStorage = (deviceId: string, userId: string) => {
+export const saveDeviceIdToLocalStorage = (deviceId: string, userId: string) => {
   localStorage.setItem(`${DEVICE_ID_KEY}-${userId}`, deviceId);
 };
 

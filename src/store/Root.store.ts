@@ -21,12 +21,12 @@ export class RootStore {
   constructor() {
     this.userStore = new UserStore(this);
     this.deviceStore = new DeviceStore(this);
-    this.assetsStore = new AssetsStore(this);
     this.accountsStore = new AccountsStore(this);
-    this.transactionsStore = new TransactionsStore(this);
     this.fireblocksSDKStore = new FireblocksSDKStore(this);
-    this.nftStore = new NFTStore(this);
+    this.assetsStore = new AssetsStore(this);
     this.backupStore = new BackupStore(this);
+    this.transactionsStore = new TransactionsStore(this);
+    this.nftStore = new NFTStore(this);
 
     makeObservable(this);
   }

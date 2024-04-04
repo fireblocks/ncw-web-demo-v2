@@ -62,8 +62,8 @@ export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ i
     backupStore
       .saveKeysBackup('GoogleDrive')
       .then(() => {
-        onClose();
         enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.SUCCESS_MESSAGE'), { variant: 'success' });
+        onClose();
       })
       .catch(() => {
         enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.ERROR_MESSAGE'), { variant: 'error' });
