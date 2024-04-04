@@ -140,6 +140,7 @@ export class UserStore {
 
   @action
   public clearStoreData() {
+    this.setHasBackup(false);
     this.setUser(null);
     this.setAccessToken('');
     this.setUserId('');
