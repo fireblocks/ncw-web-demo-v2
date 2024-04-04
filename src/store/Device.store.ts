@@ -3,14 +3,14 @@ import { action, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
 export class DeviceStore {
-  @observable public deviceId: string | null;
+  @observable public deviceId: string;
   @observable public walletId: string;
   @observable public automaticMode: boolean;
 
   private _rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
-    this.deviceId = null;
+    this.deviceId = '';
     this.walletId = '';
     this.automaticMode = false;
 
@@ -21,7 +21,7 @@ export class DeviceStore {
 
   @action
   public init(): void {
-    this.deviceId = getDeviceIdFromLocalStorage(this._rootStore.userStore.userId);
+    this.deviceId = getDeviceIdFromLocalStorage(this._rootStore.userStore.userId) || '';
     if (!this.deviceId) {
       this.automaticMode = false;
     } else {
