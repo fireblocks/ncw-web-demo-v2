@@ -292,9 +292,16 @@ export class BackupStore {
     this.setIsRecoverInProgress(true);
     try {
       const { passphraseId } = await this.passphrasePersist(location);
-      await this._rootStore.fireblocksSDKStore.sdkInstance?.recoverKeys(() => this.recoverPassphraseId(passphraseId));
-      this.setIsRecoverCompleted(true);
-      this.setIsRecoverInProgress(false);
+      if (this._rootStore.fireblocksSDKStore.sdkInstance) {
+        await this._rootStore.fireblocksSDKStore.sdkInstance.recoverKeys(() => this.recoverPassphraseId(passphraseId));
+        const keysStatus = await this._rootStore.fireblocksSDKStore.sdkInstance.getKeysStatus();
+        if (Object.keys(keysStatus).length > 0) {
+          this._rootStore.fireblocksSDKStore.setKeysStatus(keysStatus);
+          this._rootStore.fireblocksSDKStore.setSDKStatus('sdk_available');
+        }
+        this.setIsRecoverCompleted(true);
+        this.setIsRecoverInProgress(false);
+      }
     } catch (error: any) {
       throw new Error(error.message);
     } finally {

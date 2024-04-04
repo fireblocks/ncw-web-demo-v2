@@ -1,6 +1,6 @@
 import { TPassphraseLocation, saveDeviceIdToLocalStorage } from '@api';
 import { RootStore } from '@store';
-import { action, computed, makeObservable, observable, when } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 
 export class LoginVM {
   @observable public generatingKeys: boolean;
@@ -85,25 +85,20 @@ export class LoginVM {
     }
   }
 
-  public recoverMPCKeys(location: TPassphraseLocation): void {
+  public async recoverMPCKeys(location: TPassphraseLocation): Promise<void> {
     try {
       this.setRecoveringKeys(true);
       const deviceInfo = this._rootStore.userStore.myLatestActiveDevice;
       if (deviceInfo) {
-        this._rootStore.deviceStore.setDeviceId(deviceInfo.deviceId);
-        saveDeviceIdToLocalStorage(deviceInfo.deviceId, this._rootStore.userStore.userId);
-        when(
-          () => this._rootStore.deviceStore.deviceId === deviceInfo.deviceId,
-          () => {
-            this.startRecovery(location)
-              .then(() => {
-                this.setRecoveringKeys(false);
-              })
-              .catch(() => {
-                throw new Error('Error while starting recovery process.');
-              });
-          },
-        );
+        try {
+          this._rootStore.deviceStore.setDeviceId(deviceInfo.deviceId);
+          saveDeviceIdToLocalStorage(deviceInfo.deviceId, this._rootStore.userStore.userId);
+          await this.startRecovery(location);
+        } catch (error) {
+          throw new Error('Error while starting recovery process.');
+        } finally {
+          this.setRecoveringKeys(false);
+        }
       }
     } catch (error: any) {
       this.setRecoveringKeys(false);
