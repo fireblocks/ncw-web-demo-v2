@@ -40,11 +40,9 @@ export const Actions: React.FC = observer(function Actions() {
   };
 
   const recoverMPCKeys = () => {
-    try {
-      vm.recoverMPCKeys('GoogleDrive');
-    } catch (error) {
+    vm.recoverMPCKeys('GoogleDrive').catch(() => {
       enqueueSnackbar(t('LOGIN.RECOVERY_FROM_BACKUP_ERROR'), { variant: 'error' });
-    }
+    });
   };
 
   if (vm.preparingWorkspace) {
