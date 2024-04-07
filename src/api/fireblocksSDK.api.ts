@@ -1,5 +1,5 @@
 import { IKeyDescriptor, TMPCAlgorithm } from '@fireblocks/ncw-js-sdk';
-import { postCall } from './utils';
+import { postCall } from './utils.api';
 
 export type TFireblocksNCWStatus = 'sdk_not_ready' | 'initializing_sdk' | 'sdk_available' | 'sdk_initialization_failed';
 export type TKeysStatusRecord = Record<TMPCAlgorithm, IKeyDescriptor>;

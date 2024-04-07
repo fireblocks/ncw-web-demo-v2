@@ -1,4 +1,4 @@
-import { getCall } from './utils';
+import { getCall } from './utils.api';
 
 export interface IAccountDTO {
   walletId: string;

@@ -1,4 +1,4 @@
-import { getCall, postCall } from './utils';
+import { getCall, postCall } from './utils.api';
 
 export type TTransactionStatus =
   | 'PENDING_SIGNATURE'

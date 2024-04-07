@@ -1,4 +1,4 @@
-import { IIndexedDBLoggerOptions, IndexedDBLogger } from './IndexedDBLogger';
+import { IIndexedDBLoggerOptions, IndexedDBLogger } from './IndexedDBLogger.service';
 
 export function IndexedDBLoggerFactory(options: IIndexedDBLoggerOptions): Promise<IndexedDBLogger> {
   if (!IndexedDBLogger.isIndexedDBAvailable()) {

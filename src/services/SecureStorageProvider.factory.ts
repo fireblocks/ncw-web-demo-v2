@@ -1,4 +1,4 @@
-import { PasswordEncryptedLocalStorage } from './PasswordEncryptedLocalStorage';
+import { PasswordEncryptedLocalStorage } from './PasswordEncryptedLocalStorage.service';
 
 export const secureStorageProviderFactory = (deviceId: string) =>
   new PasswordEncryptedLocalStorage(deviceId, () => {
