@@ -1,11 +1,11 @@
-import { IDeviceDTO, generateNewDeviceId, getDevices, getUserId } from '@api';
+import { IDeviceDTO, getDevices, getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
 
 export class UserStore {
   @observable public loggedUser: IUser | null;
-  @observable public storeIsReady: boolean;
+  @observable public isGettingUser: boolean;
   @observable public hasBackup: boolean;
   @observable public isCheckingBackup: boolean;
   @observable public accessToken: string;
@@ -18,7 +18,7 @@ export class UserStore {
 
   constructor(rootStore: RootStore) {
     this.loggedUser = null;
-    this.storeIsReady = false;
+    this.isGettingUser = false;
     this.hasBackup = false;
     this.isCheckingBackup = false;
     this.accessToken = '';
@@ -38,6 +38,7 @@ export class UserStore {
   }
 
   public login(provider: 'GOOGLE' | 'APPLE'): void {
+    this.setIsGettingUser(true);
     this._authManager
       .login(provider)
       .then(() => {
@@ -62,7 +63,7 @@ export class UserStore {
   }
 
   public restartWallet(): void {
-    generateNewDeviceId(this.userId);
+    window.localStorage.clear();
   }
 
   public getAccessToken(): Promise<string> {
@@ -96,6 +97,7 @@ export class UserStore {
             .then((userId) => {
               this.setUserId(userId);
               this.getMyDevices();
+              this.setIsGettingUser(false);
             })
             .catch((e) => {
               this.setError(e.message);
@@ -105,7 +107,6 @@ export class UserStore {
           this.setError(e.message);
         });
     }
-    this.storeIsReady = true;
   }
 
   @action
@@ -139,14 +140,21 @@ export class UserStore {
   }
 
   @action
+  public setIsGettingUser(value: boolean) {
+    this.isGettingUser = value;
+  }
+
+  @action
   public clearStoreData() {
     this.setHasBackup(false);
     this.setUser(null);
     this.setAccessToken('');
     this.setUserId('');
     this.setError('');
-    localStorage.removeItem('VISITED_PAGE');
+    this._rootStore.transactionsStore.dispose();
     this._rootStore.fireblocksSDKStore.clearData();
+    this._rootStore.authStore.setStatus(null);
+    localStorage.removeItem('VISITED_PAGE');
   }
 
   @computed

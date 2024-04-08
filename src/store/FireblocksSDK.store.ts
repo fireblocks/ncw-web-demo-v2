@@ -184,22 +184,21 @@ export class FireblocksSDKStore {
   }
 
   @action
-  public generateMPCKeys(): void {
+  public async generateMPCKeys(): Promise<void> {
     if (!this.sdkInstance) {
       this.setError('fireblocksNCW is not initialized');
     } else {
       this.setIsMPCReady(false);
       this.setIsMPCGenerating(true);
       const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1']);
-      this.sdkInstance
-        .generateMPCKeys(ALGORITHMS)
-        .then(() => {
-          this.setIsMPCReady(true);
-          this.setIsMPCGenerating(false);
-        })
-        .catch((error) => {
-          this.setError(error.message);
-        });
+      try {
+        await this.sdkInstance.generateMPCKeys(ALGORITHMS);
+        this.setIsMPCReady(true);
+      } catch (error: any) {
+        throw new Error(error.message);
+      } finally {
+        this.setIsMPCGenerating(false);
+      }
     }
   }
 

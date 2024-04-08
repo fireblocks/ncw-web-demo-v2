@@ -9,3 +9,4 @@ export * from './FireblocksSDK.store';
 export * from './Transaction.store';
 export * from './NFT.store';
 export * from './NFTToken.store';
+export * from './Auth.store';

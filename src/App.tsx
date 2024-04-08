@@ -1,9 +1,9 @@
+import React from 'react';
 import { styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Header, SettingsPage, TransactionsPage } from '@pages';
-import { useFireblocksSDKStore, useUserStore } from '@store';
+import { useAssetsStore, useAuthStore, useNFTStore, useTransactionsStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { StoreInitializer } from './StoreInitializer';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -24,14 +24,40 @@ const ContentStyled = styled('div')(() => ({
 
 export const App: React.FC = observer(function App() {
   const userStore = useUserStore();
-  const fireblocksSDKStore = useFireblocksSDKStore();
+  const transactionsStore = useTransactionsStore();
+  const authStore = useAuthStore();
+  const assetsStore = useAssetsStore();
+  const NFTStore = useNFTStore();
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
-  const canShowDashboard = fireblocksSDKStore.keysAreReady && userStore.loggedUser;
+  const canShowDashboard = authStore.status === 'READY' && userStore.loggedUser;
+
+  React.useEffect(
+    () => () => {
+      transactionsStore.dispose();
+    },
+    [transactionsStore],
+  );
+
+  React.useEffect(() => {
+    if (userStore.userId) {
+      authStore.init().catch(() => {});
+    }
+  }, [userStore.userId, authStore]);
+
+  React.useEffect(() => {
+    const fetchAssets = async () => {
+      await assetsStore.init();
+      await NFTStore.init();
+    };
+
+    if (authStore.status === 'READY') {
+      fetchAssets().catch(() => {});
+    }
+  }, [authStore.status, assetsStore, NFTStore]);
 
   return (
     <RootStyled>
       <ContentStyled>
-        {userStore.loggedUser && <StoreInitializer />}
         {canShowDashboard && <Header />}
         <Routes>
           {canShowDashboard ? (

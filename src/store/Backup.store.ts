@@ -276,6 +276,8 @@ export class BackupStore {
     try {
       const { passphrase, passphraseId } = await this.passphrasePersist(location);
       await this._rootStore.fireblocksSDKStore.sdkInstance?.backupKeys(passphrase, passphraseId);
+      const latestBackup = await this.getMyLatestBackup();
+      this.setLatestBackup(latestBackup);
       this.setIsBackupCompleted(true);
       this.setIsBackupInProgress(false);
     } catch (e: any) {
@@ -283,8 +285,6 @@ export class BackupStore {
     } finally {
       this.setIsBackupInProgress(false);
     }
-    const latestBackup = await this.getMyLatestBackup();
-    this.setLatestBackup(latestBackup);
   }
 
   public async recoverKeyBackup(location: TPassphraseLocation) {

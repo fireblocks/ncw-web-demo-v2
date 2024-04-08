@@ -4,12 +4,11 @@ import IconApple from '@icons/apple.svg';
 import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
 import IconRecovery from '@icons/recover.svg';
-import { useRootStore, useUserStore } from '@store';
+import { useAuthStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ActionPlate } from './ActionPlate';
-import { LoginVM } from './LoginVM';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -28,24 +27,22 @@ const ProcessingStyled = styled('div')(({ theme }) => ({
 export const Actions: React.FC = observer(function Actions() {
   const userStore = useUserStore();
   const { t } = useTranslation();
-  const rootStore = useRootStore();
+  const authStore = useAuthStore();
   const { enqueueSnackbar } = useSnackbar();
 
-  const vm = React.useMemo(() => new LoginVM(rootStore), [rootStore]);
-
   const generateMPCKeys = () => {
-    vm.generateMPCKeys().catch(() => {
+    authStore.generateMPCKeys().catch(() => {
       enqueueSnackbar(t('LOGIN.GENERATE_MPC_KEYS_ERROR'), { variant: 'error' });
     });
   };
 
   const recoverMPCKeys = () => {
-    vm.recoverMPCKeys('GoogleDrive').catch(() => {
+    authStore.recoverMPCKeys('GoogleDrive').catch(() => {
       enqueueSnackbar(t('LOGIN.RECOVERY_FROM_BACKUP_ERROR'), { variant: 'error' });
     });
   };
 
-  if (vm.preparingWorkspace) {
+  if (authStore.preparingWorkspace) {
     return (
       <ProcessingStyled>
         <Progress size="medium" />
@@ -56,7 +53,7 @@ export const Actions: React.FC = observer(function Actions() {
     );
   }
 
-  if (vm.needToGenerateKeys) {
+  if (authStore.needToGenerateKeys) {
     return (
       <RootStyled>
         {userStore.hasBackup && (

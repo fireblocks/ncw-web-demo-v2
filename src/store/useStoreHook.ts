@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { MobXProviderContext } from 'mobx-react';
 import { AccountsStore } from './Accounts.store';
 import { AssetsStore } from './Assets.store';
+import { AuthStore } from './Auth.store';
 import { BackupStore } from './Backup.store';
 import { DeviceStore } from './Device.store';
 import { FireblocksSDKStore } from './FireblocksSDK.store';
@@ -53,4 +54,9 @@ export function useNFTStore(): NFTStore {
 export function useBackupStore(): BackupStore {
   const rootStore = useRootStore();
   return rootStore.backupStore;
+}
+
+export function useAuthStore(): AuthStore {
+  const rootStore = useRootStore();
+  return rootStore.authStore;
 }
