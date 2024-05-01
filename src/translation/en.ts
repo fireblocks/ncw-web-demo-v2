@@ -169,7 +169,8 @@ export const translationToEnglish = {
     EXISTING_USER_DESCRIPTION: 'Sign in to your existing wallet.',
     NEW_USER_TITLE: 'New user',
     GENERATE_MPC_KEYS_ERROR: 'Failed to generate MPC keys',
-    RECOVERY_FROM_BACKUP_ERROR: 'Failed to recover from backup',
+    RECOVERY_FROM_BACKUP_ERROR:
+      'Failed to recover from backup. You may need to allow pop-ups on your browser to continue the key backup.',
     NEW_USER_DESCRIPTION: 'Create a new wallet.',
     SIGN_IN_WITH_GOOGLE: 'Sign in with Google',
     SIGN_IN_WITH_APPLE: 'Sign in with Apple',
