@@ -78,12 +78,12 @@ export const AdvancedInfoDialog: React.FC<IProps> = observer(function AdvancedIn
           </DataBlockStyled>
         )}
 
-        {fireblocksSDKStore.keysStatus?.MPC_EDDSA_ED25519?.keyId && (
+        {fireblocksSDKStore.keysStatus?.MPC_CMP_EDDSA_ED25519?.keyId && (
           <DataBlockStyled>
             <Typography variant="h6" color="text.secondary">
-              Key (MPC_EDDSA_ED25519)
+              Key (MPC_CMP_EDDSA_ED25519)
             </Typography>
-            <CopyText size="large" text={fireblocksSDKStore.keysStatus.MPC_EDDSA_ED25519.keyId} />
+            <CopyText size="large" text={fireblocksSDKStore.keysStatus.MPC_CMP_EDDSA_ED25519.keyId} />
           </DataBlockStyled>
         )}
       </>

@@ -21,6 +21,7 @@ export interface IAssetDTO {
   blockchainId?: string;
   iconUrl?: string;
   rate?: number;
+  algorithm: string;
 }
 
 export interface IAssetAddressDTO {

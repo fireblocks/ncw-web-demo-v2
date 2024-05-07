@@ -38,10 +38,13 @@ export const translationToEnglish = {
     DIALOGS: {
       EXPORT_PRIVATE_KEYS: {
         TITLE: 'Export private key',
-        DESCRIPTION: 'Move your private key to another device.',
+        DESCRIPTION:
+          'Copy the Private Keys and save them in a secure location. You are now the responsible for their security.',
         ERROR_MESSAGE: 'Private key not exported',
         SHOW_KEY: 'Show key',
         HIDE_KEY: 'Hide key',
+        EDDSA: 'EdDSA',
+        ECDSA: 'ECDSA',
       },
       ADVANCED_INFO: {
         TITLE: 'Advanced info',

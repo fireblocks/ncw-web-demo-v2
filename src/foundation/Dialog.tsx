@@ -12,8 +12,8 @@ const RootStyled = styled('div')(({ theme }) => ({
 
 const MUIDialogLargeStyled = styled(MUIDialog)(() => ({
   '.MuiDialog-paper': {
-    width: 850,
-    maxWidth: 850,
+    width: 800,
+    maxWidth: 800,
   },
 }));
 
@@ -115,7 +115,7 @@ export const Dialog: React.FC<IProps> = ({
             {title}
           </Typography>
           {description && (
-            <Typography variant="subtitle1" color="text.secondary">
+            <Typography variant="subtitle1" color="text.secondary" sx={{ maxWidth: '90%' }}>
               {description}
             </Typography>
           )}

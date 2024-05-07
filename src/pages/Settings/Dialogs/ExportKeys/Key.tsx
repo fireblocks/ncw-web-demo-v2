@@ -28,6 +28,8 @@ const KeyStyled = styled('p')(({ theme }) => ({
   fontSize: 16,
   padding: 0,
   margin: 0,
+  wordBreak: 'break-all',
+  width: 628,
 }));
 
 interface IProps {
