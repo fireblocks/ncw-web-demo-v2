@@ -35,7 +35,7 @@ export class ExportPrivateKeysDialogVM {
   }
 
   @action
-  public handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  public handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     this.setSelectedTabValue(newValue);
   };
   public getWif(privateKey: string, isMainnet: boolean = false, isCompression: boolean = true) {
