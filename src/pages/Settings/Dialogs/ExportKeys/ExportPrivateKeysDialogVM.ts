@@ -14,19 +14,19 @@ interface IExportPrivateKeyItem {
 
 export class ExportPrivateKeysDialogVM {
   @observable public error: string | null;
-  @observable public value: number;
+  @observable public selectedTabValue: number;
   constructor(
     public assetsStore: AssetsStore,
     public fireblocksSDKStore: FireblocksSDKStore,
   ) {
     makeObservable(this);
     this.error = null;
-    this.value = 0;
+    this.selectedTabValue = 0;
   }
 
   @action
-  public setTabValue(value: number) {
-    this.value = value;
+  public setSelectedTabValue(selectedTabValue: number) {
+    this.selectedTabValue = selectedTabValue;
   }
 
   @action
@@ -36,7 +36,7 @@ export class ExportPrivateKeysDialogVM {
 
   @action
   public handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    this.setTabValue(newValue);
+    this.setSelectedTabValue(newValue);
   };
   public getWif(privateKey: string, isMainnet: boolean = false, isCompression: boolean = true) {
     if (!privateKey) {

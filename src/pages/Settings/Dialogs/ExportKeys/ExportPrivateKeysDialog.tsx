@@ -45,7 +45,7 @@ export const ExportPrivateKeysDialog: React.FC<IProps> = observer(function Expor
       <RootStyled>
         <div>
           <TabsStyled
-            value={vm.value}
+            value={vm.selectedTabValue}
             onChange={vm.handleTabChange}
             aria-label="privateKeysAlgorithmTabs"
             textColor="inherit"
@@ -65,14 +65,14 @@ export const ExportPrivateKeysDialog: React.FC<IProps> = observer(function Expor
           </TabsStyled>
         </div>
         <div>
-          <CustomTabPanel value={vm.value} index={0}>
+          <CustomTabPanel value={vm.selectedTabValue} index={0}>
             <Table>
               <TableBody>
                 <PrivateKeyListItem items={vm.ecdsaLIstItems} />
               </TableBody>
             </Table>
           </CustomTabPanel>
-          <CustomTabPanel value={vm.value} index={1}>
+          <CustomTabPanel value={vm.selectedTabValue} index={1}>
             <Table>
               <TableBody>
                 <PrivateKeyListItem items={vm.eddsaLIstItems} />
