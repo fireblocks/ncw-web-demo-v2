@@ -54,6 +54,8 @@ export const translationToEnglish = {
         DEVICE_ID: 'Device ID',
         WALLET_ID: 'Wallet ID',
         SDK_VERSION: 'SDK version',
+        ECDSA_KEY: 'KEY (MPC_CMP_ECDSA_SECP256K1)',
+        EDDSA_KEY: 'KEY (MPC_CMP_EDDSA_ED25519)',
       },
       LOGS: {
         TITLE: 'Audit log',

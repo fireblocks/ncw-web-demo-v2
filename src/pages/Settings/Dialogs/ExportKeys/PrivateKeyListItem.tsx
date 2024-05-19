@@ -39,7 +39,7 @@ const ImageStyled = styled('div')(({ theme }) => ({
 
 interface IExportPrivateKeyItem {
   name: string;
-  key: string;
+  key: string | null;
   iconSrc: string;
   index: number;
   wif?: string;
@@ -59,9 +59,11 @@ export const PrivateKeyListItem: React.FC<IProps> = observer(function PrivateKey
               </ImageStyled>
               <Typography variant="body2">{item.name}</Typography>
             </AssetBoxStyled>
-            <KeyBoxStyled>
-              <Key assetKey={item.key} />
-            </KeyBoxStyled>
+            {item.key && (
+              <KeyBoxStyled>
+                <Key assetKey={item.key} />
+              </KeyBoxStyled>
+            )}
             {item.wif && (
               <div>
                 <Typography variant="body2">WIF</Typography>

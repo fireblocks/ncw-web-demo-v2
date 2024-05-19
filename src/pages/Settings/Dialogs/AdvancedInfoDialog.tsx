@@ -72,7 +72,7 @@ export const AdvancedInfoDialog: React.FC<IProps> = observer(function AdvancedIn
         {fireblocksSDKStore.keysStatus?.MPC_CMP_ECDSA_SECP256K1?.keyId && (
           <DataBlockStyled>
             <Typography variant="h6" color="text.secondary">
-              Key (MPC_CMP_ECDSA_SECP256K1)
+              {t('SETTINGS.DIALOGS.ADVANCED_INFO.ECDSA_KEY')}
             </Typography>
             <CopyText size="large" text={fireblocksSDKStore.keysStatus.MPC_CMP_ECDSA_SECP256K1.keyId} />
           </DataBlockStyled>
@@ -81,7 +81,7 @@ export const AdvancedInfoDialog: React.FC<IProps> = observer(function AdvancedIn
         {fireblocksSDKStore.keysStatus?.MPC_CMP_EDDSA_ED25519?.keyId && (
           <DataBlockStyled>
             <Typography variant="h6" color="text.secondary">
-              Key (MPC_CMP_EDDSA_ED25519)
+              {t('SETTINGS.DIALOGS.ADVANCED_INFO.EDDSA_KEY')}
             </Typography>
             <CopyText size="large" text={fireblocksSDKStore.keysStatus.MPC_CMP_EDDSA_ED25519.keyId} />
           </DataBlockStyled>

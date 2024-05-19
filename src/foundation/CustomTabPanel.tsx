@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
 
 interface IProps {
   children?: React.ReactNode;
@@ -15,6 +14,6 @@ export const CustomTabPanel: React.FC<IProps> = ({ children, index, value, ...ot
     aria-labelledby={`tab-${index.toString()}`}
     {...other}
   >
-    {value === index && <Box>{children}</Box>}
+    {value === index && <div>{children}</div>}
   </div>
 );

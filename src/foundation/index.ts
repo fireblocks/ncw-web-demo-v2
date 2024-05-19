@@ -10,7 +10,6 @@ export {
   alpha,
   Tab,
   Tabs,
-  Box,
 } from '@mui/material';
 export * from './theme';
 export * from './table/Table';
