@@ -28,6 +28,8 @@ export class FireblocksSDKStore {
   @observable public exportedKeys: IFullKey[] | null;
   @observable public error: string;
   @observable public logger: IndexedDBLogger | null;
+  @observable public fprvKey: string | null;
+  @observable public xprvKey: string | null;
 
   private _rootStore: RootStore;
   private _unsubscribeTransactionsPolling: (() => void) | null;
@@ -45,6 +47,8 @@ export class FireblocksSDKStore {
     this.error = '';
     this.isKeysExportInProcess = false;
     this.exportedKeys = null;
+    this.fprvKey = null;
+    this.xprvKey = null;
 
     this._unsubscribeTransactionsPolling = null;
     this._rootStore = rootStore;
@@ -174,6 +178,16 @@ export class FireblocksSDKStore {
   }
 
   @action
+  public setFPRVKey(key: IFullKey): void {
+    this.fprvKey = key ? key.privateKey : null;
+  }
+
+  @action
+  public setXPRVKey(key: IFullKey): void {
+    this.xprvKey = key ? key.privateKey : null;
+  }
+
+  @action
   public clearSDKStorage() {
     if (!this.sdkInstance) {
       this.setError('fireblocksNCW is not initialized');
@@ -190,7 +204,7 @@ export class FireblocksSDKStore {
     } else {
       this.setIsMPCReady(false);
       this.setIsMPCGenerating(true);
-      const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1']);
+      const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1', 'MPC_CMP_EDDSA_ED25519']);
       try {
         await this.sdkInstance.generateMPCKeys(ALGORITHMS);
         this.setIsMPCReady(true);
@@ -211,7 +225,7 @@ export class FireblocksSDKStore {
       const keysStatus = await this.sdkInstance.getKeysStatus();
 
       const secP256K1Status = keysStatus.MPC_CMP_ECDSA_SECP256K1?.keyStatus ?? null;
-      const ed25519Status = keysStatus.MPC_EDDSA_ED25519?.keyStatus ?? null;
+      const ed25519Status = keysStatus.MPC_CMP_EDDSA_ED25519?.keyStatus ?? null;
 
       if (secP256K1Status === 'READY' || ed25519Status === 'READY') {
         this.setIsMPCReady(true);
@@ -230,6 +244,14 @@ export class FireblocksSDKStore {
       try {
         const keys = await this.sdkInstance.takeover();
         this.setExportedKeys(keys);
+        const EDDSAKey = keys.find((k) => k.algorithm === 'MPC_CMP_EDDSA_ED25519');
+        if (EDDSAKey) {
+          this.setFPRVKey(EDDSAKey);
+        }
+        const ECDSAKey = keys.find((k) => k.algorithm === 'MPC_CMP_ECDSA_SECP256K1');
+        if (ECDSAKey) {
+          this.setXPRVKey(ECDSAKey);
+        }
       } catch (error: any) {
         throw new Error(error.message);
       } finally {

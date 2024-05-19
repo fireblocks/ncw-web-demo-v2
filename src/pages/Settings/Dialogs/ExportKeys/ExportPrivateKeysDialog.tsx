@@ -1,13 +1,10 @@
-import React from 'react';
-import { Dialog, Table, TableBody, styled } from '@foundation';
+import React, { useMemo } from 'react';
+import { CustomTabPanel, Dialog, Tab, Table, TableBody, Tabs, styled } from '@foundation';
 import { useAssetsStore, useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import { FixedSizeList } from 'react-window';
-import { AssetListItem } from './AssetListItem';
-
-const TABLE_ROW_HEIGHT = 136;
+import { ExportPrivateKeysDialogVM } from './ExportPrivateKeysDialogVM';
+import { PrivateKeyListItem } from './PrivateKeyListItem';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -15,6 +12,11 @@ const RootStyled = styled('div')(() => ({
   height: 545,
 }));
 
+const TabsStyled = styled(Tabs)(({ theme }) => ({
+  '.MuiTabs-indicator': {
+    backgroundColor: theme.palette.text.primary,
+  },
+}));
 interface IProps {
   isOpen: boolean;
   onClose: () => void;
@@ -27,6 +29,10 @@ export const ExportPrivateKeysDialog: React.FC<IProps> = observer(function Expor
   const { t } = useTranslation();
   const assetsStore = useAssetsStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
+  const vm = useMemo(
+    () => new ExportPrivateKeysDialogVM(assetsStore, fireblocksSDKStore),
+    [assetsStore, fireblocksSDKStore],
+  );
 
   return (
     <Dialog
@@ -37,36 +43,43 @@ export const ExportPrivateKeysDialog: React.FC<IProps> = observer(function Expor
       size="large"
     >
       <RootStyled>
-        <Table>
-          <TableBody>
-            <AutoSizer>
-              {({ height, width }) => {
-                if (!fireblocksSDKStore.exportedKeys || !fireblocksSDKStore.exportedKeys.length) {
-                  return null;
-                } else {
-                  return (
-                    <FixedSizeList
-                      height={height}
-                      width={width}
-                      itemCount={assetsStore.myBaseAssets.length}
-                      itemSize={TABLE_ROW_HEIGHT}
-                    >
-                      {({ index, style }) => (
-                        <AssetListItem
-                          privateKey={
-                            fireblocksSDKStore.exportedKeys?.length ? fireblocksSDKStore.exportedKeys[0].privateKey : ''
-                          }
-                          index={index}
-                          style={style}
-                        />
-                      )}
-                    </FixedSizeList>
-                  );
-                }
-              }}
-            </AutoSizer>
-          </TableBody>
-        </Table>
+        <div>
+          <TabsStyled
+            value={vm.selectedTabValue}
+            onChange={vm.handleTabChange}
+            aria-label="privateKeysAlgorithmTabs"
+            textColor="inherit"
+          >
+            {assetsStore.myEDDSAAssets.length && (
+              <Tab
+                label={t('SETTINGS.DIALOGS.EXPORT_PRIVATE_KEYS.EDDSA')}
+                sx={{ textTransform: 'none', marginLeft: 2.5, fontWeight: 'bold' }}
+              />
+            )}
+            {assetsStore.myECDSAAssets.length && (
+              <Tab
+                label={t('SETTINGS.DIALOGS.EXPORT_PRIVATE_KEYS.ECDSA')}
+                sx={{ textTransform: 'none', marginLeft: 2.5, fontWeight: 'bold' }}
+              />
+            )}
+          </TabsStyled>
+        </div>
+        <div>
+          <CustomTabPanel value={vm.selectedTabValue} index={0}>
+            <Table>
+              <TableBody>
+                <PrivateKeyListItem items={vm.ecdsaLIstItems} />
+              </TableBody>
+            </Table>
+          </CustomTabPanel>
+          <CustomTabPanel value={vm.selectedTabValue} index={1}>
+            <Table>
+              <TableBody>
+                <PrivateKeyListItem items={vm.eddsaLIstItems} />
+              </TableBody>
+            </Table>
+          </CustomTabPanel>
+        </div>
       </RootStyled>
     </Dialog>
   );

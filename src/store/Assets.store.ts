@@ -53,6 +53,16 @@ export class AssetsStore {
     return this.myAssets.filter((a) => a.assetData.type === 'BASE_ASSET');
   }
 
+  @computed
+  public get myECDSAAssets(): AssetStore[] {
+    return this.myAssets.filter((a) => a.assetData.algorithm === 'MPC_ECDSA_SECP256K1');
+  }
+
+  @computed
+  public get myEDDSAAssets(): AssetStore[] {
+    return this.myAssets.filter((a) => a.assetData.algorithm === 'MPC_EDDSA_ED25519');
+  }
+
   @action
   public setSupportedAssets(assets: IAssetDTO[]): void {
     this.supportedAssets = [];
