@@ -98,8 +98,8 @@ export class FireblocksSDKStore {
                 .then((keyStatus) => {
                   this.setKeysStatus(keyStatus);
                 })
-                .catch((err) => {
-                  throw err;
+                .catch(() => {
+                  this.setError('fireblocksNCW failed to get key status');
                 });
               break;
 
