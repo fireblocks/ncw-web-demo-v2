@@ -93,9 +93,14 @@ export class FireblocksSDKStore {
         handleEvent: (event: TEvent) => {
           switch (event.type) {
             case 'key_descriptor_changed':
-              this.setKeysStatus({
-                [event.keyDescriptor.algorithm]: event.keyDescriptor,
-              } as TKeysStatusRecord);
+              this.sdkInstance
+                ?.getKeysStatus()
+                .then((keyStatus) => {
+                  this.setKeysStatus(keyStatus);
+                })
+                .catch((err) => {
+                  throw err;
+                });
               break;
 
             case 'transaction_signature_changed':
