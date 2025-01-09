@@ -2,6 +2,7 @@ import { ITransactionDTO, TFireblocksNCWStatus, TKeysStatusRecord, sendMessage }
 import {
   ConsoleLoggerFactory,
   FireblocksNCWFactory,
+  getFireblocksNCWInstance,
   IEventsHandler,
   IFireblocksNCW,
   IFullKey,
@@ -129,18 +130,25 @@ export class FireblocksSDKStore {
         logger: ConsoleLoggerFactory(),
       });
 
-      const sdkInstance = await FireblocksNCWFactory({
-        env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
-        logLevel: 'INFO',
-        deviceId: this._rootStore.deviceStore.deviceId,
-        messagesHandler,
-        eventsHandler,
-        secureStorageProvider: secureStorageProviderFactory(this._rootStore.deviceStore.deviceId),
-        logger,
-      });
+      let fireblocksNCW: IFireblocksNCW | null = null;
+
+      let ncwInstance = getFireblocksNCWInstance(this._rootStore.deviceStore.deviceId);
+      if (ncwInstance) {
+        fireblocksNCW = ncwInstance;
+      } else {
+        fireblocksNCW = await FireblocksNCWFactory({
+          env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
+          logLevel: 'INFO',
+          deviceId: this._rootStore.deviceStore.deviceId,
+          messagesHandler,
+          eventsHandler,
+          secureStorageProvider: secureStorageProviderFactory(this._rootStore.deviceStore.deviceId),
+          logger,
+        });
+      }
 
       this.setLogger(logger);
-      this.setSDKInstance(sdkInstance);
+      this.setSDKInstance(fireblocksNCW);
 
       this.setUnsubscribeTransactionsPolling(
         this._rootStore.transactionsStore.listenToTransactions((transaction: ITransactionDTO) => {
