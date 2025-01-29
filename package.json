@@ -15,7 +15,7 @@
     "@emotion/styled": "^11.11.0",
     "@fireblocks/ncw-js-sdk": "12.5.3",
     "@fontsource/roboto": "^5.0.12",
-    "@mui/material": "^5.15.14",
+    "@mui/material": "^5.16.14",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@types/node": "^20.11.30",
     "autoprefixer": "^10.4.19",
