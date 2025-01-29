@@ -30,7 +30,7 @@
     "ethers": "^6.12.0",
     "firebase": "^10.9.0",
     "fireblocks-sdk": "^5.23.0",
-    "i18next": "^23.10.1",
+    "i18next": "^23.16.8",
     "i18next-browser-languagedetector": "^7.2.0",
     "js-base64": "^3.7.7",
     "mobx": "^6.12.0",
