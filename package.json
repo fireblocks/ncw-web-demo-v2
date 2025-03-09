@@ -17,7 +17,7 @@
     "@fontsource/roboto": "^5.0.12",
     "@mui/material": "^5.15.14",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
-    "@types/node": "^20.11.30",
+    "@types/node": "^20.17.19",
     "autoprefixer": "^10.4.19",
     "base58-js": "^2.0.0",
     "eslint-config-prettier": "^9.1.0",
