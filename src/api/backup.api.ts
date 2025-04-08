@@ -1,4 +1,6 @@
 import { getCall, postCall } from './utils.api';
+import { EmbeddedWallet } from '@fireblocks/embedded-wallet-sdk';
+import { ENV_CONFIG } from '../env_config.ts';
 
 export type TPassphraseLocation = 'GoogleDrive' | 'iCloud';
 
@@ -20,7 +22,19 @@ export interface IPassphrase {
   passphraseId: string;
 }
 
-export const getLatestBackup = async (walletId: string, token: string): Promise<IBackupInfo | null> => {
+export const getLatestBackup = async (
+  walletId: string,
+  token: string,
+  embeddedWalletSDK: EmbeddedWallet | undefined,
+): Promise<IBackupInfo | null> => {
+  if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && embeddedWalletSDK) {
+    try {
+      const latestBackup: any = await embeddedWalletSDK.getLatestBackup();
+      return latestBackup;
+    } catch (e) {
+      return null;
+    }
+  }
   const response = await getCall(`api/wallets/${walletId}/backup/latest`, token);
   if (response.status >= 200 && response.status < 300) {
     return response.json();

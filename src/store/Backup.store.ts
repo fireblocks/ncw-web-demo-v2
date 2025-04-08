@@ -153,6 +153,7 @@ export class BackupStore {
       const latestBackup = await getLatestBackup(
         walletId ? walletId : this._rootStore.deviceStore.walletId,
         this._rootStore.userStore.accessToken,
+        this._rootStore.fireblocksSDKStore.embeddedWalletSDK,
       );
       return latestBackup;
     } catch (e: any) {

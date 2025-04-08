@@ -13,7 +13,7 @@ export class UserStore {
   @observable public myDevices: IDeviceDTO[];
   @observable public error: string;
 
-  private _authManager: IAuthManager;
+  public _authManager: IAuthManager;
   private _rootStore: RootStore;
 
   constructor(rootStore: RootStore) {

@@ -1,5 +1,6 @@
 import { ITransactionDTO, TFireblocksNCWStatus, TKeysStatusRecord, sendMessage } from '@api';
 import {
+  BrowserLocalStorageProvider,
   ConsoleLoggerFactory,
   FireblocksNCWFactory,
   getFireblocksNCWInstance,
@@ -15,6 +16,9 @@ import { IndexedDBLogger, IndexedDBLoggerFactory, secureStorageProviderFactory }
 import { ENV_CONFIG } from 'env_config';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
+import { EmbeddedWallet, ICoreOptions, IEmbeddedWalletOptions } from '@fireblocks/embedded-wallet-sdk';
+import { TransactionSubscriberService } from '../services/TransactionSubscriberService.ts';
+
 
 export class FireblocksSDKStore {
   @observable public sdkStatus: TFireblocksNCWStatus;
@@ -31,6 +35,7 @@ export class FireblocksSDKStore {
   @observable public logger: IndexedDBLogger | null;
   @observable public fprvKey: string | null;
   @observable public xprvKey: string | null;
+  public embeddedWalletSDK: EmbeddedWallet | null = null;
 
   private _rootStore: RootStore;
   private _unsubscribeTransactionsPolling: (() => void) | null;
@@ -50,7 +55,6 @@ export class FireblocksSDKStore {
     this.exportedKeys = null;
     this.fprvKey = null;
     this.xprvKey = null;
-
     this._unsubscribeTransactionsPolling = null;
     this._rootStore = rootStore;
 
@@ -131,20 +135,48 @@ export class FireblocksSDKStore {
       });
 
       let fireblocksNCW: IFireblocksNCW | null = null;
-
-      let ncwInstance = getFireblocksNCWInstance(this._rootStore.deviceStore.deviceId);
-      if (ncwInstance) {
-        fireblocksNCW = ncwInstance;
-      } else {
-        fireblocksNCW = await FireblocksNCWFactory({
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+        // Embedded Wallet
+        const storageProvider = new BrowserLocalStorageProvider();
+        const ewOpts: IEmbeddedWalletOptions = {
           env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
-          logLevel: 'INFO',
+          logLevel: 'VERBOSE',
+          logger,
+          authClientId: ENV_CONFIG.AUTH_CLIENT_ID,
+          authTokenRetriever: {
+            getAuthToken: () => this._rootStore.userStore._authManager.getAccessToken(),
+          },
+          reporting: {
+            enabled: false,
+          },
+        };
+        const coreNCWOptions: ICoreOptions = {
           deviceId: this._rootStore.deviceStore.deviceId,
-          messagesHandler,
           eventsHandler,
           secureStorageProvider: secureStorageProviderFactory(this._rootStore.deviceStore.deviceId),
-          logger,
-        });
+          storageProvider,
+        };
+        const fireblocksEW = new EmbeddedWallet(ewOpts);
+        fireblocksNCW =
+          getFireblocksNCWInstance(coreNCWOptions.deviceId) ?? (await fireblocksEW.initializeCore(coreNCWOptions));
+        const txSubscriber = await TransactionSubscriberService.initialize(fireblocksEW);
+        this.embeddedWalletSDK = fireblocksEW;
+      } else {
+        // Not Embedded Wallet
+        let ncwInstance = getFireblocksNCWInstance(this._rootStore.deviceStore.deviceId);
+        if (ncwInstance) {
+          fireblocksNCW = ncwInstance;
+        } else {
+          fireblocksNCW = await FireblocksNCWFactory({
+            env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
+            logLevel: 'INFO',
+            deviceId: this._rootStore.deviceStore.deviceId,
+            messagesHandler,
+            eventsHandler,
+            secureStorageProvider: secureStorageProviderFactory(this._rootStore.deviceStore.deviceId),
+            logger,
+          });
+        }
       }
 
       this.setLogger(logger);

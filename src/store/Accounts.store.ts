@@ -1,5 +1,6 @@
 import { IAccountDTO, getAccounts } from '@api';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import { ENV_CONFIG } from '../env_config.ts';
 import { AccountStore } from './Account.store';
 import { RootStore } from './Root.store';
 
@@ -22,9 +23,9 @@ export class AccountsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId) {
-      const myAccounts = await getAccounts(deviceId, accessToken);
+      const myAccounts = await getAccounts(deviceId, accessToken, this._rootStore.fireblocksSDKStore.embeddedWalletSDK);
 
-      myAccounts.map((a) => {
+      myAccounts?.map((a) => {
         this.addAccount(a);
       });
     }

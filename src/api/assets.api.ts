@@ -1,4 +1,7 @@
 import { getCall, postCall } from './utils.api';
+import { EmbeddedWallet } from '@fireblocks/embedded-wallet-sdk';
+import { ENV_CONFIG } from '../env_config.ts';
+import { NCW } from 'fireblocks-sdk';
 
 export interface IAssetDTO {
   id: string;
@@ -63,7 +66,12 @@ export const addAsset = async (
   accountId: number,
   assetId: string,
   token: string,
-): Promise<IAssetAddressDTO> => {
+  embeddedWalletSDK: EmbeddedWallet | undefined,
+): Promise<IAssetAddressDTO | NCW.WalletAssetAddress> => {
+  if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && embeddedWalletSDK) {
+    const re: Promise<NCW.WalletAssetAddress> = await embeddedWalletSDK?.addAsset(accountId, assetId);
+    return re;
+  }
   const response = await postCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}`, token);
   return response;
 };
@@ -73,12 +81,26 @@ export const getAsset = async (
   accountId: number,
   assetId: string,
   token: string,
-): Promise<IAssetDTO> => {
+  embeddedWalletSDK: EmbeddedWallet | undefined,
+): Promise<IAssetDTO | NCW.WalletAssetResponse> => {
+  if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && embeddedWalletSDK) {
+    const re: Promise<NCW.WalletAssetResponse> = await embeddedWalletSDK?.getAsset(accountId, assetId);
+    return re;
+  }
   const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}`, token);
   return response.json();
 };
 
-export const getAssets = async (deviceId: string, accountId: number, token: string): Promise<IAssetDTO[]> => {
+export const getAssets = async (
+  deviceId: string,
+  accountId: number,
+  token: string,
+  embeddedWalletSDK: EmbeddedWallet | undefined,
+): Promise<IAssetDTO[]> => {
+  if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && embeddedWalletSDK) {
+    const re: Promise<any> = await embeddedWalletSDK?.getAssets(accountId);
+    return re;
+  }
   const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets`, token);
   return response.json();
 };
@@ -87,13 +109,27 @@ export const getAssetsSummary = async (
   deviceId: string,
   accountId: number,
   token: string,
+  embeddedWalletSDK: EmbeddedWallet | undefined,
 ): Promise<IAssetsSummaryDTO[]> => {
+  if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && embeddedWalletSDK) {
+    const re: Promise<any> = await embeddedWalletSDK?.getAssets(accountId);
+    return re;
+  }
   const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets/summary`, token);
   const assetsMap = await response.json();
   return Object.values(assetsMap);
 };
 
-export const getSupportedAssets = async (deviceId: string, accountId: number, token: string): Promise<IAssetDTO[]> => {
+export const getSupportedAssets = async (
+  deviceId: string,
+  accountId: number,
+  token: string,
+  embeddedWalletSDK: EmbeddedWallet | undefined,
+): Promise<IAssetDTO[]> => {
+  if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && embeddedWalletSDK) {
+    const re: Promise<any> = await embeddedWalletSDK?.getSupportedAssets();
+    return re;
+  }
   const response = await getCall(
     `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/supported_assets`,
     token,
@@ -106,7 +142,12 @@ export const getAddress = async (
   accountId: number,
   assetId: string,
   token: string,
+  embeddedWalletSDK: EmbeddedWallet | undefined,
 ): Promise<IAssetAddressDTO> => {
+  if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && embeddedWalletSDK) {
+    const re: Promise<any> = await embeddedWalletSDK?.getAddresses(accountId, assetId);
+    return re;
+  }
   const response = await getCall(
     `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}/address`,
     token,
@@ -119,7 +160,12 @@ export const getBalance = async (
   accountId: number,
   assetId: string,
   token: string,
+  embeddedWalletSDK: EmbeddedWallet | undefined,
 ): Promise<IAssetBalanceDTO> => {
+  if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && embeddedWalletSDK) {
+    const re: Promise<any> = await embeddedWalletSDK?.getBalance(accountId, assetId);
+    return re;
+  }
   const response = await getCall(
     `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}/balance`,
     token,
