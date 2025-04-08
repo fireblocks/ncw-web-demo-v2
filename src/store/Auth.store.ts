@@ -1,6 +1,7 @@
 import { TPassphraseLocation, getDeviceIdFromLocalStorage, saveDeviceIdToLocalStorage } from '@api';
 import { RootStore } from '@store';
 import { action, computed, makeObservable, observable } from 'mobx';
+import { ENV_CONFIG } from '../env_config';
 
 type TStatus = 'GENERATING' | 'RECOVERING' | 'READY' | 'ERROR' | 'LOGGING_IN' | null;
 
@@ -86,8 +87,14 @@ export class AuthStore {
       this._rootStore.deviceStore.generateNewDeviceId();
       await this._rootStore.deviceStore.assignDeviceToNewWallet();
       await this._rootStore.accountsStore.init();
-      await this._rootStore.fireblocksSDKStore.init();
-      await this._rootStore.fireblocksSDKStore.generateMPCKeys();
+
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+        await this._rootStore.embeddedWalletSDKStore.init();
+      } else {
+        await this._rootStore.fireblocksSDKStore.init();
+        await this._rootStore.fireblocksSDKStore.generateMPCKeys();
+      }
+
       this.setStatus('READY');
     } catch (error: any) {
       this.setStatus('ERROR');

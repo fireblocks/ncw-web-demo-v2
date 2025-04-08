@@ -10,6 +10,7 @@ import { NFTStore } from './NFT.store';
 import { RootStore } from './Root.store';
 import { TransactionsStore } from './Transactions.store';
 import { UserStore } from './User.store';
+import { EmbeddedWalletSDKStore } from './EmbeddedWalletSDK.store';
 
 export function useRootStore(): RootStore {
   const stores = useContext(MobXProviderContext);
@@ -44,6 +45,11 @@ export function useAccountsStore(): AccountsStore {
 export function useFireblocksSDKStore(): FireblocksSDKStore {
   const rootStore = useRootStore();
   return rootStore.fireblocksSDKStore;
+}
+
+export function useEmbeddedWalletSDKStore(): EmbeddedWalletSDKStore {
+  const rootStore = useRootStore();
+  return rootStore.embeddedWalletSDKStore;
 }
 
 export function useNFTStore(): NFTStore {

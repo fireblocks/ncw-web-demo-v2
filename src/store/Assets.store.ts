@@ -11,6 +11,8 @@ import {
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { AssetStore, localizedCurrencyView } from './Asset.store';
 import { RootStore } from './Root.store';
+import { ENV_CONFIG } from '../env_config';
+import { EmbeddedWalletAPI } from '../api/embeddedWallet.api';
 
 export class AssetsStore {
   @observable public myAssets: AssetStore[];
@@ -20,11 +22,13 @@ export class AssetsStore {
   @observable public error: string;
 
   private _rootStore: RootStore;
+  private _embeddedWalletAPI: EmbeddedWalletAPI;
 
   constructor(rootStore: RootStore) {
     this.myAssets = [];
     this.supportedAssets = [];
     this._rootStore = rootStore;
+    this._embeddedWalletAPI = new EmbeddedWalletAPI(rootStore);
     this.isLoading = true;
     this.isGettingBalances = false;
     this.error = '';
@@ -122,28 +126,34 @@ export class AssetsStore {
   }
 
   public async addAsset(assetId: string): Promise<void> {
-    const deviceId = this._rootStore.deviceStore.deviceId;
-    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-    const accessToken = this._rootStore.userStore.accessToken;
-
-    if (deviceId && accountId !== undefined && accessToken) {
-      await addAsset(deviceId, accountId, assetId, accessToken);
-      const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken);
-      const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken);
-      const addressDTO = await getAddress(deviceId, accountId, assetId, accessToken);
+    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      await this._embeddedWalletAPI.addAsset(assetId);
+      const assetDTO = await this._embeddedWalletAPI.getAsset(assetId);
+      const balanceDTO = await this._embeddedWalletAPI.getBalance(assetId);
+      const addressDTO = await this._embeddedWalletAPI.getAddress(assetId);
 
       this.addMyAsset({ asset: assetDTO, balance: balanceDTO, address: addressDTO });
+    } else {
+      const deviceId = this._rootStore.deviceStore.deviceId;
+      const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+      const accessToken = this._rootStore.userStore.accessToken;
+
+      if (deviceId && accountId !== undefined && accessToken) {
+        await addAsset(deviceId, accountId, assetId, accessToken);
+        const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken);
+        const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken);
+        const addressDTO = await getAddress(deviceId, accountId, assetId, accessToken);
+
+        this.addMyAsset({ asset: assetDTO, balance: balanceDTO, address: addressDTO });
+      }
     }
   }
 
   public refreshBalances(): void {
     this.setIsGettingBalances(true);
-    const deviceId = this._rootStore.deviceStore.deviceId;
-    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-    const accessToken = this._rootStore.userStore.accessToken;
 
-    if (accountId !== undefined) {
-      getAssetsSummary(deviceId, accountId, accessToken)
+    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      this._embeddedWalletAPI.getAssetsSummary()
         .then((assetsSummary) => {
           assetsSummary.map((a) => {
             const asset = this.getAssetById(a.asset.id);
@@ -158,32 +168,64 @@ export class AssetsStore {
         .finally(() => {
           this.setIsGettingBalances(false);
         });
+    } else {
+      const deviceId = this._rootStore.deviceStore.deviceId;
+      const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+      const accessToken = this._rootStore.userStore.accessToken;
+
+      if (accountId !== undefined) {
+        getAssetsSummary(deviceId, accountId, accessToken)
+          .then((assetsSummary) => {
+            assetsSummary.map((a) => {
+              const asset = this.getAssetById(a.asset.id);
+              if (asset) {
+                asset.setBalance(a.balance);
+              }
+            });
+          })
+          .catch((e) => {
+            this.setError(e.message);
+          })
+          .finally(() => {
+            this.setIsGettingBalances(false);
+          });
+      }
     }
   }
 
   public async getSupported(): Promise<void> {
-    const deviceId = this._rootStore.deviceStore.deviceId;
-    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-    const accessToken = this._rootStore.userStore.accessToken;
-
-    if (deviceId && accountId !== undefined && accessToken) {
-      const assets = await getSupportedAssets(deviceId, accountId, accessToken);
+    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      const assets = await this._embeddedWalletAPI.getAssets();
       this.setSupportedAssets(assets);
+    } else {
+      const deviceId = this._rootStore.deviceStore.deviceId;
+      const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+      const accessToken = this._rootStore.userStore.accessToken;
+
+      if (deviceId && accountId !== undefined && accessToken) {
+        const assets = await getSupportedAssets(deviceId, accountId, accessToken);
+        this.setSupportedAssets(assets);
+      }
     }
   }
 
   public async getMyAssets(): Promise<void> {
-    const deviceId = this._rootStore.deviceStore.deviceId;
-    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-    const accessToken = this._rootStore.userStore.accessToken;
-
-    if (deviceId && accountId !== undefined && accessToken) {
-      const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken);
+    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      const assetsSummary = await this._embeddedWalletAPI.getAssetsSummary();
       this.setMyAssets(assetsSummary);
+    } else {
+      const deviceId = this._rootStore.deviceStore.deviceId;
+      const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+      const accessToken = this._rootStore.userStore.accessToken;
+
+      if (deviceId && accountId !== undefined && accessToken) {
+        const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken);
+        this.setMyAssets(assetsSummary);
+      }
     }
   }
 
-  public getAssetById(assetId: string): AssetStore | undefined {
-    return this.myAssets.find((a) => a.id === assetId);
+  public getAssetById(id: string): AssetStore | null {
+    return this.myAssets.find((a) => a.assetData.id === id) || null;
   }
 }

@@ -2,6 +2,8 @@ import { INewTransactionDTO, ITransactionDTO, TX_POLL_INTERVAL, createTransactio
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { RootStore } from './Root.store';
 import { TransactionStore } from './Transaction.store';
+import { ENV_CONFIG } from '../env_config';
+import { EmbeddedWalletAPI } from '../api/embeddedWallet.api';
 
 type TTransactionHandler = (tx: ITransactionDTO) => void;
 
@@ -14,6 +16,7 @@ export class TransactionsStore {
   private _transactionsActivePolling: Map<string, boolean>;
   private _disposed: boolean;
   private _rootStore: RootStore;
+  private _embeddedWalletAPI: EmbeddedWalletAPI;
 
   constructor(rootStore: RootStore) {
     this.transactions = [];
@@ -24,6 +27,7 @@ export class TransactionsStore {
 
     this._disposed = false;
     this._rootStore = rootStore;
+    this._embeddedWalletAPI = new EmbeddedWalletAPI(rootStore);
 
     makeObservable(this);
   }
@@ -115,18 +119,27 @@ export class TransactionsStore {
     while (!this._disposed) {
       try {
         await this._rootStore.userStore.resetAccessToken();
-        const response = await getTransactions(
-          this._rootStore.deviceStore.deviceId,
-          startDate,
-          this._rootStore.userStore.accessToken,
-        );
+        let transactions: ITransactionDTO[];
 
-        if (!response.ok) {
-          await sleep(TX_POLL_INTERVAL);
-          continue;
+        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+          transactions = await this._embeddedWalletAPI.getTransactions(
+            this._rootStore.deviceStore.deviceId,
+            startDate
+          );
+        } else {
+          const response = await getTransactions(
+            this._rootStore.deviceStore.deviceId,
+            startDate,
+            this._rootStore.userStore.accessToken,
+          );
+
+          if (!response.ok) {
+            await sleep(TX_POLL_INTERVAL);
+            continue;
+          }
+
+          transactions = await response.json();
         }
-
-        const transactions = await response.json();
 
         transactions.forEach((tx: ITransactionDTO) => {
           if (tx.id && tx.lastUpdated) {
@@ -171,7 +184,14 @@ export class TransactionsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId !== undefined && accessToken) {
-      const newTxData = await createTransaction(deviceId, accessToken, dataToSend);
+      let newTxData: ITransactionDTO;
+
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+        newTxData = await this._embeddedWalletAPI.createTransaction(deviceId, dataToSend!);
+      } else {
+        newTxData = await createTransaction(deviceId, accessToken, dataToSend);
+      }
+
       this.addTransaction(newTxData);
     }
   }
