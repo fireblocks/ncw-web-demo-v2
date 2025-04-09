@@ -31,6 +31,10 @@ export const Actions: React.FC = observer(function Actions() {
   const { enqueueSnackbar } = useSnackbar();
 
   const generateMPCKeys = () => {
+    if (authStore.status === 'GENERATING') {
+      return;
+    }
+    
     authStore.generateMPCKeys().catch(() => {
       enqueueSnackbar(t('LOGIN.GENERATE_MPC_KEYS_ERROR'), { variant: 'error' });
     });

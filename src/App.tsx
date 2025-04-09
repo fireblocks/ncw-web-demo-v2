@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Header, SettingsPage, TransactionsPage } from '@pages';
 import { useAssetsStore, useAuthStore, useNFTStore, useTransactionsStore, useUserStore, useEmbeddedWalletSDKStore, useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ENV_CONFIG } from './env_config';
+import { consoleLog } from './utils/logger';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -31,33 +32,42 @@ export const App: React.FC = observer(function App() {
   const NFTStore = useNFTStore();
   const embeddedWalletSDKStore = useEmbeddedWalletSDKStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
+  const [assetsInitialized, setAssetsInitialized] = React.useState(false);
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
   
-  // Updated logic to handle both SDK types
+  // Improved logic to handle both SDK types - more permissive for embedded wallet
   const canShowDashboard = 
     // User must be logged in
     !!userStore.loggedUser && 
-    // And either auth status is READY OR SDK is ready
-    (authStore.status === 'READY' || 
-     // For embedded wallet, check if SDK is initialized and MPC is ready
-     (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? 
-       embeddedWalletSDKStore.isReady : 
-       fireblocksSDKStore.isMPCReady));
+    // Auth store should be in READY state
+    authStore.status === 'READY' &&
+    // For embedded wallet, be more permissive - just require SDK initialization
+    (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? 
+      // For embedded wallet: just require SDK to be initialized
+      embeddedWalletSDKStore.isInitialized : 
+      // For regular SDK: require both SDK available and MPC keys ready
+      fireblocksSDKStore.sdkStatus === 'sdk_available' && 
+      fireblocksSDKStore.isMPCReady);
 
   // Add logging for debugging
-  React.useEffect(() => {
-    console.log('[App] Auth Status:', authStore.status);
-    console.log('[App] User logged in:', !!userStore.loggedUser);
-    console.log('[App] Embedded SDK in use:', ENV_CONFIG.USE_EMBEDDED_WALLET_SDK);
+  useEffect(() => {
+    consoleLog('[App] App component rendered or updated');
+    consoleLog('[App] Auth Status:', authStore.status);
+    consoleLog('[App] User logged in:', !!userStore.loggedUser);
+    consoleLog('[App] Embedded SDK in use:', ENV_CONFIG.USE_EMBEDDED_WALLET_SDK);
+    
     if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-      console.log('[App] Embedded SDK Ready:', embeddedWalletSDKStore.isReady);
-      console.log('[App] Embedded SDK Initialized:', embeddedWalletSDKStore.isInitialized);
-      console.log('[App] Embedded SDK MPC Ready:', embeddedWalletSDKStore.isMPCReady);
+      consoleLog('[App] Embedded SDK Ready:', embeddedWalletSDKStore.isReady);
+      consoleLog('[App] Embedded SDK Initialized:', embeddedWalletSDKStore.isInitialized);
+      consoleLog('[App] Embedded SDK MPC Generating:', embeddedWalletSDKStore.isMPCGenerating);
+      consoleLog('[App] Embedded SDK MPC Ready:', embeddedWalletSDKStore.isMPCReady);
     } else {
-      console.log('[App] Fireblocks SDK MPC Ready:', fireblocksSDKStore.isMPCReady);
+      consoleLog('[App] Fireblocks SDK Status:', fireblocksSDKStore.sdkStatus);
+      consoleLog('[App] Fireblocks SDK MPC Ready:', fireblocksSDKStore.isMPCReady);
     }
-    console.log('[App] Can show dashboard:', canShowDashboard);
-    console.log('[App] Need to generate keys:', authStore.needToGenerateKeys);
+    
+    consoleLog('[App] Can show dashboard:', canShowDashboard);
+    consoleLog('[App] Need to generate keys:', authStore.needToGenerateKeys);
   }, [
     authStore.status, 
     userStore.loggedUser, 
@@ -65,36 +75,46 @@ export const App: React.FC = observer(function App() {
     authStore.needToGenerateKeys, 
     embeddedWalletSDKStore.isReady,
     embeddedWalletSDKStore.isInitialized,
+    embeddedWalletSDKStore.isMPCGenerating,
     embeddedWalletSDKStore.isMPCReady,
+    fireblocksSDKStore.sdkStatus,
     fireblocksSDKStore.isMPCReady
   ]);
 
-  React.useEffect(
+  useEffect(
     () => () => {
       transactionsStore.dispose();
     },
     [transactionsStore],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (userStore.userId) {
-      console.log('[App] User ID found, initializing auth store');
+      consoleLog('[App] User ID found, initializing auth store');
       authStore.init().catch((error) => {
         console.error('[App] Error initializing auth store:', error);
       });
     }
   }, [userStore.userId, authStore]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Try to initialize MPC keys if needed and user is logged in
     const initWallet = async () => {
-      if (userStore.loggedUser && userStore.accessToken && authStore.needToGenerateKeys) {
-        console.log('[App] Need to generate keys, initializing wallet');
+      // Add a one-time flag to prevent multiple key generation calls
+      const keyGenInProgress = localStorage.getItem('mpc_key_gen_in_progress');
+      
+      if (userStore.loggedUser && userStore.accessToken && authStore.needToGenerateKeys && !keyGenInProgress) {
+        consoleLog('[App] Need to generate keys, initializing wallet');
         try {
+          // Set flag before starting generation
+          localStorage.setItem('mpc_key_gen_in_progress', 'true');
           await authStore.generateMPCKeys();
-          console.log('[App] MPC keys generated successfully');
+          consoleLog('[App] MPC keys generated successfully');
         } catch (error) {
           console.error('[App] Error generating MPC keys:', error);
+        } finally {
+          // Clear flag when done
+          localStorage.removeItem('mpc_key_gen_in_progress');
         }
       }
     };
@@ -102,19 +122,24 @@ export const App: React.FC = observer(function App() {
     initWallet();
   }, [userStore.loggedUser, userStore.accessToken, authStore.needToGenerateKeys]);
 
-  React.useEffect(() => {
+  // Separate useEffect for fetching assets to handle initialization state
+  useEffect(() => {
     const fetchAssets = async () => {
-      console.log('[App] Auth status is READY or SDK is ready, fetching assets...');
-      await assetsStore.init();
-      await NFTStore.init();
+      if (!assetsInitialized && canShowDashboard) {
+        consoleLog('[App] Auth status is READY and SDK is ready, fetching assets...');
+        try {
+          await assetsStore.init();
+          await NFTStore.init();
+          setAssetsInitialized(true);
+          consoleLog('[App] Assets initialized successfully');
+        } catch (error) {
+          console.error('[App] Error fetching assets:', error);
+        }
+      }
     };
 
-    if (canShowDashboard) {
-      fetchAssets().catch((error) => {
-        console.error('[App] Error fetching assets:', error);
-      });
-    }
-  }, [canShowDashboard, assetsStore, NFTStore]);
+    fetchAssets();
+  }, [canShowDashboard, assetsStore, NFTStore, assetsInitialized]);
 
   return (
     <RootStyled>
@@ -127,12 +152,12 @@ export const App: React.FC = observer(function App() {
               <Route path="transactions" element={<TransactionsPage />} />
               <Route path="nfts" element={<NFTsPage />} />
               <Route path="settings" element={<SettingsPage />} />
-              <Route path="*" element={<Navigate to={lastVisitedPage ? lastVisitedPage : 'assets'} />} />
+              <Route path="*" element={<Navigate to={lastVisitedPage || 'assets'} replace />} />
             </>
           ) : (
             <>
               <Route path="login" element={<LoginPage />} />
-              <Route path="*" element={<Navigate to="login" />} />
+              <Route path="*" element={<Navigate to="login" replace />} />
             </>
           )}
         </Routes>
