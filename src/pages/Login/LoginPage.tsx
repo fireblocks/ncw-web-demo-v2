@@ -3,11 +3,12 @@ import { Typography, alpha, styled } from '@foundation';
 import IconAssets from '@icons/login_assets.svg';
 import IconBG from '@icons/login_bg.svg';
 import IconLogo from '@icons/logo.svg';
-import { useFireblocksSDKStore } from '@store';
+import { useFireblocksSDKStore, useEmbeddedWalletSDKStore, useAuthStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { redirect } from 'react-router-dom';
 import { Actions } from './Actions';
+import { ENV_CONFIG } from '../../env_config';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -110,10 +111,37 @@ export const LoginPage: React.FC = observer(function LoginPage() {
   const { t } = useTranslation();
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
   const fireblocksSDKStore = useFireblocksSDKStore();
+  const embeddedWalletSDKStore = useEmbeddedWalletSDKStore();
+  const authStore = useAuthStore();
 
-  if (fireblocksSDKStore.keysAreReady) {
-    redirect(lastVisitedPage ? lastVisitedPage : 'assets');
-  }
+  React.useEffect(() => {
+    console.log('[LoginPage] Checking SDK status');
+    console.log('[LoginPage] Auth Status:', authStore.status);
+    console.log('[LoginPage] Embedded SDK in use:', ENV_CONFIG.USE_EMBEDDED_WALLET_SDK);
+    
+    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      console.log('[LoginPage] Embedded SDK Ready:', embeddedWalletSDKStore.isReady);
+      console.log('[LoginPage] Embedded SDK Initialized:', embeddedWalletSDKStore.isInitialized);
+      console.log('[LoginPage] Embedded SDK MPC Ready:', embeddedWalletSDKStore.isMPCReady);
+    } else {
+      console.log('[LoginPage] Fireblocks SDK Keys Ready:', fireblocksSDKStore.keysAreReady);
+      console.log('[LoginPage] Fireblocks SDK MPC Ready:', fireblocksSDKStore.isMPCReady);
+    }
+    
+    // Redirect if SDK is ready
+    if ((ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && embeddedWalletSDKStore.isReady) || 
+        (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && fireblocksSDKStore.keysAreReady) ||
+        authStore.status === 'READY') {
+      console.log('[LoginPage] Keys are ready, redirecting to dashboard');
+      window.location.href = `/${lastVisitedPage || 'assets'}`;
+    }
+  }, [
+    fireblocksSDKStore.keysAreReady, 
+    embeddedWalletSDKStore.isReady,
+    embeddedWalletSDKStore.isMPCReady,
+    embeddedWalletSDKStore.isInitialized,
+    authStore.status
+  ]);
 
   return (
     <RootStyled>
