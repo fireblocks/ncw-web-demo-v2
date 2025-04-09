@@ -28,6 +28,7 @@ export class TransactionsStore {
     this._disposed = false;
     this._rootStore = rootStore;
     this._embeddedWalletAPI = new EmbeddedWalletAPI(rootStore);
+    console.log('[Transactions] TransactionsStore initialized');
 
     makeObservable(this);
   }
@@ -39,6 +40,7 @@ export class TransactionsStore {
 
   @action
   public dispose(): void {
+    console.log('[Transactions] Disposing TransactionsStore');
     this.transactions = [];
     this._transactionSubscriptions.clear();
     this._transactionsActivePolling.clear();
@@ -52,6 +54,7 @@ export class TransactionsStore {
 
   @action
   public addTransaction(transactionData: ITransactionDTO): void {
+    console.log(`[Transactions] Adding transaction: ${transactionData.id}`, transactionData);
     const transactionStore = new TransactionStore(transactionData, this._rootStore);
 
     runInAction(() => {
@@ -73,31 +76,130 @@ export class TransactionsStore {
     }
   }
 
-  public listenToTransactions(callBack: TTransactionHandler): () => void {
-    let subscriptions = this._transactionSubscriptions.get(this._rootStore.deviceStore.deviceId);
+  @action
+  public setTransactions(transactions: ITransactionDTO[]): void {
+    console.log(`[Transactions] Setting ${transactions.length} transactions`);
+    this.transactions = transactions.map((tx) => new TransactionStore(tx, this._rootStore));
+  }
 
-    if (!subscriptions) {
-      subscriptions = [];
-      this._transactionSubscriptions.set(this._rootStore.deviceStore.deviceId, subscriptions);
+  @action
+  public async getTransactions(): Promise<void> {
+    console.log('[Transactions] Fetching all transactions');
+    this.isLoading = true;
+
+    try {
+      const deviceId = this._rootStore.deviceStore.deviceId;
+      const accessToken = this._rootStore.userStore.accessToken;
+
+      if (deviceId && accessToken) {
+        let transactions: ITransactionDTO[];
+        
+        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+          console.log('[Transactions] Using embedded wallet API to fetch transactions');
+          // Use current time minus 30 days as startDate (in milliseconds)
+          const startDate = Date.now() - 30 * 24 * 60 * 60 * 1000;
+          transactions = await this._embeddedWalletAPI.getTransactions(deviceId, startDate);
+        } else {
+          console.log('[Transactions] Using standard API to fetch transactions');
+          // Use current time minus 30 days as startDate (in milliseconds)
+          const startDate = Date.now() - 30 * 24 * 60 * 60 * 1000;
+          const response = await getTransactions(deviceId, startDate, accessToken);
+          transactions = await response.json();
+        }
+        
+        console.log(`[Transactions] Retrieved ${transactions.length} transactions`);
+        this.setTransactions(transactions);
+      } else {
+        console.warn('[Transactions] Cannot fetch transactions: missing deviceId or accessToken');
+      }
+    } catch (e: any) {
+      console.error('[Transactions] Error fetching transactions:', e);
+      this.setError(e.message);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  public listenToTransactions(callback: TTransactionHandler): () => void {
+    console.log('[Transactions] Starting transaction polling');
+    const deviceId = this._rootStore.deviceStore.deviceId;
+    const accessToken = this._rootStore.userStore.accessToken;
+
+    const subscriptionId = Math.random().toString();
+
+    if (!this._transactionSubscriptions.has(deviceId)) {
+      this._transactionSubscriptions.set(deviceId, []);
     }
 
-    subscriptions.push(callBack);
+    const deviceSubscriptions = this._transactionSubscriptions.get(deviceId)!;
+    deviceSubscriptions.push(callback);
+    this._transactionSubscriptions.set(deviceId, deviceSubscriptions);
 
-    this.startPollingTransactions()
-      .then(() => {})
-      .catch(() => {});
+    const poll = async () => {
+      if (this._disposed || !this._transactionsActivePolling.get(deviceId)) {
+        console.log(`[Transactions] Polling stopped for device: ${deviceId}`);
+        return;
+      }
+
+      try {
+        // Check if the SDK is ready before attempting to fetch transactions
+        const sdkReady = ENV_CONFIG.USE_EMBEDDED_WALLET_SDK 
+          ? !!this._rootStore.embeddedWalletSDKStore?.sdkInstance 
+          : true;
+        
+        if (!sdkReady) {
+          console.log('[Transactions] SDK not ready yet, waiting before polling again');
+          await sleep(TX_POLL_INTERVAL);
+          poll();
+          return;
+        }
+
+        let transactions: ITransactionDTO[];
+        
+        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+          // Use current time minus 30 days as startDate (in milliseconds)
+          const startDate = Date.now() - 30 * 24 * 60 * 60 * 1000;
+          transactions = await this._embeddedWalletAPI.getTransactions(deviceId, startDate);
+        } else {
+          // Use current time minus 30 days as startDate (in milliseconds)
+          const startDate = Date.now() - 30 * 24 * 60 * 60 * 1000;
+          const response = await getTransactions(deviceId, startDate, accessToken);
+          transactions = await response.json();
+        }
+
+        if (transactions.length > 0) {
+          console.log(`[Transactions] Poll retrieved ${transactions.length} transactions`);
+        }
+        
+        const deviceCallbacks = this._transactionSubscriptions.get(deviceId) || [];
+        transactions.forEach((transaction) => {
+          deviceCallbacks.forEach((cb) => cb(transaction));
+        });
+      } catch (e) {
+        console.error('[Transactions] Error during transaction polling:', e);
+      }
+
+      await sleep(TX_POLL_INTERVAL);
+      poll();
+    };
+
+    if (!this._transactionsActivePolling.get(deviceId)) {
+      console.log(`[Transactions] Starting transaction polling for device: ${deviceId}`);
+      this._transactionsActivePolling.set(deviceId, true);
+      poll();
+    }
 
     return () => {
-      this.stopPollingTransactions();
+      console.log(`[Transactions] Unsubscribing from transactions, id: ${subscriptionId}`);
+      const deviceCallbacks = this._transactionSubscriptions.get(deviceId) || [];
+      const newCallbacks = deviceCallbacks.filter((cb) => cb !== callback);
 
-      if (subscriptions) {
-        const callBackIndex = subscriptions.indexOf(callBack);
-        if (callBackIndex !== -1) {
-          subscriptions.splice(callBackIndex, 1);
-          if (subscriptions.length === 0) {
-            this._transactionSubscriptions.delete(this._rootStore.deviceStore.deviceId);
-          }
-        }
+      if (newCallbacks.length === 0) {
+        console.log(`[Transactions] No more subscribers for device: ${deviceId}, stopping polling`);
+        this._transactionsActivePolling.set(deviceId, false);
+        this._transactionSubscriptions.delete(deviceId);
+      } else {
+        this._transactionSubscriptions.set(deviceId, newCallbacks);
       }
     };
   }
@@ -179,6 +281,7 @@ export class TransactionsStore {
   }
 
   public async createTransaction(dataToSend?: INewTransactionDTO): Promise<void> {
+    console.log('[Transactions] Creating new transaction', dataToSend);
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
     const accessToken = this._rootStore.userStore.accessToken;
@@ -186,13 +289,23 @@ export class TransactionsStore {
     if (deviceId && accountId !== undefined && accessToken) {
       let newTxData: ITransactionDTO;
 
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-        newTxData = await this._embeddedWalletAPI.createTransaction(deviceId, dataToSend!);
-      } else {
-        newTxData = await createTransaction(deviceId, accessToken, dataToSend);
+      try {
+        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+          console.log('[Transactions] Using embedded wallet API to create transaction');
+          newTxData = await this._embeddedWalletAPI.createTransaction(deviceId, dataToSend!);
+        } else {
+          console.log('[Transactions] Using standard API to create transaction');
+          newTxData = await createTransaction(deviceId, accessToken, dataToSend);
+        }
+        
+        console.log('[Transactions] Transaction created successfully:', newTxData.id);
+        this.addTransaction(newTxData);
+      } catch (error) {
+        console.error('[Transactions] Error creating transaction:', error);
+        throw error;
       }
-
-      this.addTransaction(newTxData);
+    } else {
+      console.error('[Transactions] Cannot create transaction: missing deviceId, accountId, or accessToken');
     }
   }
 

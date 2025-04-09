@@ -76,14 +76,18 @@ export class FireblocksSDKStore {
 
   @action
   public async init() {
+    console.log('[SDK] Initializing SDK...');
     this.setIsMPCGenerating(true);
     this.setSDKInstance(null);
     this.setSDKStatus('initializing_sdk');
 
     try {
+      console.log('[SDK] Setting up message and event handlers');
       const messagesHandler: IMessagesHandler = {
         handleOutgoingMessage: (message: string) => {
+          console.log('[SDK] Handling outgoing message');
           if (!this._rootStore.deviceStore.deviceId) {
+            console.error('[SDK] deviceId is not set');
             throw new Error('deviceId is not set');
           }
           return sendMessage(this._rootStore.deviceStore.deviceId, this._rootStore.userStore.accessToken, message);
@@ -92,39 +96,48 @@ export class FireblocksSDKStore {
 
       const eventsHandler: IEventsHandler = {
         handleEvent: (event: TEvent) => {
+          console.log(`[SDK] Event received: ${event.type}`);
           switch (event.type) {
             case 'key_descriptor_changed':
+              console.log('[SDK] Key descriptor changed event');
               this.sdkInstance
                 ?.getKeysStatus()
                 .then((keyStatus) => {
+                  console.log('[SDK] Updated key status:', keyStatus);
                   this.setKeysStatus(keyStatus);
                 })
-                .catch(() => {
+                .catch((error) => {
+                  console.error('[SDK] Failed to get key status:', error);
                   this.setError('fireblocksNCW failed to get key status');
                 });
               break;
 
             case 'transaction_signature_changed':
+              console.log(`[SDK] Transaction signature changed for txId: ${event.transactionSignature.txId}`);
               this._rootStore.transactionsStore
                 .getTransactionById(event.transactionSignature.txId)
                 ?.updateSignatureStatus(event.transactionSignature.transactionSignatureStatus);
               break;
 
             case 'keys_backup':
+              console.log('[SDK] Keys backup event received');
               this.setKeysBackupStatus(JSON.stringify(event.keysBackup));
               break;
 
             case 'keys_recovery':
+              console.log('[SDK] Keys recovery event received');
               this.setKeysRecoveryStatus(JSON.stringify(event.keyDescriptor));
               break;
 
             case 'join_wallet_descriptor':
+              console.log('[SDK] Join wallet descriptor event received');
               this.setJoinWalletEventDescriptor(JSON.stringify(event.joinWalletDescriptor));
               break;
           }
         },
       };
 
+      console.log('[SDK] Creating IndexedDB logger');
       const logger = await IndexedDBLoggerFactory({
         deviceId: this._rootStore.deviceStore.deviceId,
         logger: ConsoleLoggerFactory(),
@@ -132,10 +145,9 @@ export class FireblocksSDKStore {
 
       let fireblocksNCW: IFireblocksNCW | null = null;
 
-      let ncwInstance = getFireblocksNCWInstance(this._rootStore.deviceStore.deviceId);
-      if (ncwInstance) {
-        fireblocksNCW = ncwInstance;
-      } else {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+        console.log('[SDK] Using Embedded Wallet SDK initialization');
+        // Embedded wallet SDK initialization
         fireblocksNCW = await FireblocksNCWFactory({
           env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
           logLevel: 'INFO',
@@ -145,25 +157,52 @@ export class FireblocksSDKStore {
           secureStorageProvider: secureStorageProviderFactory(this._rootStore.deviceStore.deviceId),
           logger,
         });
+        console.log('[SDK] Embedded wallet SDK initialized successfully');
+      } else {
+        // Regular SDK initialization
+        let ncwInstance = getFireblocksNCWInstance(this._rootStore.deviceStore.deviceId);
+        if (ncwInstance) {
+          fireblocksNCW = ncwInstance;
+        } else {
+          fireblocksNCW = await FireblocksNCWFactory({
+            env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
+            logLevel: 'INFO',
+            deviceId: this._rootStore.deviceStore.deviceId,
+            messagesHandler,
+            eventsHandler,
+            secureStorageProvider: secureStorageProviderFactory(this._rootStore.deviceStore.deviceId),
+            logger,
+          });
+        }
       }
 
+      console.log('[SDK] SDK initialized, setting SDK instance');
       this.setLogger(logger);
       this.setSDKInstance(fireblocksNCW);
 
-      this.setUnsubscribeTransactionsPolling(
-        this._rootStore.transactionsStore.listenToTransactions((transaction: ITransactionDTO) => {
-          this._rootStore.transactionsStore.addOrEditTransaction(transaction);
-        }),
-      );
       if (this.sdkInstance) {
+        console.log('[SDK] Getting keys status');
         const keyStatus = await this.sdkInstance.getKeysStatus();
+        console.log('[SDK] Keys status:', keyStatus);
         if (Object.keys(keyStatus).length > 0) {
           this.setKeysStatus(keyStatus);
           this.setSDKStatus('sdk_available');
+          console.log('[SDK] SDK status set to sdk_available');
         }
+        
+        // Only after SDK is fully initialized, start transaction polling
+        console.log('[SDK] Setting up transactions polling');
+        this.setUnsubscribeTransactionsPolling(
+          this._rootStore.transactionsStore.listenToTransactions((transaction: ITransactionDTO) => {
+            console.log(`[SDK] Transaction update received: ${transaction.id}`);
+            this._rootStore.transactionsStore.addOrEditTransaction(transaction);
+          }),
+        );
+        
         this.setIsMPCGenerating(false);
       }
     } catch (error: any) {
+      console.error('[SDK] SDK initialization failed:', error);
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
       throw new Error(error.message);
@@ -213,15 +252,20 @@ export class FireblocksSDKStore {
   @action
   public async generateMPCKeys(): Promise<void> {
     if (!this.sdkInstance) {
+      console.error('[SDK] generateMPCKeys: SDK not initialized');
       this.setError('fireblocksNCW is not initialized');
     } else {
+      console.log('[SDK] Starting MPC keys generation...');
       this.setIsMPCReady(false);
       this.setIsMPCGenerating(true);
       const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1', 'MPC_CMP_EDDSA_ED25519']);
       try {
+        console.log('[SDK] Generating MPC keys with algorithms:', Array.from(ALGORITHMS));
         await this.sdkInstance.generateMPCKeys(ALGORITHMS);
+        console.log('[SDK] MPC keys generation successful');
         this.setIsMPCReady(true);
       } catch (error: any) {
+        console.error('[SDK] MPC keys generation failed:', error);
         throw new Error(error.message);
       } finally {
         this.setIsMPCGenerating(false);
@@ -231,18 +275,24 @@ export class FireblocksSDKStore {
 
   public async checkMPCKeys() {
     if (!this.sdkInstance) {
+      console.error('[SDK] checkMPCKeys: SDK not initialized');
       this.setError('fireblocksNCW is not initialized');
     } else {
+      console.log('[SDK] Checking MPC keys status...');
       this.setIsMPCReady(false);
       this.setIsMPCGenerating(true);
       const keysStatus = await this.sdkInstance.getKeysStatus();
+      console.log('[SDK] MPC keys status:', keysStatus);
 
       const secP256K1Status = keysStatus.MPC_CMP_ECDSA_SECP256K1?.keyStatus ?? null;
       const ed25519Status = keysStatus.MPC_CMP_EDDSA_ED25519?.keyStatus ?? null;
+      console.log('[SDK] SECP256K1 status:', secP256K1Status, 'ED25519 status:', ed25519Status);
 
       if (secP256K1Status === 'READY' || ed25519Status === 'READY') {
+        console.log('[SDK] MPC is ready');
         this.setIsMPCReady(true);
       } else {
+        console.log('[SDK] MPC is not ready');
         this.setIsMPCReady(false);
       }
       this.setIsMPCGenerating(false);
@@ -251,21 +301,27 @@ export class FireblocksSDKStore {
 
   public async takeover() {
     if (!this.sdkInstance) {
+      console.error('[SDK] takeover: SDK not initialized');
       this.setError('fireblocksNCW is not initialized');
     } else {
+      console.log('[SDK] Starting key takeover process...');
       this.setIsKeysExportInProcess(true);
       try {
         const keys = await this.sdkInstance.takeover();
+        console.log('[SDK] Key takeover successful, keys:', keys.length);
         this.setExportedKeys(keys);
         const EDDSAKey = keys.find((k) => k.algorithm === 'MPC_CMP_EDDSA_ED25519');
         if (EDDSAKey) {
+          console.log('[SDK] Found EDDSA key');
           this.setFPRVKey(EDDSAKey);
         }
         const ECDSAKey = keys.find((k) => k.algorithm === 'MPC_CMP_ECDSA_SECP256K1');
         if (ECDSAKey) {
+          console.log('[SDK] Found ECDSA key');
           this.setXPRVKey(ECDSAKey);
         }
       } catch (error: any) {
+        console.error('[SDK] Key takeover failed:', error);
         throw new Error(error.message);
       } finally {
         this.setIsKeysExportInProcess(false);

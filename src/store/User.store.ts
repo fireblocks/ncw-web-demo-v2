@@ -27,10 +27,12 @@ export class UserStore {
     this.myDevices = [];
 
     this._rootStore = rootStore;
+    console.log('[Auth] Initializing UserStore');
 
     this._authManager = new FirebaseAuthManager();
 
     this._authManager.onUserChanged((user) => {
+      console.log('[Auth] User changed event received', user ? 'User logged in' : 'User logged out');
       this.setUser(user);
     });
 
@@ -38,26 +40,34 @@ export class UserStore {
   }
 
   public login(provider: 'GOOGLE' | 'APPLE'): void {
+    console.log(`[Auth] Starting login with ${provider} provider`);
     this.setIsGettingUser(true);
     this._authManager
       .login(provider)
       .then(() => {
         if (this._authManager.loggedUser) {
+          console.log('[Auth] Login successful');
           this.setUser(this._authManager.loggedUser);
+        } else {
+          console.log('[Auth] Login completed but no user returned');
         }
       })
       .catch((e) => {
+        console.error('[Auth] Login error:', e);
         this.setError(e.message);
       });
   }
 
   public logout(): void {
+    console.log('[Auth] Starting logout');
     this._authManager
       .logout()
       .then(() => {
+        console.log('[Auth] Logout successful');
         this.clearStoreData();
       })
       .catch((e) => {
+        console.error('[Auth] Logout error:', e);
         this.setError(e.message);
       });
   }
@@ -67,7 +77,9 @@ export class UserStore {
   }
 
   public getAccessToken(): Promise<string> {
+    console.log('[Auth] Getting access token');
     if (!this.loggedUser) {
+      console.error('[Auth] Cannot get access token - user not logged in');
       throw new Error('User is not logged in');
     }
 
@@ -87,25 +99,32 @@ export class UserStore {
 
   @action
   public setUser(user: IUser | null) {
+    console.log('[Auth] Setting user:', user ? `${user.displayName} (${user.email})` : 'null');
     this.loggedUser = user;
     if (user) {
       this._authManager
         .getAccessToken()
         .then((token) => {
+          console.log('[Auth] Access token obtained');
           this.setAccessToken(token);
           getUserId(token)
             .then((userId) => {
+              console.log('[Auth] User ID obtained:', userId);
               this.setUserId(userId);
               this.getMyDevices();
               this.setIsGettingUser(false);
             })
             .catch((e) => {
+              console.error('[Auth] Error getting user ID:', e);
               this.setError(e.message);
             });
         })
         .catch((e) => {
+          console.error('[Auth] Error getting access token:', e);
           this.setError(e.message);
         });
+    } else {
+      console.log('[Auth] User cleared/logged out');
     }
   }
 
@@ -209,18 +228,21 @@ export class UserStore {
   }
 
   public getMyDevices(): void {
+    console.log('[Auth] Getting user devices');
     if (!this.loggedUser) {
       this.setError('User is not logged in');
     }
 
     getDevices(this.accessToken)
       .then((devices) => {
+        console.log('[Auth] Devices retrieved:', devices.length);
         this.setMyDevices(devices);
         if (devices?.length) {
           this.checkLatestBackup(devices[devices.length - 1]);
         }
       })
       .catch((e) => {
+        console.error('[Auth] Error getting devices:', e);
         this.setError(e.message);
       });
   }

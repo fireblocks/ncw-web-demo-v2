@@ -17,10 +17,13 @@ export class FirebaseAuthManager implements IAuthManager {
   private _loggedUser: User | null = null;
 
   constructor() {
+    console.log('[Firebase] Initializing FirebaseAuthManager');
     const firebaseApp: FirebaseApp = initializeApp(firebaseConfig);
     this._auth = getAuth(firebaseApp);
     this._loggedUser = this._auth.currentUser;
+    console.log('[Firebase] Current user on init:', this._loggedUser ? `${this._loggedUser.displayName} (${this._loggedUser.email})` : 'None');
     this._auth.onAuthStateChanged((user) => {
+      console.log('[Firebase] Auth state changed:', user ? `${user.displayName} (${user.email})` : 'Logged out');
       this._loggedUser = user;
     });
   }
@@ -38,40 +41,64 @@ export class FirebaseAuthManager implements IAuthManager {
   }
 
   public async login(provider: 'GOOGLE' | 'APPLE'): Promise<void> {
+    console.log(`[Firebase] Attempting login with ${provider}`);
     let authProvider: AuthProvider;
     const googleProvider = new GoogleAuthProvider();
 
     switch (provider) {
       case 'GOOGLE':
+        console.log('[Firebase] Setting up Google provider');
         googleProvider.setCustomParameters({ prompt: 'select_account' });
         authProvider = googleProvider;
         break;
       case 'APPLE':
+        console.log('[Firebase] Setting up Apple provider');
         authProvider = new OAuthProvider('apple.com');
         break;
       default:
+        console.error('[Firebase] Unsupported provider:', provider);
         throw new Error('Unsupported provider');
     }
 
     const unsubscribe = this._auth.onAuthStateChanged((user) => {
+      console.log('[Firebase] Auth state changed during login:', user ? 'User logged in' : 'No user');
       this._loggedUser = user;
       unsubscribe();
     });
 
-    const result = await signInWithPopup(this._auth, authProvider);
-    this._loggedUser = result.user;
+    try {
+      console.log('[Firebase] Opening sign-in popup');
+      const result = await signInWithPopup(this._auth, authProvider);
+      console.log('[Firebase] Sign-in popup completed successfully');
+      this._loggedUser = result.user;
+    } catch (error) {
+      console.error('[Firebase] Error during sign-in popup:', error);
+      throw error;
+    }
   }
 
-  public logout(): Promise<void> {
-    return this._auth.signOut();
+  public async logout(): Promise<void> {
+    console.log('[Firebase] Attempting logout');
+    await this._auth.signOut();
+    console.log('[Firebase] Logout completed');
+    this._loggedUser = null;
   }
 
-  public getAccessToken(): Promise<string> {
-    if (!this._loggedUser) {
-      throw new Error('User is not logged in');
+  public async getAccessToken(): Promise<string> {
+    console.log('[Firebase] Getting access token');
+    if (this._loggedUser) {
+      try {
+        const token = await this._loggedUser.getIdToken();
+        console.log('[Firebase] Successfully retrieved access token');
+        return token;
+      } catch (error) {
+        console.error('[Firebase] Error getting access token:', error);
+        throw error;
+      }
     }
 
-    return this._loggedUser.getIdToken();
+    console.error('[Firebase] Cannot get access token - no user logged in');
+    throw new Error('User is not authenticated');
   }
 
   public get loggedUser(): IUser | null {

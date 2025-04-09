@@ -165,57 +165,89 @@ export class EmbeddedWalletAPI {
   }
 
   public async getTransactions(deviceId: string, startDate: number): Promise<ITransactionDTO[]> {
+    console.log('[EmbeddedWallet] Getting transactions, SDK instance:', 
+      this._rootStore.embeddedWalletSDKStore.sdkInstance ? 'exists' : 'missing');
+    
     if (!this._rootStore.embeddedWalletSDKStore.sdkInstance) {
-      throw new Error('Embedded wallet SDK is not initialized');
+      console.error('[EmbeddedWallet] Embedded wallet SDK is not initialized');
+      // Return empty array instead of throwing an error to prevent app crashes during initialization
+      return [];
     }
 
-    const transactions = await this._rootStore.embeddedWalletSDKStore.sdkInstance.getTransactions({
-      startDate,
-      incoming: true,
-      outgoing: true
-    });
-
-    return transactions.data.map(tx => ({
-      id: tx.id,
-      status: tx.status as TTransactionStatus,
-      createdAt: tx.createdAt,
-      lastUpdated: tx.lastUpdated,
-      details: tx as unknown as ITransactionDetailsDTO
-    }));
+    try {
+      console.log(`[EmbeddedWallet] Fetching transactions for device ${deviceId} since ${new Date(startDate).toISOString()}`);
+      const transactions = await this._rootStore.embeddedWalletSDKStore.sdkInstance.getTransactions({
+        startDate,
+        incoming: true,
+        outgoing: true
+      });
+      
+      console.log(`[EmbeddedWallet] Retrieved ${transactions.data.length} transactions`);
+      return transactions.data.map(tx => ({
+        id: tx.id,
+        status: tx.status as TTransactionStatus,
+        createdAt: tx.createdAt,
+        lastUpdated: tx.lastUpdated,
+        details: tx as unknown as ITransactionDetailsDTO
+      }));
+    } catch (error) {
+      console.error('[EmbeddedWallet] Error fetching transactions:', error);
+      return [];
+    }
   }
 
   public async createTransaction(deviceId: string, dataToSend: INewTransactionDTO): Promise<ITransactionDTO> {
+    console.log('[EmbeddedWallet] Creating transaction:', dataToSend);
+    
     if (!this._rootStore.embeddedWalletSDKStore.sdkInstance) {
+      console.error('[EmbeddedWallet] Cannot create transaction - Embedded wallet SDK is not initialized');
       throw new Error('Embedded wallet SDK is not initialized');
     }
 
-    const transaction = await this._rootStore.embeddedWalletSDKStore.sdkInstance.createTransaction({
-      source: {
-        accountId: parseInt(dataToSend.accountId),
-        assetId: dataToSend.assetId
-      },
-      destination: {
-        address: dataToSend.destAddress
-      },
-      amount: dataToSend.amount,
-      note: dataToSend.note
-    });
+    try {
+      console.log(`[EmbeddedWallet] Creating transaction for asset ${dataToSend.assetId} with amount ${dataToSend.amount}`);
+      const transaction = await this._rootStore.embeddedWalletSDKStore.sdkInstance.createTransaction({
+        source: {
+          accountId: parseInt(dataToSend.accountId),
+          assetId: dataToSend.assetId
+        },
+        destination: {
+          address: dataToSend.destAddress
+        },
+        amount: dataToSend.amount,
+        note: dataToSend.note
+      });
 
-    return {
-      id: transaction.id,
-      status: transaction.status as TTransactionStatus,
-      createdAt: transaction.createdAt,
-      lastUpdated: transaction.lastUpdated,
-      details: transaction as unknown as ITransactionDetailsDTO
-    };
+      console.log(`[EmbeddedWallet] Transaction created successfully with ID: ${transaction.id}`);
+      return {
+        id: transaction.id,
+        status: transaction.status as TTransactionStatus,
+        createdAt: transaction.createdAt,
+        lastUpdated: transaction.lastUpdated,
+        details: transaction as unknown as ITransactionDetailsDTO
+      };
+    } catch (error) {
+      console.error('[EmbeddedWallet] Error creating transaction:', error);
+      throw error;
+    }
   }
 
   public async cancelTransaction(deviceId: string, txId: string): Promise<void> {
+    console.log(`[EmbeddedWallet] Cancelling transaction: ${txId}`);
+    
     if (!this._rootStore.embeddedWalletSDKStore.sdkInstance) {
+      console.error('[EmbeddedWallet] Cannot cancel transaction - Embedded wallet SDK is not initialized');
       throw new Error('Embedded wallet SDK is not initialized');
     }
 
-    await this._rootStore.embeddedWalletSDKStore.sdkInstance.cancelTransaction(txId);
+    try {
+      console.log(`[EmbeddedWallet] Sending cancel request for transaction: ${txId}`);
+      await this._rootStore.embeddedWalletSDKStore.sdkInstance.cancelTransaction(txId);
+      console.log(`[EmbeddedWallet] Transaction ${txId} cancelled successfully`);
+    } catch (error) {
+      console.error(`[EmbeddedWallet] Error cancelling transaction ${txId}:`, error);
+      throw error;
+    }
   }
 
   public async getAssets(): Promise<IAssetDTO[]> {

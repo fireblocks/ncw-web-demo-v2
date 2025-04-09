@@ -33,6 +33,7 @@ export class TransactionStore {
     this.isSigning = false;
 
     this._rootStore = rootStore;
+    console.log(`[Transaction] Created transaction ${dto.id}, status: ${dto.status}`);
 
     makeObservable(this);
   }
@@ -118,15 +119,21 @@ export class TransactionStore {
 
   @action
   public updateSignatureStatus(signatureStatus: TTransactionSignatureStatus) {
+    console.log(`[Transaction] ${this.id} - Signature status changed: ${signatureStatus}`);
     this.signatureStatus = signatureStatus;
   }
 
   @action
   public updateStatus(status: TTransactionStatus) {
+    console.log(`[Transaction] ${this.id} - Status changed: ${this.status} -> ${status}`);
     this.status = status;
     if (this.isNFT) {
-      this._rootStore.nftStore.getTokens().catch(() => {});
+      console.log(`[Transaction] ${this.id} - Refreshing NFT tokens for NFT transaction`);
+      this._rootStore.nftStore.getTokens().catch((error) => {
+        console.error(`[Transaction] Error refreshing NFT tokens:`, error);
+      });
     } else {
+      console.log(`[Transaction] ${this.id} - Refreshing balances for asset ${this.assetId}`);
       this._rootStore.assetsStore.refreshBalances();
     }
     this.setIsSigning(false);
@@ -134,26 +141,35 @@ export class TransactionStore {
 
   @action
   public setIsSigning(isSigning: boolean) {
+    console.log(`[Transaction] ${this.id} - Signing state changed: ${isSigning}`);
     this.isSigning = isSigning;
   }
 
   @action
   public setError(error: string): void {
+    console.error(`[Transaction] ${this.id} - Error: ${error}`);
     this.error = error;
   }
 
   public signTransaction() {
+    console.log(`[Transaction] ${this.id} - Starting transaction signing`);
     this.setIsSigning(true);
     this._rootStore.fireblocksSDKStore.sdkInstance
       ?.signTransaction(this.id)
-      .then(() => {})
+      .then(() => {
+        console.log(`[Transaction] ${this.id} - Signing initiated successfully`);
+      })
       .catch((e) => {
+        console.error(`[Transaction] ${this.id} - Signing failed:`, e);
         this.setIsSigning(false);
         this.setError(e.message);
         this._rootStore.fireblocksSDKStore.sdkInstance
           ?.stopInProgressSignTransaction()
-          .then(() => {})
+          .then(() => {
+            console.log(`[Transaction] ${this.id} - Stopped in-progress signing`);
+          })
           .catch((err) => {
+            console.error(`[Transaction] ${this.id} - Failed to stop in-progress signing:`, err);
             this.setError(err.message);
           });
       });
@@ -164,19 +180,25 @@ export class TransactionStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accessToken) {
+      console.log(`[Transaction] ${this.id} - Cancelling transaction`);
       this.updateStatus('CANCELLING');
       cancelTransaction(deviceId, accessToken, this.id)
         .then(() => {
+          console.log(`[Transaction] ${this.id} - Transaction cancelled successfully`);
           this.updateStatus('CANCELLED');
         })
         .catch((e) => {
+          console.error(`[Transaction] ${this.id} - Failed to cancel transaction:`, e);
           this.setError(e.message);
         });
+    } else {
+      console.error(`[Transaction] ${this.id} - Cannot cancel: missing deviceId or accessToken`);
     }
   }
 
   @action
   public update(dto: ITransactionDTO) {
+    console.log(`[Transaction] ${this.id} - Updating transaction data`);
     this.updateStatus(dto.status);
     this.createdAt = dto.createdAt || null;
     this.lastUpdated = dto.lastUpdated || null;
