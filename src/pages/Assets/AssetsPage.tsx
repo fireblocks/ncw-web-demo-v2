@@ -1,10 +1,11 @@
 import React from 'react';
-import { LoadingPage, Typography, styled } from '@foundation';
+import { Typography, styled } from '@foundation';
 import { useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { EmptyPage } from '../common/EmptyPage';
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
+import { LoadingIndicator } from '../common/LoadingIndicator';
 import { AddAssetDialog } from './AddAssetDialog/AddAssetDialog';
 import { AssetsList } from './AssetsList';
 
@@ -26,7 +27,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
   localStorage.setItem('VISITED_PAGE', 'assets');
 
   if (assetsStore.isLoading) {
-    return <LoadingPage />;
+    return <LoadingIndicator message={t('ASSETS.LOADING')} />;
   }
 
   return (

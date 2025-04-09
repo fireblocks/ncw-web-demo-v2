@@ -86,9 +86,15 @@ export class AssetsStore {
   @action
   public async init(): Promise<void> {
     this.setIsLoading(true);
-    await this.getMyAssets();
-    await this.getSupported();
-    this.setIsLoading(false);
+    try {
+      await this.getMyAssets();
+      await this.getSupported();
+    } catch (error: any) {
+      console.error('[Assets] Error initializing assets:', error);
+      this.setError(error.message || 'Error loading assets');
+    } finally {
+      this.setIsLoading(false);
+    }
   }
 
   @action
@@ -195,8 +201,14 @@ export class AssetsStore {
 
   public async getSupported(): Promise<void> {
     if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-      const assets = await this._embeddedWalletAPI.getAssets();
-      this.setSupportedAssets(assets);
+      try {
+        const assets = await this._embeddedWalletAPI.getAssets();
+        this.setSupportedAssets(assets || []);
+      } catch (error: any) {
+        console.error('[Assets] Error fetching supported assets:', error);
+        // Set empty assets array to allow the app to continue
+        this.setSupportedAssets([]);
+      }
     } else {
       const deviceId = this._rootStore.deviceStore.deviceId;
       const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
@@ -211,8 +223,14 @@ export class AssetsStore {
 
   public async getMyAssets(): Promise<void> {
     if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-      const assetsSummary = await this._embeddedWalletAPI.getAssetsSummary();
-      this.setMyAssets(assetsSummary);
+      try {
+        const assetsSummary = await this._embeddedWalletAPI.getAssetsSummary();
+        this.setMyAssets(assetsSummary || []);
+      } catch (error: any) {
+        console.error('[Assets] Error fetching assets summary:', error);
+        // Set empty assets array to allow the app to continue
+        this.setMyAssets([]);
+      }
     } else {
       const deviceId = this._rootStore.deviceStore.deviceId;
       const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
