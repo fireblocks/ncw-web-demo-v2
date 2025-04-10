@@ -2,6 +2,7 @@ import { IDeviceDTO, getDevices, getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
+import { ENV_CONFIG } from '../env_config.ts';
 
 export class UserStore {
   @observable public loggedUser: IUser | null;
@@ -93,15 +94,26 @@ export class UserStore {
         .getAccessToken()
         .then((token) => {
           this.setAccessToken(token);
-          getUserId(token)
-            .then((userId) => {
-              this.setUserId(userId);
+          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+            // with embedded wallet
+            if (this._authManager.loggedUser !== null) {
+              const userFirebase = this._authManager.loggedUser;
+              this.setUserId(userFirebase.uid);
               this.getMyDevices();
               this.setIsGettingUser(false);
-            })
-            .catch((e) => {
-              this.setError(e.message);
-            });
+            }
+          } else {
+            // with backend proxy
+            getUserId(token)
+              .then((userId) => {
+                this.setUserId(userId);
+                this.getMyDevices();
+                this.setIsGettingUser(false);
+              })
+              .catch((e) => {
+                this.setError(e.message);
+              });
+          }
         })
         .catch((e) => {
           this.setError(e.message);

@@ -1,3 +1,5 @@
+import { User } from 'firebase/auth';
+
 export interface IUser {
   displayName: string | null;
   email: string | null;
@@ -9,5 +11,5 @@ export interface IAuthManager {
   logout(): Promise<void>;
   getAccessToken(): Promise<string>;
   onUserChanged(callback: (user: IUser | null) => void): () => void;
-  get loggedUser(): IUser | null;
+  get loggedUser(): User | null;
 }

@@ -1,24 +1,33 @@
 import { ITransactionDTO, TFireblocksNCWStatus, TKeysStatusRecord, sendMessage } from '@api';
 import {
+  BrowserLocalStorageProvider,
   ConsoleLoggerFactory,
-  FireblocksNCWFactory,
+  FireblocksNCWFactory, generateDeviceId,
   getFireblocksNCWInstance,
   IEventsHandler,
   IFireblocksNCW,
-  IFullKey,
+  IFullKey, IJoinWalletEvent, IKeyBackupEvent, IKeyDescriptor, IKeyRecoveryEvent,
   IMessagesHandler,
   TEnv,
   TEvent,
   TMPCAlgorithm,
 } from '@fireblocks/ncw-js-sdk';
-import { IndexedDBLogger, IndexedDBLoggerFactory, secureStorageProviderFactory } from '@services';
+import {
+  IndexedDBLogger,
+  IndexedDBLoggerFactory,
+  PasswordEncryptedLocalStorage,
+  secureStorageProviderFactory,
+} from '@services';
 import { ENV_CONFIG } from 'env_config';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { RootStore } from './Root.store';
+import { EmbeddedWallet, ICoreOptions, IEmbeddedWalletOptions } from '@fireblocks/embedded-wallet-sdk';
+import { saveDeviceIdToLocalStorage } from '../api';
 
 export class FireblocksSDKStore {
   @observable public sdkStatus: TFireblocksNCWStatus;
   @observable public keysStatus: TKeysStatusRecord | null;
+  @observable public fireblocksEW: EmbeddedWallet;
   @observable public sdkInstance: IFireblocksNCW | null;
   @observable public keysBackupStatus: string;
   @observable public keysRecoveryStatus: string;
@@ -74,12 +83,114 @@ export class FireblocksSDKStore {
     this.setSDKStatus('sdk_not_ready');
   }
 
-  @action
-  public async init() {
+  public async initEmbeddedWalletProcess(): Promise<void> {
     this.setIsMPCGenerating(true);
     this.setSDKInstance(null);
     this.setSDKStatus('initializing_sdk');
 
+    console.log('initEmbeddedWalletProcess: initializing_sdk');
+    try {
+      const eventsHandler: IEventsHandler = {
+        handleEvent: (event: TEvent) => {
+          switch (event.type) {
+            case 'key_descriptor_changed':
+              const _keysStatus: Record<TMPCAlgorithm, IKeyDescriptor> =
+                this.keysStatus ?? ({} as Record<TMPCAlgorithm, IKeyDescriptor>);
+              _keysStatus[event.keyDescriptor.algorithm] = event.keyDescriptor;
+              this.setKeysStatus(_keysStatus);
+              break;
+            case 'transaction_signature_changed':
+              console.log(`Transaction signature status: ${event.transactionSignature.transactionSignatureStatus}`);
+              break;
+            case 'keys_backup':
+              console.log(`Key backup status: ${JSON.stringify((event as IKeyBackupEvent).keysBackup)}`);
+              break;
+            case 'keys_recovery':
+              console.log(`Key recover status: ${JSON.stringify((event as IKeyRecoveryEvent).keyDescriptor)}`);
+              break;
+            case 'join_wallet_descriptor':
+              console.log(`join wallet event: ${JSON.stringify((event as IJoinWalletEvent).joinWalletDescriptor)}`);
+              break;
+          }
+        },
+      };
+
+      let deviceId = prompt(
+        'Enter device ID (leave empty for a random uuid)',
+        this._rootStore.deviceStore.deviceId ?? '',
+      );
+      if (!deviceId) {
+        deviceId = generateDeviceId();
+      }
+      this._rootStore.deviceStore.setDeviceId(deviceId);
+      saveDeviceIdToLocalStorage(deviceId, this._rootStore.userStore.userId);
+      const storageProvider = new BrowserLocalStorageProvider();
+      const secureStorageProvider = new PasswordEncryptedLocalStorage(deviceId, () => {
+        const password = prompt('Enter password', '');
+        if (password === null) {
+          return Promise.reject(new Error('Rejected by user'));
+        }
+        return Promise.resolve(password || '');
+      });
+      const logger = await IndexedDBLoggerFactory({
+        deviceId: this._rootStore.deviceStore.deviceId,
+        logger: ConsoleLoggerFactory(),
+      });
+      const ewOpts: IEmbeddedWalletOptions = {
+        env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
+        logLevel: 'VERBOSE',
+        logger,
+        authClientId: ENV_CONFIG.AUTH_CLIENT_ID,
+        authTokenRetriever: {
+          getAuthToken: () => this._rootStore.userStore.getAccessToken(),
+        },
+        reporting: {
+          enabled: false,
+        },
+      };
+      this.setLogger(logger);
+      const coreNCWOptions: ICoreOptions = {
+        deviceId,
+        eventsHandler,
+        secureStorageProvider,
+        storageProvider,
+      };
+      this.fireblocksEW = new EmbeddedWallet(ewOpts);
+      const sdkIns =
+        getFireblocksNCWInstance(coreNCWOptions.deviceId) ?? (await this.fireblocksEW.initializeCore(coreNCWOptions));
+      this.setSDKInstance(sdkIns);
+
+     // const txSubscriber = await TransactionSubscriberService.initialize(this.fireblocksEW);
+
+      this.setUnsubscribeTransactionsPolling(
+        this._rootStore.transactionsStore.listenToTransactions((transaction: ITransactionDTO) => {
+          this._rootStore.transactionsStore.addOrEditTransaction(transaction);
+        }),
+      );
+
+      if (this.sdkInstance) {
+        const keyStatus = await (this.sdkInstance as IFireblocksNCW).getKeysStatus();
+        console.log('keysStatus: ', keyStatus);
+        if (Object.keys(keyStatus).length > 0) {
+          this.setKeysStatus(keyStatus);
+          this.setSDKStatus('sdk_available');
+        }
+        this.setIsMPCGenerating(false);
+      }
+      this.setSDKStatus('sdk_available');
+    } catch (error) {
+      this.setIsMPCGenerating(false);
+      this.setSDKStatus('sdk_initialization_failed');
+      throw new Error(error.message);
+    }
+  }
+
+  public async initWithProxyBackendProcess(): Promise<void> {
+    this.setIsMPCGenerating(true);
+    this.setSDKInstance(null);
+    this.setSDKStatus('initializing_sdk');
+
+    console.log('initWithProxyBackendProcess: initializing_sdk');
     try {
       const messagesHandler: IMessagesHandler = {
         handleOutgoingMessage: (message: string) => {
@@ -132,7 +243,7 @@ export class FireblocksSDKStore {
 
       let fireblocksNCW: IFireblocksNCW | null = null;
 
-      let ncwInstance = getFireblocksNCWInstance(this._rootStore.deviceStore.deviceId);
+      const ncwInstance = getFireblocksNCWInstance(this._rootStore.deviceStore.deviceId);
       if (ncwInstance) {
         fireblocksNCW = ncwInstance;
       } else {
@@ -167,6 +278,15 @@ export class FireblocksSDKStore {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
       throw new Error(error.message);
+    }
+  }
+
+  @action
+  public async init() {
+    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      await this.initEmbeddedWalletProcess();
+    } else {
+      await this.initWithProxyBackendProcess();
     }
   }
 
