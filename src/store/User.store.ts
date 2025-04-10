@@ -94,7 +94,7 @@ export class UserStore {
         .getAccessToken()
         .then((token) => {
           this.setAccessToken(token);
-          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === true) {
             // with embedded wallet
             if (this._authManager.loggedUser !== null) {
               const userFirebase = this._authManager.loggedUser;
