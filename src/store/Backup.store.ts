@@ -47,7 +47,7 @@ export class BackupStore {
 
   public async init() {
     try {
-      const response = await getPassphraseInfos(this._rootStore.userStore.accessToken);
+      const response = await getPassphraseInfos(this._rootStore.userStore.accessToken, this._rootStore);
       this.setPassPhrases(response.passphrases);
       const latestBackup = await this.getMyLatestBackup();
       this.setLatestBackup(latestBackup);
@@ -121,7 +121,7 @@ export class BackupStore {
   @action
   public async createPassphraseInfo(passphraseId: string, location: TPassphraseLocation): Promise<void> {
     try {
-      await createPassphraseInfo(passphraseId, location, this._rootStore.userStore.accessToken);
+      await createPassphraseInfo(passphraseId, location, this._rootStore.userStore.accessToken, this._rootStore);
       this.addPassPhrases(passphraseId, location);
     } catch (e: any) {
       this.setError(e.message);
@@ -153,6 +153,7 @@ export class BackupStore {
       const latestBackup = await getLatestBackup(
         walletId ? walletId : this._rootStore.deviceStore.walletId,
         this._rootStore.userStore.accessToken,
+        this._rootStore,
       );
       return latestBackup;
     } catch (e: any) {
@@ -239,7 +240,7 @@ export class BackupStore {
   }
 
   public async recoverPassphraseId(passphraseId: string): Promise<string> {
-    const { passphrases } = await getPassphraseInfos(this._rootStore.userStore.accessToken);
+    const { passphrases } = await getPassphraseInfos(this._rootStore.userStore.accessToken, this._rootStore);
 
     if (passphrases === null) {
       throw new Error();

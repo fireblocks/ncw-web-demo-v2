@@ -1,4 +1,5 @@
-import { EmbeddedWallet, IPaginatedResponse } from '@fireblocks/embedded-wallet-sdk';
+import { IPaginatedResponse } from '@fireblocks/embedded-wallet-sdk';
+import { RootStore } from '@store';
 import { AssetResponse, NCW } from 'fireblocks-sdk';
 
 export interface IAssetDTO {
@@ -60,13 +61,20 @@ export interface IAssetsSummaryDTO {
 }
 
 export const addAsset = async (
-  fireblocksEW: EmbeddedWallet,
+  deviceId: string,
   accountId: number,
   assetId: string,
-): Promise<NCW.WalletAssetAddress> => {
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<IAssetAddressDTO> => {
   try {
-    const asset = await fireblocksEW.addAsset(accountId, assetId);
-    return asset;
+    // const asset = await rootStore?.fireblocksSDKStore.fireblocksEW.addAsset(accountId, assetId);
+    // return asset;
+    if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
+      throw new Error('Embedded wallet SDK is not initialized');
+    }
+    const response = await rootStore.fireblocksSDKStore.fireblocksEW.addAsset(accountId, assetId);
+    return response;
   } catch (e) {
     console.error('addAsset error: ', e);
     return null;
@@ -74,42 +82,220 @@ export const addAsset = async (
 };
 
 export const getAsset = async (
-  fireblocksEW: EmbeddedWallet,
+  deviceId: string,
   accountId: number,
   assetId: string,
-): Promise<NCW.WalletAssetResponse> => {
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<IAssetDTO> => {
   try {
-    const asset = await fireblocksEW.getAsset(accountId, assetId);
-    return asset;
+    if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
+      throw new Error('Embedded wallet SDK is not initialized');
+    }
+    const asset = await rootStore.fireblocksSDKStore.fireblocksEW.getAsset(accountId, assetId);
+    return {
+      id: asset.id,
+      symbol: asset.symbol,
+      name: asset.name,
+      decimals: asset.decimals,
+      networkProtocol: asset.networkProtocol,
+      testnet: asset.testnet,
+      hasFee: asset.hasFee,
+      type: asset.type,
+      baseAsset: asset.baseAsset,
+      ethNetwork: asset.ethNetwork,
+      ethContractAddress: asset.ethContractAddress,
+      issuerAddress: asset.issuerAddress,
+      blockchainSymbol: asset.blockchainSymbol,
+      deprecated: asset.deprecated,
+      coinType: asset.coinType,
+      blockchain: asset.blockchain,
+      blockchainDisplayName: asset.blockchainDisplayName,
+      blockchainId: asset.blockchainId,
+      iconUrl: '',
+      rate: 0,
+      algorithm: '',
+    };
   } catch (e) {
     console.error('getAsset error: ', e);
     return null;
   }
 };
 
+export const getEmbeddedWalletAssets = async (rootStore: RootStore, accountId: number): Promise<IAssetDTO[]> => {
+  const response = await rootStore.fireblocksSDKStore.fireblocksEW.getAssets(accountId);
+  return response.data.map((asset) => ({
+    id: asset.id,
+    symbol: asset.symbol,
+    name: asset.name,
+    decimals: asset.decimals,
+    networkProtocol: asset.networkProtocol,
+    testnet: asset.testnet,
+    hasFee: asset.hasFee,
+    type: asset.type,
+    baseAsset: asset.baseAsset,
+    ethNetwork: asset.ethNetwork,
+    ethContractAddress: asset.ethContractAddress,
+    issuerAddress: asset.issuerAddress,
+    blockchainSymbol: asset.blockchainSymbol,
+    deprecated: asset.deprecated,
+    coinType: asset.coinType,
+    blockchain: asset.blockchain,
+    blockchainDisplayName: asset.blockchainDisplayName,
+    blockchainId: asset.blockchainId,
+    iconUrl: asset?.iconUrl || '',
+    rate: asset?.rate || 0,
+    algorithm: asset?.algorithm || '',
+  }));
+};
+
+export const getEmbeddedWalletAsset = async (rootStore: RootStore, assetId: string, accountId: number): Promise<IAssetDTO> => {
+  const asset = await rootStore.fireblocksSDKStore.fireblocksEW.getAsset(accountId, assetId);
+  return {
+    id: asset.id,
+    symbol: asset.symbol,
+    name: asset.name,
+    decimals: asset.decimals,
+    networkProtocol: asset.networkProtocol,
+    testnet: asset.testnet,
+    hasFee: asset.hasFee,
+    type: asset.type,
+    baseAsset: asset.baseAsset,
+    ethNetwork: asset.ethNetwork,
+    ethContractAddress: asset.ethContractAddress,
+    issuerAddress: asset.issuerAddress,
+    blockchainSymbol: asset.blockchainSymbol,
+    deprecated: asset.deprecated,
+    coinType: asset.coinType,
+    blockchain: asset.blockchain,
+    blockchainDisplayName: asset.blockchainDisplayName,
+    blockchainId: asset.blockchainId,
+    iconUrl: asset?.iconUrl || '',
+    rate: asset?.rate || 0,
+    algorithm: asset?.algorithm || '',
+  };
+};
+
 export const getAssets = async (
+  deviceId: string,
   accountId: number,
-  fireblocksEW: EmbeddedWallet,
-): Promise<NCW.WalletAssetResponse[]> => {
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<Promise<IAssetDTO>[]> => {
+  console.log('[EmbeddedWallet] Getting assets');
+
+  if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
+    console.error('[EmbeddedWallet] Embedded wallet SDK is not initialized');
+    return [];
+  }
   try {
-    const assets: IPaginatedResponse<NCW.WalletAssetResponse> = await fireblocksEW.getAssets(accountId);
-    return assets?.data ?? [];
-  } catch (e) {
-    console.error('getAssets error: ', e)
+    const response = await rootStore.fireblocksSDKStore.fireblocksEW.getAssets(accountId);
+    return response.data.map((asset) => getEmbeddedWalletAsset(rootStore, asset.id, accountId));
+  } catch (error) {
+    console.log('[EmbeddedWallet] Error getting assets:', error);
     return [];
   }
 };
 
-export const getAssetsSummary = async (
+export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accountId: number): Promise<IAssetsSummaryDTO[]> => {
+  const response = await rootStore.fireblocksSDKStore.fireblocksEW.getAssets(accountId);
+  const summaries: IAssetsSummaryDTO[] = [];
 
-): Promise<IAssetsSummaryDTO[]> => {
-    // todo: not currently in the SDK api, so need to figure out where to take it from
+  for (const asset of response.data) {
+    const addressResponse = await rootStore.fireblocksSDKStore.fireblocksEW.getAddresses(accountId, asset.id );
+    const address = addressResponse.data[0];
+    const balance = await rootStore.fireblocksSDKStore.fireblocksEW.getBalance(accountId, asset.id);
+
+    summaries.push({
+      asset: {
+        id: asset.id,
+        symbol: asset.symbol,
+        name: asset.name,
+        decimals: asset.decimals,
+        networkProtocol: asset.networkProtocol,
+        testnet: asset.testnet,
+        hasFee: asset.hasFee,
+        type: asset.type,
+        baseAsset: asset.baseAsset,
+        ethNetwork: asset.ethNetwork,
+        ethContractAddress: asset.ethContractAddress,
+        issuerAddress: asset.issuerAddress,
+        blockchainSymbol: asset.blockchainSymbol,
+        deprecated: asset.deprecated,
+        coinType: asset.coinType,
+        blockchain: asset.blockchain,
+        blockchainDisplayName: asset.blockchainDisplayName,
+        blockchainId: asset.blockchainId,
+        iconUrl: asset?.iconUrl || '',
+        rate: asset?.rate || 0,
+        algorithm: asset?.algorithm || '',
+      },
+      address: {
+        accountName: address.accountName,
+        accountId: address.accountId,
+        asset: address.asset,
+        address: address.address,
+        addressType: address.addressType,
+        addressDescription: address.addressDescription,
+        tag: address.tag,
+        addressIndex: address.addressIndex,
+        legacyAddress: address.legacyAddress,
+      },
+      balance: {
+        id: balance.id,
+        total: balance.total,
+        lockedAmount: balance.lockedAmount,
+        available: balance.available,
+        pending: balance.pending,
+        selfStakedCPU: balance.selfStakedCPU,
+        selfStakedNetwork: balance.selfStakedNetwork,
+        pendingRefundCPU: balance.pendingRefundCPU,
+        pendingRefundNetwork: balance.pendingRefundNetwork,
+        totalStakedCPU: balance.totalStakedCPU,
+        totalStakedNetwork: balance.totalStakedNetwork,
+        blockHeight: balance.blockHeight,
+        blockHash: balance.blockHash,
+      },
+    });
+  }
+
+  return summaries;
 };
 
-export const getSupportedAssets = async (fireblocksEW: EmbeddedWallet): Promise<NCW.WalletAssetResponse[]> => {
+export const getAssetsSummary = async (
+  deviceId: string,
+  accountId: number,
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<IAssetsSummaryDTO[]> => {
+  console.log('[EmbeddedWallet] Getting assets summary');
   try {
-    const supportedAssets = await fireblocksEW.getSupportedAssets();
-    return supportedAssets?.data ?? [];
+    return await getEmbeddedWalletAssetsSummary(rootStore, accountId);
+  } catch (error) {
+    console.error('[EmbeddedWallet] Error getting assets summary:', error);
+  }
+};
+
+export const getSupportedAssets = async (
+  deviceId: string,
+  accountId: number,
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<IAssetDTO[]> => {
+  try {
+    const supportedAssets = await rootStore?.fireblocksSDKStore.fireblocksEW.getSupportedAssets();
+    if (supportedAssets) {
+      // return supportedAssets?.data ?? [];
+      return supportedAssets?.data?.map((asset) => ({
+        ...asset,
+        iconUrl: asset?.url ?? '',
+        rate: asset?.rate ?? '',
+        algorithm: '',
+      }));
+    } else {
+      console.log('getSupportedAssets, supportedAssets returned null or undefined');
+      return [];
+    }
   } catch (e) {
     console.error('getSupportedAssets error: ', e);
     return [];
@@ -117,27 +303,56 @@ export const getSupportedAssets = async (fireblocksEW: EmbeddedWallet): Promise<
 };
 
 export const getAddress = async (
-  fireblocksEW: EmbeddedWallet,
+  deviceId: string,
   accountId: number,
   assetId: string,
-): Promise<NCW.WalletAssetAddress[]> => {
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<IAssetAddressDTO> => {
   try {
-    const addresses = await fireblocksEW.getAddresses(accountId, assetId);
-    return addresses?.data ?? [];
+    const response = await this._rootStore.embeddedWalletSDKStore.sdkInstance.getAddresses(accountId, assetId);
+    const address = response.data[0];
+    return {
+      accountName: address.accountName,
+      accountId: address.accountId,
+      asset: address.asset,
+      address: address.address,
+      addressType: address.addressType,
+      addressDescription: address.addressDescription,
+      tag: address.tag,
+      addressIndex: address.addressIndex,
+      legacyAddress: address.legacyAddress
+    };
   } catch (e) {
     console.error('getSupportedAssets error: ', e);
-    return [];
+    return null;
   }
 };
 
 export const getBalance = async (
-  fireblocksEW: EmbeddedWallet,
+  deviceId: string,
   accountId: number,
   assetId: string,
-): Promise<AssetResponse> => {
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<IAssetBalanceDTO> => {
   try {
-    const balance = await fireblocksEW.getBalance(accountId, assetId);
-    return balance;
+    const balance = await rootStore?.fireblocksSDKStore.fireblocksEW.getBalance(accountId, assetId);
+    return {
+      id: balance?.id,
+      total: balance?.total,
+      lockedAmount: balance?.lockedAmount,
+      available: balance?.available,
+      pending: balance?.pending,
+      selfStakedCPU: balance?.selfStakedCPU,
+      selfStakedNetwork: balance?.selfStakedNetwork,
+      pendingRefundCPU: balance?.pendingRefundCPU,
+      pendingRefundNetwork: balance?.pendingRefundNetwork,
+      totalStakedCPU: balance?.totalStakedCPU,
+      totalStakedNetwork: balance?.totalStakedNetwork,
+      blockHeight: balance?.blockHeight,
+      blockHash: balance?.blockHash
+    };
   } catch (e) {
     console.error('getSupportedAssets error: ', e);
     return null;

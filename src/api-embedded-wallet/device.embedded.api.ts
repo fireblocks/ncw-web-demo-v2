@@ -1,6 +1,5 @@
 import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
-import { EmbeddedWallet } from '@fireblocks/embedded-wallet-sdk';
-
+import { RootStore } from '@store';
 
 const DEVICE_ID_KEY = 'DEMO_APP:deviceId';
 
@@ -34,9 +33,13 @@ export const generateNewDeviceId = (userId: string) => {
   return uuid;
 };
 
-export const assignDeviceToNewWallet = async (fireblocksEW: EmbeddedWallet): Promise<string> => {
+export const assignDeviceToNewWallet = async (
+  deviceId: string,
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<string> => {
     try {
-      const assignResponse = await fireblocksEW.assignWallet();
+      const assignResponse = await rootStore?.fireblocksSDKStore.fireblocksEW.assignWallet();
       return assignResponse?.walletId;
     } catch (e) {
       console.error('device.embedded.api.ts - assignDeviceToNewWallet err: ', e);
@@ -44,7 +47,7 @@ export const assignDeviceToNewWallet = async (fireblocksEW: EmbeddedWallet): Pro
     }
 };
 
-export const getDevices = async (token: string): Promise<IDeviceDTO[]> => {
+export const getDevices = async (token: string, rootStore: RootStore | null = null): Promise<IDeviceDTO[]> => {
   // todo:
   // const response = await getCall('api/devices/', token);
   // const { devices } = await response.json();

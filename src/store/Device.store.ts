@@ -19,6 +19,7 @@ export class DeviceStore {
 
   @action
   public init(): void {
+    console.log('Device store init');
     this.deviceId = getDeviceIdFromLocalStorage(this._rootStore.userStore.userId) || '';
   }
 
@@ -43,7 +44,7 @@ export class DeviceStore {
 
     if (deviceId && accessToken) {
       try {
-        const newWalletId = await assignDeviceToNewWallet(deviceId, accessToken);
+        const newWalletId = await assignDeviceToNewWallet(deviceId, accessToken, this._rootStore);
         this.setWalletId(newWalletId);
       } catch (error: any) {
         throw new Error(error.message);

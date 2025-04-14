@@ -127,10 +127,10 @@ export class AssetsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId !== undefined && accessToken) {
-      await addAsset(deviceId, accountId, assetId, accessToken);
-      const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken);
-      const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken);
-      const addressDTO = await getAddress(deviceId, accountId, assetId, accessToken);
+      await addAsset(deviceId, accountId, assetId, accessToken, this._rootStore);
+      const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken, this._rootStore);
+      const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken, this._rootStore);
+      const addressDTO = await getAddress(deviceId, accountId, assetId, accessToken, this._rootStore);
 
       this.addMyAsset({ asset: assetDTO, balance: balanceDTO, address: addressDTO });
     }
@@ -143,7 +143,7 @@ export class AssetsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (accountId !== undefined) {
-      getAssetsSummary(deviceId, accountId, accessToken)
+      getAssetsSummary(deviceId, accountId, accessToken, this._rootStore)
         .then((assetsSummary) => {
           assetsSummary.map((a) => {
             const asset = this.getAssetById(a.asset.id);
@@ -167,7 +167,7 @@ export class AssetsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId !== undefined && accessToken) {
-      const assets = await getSupportedAssets(deviceId, accountId, accessToken);
+      const assets = await getSupportedAssets(deviceId, accountId, accessToken, this._rootStore);
       this.setSupportedAssets(assets);
     }
   }
@@ -178,7 +178,7 @@ export class AssetsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId !== undefined && accessToken) {
-      const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken);
+      const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken, this._rootStore);
       this.setMyAssets(assetsSummary);
     }
   }

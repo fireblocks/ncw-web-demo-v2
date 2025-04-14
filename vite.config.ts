@@ -1,8 +1,15 @@
 import react from '@vitejs/plugin-react';
+import dotenv from 'dotenv';
+import { resolve } from 'path';
 import { defineConfig, splitVendorChunkPlugin } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { resolve } from 'path';
+
+// Load env file manually for vite config
+dotenv.config();
+
+// Now you can debug
+console.log('VITE_USE_EMBEDDED_WALLET_SDK:', process.env.VITE_USE_EMBEDDED_WALLET_SDK);
 
 // Read the environment variable (Vite automatically loads env variables prefixed with VITE_)
 const useEmbeddedWalletSDK = process.env.VITE_USE_EMBEDDED_WALLET_SDK === 'true';

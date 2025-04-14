@@ -11,7 +11,7 @@ export class TransactionsStore {
   @observable public error: string;
 
   private _transactionSubscriptions: Map<string, TTransactionHandler[]>;
-  private _transactionsActivePolling: Map<string, boolean>;
+  public _transactionsActivePolling: Map<string, boolean>;
   private _disposed: boolean;
   private _rootStore: RootStore;
 
@@ -119,6 +119,7 @@ export class TransactionsStore {
           this._rootStore.deviceStore.deviceId,
           startDate,
           this._rootStore.userStore.accessToken,
+          this._rootStore
         );
 
         if (!response.ok) {
@@ -161,7 +162,7 @@ export class TransactionsStore {
   }
 
   @computed
-  private get _hasTransactionsActivePollingForCurrentDevice(): boolean {
+  public get _hasTransactionsActivePollingForCurrentDevice(): boolean {
     return !!this._transactionsActivePolling.get(this._rootStore.deviceStore.deviceId);
   }
 
@@ -171,7 +172,7 @@ export class TransactionsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId !== undefined && accessToken) {
-      const newTxData = await createTransaction(deviceId, accessToken, dataToSend);
+      const newTxData = await createTransaction(deviceId, accessToken, dataToSend, this._rootStore);
       this.addTransaction(newTxData);
     }
   }

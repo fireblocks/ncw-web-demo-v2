@@ -197,7 +197,12 @@ export class FireblocksSDKStore {
           if (!this._rootStore.deviceStore.deviceId) {
             throw new Error('deviceId is not set');
           }
-          return sendMessage(this._rootStore.deviceStore.deviceId, this._rootStore.userStore.accessToken, message);
+          return sendMessage(
+            this._rootStore.deviceStore.deviceId,
+            this._rootStore.userStore.accessToken,
+            message,
+            this._rootStore,
+          );
         },
       };
 
@@ -277,7 +282,7 @@ export class FireblocksSDKStore {
     } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
-      throw new Error(error.message);
+      throw new Error(error);
     }
   }
 

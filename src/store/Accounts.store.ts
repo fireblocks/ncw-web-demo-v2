@@ -22,7 +22,8 @@ export class AccountsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId) {
-      const myAccounts = await getAccounts(deviceId, accessToken);
+      console.log('Accounts store init');
+      const myAccounts = await getAccounts(deviceId, accessToken, this._rootStore);
 
       myAccounts.map((a) => {
         this.addAccount(a);

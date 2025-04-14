@@ -165,7 +165,7 @@ export class TransactionStore {
 
     if (deviceId && accessToken) {
       this.updateStatus('CANCELLING');
-      cancelTransaction(deviceId, accessToken, this.id)
+      cancelTransaction(deviceId, accessToken, this.id, this._rootStore)
         .then(() => {
           this.updateStatus('CANCELLED');
         })

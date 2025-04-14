@@ -1,3 +1,4 @@
+import { RootStore } from '@store';
 import { getCall } from './utils.api';
 
 export interface IAccountDTO {
@@ -5,7 +6,8 @@ export interface IAccountDTO {
   accountId: number;
 }
 
-export const getAccounts = async (deviceId: string, token: string): Promise<IAccountDTO[]> => {
+export const getAccounts = async (deviceId: string, token: string, rootStore: RootStore | null = null): Promise<IAccountDTO[]> => {
+  console.log('getAccounts proxy backend call');
   const response = await getCall(`api/devices/${deviceId}/accounts/`, token);
   return response.json();
 };

@@ -36,8 +36,8 @@ export class NFTStore {
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
 
     if (deviceId && accountId !== undefined && accessToken) {
-      const myCollections = await getNFTCollections(deviceId, accessToken);
-      const myTokens = await getNFTTokens(deviceId, accountId, accessToken);
+      const myCollections = await getNFTCollections(deviceId, accessToken, this._rootStore);
+      const myTokens = await getNFTTokens(deviceId, accountId, accessToken, this._rootStore);
 
       this.setCollections(myCollections);
       this.setTokens(myTokens);

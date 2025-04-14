@@ -1,3 +1,4 @@
+import { RootStore } from '@store';
 import { getCall, postCall } from './utils.api';
 
 export type TTransactionStatus =
@@ -94,7 +95,12 @@ export const TX_POLL_INTERVAL = 5000;
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export const getTransactions = async (deviceId: string, startDate: number, token: string): Promise<Response> => {
+export const getTransactions = async (
+  deviceId: string,
+  startDate: number,
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<Response> => {
   const response = await getCall(
     `api/devices/${deviceId}/transactions?poll=true&startDate=${startDate.toString()}&details=true`,
     token,
@@ -106,12 +112,18 @@ export const createTransaction = async (
   deviceId: string,
   token: string,
   dataToSend?: INewTransactionDTO,
+  rootStore: RootStore | null = null,
 ): Promise<ITransactionDTO> => {
   const createTxResponse = await postCall(`api/devices/${deviceId}/transactions`, token, dataToSend);
   return createTxResponse;
 };
 
-export const cancelTransaction = async (deviceId: string, token: string, txId: string): Promise<void> => {
+export const cancelTransaction = async (
+  deviceId: string,
+  token: string,
+  txId: string,
+  rootStore: RootStore | null = null,
+): Promise<void> => {
   const response = await postCall(`api/devices/${deviceId}/transactions/${txId}/cancel`, token);
   return response;
 };

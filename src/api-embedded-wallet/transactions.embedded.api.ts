@@ -1,6 +1,7 @@
-import { EmbeddedWallet, IGetTransactionsParams, ITransactionRequest } from '@fireblocks/embedded-wallet-sdk';
+import { IGetTransactionsParams, ITransactionRequest } from '@fireblocks/embedded-wallet-sdk';
 import { TransactionResponse } from 'ethers';
 import { CreateTransactionResponse } from 'fireblocks-sdk';
+import { RootStore } from '@store';
 
 export type TTransactionStatus =
   | 'PENDING_SIGNATURE'
@@ -139,7 +140,7 @@ export const transactionResponseToTransactionData = (tx: any): ITransactionDTO =
 });
 
 export const fetchTransactionsAllPages = async (
-  fireblocksEW: EmbeddedWallet,
+  rootStore: RootStore,
   filter: IGetTransactionsParams,
 ): Promise<TransactionResponse[]> => {
   const transactions: TransactionResponse[] = [];
@@ -149,7 +150,7 @@ export const fetchTransactionsAllPages = async (
     if (pageCursor) {
       filter.pageCursor = pageCursor;
     }
-    const response = await fireblocksEW.getTransactions(filter);
+    const response = await rootStore.fireblocksSDKStore.fireblocksEW.getTransactions(filter);
     pageCursor = response.paging?.next ?? null;
     if (response.data) {
       transactions.push(...(response.data as any));
@@ -159,33 +160,59 @@ export const fetchTransactionsAllPages = async (
   return transactions;
 };
 
-export const getTransactions = async (fireblocksEW: EmbeddedWallet): Promise<ITransactionDTO[]> => {
-  try {
-    const [outgoingTxs, incomingTxs] = await Promise.all([
-      fetchTransactionsAllPages(fireblocksEW, {
-        outgoing: true,
-      }),
-      fetchTransactionsAllPages(fireblocksEW, {
-        incoming: true,
-      }),
-    ]);
+export const getTransactions = async (
+  deviceId: string,
+  startDate: number,
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<ITransactionDTO[]> => {
+  console.log('[EmbeddedWallet] Getting transactions, SDK instance:',
+    rootStore?.fireblocksSDKStore.fireblocksEW ? 'exists' : 'missing',
+  );
 
-    const txMap = new Map<string, any>();
-    [...outgoingTxs, ...incomingTxs].forEach((tx) => {
-      txMap.set(tx.id, tx);
-    });
-    console.log('fetched transactions', txMap.size);
-    const response = Array.from(txMap.values()).map(transactionResponseToTransactionData);
-    return response;
-  } catch (e) {
-    console.error('transactions.embedded.api.ts - getTransactions err: ', e);
+  if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
+    console.error('[EmbeddedWallet] Embedded wallet SDK is not initialized');
+    // Return empty array instead of throwing
+    return [];
+  }
+
+  try {
+    console.log(
+      `[EmbeddedWallet] Fetching transactions for device ${deviceId} since ${new Date(startDate).toISOString()}`,
+    );
+
+    // Attempt to fetch transactions from the SDK
+    try {
+      const transactions = await rootStore?.fireblocksSDKStore.fireblocksEW.getTransactions({
+        incoming: true,
+        outgoing: true,
+      });
+
+      console.log(`[EmbeddedWallet] Retrieved ${transactions?.data?.length} transactions`);
+      return transactions.data.map(tx => ({
+        id: tx.id,
+        status: tx.status as TTransactionStatus,
+        createdAt: tx.createdAt,
+        lastUpdated: tx.lastUpdated,
+        details: tx as unknown as ITransactionDetailsDTO,
+      }));
+    } catch (sdkError) {
+      // Log SDK error but don't throw
+      console.error('[EmbeddedWallet] Error fetching transactions from SDK:', sdkError);
+      // Return empty array to avoid breaking the application
+      return [];
+    }
+  } catch (error) {
+    console.error('[EmbeddedWallet] Error in getTransactions:', error);
     return [];
   }
 };
 
 export const createTransaction = async (
-  fireblocksEW: EmbeddedWallet,
+  deviceId: string,
+  token: string,
   dataToSend?: INewTransactionDTO,
+  rootStore: RootStore | null = null,
 ): Promise<CreateTransactionResponse | null> => {
   try {
     const assetId = dataToSend?.assetId;
@@ -204,7 +231,8 @@ export const createTransaction = async (
       },
       amount,
     };
-    const createdTrans = await fireblocksEW.createTransaction(params);
+    console.log(`[EmbeddedWallet] Creating transaction for asset ${assetId} with amount ${amount}`);
+    const createdTrans = await rootStore?.fireblocksSDKStore.fireblocksEW.createTransaction(params);
     console.log('created transaction res: ', createdTrans);
     return createdTrans;
   } catch (e) {
@@ -213,12 +241,25 @@ export const createTransaction = async (
   }
 };
 
-export const cancelTransaction = async (fireblocksEW: EmbeddedWallet, txId: string): Promise<any> => {
+export const cancelTransaction = async (
+  deviceId: string,
+  token: string,
+  txId: string,
+  rootStore: RootStore | null = null,
+): Promise<any> => {
+  console.log(`[EmbeddedWallet] Cancelling transaction: ${txId}`);
+
+  if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
+    console.error('[EmbeddedWallet] Cannot cancel transaction - Embedded wallet SDK is not initialized');
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
+
   try {
-    // todo: there is not an example of use on ncw-web-demo
-    const cancelTransactionResponse = await fireblocksEW.cancelTransaction(txId);
-    return cancelTransactionResponse;
-  } catch (e) {
-    console.error('transactions.embedded.api.ts - createTransaction err: ', e);
+    console.log(`[EmbeddedWallet] Sending cancel request for transaction: ${txId}`);
+    await rootStore.fireblocksSDKStore.fireblocksEW.cancelTransaction(txId);
+    console.log(`[EmbeddedWallet] Transaction ${txId} cancelled successfully`);
+  } catch (error) {
+    console.error(`[EmbeddedWallet] Error cancelling transaction ${txId}:`, error);
+    throw error;
   }
 };
