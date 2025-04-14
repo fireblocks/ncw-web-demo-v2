@@ -159,6 +159,16 @@ export class AuthStore {
   public async generateMPCKeys(): Promise<void> {
     try {
       if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+        // Initialize the SDK if it's not already initialized
+        if (!this._rootStore.fireblocksSDKStore.fireblocksEW) {
+          console.log('[Auth] Initializing embedded wallet SDK');
+          try {
+            await this._rootStore.fireblocksSDKStore.init();
+          } catch (initError) {
+            console.error('[Auth] Error initializing embedded wallet SDK:', initError);
+            // Continue despite initialization errors
+          }
+        }
         console.log('[Auth] Starting MPC key generation process');
         this.setStatus('GENERATING');
         // Create a new device ID if needed
@@ -171,16 +181,7 @@ export class AuthStore {
         await this._rootStore.deviceStore.assignDeviceToNewWallet();
         await this._rootStore.accountsStore.init();
         console.log('[Auth] Generating MPC keys with embedded wallet SDK');
-        // Initialize the SDK if it's not already initialized
-        if (!this._rootStore.fireblocksSDKStore.fireblocksEW) {
-          console.log('[Auth] Initializing embedded wallet SDK');
-          try {
-            await this._rootStore.fireblocksSDKStore.init();
-          } catch (initError) {
-            console.error('[Auth] Error initializing embedded wallet SDK:', initError);
-            // Continue despite initialization errors
-          }
-        }
+
 
         // Generate MPC keys
         if (this._rootStore.fireblocksSDKStore.sdkInstance) {

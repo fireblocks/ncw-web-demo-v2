@@ -127,15 +127,22 @@ export class FireblocksSDKStore {
               break;
             case 'transaction_signature_changed':
               console.log(`Transaction signature status: ${event.transactionSignature.transactionSignatureStatus}`);
+             //  this._rootStore.transactionsStore._refreshTransactions();
               break;
             case 'keys_backup':
               console.log(`Key backup status: ${JSON.stringify(event.keysBackup)}`);
+              this.setKeysBackupStatus(JSON.stringify(event.keysBackup));
+              this._rootStore.backupStore.getMyLatestBackup().catch((error) => {
+                console.error('[EmbeddedWalletSDK] Error getting latest backup:', error);
+              });
               break;
             case 'keys_recovery':
               console.log(`Key recover status: ${JSON.stringify(event.keyDescriptor)}`);
+              this.setKeysRecoveryStatus(JSON.stringify(event.keyDescriptor));
               break;
             case 'join_wallet_descriptor':
               console.log(`join wallet event: ${JSON.stringify(event.joinWalletDescriptor)}`);
+              this.setJoinWalletEventDescriptor(JSON.stringify(event.joinWalletDescriptor));
               break;
           }
         },
@@ -372,7 +379,9 @@ export class FireblocksSDKStore {
       this.setIsMPCGenerating(true);
       const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1', 'MPC_CMP_EDDSA_ED25519']);
       try {
+        const started = Date.now();
         await this.sdkInstance.generateMPCKeys(ALGORITHMS);
+        console.log(`// @@@ DEBUGS: took ${Date.now() - started}ms to generate keys`);
         this.setIsMPCReady(true);
       } catch (error: any) {
         throw new Error(error.message);

@@ -284,6 +284,7 @@ export const getSupportedAssets = async (
 ): Promise<IAssetDTO[]> => {
   try {
     const supportedAssets = await rootStore?.fireblocksSDKStore.fireblocksEW.getSupportedAssets();
+    console.log('getSupportedAssets supportedAssets: ', supportedAssets);
     if (supportedAssets) {
       // return supportedAssets?.data ?? [];
       return supportedAssets?.data?.map((asset) => ({

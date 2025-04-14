@@ -1,8 +1,10 @@
-import { IPassphraseInfo, TPassphrases } from '@api';
+import { IPassphraseInfo } from '@api';
 import { RootStore } from '@store';
 import { IBackupInfo } from '../api';
 
 export type TPassphraseLocation = 'GoogleDrive' | 'iCloud';
+
+export type TPassphrases = Record<string, IPassphraseInfo>;
 
 export const getLatestBackup = async (
   walletId: string,
@@ -55,11 +57,21 @@ export const getPassphraseInfos = async (
   const passphrases: { passphrases: IPassphraseInfo[] } = {
     passphrases: [],
   };
+  console.log('getPassphraseInfos embedded wallet');
   try {
     const res = await rootStore?.fireblocksSDKStore.fireblocksEW.getLatestBackup();
     passphrases.passphrases.push({ passphraseId: res.passphraseId, location: 'GoogleDrive' });
-  } catch (e) {
-    console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);
+  } catch (error) {
+    // Check if this is the "No backup found" error
+    if (error.message === 'No backup found' || (error.code === 'UNKNOWN' && error.message === 'No backup found')) {
+      console.log('No existing backup found - this is normal for first-time backup');
+      return null; // Return null to indicate no backup exists yet
+    }
+
+    // Log other errors and rethrow
+    console.error('backup.embedded.api.ts - getPassphraseInfo err: ', error);
+    throw error;
+
   }
   const reduced = passphrases.passphrases.reduce<TPassphrases>((p, v) => {
     p[v.passphraseId] = v;

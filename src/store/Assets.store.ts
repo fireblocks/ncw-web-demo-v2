@@ -173,14 +173,43 @@ export class AssetsStore {
   }
 
   public async getMyAssets(): Promise<void> {
-    const deviceId = this._rootStore.deviceStore.deviceId;
-    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-    const accessToken = this._rootStore.userStore.accessToken;
+    try {
+      const deviceId = this._rootStore.deviceStore.deviceId;
+      const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+      const accessToken = this._rootStore.userStore.accessToken;
 
-    if (deviceId && accountId !== undefined && accessToken) {
-      const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken, this._rootStore);
-      this.setMyAssets(assetsSummary);
+      console.log('getMyAssets - Debug Info:', {
+        deviceId,
+        accountId,
+        hasAccessToken: !!accessToken,
+        accountStoreInitialized: !!this._rootStore.accountsStore,
+      });
+
+
+      if (deviceId && accountId !== undefined && accessToken) {
+        const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken, this._rootStore);
+        this.setMyAssets(assetsSummary);
+      } else {
+        console.warn('Cannot get assets - missing required data:', {
+          deviceId: !!deviceId,
+          accountId: accountId, // Show actual value to debug
+          accessToken: !!accessToken,
+        });
+
+        // Instead of just failing silently, attempt to initialize what's missing
+        if (!accountId && this._rootStore.accountsStore) {
+          console.log('Attempting to initialize account...');
+          // Try to initialize or retrieve account ID
+          await this._rootStore.accountsStore.init();
+        }
+
+        this.setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Error in getMyAssets:', error);
+      this.setIsLoading(false);
     }
+
   }
 
   public getAssetById(assetId: string): AssetStore | undefined {

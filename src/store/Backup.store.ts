@@ -275,6 +275,7 @@ export class BackupStore {
     this.clearProgress();
     this.setIsBackupInProgress(true);
     try {
+      //await this._rootStore.backupStore.init();
       const { passphrase, passphraseId } = await this.passphrasePersist(location);
       await this._rootStore.fireblocksSDKStore.sdkInstance?.backupKeys(passphrase, passphraseId);
       const latestBackup = await this.getMyLatestBackup();
