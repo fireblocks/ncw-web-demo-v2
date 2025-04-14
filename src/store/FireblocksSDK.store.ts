@@ -1,12 +1,18 @@
 import { ITransactionDTO, TFireblocksNCWStatus, TKeysStatusRecord, sendMessage } from '@api';
+import { EmbeddedWallet, ICoreOptions, IEmbeddedWalletOptions } from '@fireblocks/embedded-wallet-sdk';
 import {
   BrowserLocalStorageProvider,
   ConsoleLoggerFactory,
-  FireblocksNCWFactory, generateDeviceId,
+  FireblocksNCWFactory,
+  generateDeviceId,
   getFireblocksNCWInstance,
   IEventsHandler,
   IFireblocksNCW,
-  IFullKey, IJoinWalletEvent, IKeyBackupEvent, IKeyDescriptor, IKeyRecoveryEvent,
+  IFullKey,
+  IJoinWalletEvent,
+  IKeyBackupEvent,
+  IKeyDescriptor,
+  IKeyRecoveryEvent,
   IMessagesHandler,
   TEnv,
   TEvent,
@@ -20,9 +26,29 @@ import {
 } from '@services';
 import { ENV_CONFIG } from 'env_config';
 import { action, computed, makeObservable, observable } from 'mobx';
-import { RootStore } from './Root.store';
-import { EmbeddedWallet, ICoreOptions, IEmbeddedWalletOptions } from '@fireblocks/embedded-wallet-sdk';
 import { saveDeviceIdToLocalStorage } from '../api';
+import { RootStore } from './Root.store';
+
+const createSafeLogger = (baseLogger: any) => {
+  const sanitizeData = (data: any) => {
+    if (!data) return data;
+    try {
+      // This will throw an error for non-serializable objects
+      JSON.stringify(data);
+      return data;
+    } catch (e) {
+      // Return a simplified version of the object
+      return { info: 'Data contained non-serializable objects (like XMLHttpRequest)' };
+    }
+  };
+
+  return {
+    debug: (message: string, data?: any) => baseLogger.debug(message, sanitizeData(data)),
+    info: (message: string, data?: any) => baseLogger.info(message, sanitizeData(data)),
+    warn: (message: string, data?: any) => baseLogger.warn(message, sanitizeData(data)),
+    error: (message: string, data?: any) => baseLogger.error(message, sanitizeData(data)),
+  };
+};
 
 export class FireblocksSDKStore {
   @observable public sdkStatus: TFireblocksNCWStatus;
@@ -103,13 +129,13 @@ export class FireblocksSDKStore {
               console.log(`Transaction signature status: ${event.transactionSignature.transactionSignatureStatus}`);
               break;
             case 'keys_backup':
-              console.log(`Key backup status: ${JSON.stringify((event as IKeyBackupEvent).keysBackup)}`);
+              console.log(`Key backup status: ${JSON.stringify(event.keysBackup)}`);
               break;
             case 'keys_recovery':
-              console.log(`Key recover status: ${JSON.stringify((event as IKeyRecoveryEvent).keyDescriptor)}`);
+              console.log(`Key recover status: ${JSON.stringify(event.keyDescriptor)}`);
               break;
             case 'join_wallet_descriptor':
-              console.log(`join wallet event: ${JSON.stringify((event as IJoinWalletEvent).joinWalletDescriptor)}`);
+              console.log(`join wallet event: ${JSON.stringify(event.joinWalletDescriptor)}`);
               break;
           }
         },
@@ -148,7 +174,8 @@ export class FireblocksSDKStore {
           enabled: false,
         },
       };
-      this.setLogger(logger);
+      // this.setLogger(logger);
+      this.logger = await IndexedDBLoggerFactory({ deviceId, logger: ConsoleLoggerFactory() });
       const coreNCWOptions: ICoreOptions = {
         deviceId,
         eventsHandler,
@@ -160,7 +187,7 @@ export class FireblocksSDKStore {
         getFireblocksNCWInstance(coreNCWOptions.deviceId) ?? (await this.fireblocksEW.initializeCore(coreNCWOptions));
       this.setSDKInstance(sdkIns);
 
-     // const txSubscriber = await TransactionSubscriberService.initialize(this.fireblocksEW);
+      // const txSubscriber = await TransactionSubscriberService.initialize(this.fireblocksEW);
 
       this.setUnsubscribeTransactionsPolling(
         this._rootStore.transactionsStore.listenToTransactions((transaction: ITransactionDTO) => {
@@ -169,7 +196,7 @@ export class FireblocksSDKStore {
       );
 
       if (this.sdkInstance) {
-        const keyStatus = await (this.sdkInstance as IFireblocksNCW).getKeysStatus();
+        const keyStatus = await this.sdkInstance.getKeysStatus();
         console.log('keysStatus: ', keyStatus);
         if (Object.keys(keyStatus).length > 0) {
           this.setKeysStatus(keyStatus);
