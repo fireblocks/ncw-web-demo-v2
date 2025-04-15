@@ -120,14 +120,26 @@ export class FireblocksSDKStore {
         handleEvent: (event: TEvent) => {
           switch (event.type) {
             case 'key_descriptor_changed':
-              const _keysStatus: Record<TMPCAlgorithm, IKeyDescriptor> =
-                this.keysStatus ?? ({} as Record<TMPCAlgorithm, IKeyDescriptor>);
-              _keysStatus[event.keyDescriptor.algorithm] = event.keyDescriptor;
-              this.setKeysStatus(_keysStatus);
+              // const _keysStatus: Record<TMPCAlgorithm, IKeyDescriptor> =
+              //   this.keysStatus ?? ({} as Record<TMPCAlgorithm, IKeyDescriptor>);
+              // _keysStatus[event.keyDescriptor.algorithm] = event.keyDescriptor;
+              // this.setKeysStatus(_keysStatus);
+              /////
+              this.sdkInstance
+                ?.getKeysStatus()
+                .then((keyStatus) => {
+                  this.setKeysStatus(keyStatus);
+                })
+                .catch(() => {
+                  this.setError('fireblocksNCW failed to get key status');
+                });
               break;
             case 'transaction_signature_changed':
               console.log(`Transaction signature status: ${event.transactionSignature.transactionSignatureStatus}`);
              //  this._rootStore.transactionsStore._refreshTransactions();
+              this._rootStore.transactionsStore
+                .getTransactionById(event.transactionSignature.txId)
+                ?.updateSignatureStatus(event.transactionSignature.transactionSignatureStatus);
               break;
             case 'keys_backup':
               console.log(`Key backup status: ${JSON.stringify(event.keysBackup)}`);
@@ -155,6 +167,7 @@ export class FireblocksSDKStore {
       if (!deviceId) {
         deviceId = generateDeviceId();
       }
+      console.log('embedded wallet set deviceId: ', deviceId);
       this._rootStore.deviceStore.setDeviceId(deviceId);
       saveDeviceIdToLocalStorage(deviceId, this._rootStore.userStore.userId);
       const storageProvider = new BrowserLocalStorageProvider();
@@ -165,6 +178,7 @@ export class FireblocksSDKStore {
         }
         return Promise.resolve(password || '');
       });
+      console.log('embedded wallet set logger: ', secureStorageProvider);
       const logger = await IndexedDBLoggerFactory({
         deviceId: this._rootStore.deviceStore.deviceId,
         logger: ConsoleLoggerFactory(),
@@ -204,7 +218,7 @@ export class FireblocksSDKStore {
 
       if (this.sdkInstance) {
         const keyStatus = await this.sdkInstance.getKeysStatus();
-        console.log('keysStatus: ', keyStatus);
+        console.log('embedded wallet keysStatus: ', keyStatus);
         if (Object.keys(keyStatus).length > 0) {
           this.setKeysStatus(keyStatus);
           this.setSDKStatus('sdk_available');
@@ -375,6 +389,11 @@ export class FireblocksSDKStore {
     if (!this.sdkInstance) {
       this.setError('fireblocksNCW is not initialized');
     } else {
+      await this.checkMPCKeys();
+      if (this.isMPCReady) {
+        console.log('// @@@ DEBUGS: MPC keys are already generated');
+        return;
+      }
       this.setIsMPCReady(false);
       this.setIsMPCGenerating(true);
       const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1', 'MPC_CMP_EDDSA_ED25519']);
@@ -402,7 +421,10 @@ export class FireblocksSDKStore {
       const secP256K1Status = keysStatus.MPC_CMP_ECDSA_SECP256K1?.keyStatus ?? null;
       const ed25519Status = keysStatus.MPC_CMP_EDDSA_ED25519?.keyStatus ?? null;
 
+      console.log('// @@@ DEBUGS: MPC keys status secP256K1Status: ', secP256K1Status);
+      console.log('// @@@ DEBUGS: MPC keys status ed25519Status: ', ed25519Status);
       if (secP256K1Status === 'READY' || ed25519Status === 'READY') {
+        console.log('// @@@ DEBUGS: MPC keys are already generated');
         this.setIsMPCReady(true);
       } else {
         this.setIsMPCReady(false);

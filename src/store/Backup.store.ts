@@ -121,7 +121,9 @@ export class BackupStore {
   @action
   public async createPassphraseInfo(passphraseId: string, location: TPassphraseLocation): Promise<void> {
     try {
+      console.log('createPassphraseInfo action: ', passphraseId, location);
       await createPassphraseInfo(passphraseId, location, this._rootStore.userStore.accessToken, this._rootStore);
+      console.log('createPassphraseInfo addPassPhrases: ', passphraseId, location);
       this.addPassPhrases(passphraseId, location);
     } catch (e: any) {
       this.setError(e.message);

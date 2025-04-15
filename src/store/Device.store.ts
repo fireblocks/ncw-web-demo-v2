@@ -19,28 +19,32 @@ export class DeviceStore {
 
   @action
   public init(): void {
-    console.log('Device store init');
+    console.log('Device Store: device store init');
     this.deviceId = getDeviceIdFromLocalStorage(this._rootStore.userStore.userId) || '';
   }
 
   @action
   public setDeviceId(deviceId: string): void {
+    console.log('Device Store: setDeviceId: ', deviceId);
     this.deviceId = deviceId;
   }
 
   @action
   public setWalletId(walletId: string): void {
+    console.log('Device Store: setWalletId: ', walletId);
     this.walletId = walletId;
   }
 
   @action
   public generateNewDeviceId(): void {
+    console.log('Device Store: generateNewDeviceId');
     this.deviceId = generateNewDeviceId(this._rootStore.userStore.userId);
   }
 
   public async assignDeviceToNewWallet(): Promise<void> {
     const deviceId = this.deviceId;
     const accessToken = this._rootStore.userStore.accessToken;
+    console.log('Device Store: assignDeviceToNewWallet: ', this.deviceId, accessToken);
 
     if (deviceId && accessToken) {
       try {

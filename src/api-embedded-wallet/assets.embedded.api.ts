@@ -226,7 +226,7 @@ export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accou
         blockchain: asset.blockchain,
         blockchainDisplayName: asset.blockchainDisplayName,
         blockchainId: asset.blockchainId,
-        iconUrl: asset?.iconUrl || '',
+        iconUrl: asset?.blockchainSymbol || '',
         rate: asset?.rate || 0,
         algorithm: asset?.algorithm || '',
       },
@@ -258,6 +258,8 @@ export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accou
       },
     });
   }
+
+  console.log('[EmbeddedWallet] Assets summary:', summaries);
 
   return summaries;
 };

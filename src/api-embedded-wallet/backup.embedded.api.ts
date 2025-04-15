@@ -42,12 +42,11 @@ export const getPassphraseInfo = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<IPassphraseInfo> => {
-    try {
-      // todo: ?
-      return null;
-    } catch (e) {
-      console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);
-    }
+  try {
+    return Promise.resolve({ passphraseId: passphraseId, location: 'GoogleDrive' });
+  } catch (e) {
+    console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);
+  }
 };
 
 export const getPassphraseInfos = async (
@@ -71,12 +70,13 @@ export const getPassphraseInfos = async (
     // Log other errors and rethrow
     console.error('backup.embedded.api.ts - getPassphraseInfo err: ', error);
     throw error;
-
   }
   const reduced = passphrases.passphrases.reduce<TPassphrases>((p, v) => {
     p[v.passphraseId] = v;
+    console.log('getPassphraseInfos embedded wallet - p: ', p);
     return p;
   }, {});
+  console.log('getPassphraseInfos embedded wallet - reduced: ', reduced);
   return reduced;
 };
 
@@ -86,6 +86,9 @@ export const createPassphraseInfo = async (
   token: string,
   rootStore: RootStore | null = null,
 ) => {
-    // todo: how to create Passphrase, we should put it where?
-
+  try {
+    return Promise.resolve({ passphraseId: passphraseId, location: 'GoogleDrive' });
+  } catch (e) {
+    console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);
+  }
 };

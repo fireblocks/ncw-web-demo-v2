@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { CssBaseline, webDemoTheme, Notification } from '@foundation';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { RootStore } from '@store';
@@ -12,7 +13,7 @@ import { HashRouter } from 'react-router-dom';
 configure({ enforceActions: 'always' });
 
 export const Initializer: React.FC = () => {
-  const rootStore = new RootStore();
+  const rootStore = useMemo(() => new RootStore(), []);
 
   return (
     <>

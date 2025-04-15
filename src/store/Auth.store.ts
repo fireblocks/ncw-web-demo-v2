@@ -31,6 +31,8 @@ export class AuthStore {
       console.log('[Auth] Starting automatic login process');
       this.setStatus('LOGGING_IN');
 
+      this._rootStore.deviceStore.init();
+
       // Initialize device
       console.log('[Auth] Initializing device');
       if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
@@ -39,7 +41,6 @@ export class AuthStore {
         await this._rootStore.fireblocksSDKStore.initEmbeddedWalletProcess();
         console.log('[Auth] Embedded wallet SDK initialized successfully');
       }
-      this._rootStore.deviceStore.init();
       await this._rootStore.deviceStore.assignDeviceToNewWallet();
       await this._rootStore.accountsStore.init();
 
