@@ -209,7 +209,7 @@ export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accou
   const summaries: IAssetsSummaryDTO[] = [];
 
   for (const asset of response.data) {
-    const addressResponse = await rootStore.fireblocksSDKStore.fireblocksEW.getAddresses(accountId, asset.id );
+    const addressResponse = await rootStore.fireblocksSDKStore.fireblocksEW.getAddresses(accountId, asset.id);
     const address = addressResponse.data[0];
     const balance = await rootStore.fireblocksSDKStore.fireblocksEW.getBalance(accountId, asset.id);
 
@@ -342,21 +342,21 @@ export const getAddress = async (
   }
 
   try {
-    const address = await rootStore.fireblocksSDKStore.fireblocksEW.getAddress(accountId, assetId);
-    if (!address) {
+    const address = await rootStore.fireblocksSDKStore.fireblocksEW.getAddresses(accountId, assetId);
+    if (!address?.data[0]) {
       throw new Error('Failed to get address');
     }
     
     return {
-      accountName: address.accountName || '',
-      accountId: address.accountId || accountId.toString(),
-      asset: address.asset || assetId,
-      address: address.address || '',
-      addressType: address.addressType || '',
-      addressDescription: address.addressDescription,
-      tag: address.tag,
-      addressIndex: address.addressIndex,
-      legacyAddress: address.legacyAddress
+      accountName: address?.data[0].accountName || '',
+      accountId: address?.data[0].accountId || accountId.toString(),
+      asset: address?.data[0].asset || assetId,
+      address: address?.data[0].address || '',
+      addressType: address?.data[0].addressType || '',
+      addressDescription: address?.data[0].addressDescription,
+      tag: address?.data[0].tag,
+      addressIndex: address?.data[0].addressIndex,
+      legacyAddress: address?.data[0].legacyAddress
     };
   } catch (error) {
     console.error('getAddress error:', error);
