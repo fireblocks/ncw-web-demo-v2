@@ -67,17 +67,19 @@ export const addAsset = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetAddressDTO> => {
+  if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
+  
   try {
-    // const asset = await rootStore?.fireblocksSDKStore.fireblocksEW.addAsset(accountId, assetId);
-    // return asset;
-    if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
-      throw new Error('Embedded wallet SDK is not initialized');
-    }
     const response = await rootStore.fireblocksSDKStore.fireblocksEW.addAsset(accountId, assetId);
+    if (!response) {
+      throw new Error('Failed to add asset');
+    }
     return response;
-  } catch (e) {
-    console.error('addAsset error: ', e);
-    return null;
+  } catch (error) {
+    console.error('addAsset error:', error);
+    throw error;
   }
 };
 
@@ -88,11 +90,16 @@ export const getAsset = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetDTO> => {
+  if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
+
   try {
-    if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
-      throw new Error('Embedded wallet SDK is not initialized');
-    }
     const asset = await rootStore.fireblocksSDKStore.fireblocksEW.getAsset(accountId, assetId);
+    if (!asset) {
+      throw new Error('Asset not found');
+    }
+    
     return {
       id: asset.id,
       symbol: asset.symbol,
@@ -112,13 +119,13 @@ export const getAsset = async (
       blockchain: asset.blockchain,
       blockchainDisplayName: asset.blockchainDisplayName,
       blockchainId: asset.blockchainId,
-      iconUrl: '',
-      rate: 0,
-      algorithm: '',
+      iconUrl: asset.iconUrl || '',
+      rate: asset.rate || 0,
+      algorithm: asset.algorithm || '',
     };
-  } catch (e) {
-    console.error('getAsset error: ', e);
-    return null;
+  } catch (error) {
+    console.error('getAsset error:', error);
+    throw error;
   }
 };
 
@@ -284,24 +291,42 @@ export const getSupportedAssets = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetDTO[]> => {
+  if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
+
   try {
-    const supportedAssets = await rootStore?.fireblocksSDKStore.fireblocksEW.getSupportedAssets();
-    console.log('getSupportedAssets supportedAssets: ', supportedAssets);
-    if (supportedAssets) {
-      // return supportedAssets?.data ?? [];
-      return supportedAssets?.data?.map((asset) => ({
-        ...asset,
-        iconUrl: asset?.url ?? '',
-        rate: asset?.rate ?? '',
-        algorithm: '',
-      }));
-    } else {
-      console.log('getSupportedAssets, supportedAssets returned null or undefined');
-      return [];
+    const supportedAssets = await rootStore.fireblocksSDKStore.fireblocksEW.getSupportedAssets();
+    if (!supportedAssets?.data) {
+      throw new Error('Failed to get supported assets');
     }
-  } catch (e) {
-    console.error('getSupportedAssets error: ', e);
-    return [];
+    
+    return supportedAssets.data.map(asset => ({
+      id: asset.id,
+      symbol: asset.symbol,
+      name: asset.name,
+      decimals: asset.decimals || 0,
+      networkProtocol: asset.networkProtocol,
+      testnet: asset.testnet || false,
+      hasFee: asset.hasFee || false,
+      type: asset.type,
+      baseAsset: asset.baseAsset,
+      ethNetwork: asset.ethNetwork,
+      ethContractAddress: asset.ethContractAddress,
+      issuerAddress: asset.issuerAddress,
+      blockchainSymbol: asset.blockchainSymbol,
+      deprecated: asset.deprecated || false,
+      coinType: asset.coinType,
+      blockchain: asset.blockchain,
+      blockchainDisplayName: asset.blockchainDisplayName,
+      blockchainId: asset.blockchainId,
+      iconUrl: asset.iconUrl || '',
+      rate: asset.rate || 0,
+      algorithm: asset.algorithm || ''
+    }));
+  } catch (error) {
+    console.error('getSupportedAssets error:', error);
+    throw error;
   }
 };
 
@@ -312,23 +337,30 @@ export const getAddress = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetAddressDTO> => {
+  if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
+
   try {
-    const response = await this._rootStore.embeddedWalletSDKStore.sdkInstance.getAddresses(accountId, assetId);
-    const address = response.data[0];
+    const address = await rootStore.fireblocksSDKStore.fireblocksEW.getAddress(accountId, assetId);
+    if (!address) {
+      throw new Error('Failed to get address');
+    }
+    
     return {
-      accountName: address.accountName,
-      accountId: address.accountId,
-      asset: address.asset,
-      address: address.address,
-      addressType: address.addressType,
+      accountName: address.accountName || '',
+      accountId: address.accountId || accountId.toString(),
+      asset: address.asset || assetId,
+      address: address.address || '',
+      addressType: address.addressType || '',
       addressDescription: address.addressDescription,
       tag: address.tag,
       addressIndex: address.addressIndex,
       legacyAddress: address.legacyAddress
     };
-  } catch (e) {
-    console.error('getSupportedAssets error: ', e);
-    return null;
+  } catch (error) {
+    console.error('getAddress error:', error);
+    throw error;
   }
 };
 
@@ -339,25 +371,33 @@ export const getBalance = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetBalanceDTO> => {
+  if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
+
   try {
-    const balance = await rootStore?.fireblocksSDKStore.fireblocksEW.getBalance(accountId, assetId);
+    const balance = await rootStore.fireblocksSDKStore.fireblocksEW.getBalance(accountId, assetId);
+    if (!balance) {
+      throw new Error('Failed to get balance');
+    }
+    
     return {
-      id: balance?.id,
-      total: balance?.total,
-      lockedAmount: balance?.lockedAmount,
-      available: balance?.available,
-      pending: balance?.pending,
-      selfStakedCPU: balance?.selfStakedCPU,
-      selfStakedNetwork: balance?.selfStakedNetwork,
-      pendingRefundCPU: balance?.pendingRefundCPU,
-      pendingRefundNetwork: balance?.pendingRefundNetwork,
-      totalStakedCPU: balance?.totalStakedCPU,
-      totalStakedNetwork: balance?.totalStakedNetwork,
-      blockHeight: balance?.blockHeight,
-      blockHash: balance?.blockHash
+      id: balance.id || assetId,
+      total: balance.total || '0',
+      lockedAmount: balance.lockedAmount,
+      available: balance.available,
+      pending: balance.pending,
+      selfStakedCPU: balance.selfStakedCPU,
+      selfStakedNetwork: balance.selfStakedNetwork,
+      pendingRefundCPU: balance.pendingRefundCPU,
+      pendingRefundNetwork: balance.pendingRefundNetwork,
+      totalStakedCPU: balance.totalStakedCPU,
+      totalStakedNetwork: balance.totalStakedNetwork,
+      blockHeight: balance.blockHeight,
+      blockHash: balance.blockHash
     };
-  } catch (e) {
-    console.error('getSupportedAssets error: ', e);
-    return null;
+  } catch (error) {
+    console.error('getBalance error:', error);
+    throw error;
   }
 };

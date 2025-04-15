@@ -34,65 +34,81 @@ export class AssetsStore {
 
   @computed
   public get totalAvailableBalanceInUSD(): string {
-    const balance = this.myAssets.reduce((acc, a) => acc + Number(a.totalBalance) * (a.assetData.rate || 0), 0);
+    const balance = this.myAssets.reduce((acc, a) => {
+      const rate = a.assetData?.rate || 0;
+      const total = Number(a.totalBalance || 0);
+      return acc + (total * rate);
+    }, 0);
     return localizedCurrencyView(balance);
   }
 
   @computed
   public get myAssetsSortedByBalanceInUSD(): AssetStore[] {
     return this.myAssets.slice().sort((a, b) => {
-      if (a.assetData.rate && b.assetData.rate) {
-        return b.totalBalance * b.assetData.rate - a.totalBalance * a.assetData.rate;
-      }
-      return 0;
+      const aRate = a.assetData?.rate || 0;
+      const bRate = b.assetData?.rate || 0;
+      const aBalance = a.totalBalance || 0;
+      const bBalance = b.totalBalance || 0;
+      return (bBalance * bRate) - (aBalance * aRate);
     });
   }
 
   @computed
   public get myBaseAssets(): AssetStore[] {
-    return this.myAssets.filter((a) => a.assetData.type === 'BASE_ASSET');
+    return this.myAssets.filter((a) => a.assetData?.type === 'BASE_ASSET');
   }
 
   @computed
   public get myECDSAAssets(): AssetStore[] {
-    return this.myAssets.filter((a) => a.assetData.algorithm === 'MPC_ECDSA_SECP256K1');
+    return this.myAssets.filter((a) => a.assetData?.algorithm === 'MPC_ECDSA_SECP256K1');
   }
 
   @computed
   public get myEDDSAAssets(): AssetStore[] {
-    return this.myAssets.filter((a) => a.assetData.algorithm === 'MPC_EDDSA_ED25519');
+    return this.myAssets.filter((a) => a.assetData?.algorithm === 'MPC_EDDSA_ED25519');
   }
 
   @action
   public setSupportedAssets(assets: IAssetDTO[]): void {
     this.supportedAssets = [];
-    assets.map((a) => {
-      this.addSupportedAsset(a);
+    assets.forEach((a) => {
+      if (a) this.addSupportedAsset(a);
     });
   }
 
   @action
   public setMyAssets(assets: IAssetsSummaryDTO[]): void {
     this.myAssets = [];
-    assets.map((a) => {
-      this.addMyAsset(a);
+    assets.forEach((a) => {
+      if (a?.asset) this.addMyAsset(a);
     });
   }
 
   @action
   public async init(): Promise<void> {
     this.setIsLoading(true);
-    await this.getMyAssets();
-    await this.getSupported();
-    this.setIsLoading(false);
+    try {
+      await this.getMyAssets();
+      await this.getSupported();
+    } catch (error) {
+      console.error('Error initializing assets:', error);
+      this.setError(error.message);
+    } finally {
+      this.setIsLoading(false);
+    }
   }
 
   @action
   public addMyAsset(assetData: IAssetsSummaryDTO): void {
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
 
-    if (accountId !== undefined) {
-      const assetStore = new AssetStore(assetData.asset, assetData.balance, assetData.address, this._rootStore);
+    if (accountId !== undefined && assetData?.asset) {
+      const assetStore = new AssetStore(
+        assetData.asset,
+        assetData.balance || null,
+        assetData.address || null,
+        this._rootStore
+      );
 
       runInAction(() => {
         this.myAssets.push(assetStore);
@@ -117,22 +133,48 @@ export class AssetsStore {
 
   @action
   public addSupportedAsset(assetData: IAssetDTO): void {
+    if (!assetData) return;
     const assetStore = new AssetStore(assetData, null, null, this._rootStore);
     this.supportedAssets.push(assetStore);
   }
 
   public async addAsset(assetId: string): Promise<void> {
-    const deviceId = this._rootStore.deviceStore.deviceId;
-    const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-    const accessToken = this._rootStore.userStore.accessToken;
+    try {
+      const deviceId = this._rootStore.deviceStore.deviceId;
+      const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+      const accessToken = this._rootStore.userStore.accessToken;
 
-    if (deviceId && accountId !== undefined && accessToken) {
-      await addAsset(deviceId, accountId, assetId, accessToken, this._rootStore);
-      const assetDTO = await getAsset(deviceId, accountId, assetId, accessToken, this._rootStore);
-      const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken, this._rootStore);
-      const addressDTO = await getAddress(deviceId, accountId, assetId, accessToken, this._rootStore);
+      if (!deviceId || accountId === undefined || !accessToken) {
+        throw new Error('Missing required data for adding asset');
+      }
 
-      this.addMyAsset({ asset: assetDTO, balance: balanceDTO, address: addressDTO });
+      // Add the asset first
+      const addedAsset = await addAsset(deviceId, accountId, assetId, accessToken, this._rootStore);
+      if (!addedAsset) {
+        throw new Error('Failed to add asset');
+      }
+
+      // Get asset details
+      const [assetDTO, balanceDTO, addressDTO] = await Promise.all([
+        getAsset(deviceId, accountId, assetId, accessToken, this._rootStore),
+        getBalance(deviceId, accountId, assetId, accessToken, this._rootStore),
+        getAddress(deviceId, accountId, assetId, accessToken, this._rootStore)
+      ]);
+
+      if (!assetDTO) {
+        throw new Error('Failed to get asset details');
+      }
+
+      // Add to my assets
+      this.addMyAsset({
+        asset: assetDTO,
+        balance: balanceDTO || null,
+        address: addressDTO || null
+      });
+    } catch (error) {
+      console.error('Error adding asset:', error);
+      this.setError(error.message);
+      throw error;
     }
   }
 
