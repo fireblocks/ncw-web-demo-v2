@@ -20,7 +20,6 @@ export const getLatestBackup = async (
       createdAt: response?.createdAt,
       keys: response?.keys,
     };
-    console.log('[EmbeddedWalletSDK] Latest backup retrieved');
   } catch (error) {
     console.error('getLatestBackup: [EmbeddedWalletSDK] Error getting latest backup:', error);
     return null;
@@ -43,6 +42,7 @@ export const getPassphraseInfo = async (
   rootStore: RootStore | null = null,
 ): Promise<IPassphraseInfo> => {
   try {
+    console.log('getPassphraseInfo embedded wallet');
     return Promise.resolve({ passphraseId: passphraseId, location: 'GoogleDrive' });
   } catch (e) {
     console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);
@@ -59,6 +59,7 @@ export const getPassphraseInfos = async (
   console.log('getPassphraseInfos embedded wallet');
   try {
     const res = await rootStore?.fireblocksSDKStore.fireblocksEW.getLatestBackup();
+    console.log('getPassphraseInfos res: ', res);
     passphrases.passphrases.push({ passphraseId: res.passphraseId, location: 'GoogleDrive' });
   } catch (error) {
     // Check if this is the "No backup found" error
@@ -87,6 +88,7 @@ export const createPassphraseInfo = async (
   rootStore: RootStore | null = null,
 ) => {
   try {
+    console.log('createPassphraseInfo embedded wallet');
     return Promise.resolve({ passphraseId: passphraseId, location: 'GoogleDrive' });
   } catch (e) {
     console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);

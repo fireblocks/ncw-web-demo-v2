@@ -35,7 +35,7 @@ export class AuthStore {
 
       // Initialize device
       console.log('[Auth] Initializing device');
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
         // Initialize the embedded wallet SDK
         console.log('[Auth] Initializing embedded wallet SDK');
         await this._rootStore.fireblocksSDKStore.initEmbeddedWalletProcess();
@@ -44,7 +44,7 @@ export class AuthStore {
       await this._rootStore.deviceStore.assignDeviceToNewWallet();
       await this._rootStore.accountsStore.init();
 
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
         console.log('[Auth] Using embedded wallet SDK');
         try {
           // After initialization, check if we need to generate keys
@@ -105,7 +105,7 @@ export class AuthStore {
     } catch (error) {
       console.error('[Auth] Error during automatic login:', error);
       // Only set ERROR status if we're not using embedded wallet SDK
-      if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK !== 'true') {
         this.setStatus('ERROR');
         throw new Error('Error while starting automatic login process.');
       } else {
@@ -159,7 +159,7 @@ export class AuthStore {
 
   public async generateMPCKeys(): Promise<void> {
     try {
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
         // Initialize the SDK if it's not already initialized
         if (!this._rootStore.fireblocksSDKStore.fireblocksEW) {
           console.log('[Auth] Initializing embedded wallet SDK');

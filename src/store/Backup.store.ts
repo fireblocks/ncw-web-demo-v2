@@ -13,6 +13,7 @@ import { cloudkitBackup, cloudkitRecover, googleDriveBackup, googleDriveRecover,
 import { action, makeObservable, observable } from 'mobx';
 import CloudKit from 'tsl-apple-cloudkit';
 import { RootStore } from './Root.store';
+import { ENV_CONFIG } from '../env_config.ts';
 
 export class BackupStore {
   @observable public passPhrases: TPassphrases | null;
@@ -206,7 +207,11 @@ export class BackupStore {
 
   public async passphrasePersist(location: TPassphraseLocation): Promise<IPassphrase> {
     if (this.passPhrases === null) {
-      throw new Error('Passphrases not loaded');
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+        console.log('create passPhrases if not found');
+      } else {
+        throw new Error('Passphrases not loaded');
+      }
     }
 
     try {

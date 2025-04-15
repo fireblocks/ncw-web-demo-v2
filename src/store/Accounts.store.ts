@@ -25,9 +25,10 @@ export class AccountsStore {
     if (deviceId) {
       console.log('Accounts store init');
       const myAccounts = await getAccounts(deviceId, accessToken, this._rootStore);
-      if (myAccounts?.data?.length === 0 && ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-        console.log('No accounts found, creating new account');
+      if (!myAccounts?.data?.length && ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+        console.log('No accounts found, creat!ing new account');
         const newAccount = await this._rootStore.fireblocksSDKStore.fireblocksEW.createAccount();
+        console.log('newAccount: ', newAccount)
         this.addAccount(newAccount);
       } else {
         console.log('Found accounts: ', myAccounts);
