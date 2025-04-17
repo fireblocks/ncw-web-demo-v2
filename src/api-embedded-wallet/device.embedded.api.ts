@@ -38,18 +38,22 @@ export const assignDeviceToNewWallet = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<string> => {
-    try {
-      const assignResponse = await rootStore?.fireblocksSDKStore.fireblocksEW.assignWallet();
-      return assignResponse?.walletId;
-    } catch (e) {
-      console.error('device.embedded.api.ts - assignDeviceToNewWallet err: ', e);
-      return '';
-    }
+  try {
+    const assignResponse = await rootStore?.fireblocksSDKStore.fireblocksEW.assignWallet();
+    return assignResponse?.walletId;
+  } catch (e) {
+    console.error('device.embedded.api.ts - assignDeviceToNewWallet err: ', e);
+    return '';
+  }
 };
 
-export const getDevices = async (token: string, rootStore: RootStore | null = null): Promise<IDeviceDTO[]> => {
-  // todo:
-  // const response = await getCall('api/devices/', token);
-  // const { devices } = await response.json();
-  // return devices;
-};
+export const getDevices = async (token: string, rootStore: RootStore | null = null): Promise<IDeviceDTO[]> =>
+  new Promise((resolve) => {
+    resolve([
+      {
+        deviceId: rootStore?.deviceStore?.deviceId ?? '',
+        walletId: rootStore?.deviceStore?.walletId ?? '',
+        createdAt: Date.now(),
+      },
+    ]);
+  });

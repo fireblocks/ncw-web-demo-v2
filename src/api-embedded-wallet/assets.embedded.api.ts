@@ -1,6 +1,4 @@
-import { IPaginatedResponse } from '@fireblocks/embedded-wallet-sdk';
 import { RootStore } from '@store';
-import { AssetResponse, NCW } from 'fireblocks-sdk';
 
 export interface IAssetDTO {
   id: string;
@@ -76,6 +74,7 @@ export const addAsset = async (
     if (!response) {
       throw new Error('Failed to add asset');
     }
+    console.log('[EmbeddedWallet] Added asset:', response);
     return response;
   } catch (error) {
     console.error('addAsset error:', error);
@@ -281,7 +280,8 @@ export const getAssetsSummary = async (
   try {
     return await getEmbeddedWalletAssetsSummary(rootStore, accountId);
   } catch (error) {
-    console.error('[EmbeddedWallet] Error getting assets summary:', error);
+    console.log('[EmbeddedWallet] Error getting assets summary:', error);
+    throw new Error('[EmbeddedWallet] Error getting assets summary:');
   }
 };
 
@@ -320,9 +320,9 @@ export const getSupportedAssets = async (
       blockchain: asset.blockchain,
       blockchainDisplayName: asset.blockchainDisplayName,
       blockchainId: asset.blockchainId,
-      iconUrl: asset.iconUrl || '',
-      rate: asset.rate || 0,
-      algorithm: asset.algorithm || ''
+      iconUrl: asset?.iconUrl || '',
+      rate: asset?.rate || 0,
+      algorithm: asset?.algorithm || '',
     }));
   } catch (error) {
     console.error('getSupportedAssets error:', error);

@@ -14,12 +14,17 @@ export const getLatestBackup = async (
   try {
     console.log('[EmbeddedWalletSDK] Getting latest backup');
     const response = await rootStore?.fireblocksSDKStore.fireblocksEW.getLatestBackup();
-    return {
-      passphraseId: response?.passphraseId,
-      location: determineLocation(response.passphraseId),
-      createdAt: response?.createdAt,
-      keys: response?.keys,
-    };
+    console.log('[EmbeddedWalletSDK] Latest backup: ', response);
+    if (response) {
+      return {
+        passphraseId: response?.passphraseId,
+        location: determineLocation(response.passphraseId),
+        createdAt: response?.createdAt,
+        keys: response?.keys,
+      };
+    } else {
+      return null;
+    }
   } catch (error) {
     console.error('getLatestBackup: [EmbeddedWalletSDK] Error getting latest backup:', error);
     return null;

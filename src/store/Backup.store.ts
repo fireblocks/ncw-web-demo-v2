@@ -153,11 +153,14 @@ export class BackupStore {
 
   public async getMyLatestBackup(walletId?: string): Promise<IBackupInfo | null> {
     try {
+      console.log('@@@@@@@ getMyLatestBackup walletId: ', walletId, this._rootStore.deviceStore.walletId);
+      console.log('@@@@@@@ getMyLatestBackup this._rootStore.userStore.accessToken: ', walletId);
       const latestBackup = await getLatestBackup(
         walletId ? walletId : this._rootStore.deviceStore.walletId,
         this._rootStore.userStore.accessToken,
         this._rootStore,
       );
+      console.log('@@@@@@@ latestBackup: ', latestBackup);
       return latestBackup;
     } catch (e: any) {
       this.setError(e.message);
