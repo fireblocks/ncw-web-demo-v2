@@ -215,6 +215,7 @@ export const createTransaction = async (
   rootStore: RootStore | null = null,
 ): Promise<CreateTransactionResponse | null> => {
   try {
+    console.log('[EmbeddedWallet] Creating transaction dataToSend: ', dataToSend);
     const assetId = dataToSend?.assetId;
     const destAddress = dataToSend?.destAddress ?? '';
     const amount = dataToSend?.amount || '0.00000001';

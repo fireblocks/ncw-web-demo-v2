@@ -1,8 +1,8 @@
 import { IAccountDTO, getAccounts } from '@api';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import { ENV_CONFIG } from '../env_config.ts';
 import { AccountStore } from './Account.store';
 import { RootStore } from './Root.store';
-import { ENV_CONFIG } from '../env_config.ts';
 
 export class AccountsStore {
   @observable public accounts: AccountStore[];
@@ -25,14 +25,14 @@ export class AccountsStore {
     if (deviceId) {
       console.log('Accounts store init');
       const myAccounts = await getAccounts(deviceId, accessToken, this._rootStore);
-      if (!myAccounts?.data?.length && ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+      if (!myAccounts?.length && ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
         console.log('No accounts found, creat!ing new account');
         const newAccount = await this._rootStore.fireblocksSDKStore.fireblocksEW.createAccount();
         console.log('newAccount: ', newAccount)
         this.addAccount(newAccount);
       } else {
         console.log('Found accounts: ', myAccounts);
-        myAccounts.map((a) => {
+        myAccounts.map((a: IAccountDTO) => {
           this.addAccount(a);
         });
       }

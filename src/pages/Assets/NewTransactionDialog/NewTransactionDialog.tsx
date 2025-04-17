@@ -56,6 +56,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
 
   const createNewTransaction = () => {
     setIsCreatingTransfer(true);
+    console.log('DEBUG TRANSFER: ', `[asset?.id: ${asset?.id}]`, `[amount: ${amount}]`, `[address: ${address}]`, `[feeLevel: ${feeLevel}]`, `[txType: ${txType}]`);
     if (txType === 'TRANSFER') {
       transactionsStore
         .createTransaction({
