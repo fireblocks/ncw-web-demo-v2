@@ -1,113 +1,213 @@
-import { TokenResponse } from '@fireblocks/ts-sdk/models/token-response.ts';
+import { TokenOwnershipResponse } from '@fireblocks/ts-sdk';
 import { RootStore } from '@store';
 import { CollectionOwnership, Token, TokenWithBalance } from 'fireblocks-sdk';
 
+/**
+ * Retrieves all NFT tokens owned by the user.
+ * @param deviceId - The ID of the device
+ * @param accountId - The ID of the account
+ * @param token - Authentication token
+ * @param rootStore - The root store instance containing the Fireblocks SDK
+ * @returns Promise resolving to an array of TokenWithBalance objects
+ */
 export const getNFTTokens = async (
   deviceId: string,
   accountId: number,
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<TokenWithBalance[]> => {
-  // todo: is this the right operation?
   try {
     const NFTtokens = await rootStore?.fireblocksSDKStore.fireblocksEW.getOwnedNFTs();
-    return NFTtokens?.data ?? [];
+    if (!NFTtokens?.data) return [];
+
+    return NFTtokens.data.map((tokenItem: TokenOwnershipResponse) => {
+      // First, get the response from the API
+      const nftToken = {
+        id: tokenItem.id,
+        tokenId: tokenItem.tokenId,
+        standard: tokenItem.standard,
+        blockchainDescriptor: tokenItem.blockchainDescriptor as string,
+        description: tokenItem.description,
+        name: tokenItem.name,
+        metadataURI: tokenItem.metadataURI,
+        cachedMetadataURI: tokenItem.cachedMetadataURI,
+        ownershipStartTime: tokenItem.ownershipStartTime || 0,
+        balance: '1', // NFTs are always owned in quantity of 1
+        ownershipLastUpdateTime: tokenItem.ownershipStartTime || Date.now(),
+        status: tokenItem.status || 'ACTIVE',
+        media: tokenItem.media
+          ? tokenItem.media.map((media) => ({
+              url: media.url,
+              contentType: media.contentType,
+            }))
+          : undefined,
+        collection: tokenItem.collection
+          ? {
+              id: tokenItem.collection.id,
+              name: tokenItem.collection.name,
+            }
+          : undefined,
+        spam: tokenItem.spam
+          ? {
+              result: tokenItem.spam.result,
+              source: tokenItem.spam.source,
+            }
+          : undefined,
+        ncwId: deviceId,
+        ncwAccountId: accountId,
+      };
+
+      // Cast it to TokenWithBalance to satisfy the type system
+      return nftToken as unknown as TokenWithBalance;
+    });
   } catch (e) {
     console.error('nft.embedded.api.ts - getNFTTokens err: ', e);
     return [];
   }
 };
 
+/**
+ * Retrieves all NFT collections owned by the user.
+ * @param deviceId - The ID of the device
+ * @param token - Authentication token
+ * @param rootStore - The root store instance containing the Fireblocks SDK
+ * @returns Promise resolving to an array of CollectionOwnership objects
+ */
 export const getNFTCollections = async (
   deviceId: string,
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<CollectionOwnership[]> => {
-  // todo: it seems that on ncw-web-demo there is no NFT usage from embedded wallet and no example on that
-
-  // const response = await getCall(`api/devices/${deviceId}/nfts/ownership/collections`, token);
-  // return response.json();
   try {
     const NFTtokens = await rootStore?.fireblocksSDKStore.fireblocksEW.getOwnedNFTs();
-    return NFTtokens?.data ?? [];
+    if (!NFTtokens?.data) return [];
+
+    // Group tokens by collection
+    const collectionsMap = new Map<string, CollectionOwnership>();
+
+    NFTtokens.data.forEach((tokenItem) => {
+      if (tokenItem.collection) {
+        const collectionId = tokenItem.collection.id;
+        if (!collectionsMap.has(collectionId)) {
+          collectionsMap.set(collectionId, {
+            id: collectionId,
+            name: tokenItem.collection.name,
+            standard: tokenItem.standard,
+            blockchainDescriptor: tokenItem.blockchainDescriptor as string,
+          });
+        }
+      }
+    });
+
+    return Array.from(collectionsMap.values());
   } catch (e) {
-    console.error('nft.embedded.api.ts - getNFTTokens err: ', e);
+    console.error('nft.embedded.api.ts - getNFTCollections err: ', e);
     return [];
   }
 };
 
+/**
+ * Retrieves all NFT assets owned by the user.
+ * @param deviceId - The ID of the device
+ * @param token - Authentication token
+ * @param rootStore - The root store instance containing the Fireblocks SDK
+ * @returns Promise resolving to an array of Token objects
+ */
 export const getNFTAssets = async (
   deviceId: string,
   token: string,
   rootStore: RootStore | null = null,
-): Promise<Token[] | undefined> => {
-  // todo: it seems that on ncw-web-demo there is no NFT usage from embedded wallet and no example on that
-
-  // const response = await getCall(`api/devices/${deviceId}/nfts/ownership/assets`, token);
-  // return response.json();
+): Promise<Token[]> => {
   try {
-    // todo: id is assetId
-    const NFTtokens: TokenResponse | undefined = await rootStore?.fireblocksSDKStore.fireblocksEW.getNFT({
-      id: deviceId,
-    });
-    if (NFTtokens) {
-      return {
-        id: NFTtokens.id,
-        tokenId: NFTtokens.tokenId,
-        standard: NFTtokens.standard,
-        blockchainDescriptor: NFTtokens.blockchainDescriptor as string,
-        description: NFTtokens.description,
-        name: NFTtokens.name,
-        metadataURI: NFTtokens.metadataURI,
-        cachedMetadataURI: NFTtokens.cachedMetadataURI,
-        // Type conversions for the nested objects
-        media: NFTtokens.media ? NFTtokens.media.map(convertToMediaEntity) : undefined,
-        collection: NFTtokens.collection ? convertToNFTCollection(NFTtokens.collection) : undefined,
-        spam: NFTtokens.spam ? convertToNFTSpamTokenResponse(NFTtokens.spam) : undefined,
-      };
-    } else {
-      return undefined;
-    }
+    const NFTtokens = await rootStore?.fireblocksSDKStore.fireblocksEW.getOwnedNFTs();
+    if (!NFTtokens?.data) return [];
+
+    return NFTtokens.data.map((tokenItem) => ({
+      id: tokenItem.id,
+      tokenId: tokenItem.tokenId,
+      standard: tokenItem.standard,
+      blockchainDescriptor: tokenItem.blockchainDescriptor as string,
+      description: tokenItem.description,
+      name: tokenItem.name,
+      metadataURI: tokenItem.metadataURI,
+      cachedMetadataURI: tokenItem.cachedMetadataURI,
+      media: tokenItem.media
+        ? tokenItem.media.map((media) => ({
+            url: media.url,
+            contentType: media.contentType,
+          }))
+        : undefined,
+      collection: tokenItem.collection
+        ? {
+            id: tokenItem.collection.id,
+            name: tokenItem.collection.name,
+          }
+        : undefined,
+      spam: tokenItem.spam
+        ? {
+            result: tokenItem.spam.result,
+            source: tokenItem.spam.source || 'UNKNOWN',
+          }
+        : undefined,
+    }));
   } catch (e) {
-    console.error('nft.embedded.api.ts - getNFTTokens err: ', e);
+    console.error('nft.embedded.api.ts - getNFTAssets err: ', e);
     return [];
   }
 };
 
-// helper for internal use
-
 /**
- * Converts a MediaEntityResponse to MediaEntity
+ * Retrieves a single NFT asset by its ID.
+ * @param assetId - The ID of the NFT to retrieve
+ * @param token - Authentication token
+ * @param rootStore - The root store instance containing the Fireblocks SDK
+ * @returns Promise resolving to a Token object
+ * @throws Error if the SDK is not initialized or if the NFT is not found
  */
-const convertToMediaEntity = (media) => {
-  // Implement conversion logic based on differences between types
-  // For example:
-  return {
-    url: media.url,
-    contentType: media.contentType,
-    // Add other properties as needed
-  };
-};
+export const getSingleNFTAsset = async (
+  assetId: string,
+  token: string,
+  rootStore: RootStore | null = null,
+): Promise<Token> => {
+  if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
 
-/**
- * Converts a TokenCollectionResponse to NFTCollection
- */
-const convertToNFTCollection = (collection) => {
-  // Implement conversion logic based on differences between types
-  return {
-    id: collection.id,
-    name: collection.name,
-    // Add other properties as needed
-  };
-}
+  try {
+    const nft = await rootStore.fireblocksSDKStore.fireblocksEW.getNFT({ id: assetId });
+    if (!nft) {
+      throw new Error('NFT not found');
+    }
 
-/**
- * Converts a SpamTokenResponse to NFTSpamTokenResponse
- */
-const convertToNFTSpamTokenResponse = (spam) => {
-  // Implement conversion logic based on differences between types
-  return {
-    isSpam: spam.isSpam,
-    // Add other properties as needed
-  };
+    return {
+      id: nft.id,
+      tokenId: nft.tokenId,
+      standard: nft.standard,
+      blockchainDescriptor: nft.blockchainDescriptor as string,
+      description: nft.description,
+      name: nft.name,
+      metadataURI: nft.metadataURI,
+      cachedMetadataURI: nft.cachedMetadataURI,
+      media: nft.media
+        ? nft.media.map((media) => ({
+            url: media.url,
+            contentType: media.contentType,
+          }))
+        : undefined,
+      collection: nft.collection
+        ? {
+            id: nft.collection.id,
+            name: nft.collection.name,
+          }
+        : undefined,
+      spam: nft.spam
+        ? {
+            result: nft.spam.result,
+          }
+        : undefined,
+    };
+  } catch (error) {
+    console.error('getNFTsingleAsset error:', error);
+    throw error;
+  }
 };

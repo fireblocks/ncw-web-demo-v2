@@ -209,6 +209,7 @@ export class BackupStore {
     if (this.passPhrases === null) {
       if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
         console.log('create passPhrases if not found');
+        await this.init();
       } else {
         throw new Error('Passphrases not loaded');
       }
