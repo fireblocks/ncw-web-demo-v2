@@ -225,7 +225,7 @@ export class UserStore {
       this.setError('User is not logged in');
     }
 
-    getDevices(this.accessToken)
+    getDevices(this.accessToken, this._rootStore)
       .then((devices) => {
         this.setMyDevices(devices);
         if (devices?.length) {

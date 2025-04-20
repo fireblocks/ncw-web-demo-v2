@@ -38,7 +38,7 @@ export class AuthStore {
       if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
         // Initialize the embedded wallet SDK
         console.log('[Auth] Initializing embedded wallet SDK');
-        await this._rootStore.fireblocksSDKStore.initEmbeddedWalletProcess();
+        await this._rootStore.fireblocksSDKStore.init();
         console.log('[Auth] Embedded wallet SDK initialized successfully');
       }
       await this._rootStore.deviceStore.assignDeviceToNewWallet();
@@ -62,13 +62,13 @@ export class AuthStore {
           }
 
           // Ensure account exists
-          try {
-            console.log('[Auth] Ensuring account exists');
-            await this._rootStore.accountsStore.init();
-          } catch (accountError) {
-            console.error('[Auth] Error fetching accounts:', accountError);
-            // Continue despite account fetching errors
-          }
+          // try {
+          //   console.log('[Auth] Ensuring account exists');
+          //   await this._rootStore.accountsStore.init();
+          // } catch (accountError) {
+          //   console.error('[Auth] Error fetching accounts:', accountError);
+          //   // Continue despite account fetching errors
+          // }
 
           // Start transaction polling
           try {

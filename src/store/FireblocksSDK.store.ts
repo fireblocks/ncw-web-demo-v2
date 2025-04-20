@@ -120,19 +120,20 @@ export class FireblocksSDKStore {
         handleEvent: (event: TEvent) => {
           switch (event.type) {
             case 'key_descriptor_changed':
-              // const _keysStatus: Record<TMPCAlgorithm, IKeyDescriptor> =
-              //   this.keysStatus ?? ({} as Record<TMPCAlgorithm, IKeyDescriptor>);
-              // _keysStatus[event.keyDescriptor.algorithm] = event.keyDescriptor;
-              // this.setKeysStatus(_keysStatus);
+              const _keysStatus: Record<TMPCAlgorithm, IKeyDescriptor> =
+                this.keysStatus ?? ({} as Record<TMPCAlgorithm, IKeyDescriptor>);
+              _keysStatus[event.keyDescriptor.algorithm] = event.keyDescriptor;
+              console.log(`Key status: ${JSON.stringify(_keysStatus)}`);
+              this.setKeysStatus(_keysStatus);
               /////
-              this.sdkInstance
-                ?.getKeysStatus()
-                .then((keyStatus) => {
-                  this.setKeysStatus(keyStatus);
-                })
-                .catch(() => {
-                  this.setError('fireblocksNCW failed to get key status');
-                });
+              // this.sdkInstance
+              //   ?.getKeysStatus()
+              //   .then((keyStatus) => {
+              //     this.setKeysStatus(keyStatus);
+              //   })
+              //   .catch(() => {
+              //     this.setError('fireblocksNCW failed to get key status');
+              //   });
               break;
             case 'transaction_signature_changed':
               console.log(`Transaction signature status: ${event.transactionSignature.transactionSignatureStatus}`);
