@@ -93,7 +93,7 @@ export interface INewTransactionDTO {
   estimateFee: boolean;
 }
 
-export const TX_POLL_INTERVAL = 5000;
+export const TX_POLL_INTERVAL = 30000;
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 

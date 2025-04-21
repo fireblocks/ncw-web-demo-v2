@@ -12,12 +12,28 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import { AssetStore, localizedCurrencyView } from './Asset.store';
 import { RootStore } from './Root.store';
 
+// Debounce utility function
+const debounce = <T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): ((...args: Parameters<T>) => void) => {
+  let timeout: NodeJS.Timeout | null = null;
+  return (...args: Parameters<T>) => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
 export class AssetsStore {
   @observable public myAssets: AssetStore[];
   @observable public supportedAssets: AssetStore[];
   @observable public isLoading: boolean;
   @observable public isGettingBalances: boolean;
   @observable public error: string;
+  private _lastRefreshTime: number = 0;
+  private _refreshDebounced: () => void;
 
   private _rootStore: RootStore;
 
@@ -28,6 +44,11 @@ export class AssetsStore {
     this.isLoading = true;
     this.isGettingBalances = false;
     this.error = '';
+
+    // Initialize debounced refresh function with 5 second delay
+    this._refreshDebounced = debounce(() => {
+      this._doRefreshBalances();
+    }, 5000);
 
     makeObservable(this);
   }
@@ -178,7 +199,12 @@ export class AssetsStore {
     }
   }
 
-  public refreshBalances(): void {
+  private _doRefreshBalances(): void {
+    console.log('[AssetsStore] Starting balance refresh', {
+      timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
+      isGettingBalances: this.isGettingBalances
+    });
+
     this.setIsGettingBalances(true);
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
@@ -187,6 +213,7 @@ export class AssetsStore {
     if (accountId !== undefined) {
       getAssetsSummary(deviceId, accountId, accessToken, this._rootStore)
         .then((assetsSummary) => {
+          console.log('[AssetsStore] Balance refresh completed successfully');
           assetsSummary.map((a) => {
             const asset = this.getAssetById(a.asset.id);
             if (asset) {
@@ -195,11 +222,30 @@ export class AssetsStore {
           });
         })
         .catch((e) => {
+          console.error('[AssetsStore] Balance refresh failed:', e);
           this.setError(e.message);
         })
         .finally(() => {
           this.setIsGettingBalances(false);
+          this._lastRefreshTime = Date.now();
         });
+    }
+  }
+
+  public refreshBalances(): void {
+    console.log('[AssetsStore] refreshBalances called', {
+      timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
+      isGettingBalances: this.isGettingBalances
+    });
+
+    // Only allow refresh if at least 5 seconds have passed since last refresh
+    const now = Date.now();
+    if (now - this._lastRefreshTime >= 5000) {
+      this._doRefreshBalances();
+    } else {
+      // If less than 5 seconds have passed, schedule a debounced refresh
+      console.log('[AssetsStore] Scheduling debounced refresh');
+      this._refreshDebounced();
     }
   }
 

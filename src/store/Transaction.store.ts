@@ -123,11 +123,24 @@ export class TransactionStore {
 
   @action
   public updateStatus(status: TTransactionStatus) {
+    console.log('[TransactionStore] Status update:', {
+      transactionId: this.id,
+      oldStatus: this.status,
+      newStatus: status
+    });
+
     this.status = status;
+    
+    // Only refresh balances for significant status changes
+    const significantStatuses: TTransactionStatus[] = ['COMPLETED', 'FAILED', 'CANCELLED'];
     if (this.isNFT) {
+      console.log('[TransactionStore] Refreshing NFT tokens');
       this._rootStore.nftStore.getTokens().catch(() => {});
-    } else {
+    } else if (significantStatuses.includes(status)) {
+      console.log('[TransactionStore] Refreshing balances due to significant status change');
       this._rootStore.assetsStore.refreshBalances();
+    } else {
+      console.log('[TransactionStore] Skipping balance refresh - not a significant status change');
     }
     this.setIsSigning(false);
   }

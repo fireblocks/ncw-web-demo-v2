@@ -203,16 +203,32 @@ export const getAssets = async (
   }
 };
 
+// Add cache for asset summaries
+let assetSummaryCache: {
+  data: IAssetsSummaryDTO[];
+  timestamp: number;
+} | null = null;
+
+const CACHE_DURATION = 30000; // Changed from 5000 to 30000 (30 seconds)
+
 export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accountId: number): Promise<IAssetsSummaryDTO[]> => {
+  // Check cache first
+  // if (assetSummaryCache && (Date.now() - assetSummaryCache.timestamp) < CACHE_DURATION) {
+  //   console.log('[EmbeddedWallet] Returning cached assets summary');
+  //   return assetSummaryCache.data;
+  // }
+
+  console.log('[EmbeddedWallet] Fetching fresh assets summary');
   const response = await rootStore.fireblocksSDKStore.fireblocksEW.getAssets(accountId);
-  const summaries: IAssetsSummaryDTO[] = [];
+  
+  // Batch all address and balance requests
+  const promises = response.data.map(async (asset) => {
+    const [addressResponse, balance] = await Promise.all([
+      rootStore.fireblocksSDKStore.fireblocksEW.getAddresses(accountId, asset.id),
+      rootStore.fireblocksSDKStore.fireblocksEW.getBalance(accountId, asset.id)
+    ]);
 
-  for (const asset of response.data) {
-    const addressResponse = await rootStore.fireblocksSDKStore.fireblocksEW.getAddresses(accountId, asset.id);
-    const address = addressResponse.data[0];
-    const balance = await rootStore.fireblocksSDKStore.fireblocksEW.getBalance(accountId, asset.id);
-
-    summaries.push({
+    return {
       asset: {
         id: asset.id,
         symbol: asset.symbol,
@@ -236,37 +252,20 @@ export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accou
         rate: asset?.rate || 0,
         algorithm: asset?.algorithm || '',
       },
-      address: {
-        accountName: address.accountName,
-        accountId: address.accountId,
-        asset: address.asset,
-        address: address.address,
-        addressType: address.addressType,
-        addressDescription: address.addressDescription,
-        tag: address.tag,
-        addressIndex: address.addressIndex,
-        legacyAddress: address.legacyAddress,
-      },
-      balance: {
-        id: balance.id,
-        total: balance.total,
-        lockedAmount: balance.lockedAmount,
-        available: balance.available,
-        pending: balance.pending,
-        selfStakedCPU: balance.selfStakedCPU,
-        selfStakedNetwork: balance.selfStakedNetwork,
-        pendingRefundCPU: balance.pendingRefundCPU,
-        pendingRefundNetwork: balance.pendingRefundNetwork,
-        totalStakedCPU: balance.totalStakedCPU,
-        totalStakedNetwork: balance.totalStakedNetwork,
-        blockHeight: balance.blockHeight,
-        blockHash: balance.blockHash,
-      },
-    });
-  }
+      address: addressResponse.data[0],
+      balance: balance
+    };
+  });
+
+  const summaries = await Promise.all(promises);
+
+  // Update cache
+  assetSummaryCache = {
+    data: summaries,
+    timestamp: Date.now()
+  };
 
   console.log('[EmbeddedWallet] Assets summary:', summaries);
-
   return summaries;
 };
 
