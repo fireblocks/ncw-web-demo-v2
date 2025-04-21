@@ -403,5 +403,5 @@ export const getBalance = async (
 
 const getCryptoIconUrl = (symbol: string) => {
   const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
-  return `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/${normalizedSymbol}.png`;
+  return `src/icons/crypto-icons/${normalizedSymbol}.png`;
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TNewTransactionMode } from '@api';
 import {
   CopyText,
@@ -40,6 +40,15 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
 }) {
   const currentAsset = filteredAssets[index];
 
+  const titleCellProps = useMemo(
+    () => ({
+      title: currentAsset.name,
+      subtitle: currentAsset.symbol,
+      iconUrl: currentAsset.iconUrl || IconNoAsset,
+    }),
+    [currentAsset.name, currentAsset.symbol, currentAsset.iconUrl],
+  );
+
   return (
     <div
       key={currentAsset.id}
@@ -53,11 +62,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
     >
       <TableRow>
         <RowStyled>
-          <TableTitleCell
-            title={currentAsset.name}
-            subtitle={currentAsset.symbol}
-            iconUrl={currentAsset.iconUrl || IconNoAsset}
-          />
+          <TableTitleCell {...titleCellProps} />
           <TableBalanceCell balance={currentAsset.totalBalance} balanceInUsd={currentAsset.totalBalanceInUSD} />
           <TableTextCell text={currentAsset.rate} />
           <TableCell>

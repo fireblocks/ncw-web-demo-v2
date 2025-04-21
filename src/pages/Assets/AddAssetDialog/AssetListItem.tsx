@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ActionButton, Progress, TableCell, TableRow, TableTitleCell, styled } from '@foundation';
 import IconNoAsset from '@icons/no_asset_image.svg';
 import { AssetStore, useAssetsStore } from '@store';
@@ -47,6 +47,15 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
       });
   };
 
+  const titleCellProps = useMemo(
+    () => ({
+      title: currentAsset.name,
+      subtitle: currentAsset.symbol,
+      iconUrl: currentAsset.iconUrl || IconNoAsset,
+    }),
+    [currentAsset.name, currentAsset.symbol, currentAsset.iconUrl],
+  );
+
   return (
     <div
       style={style}
@@ -60,11 +69,7 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
     >
       <TableRow>
         <RowStyled>
-          <TableTitleCell
-            title={currentAsset.name}
-            subtitle={currentAsset.symbol}
-            iconUrl={currentAsset.iconUrl || IconNoAsset}
-          />
+          <TableTitleCell {...titleCellProps} />
           <TableCell>
             {hoveredLine === currentAsset.id ? (
               <>
