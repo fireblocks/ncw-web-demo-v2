@@ -98,7 +98,7 @@ export const getAsset = async (
     if (!asset) {
       throw new Error('Asset not found');
     }
-    
+
     return {
       id: asset.id,
       symbol: asset.symbol,
@@ -401,6 +401,48 @@ export const getBalance = async (
   }
 };
 
+/**
+ * A map of coin symbols to their corresponding IDs
+ * @example { "BTC": "bitcoin", "ETH": "ethereum" }
+ */
+interface CoinSymbolToIdMap {
+  [symbol: string]: string;
+}
+
+/**
+ * Represents the rate information for a coin
+ */
+interface CoinRate {
+  coinType: string;
+  rate: number | null;
+}
+
+/**
+ * Fetches current USD rates for multiple cryptocurrencies
+ * @param coinSymbolToIdMap Map of coin symbols to their CoinGecko IDs
+ * @returns Promise with an array of coin rates
+ */
+const getAllRatesLive = async (coinSymbolToIdMap: CoinSymbolToIdMap): Promise<CoinRate[]> => {
+  const coinIds = Object.values(coinSymbolToIdMap).join(',');
+  const apiUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds}&vs_currencies=usd`;
+
+  try {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+
+    const result = Object.entries(coinSymbolToIdMap).map(([symbol, id]) => ({
+      coinType: symbol,
+      rate: data[id]?.usd ?? null,
+    }));
+
+    console.log('Coin prices:', result);
+    return result;
+  } catch (error) {
+    console.error('Error fetching coin prices:', error);
+    throw error; // Rethrow to let caller handle the error
+  }
+};
+
 const getCryptoIconUrl = (symbol: string) => {
   const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
   return normalizedSymbol?.length && cryptoIconNamesLocally.includes(normalizedSymbol)
@@ -463,3 +505,59 @@ const cryptoIconNamesLocally = [
   'crv', // Curve DAO Token
   'yfi', // yearn.finance
 ];
+
+const coinSymbolToIdMap = {
+  btc: 'bitcoin',
+  eth: 'ethereum',
+  usdt: 'tether',
+  bnb: 'binancecoin',
+  usdc: 'usd-coin',
+  xrp: 'ripple',
+  ada: 'cardano',
+  doge: 'dogecoin',
+  sol: 'solana',
+  dot: 'polkadot',
+  trx: 'tron',
+  shib: 'shiba-inu',
+  avax: 'avalanche-2',
+  dai: 'dai',
+  matic: 'polygon',
+  uni: 'uniswap',
+  link: 'chainlink',
+  etc: 'ethereum-classic',
+  ltc: 'litecoin',
+  atom: 'cosmos',
+  xlm: 'stellar',
+  algo: 'algorand',
+  near: 'near',
+  ftm: 'fantom',
+  egld: 'elrond-erd-2',
+  xmr: 'monero',
+  cake: 'pancakeswap-token',
+  axs: 'axie-infinity',
+  vet: 'vechain',
+  hbar: 'hedera-hashgraph',
+  fil: 'filecoin',
+  sand: 'the-sandbox',
+  mana: 'decentraland',
+  xtz: 'tezos',
+  theta: 'theta-token',
+  aave: 'aave',
+  one: 'harmony',
+  eos: 'eos',
+  grt: 'the-graph',
+  ftt: 'ftx-token',
+  zec: 'zcash',
+  bch: 'bitcoin-cash',
+  neo: 'neo',
+  bat: 'basic-attention-token',
+  enj: 'enjincoin',
+  icp: 'internet-computer',
+  comp: 'compound-governance-token',
+  mkr: 'maker',
+  waves: 'waves',
+  dash: 'dash',
+  crv: 'curve-dao-token',
+  yfi: 'yearn-finance',
+};
+
