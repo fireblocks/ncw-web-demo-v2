@@ -36,6 +36,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   const [address, setAddress] = React.useState('');
   const [feeLevel, setFeeLevel] = React.useState('LOW');
   const [txType, setTxType] = React.useState('TRANSFER');
+  const [isAmountTooHigh, setIsAmountTooHigh] = React.useState(false);
   const [isCreatingTransfer, setIsCreatingTransfer] = React.useState(false);
 
   React.useEffect(() => {
@@ -46,17 +47,33 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
     }
   }, [asset]);
 
+  React.useEffect(() => {
+    if (!amount || !asset?.totalBalance) {
+      setIsAmountTooHigh(false);
+      return;
+    }
+
+    const amountValue = parseFloat(amount);
+    const balanceValue = asset.totalBalance;
+
+    setIsAmountTooHigh(amountValue > balanceValue);
+  }, [amount, asset?.totalBalance]);
+
   const clearState = () => {
     setAmount('');
     setAddress('');
     setFeeLevel('LOW');
   };
 
-  const shouldDisableAction = (txType === 'TRANSFER' && mode === 'SEND' && (!amount || !address)) || isCreatingTransfer;
+  const shouldDisableAction = (
+    txType === 'TRANSFER' &&
+    mode === 'SEND' &&
+    (!amount || !address || isAmountTooHigh)
+  ) || isCreatingTransfer;
 
-  const createNewTransaction = () => {
+
+    const createNewTransaction = () => {
     setIsCreatingTransfer(true);
-    console.log('DEBUG TRANSFER: ', `[asset?.id: ${asset?.id}]`, `[amount: ${amount}]`, `[address: ${address}]`, `[feeLevel: ${feeLevel}]`, `[txType: ${txType}]`);
     if (txType === 'TRANSFER') {
       transactionsStore
         .createTransaction({

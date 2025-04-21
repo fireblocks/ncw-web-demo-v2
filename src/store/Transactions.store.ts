@@ -2,6 +2,7 @@ import { INewTransactionDTO, ITransactionDTO, TX_POLL_INTERVAL, createTransactio
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { RootStore } from './Root.store';
 import { TransactionStore } from './Transaction.store';
+import { ENV_CONFIG } from '../env_config.ts';
 
 type TTransactionHandler = (tx: ITransactionDTO) => void;
 
@@ -122,12 +123,12 @@ export class TransactionsStore {
           this._rootStore
         );
 
-        if (!response.ok) {
+        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'false' && !response?.ok) {
           await sleep(TX_POLL_INTERVAL);
           continue;
         }
 
-        const transactions = await response.json();
+        const transactions = ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' ? response : await response.json();
 
         transactions.forEach((tx: ITransactionDTO) => {
           if (tx.id && tx.lastUpdated) {
@@ -144,6 +145,11 @@ export class TransactionsStore {
             }
           }
         });
+
+        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+          await sleep(TX_POLL_INTERVAL);
+          continue;
+        }
       } catch (e: any) {
         this.setError(e.message);
         await sleep(TX_POLL_INTERVAL);

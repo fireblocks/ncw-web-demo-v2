@@ -183,13 +183,16 @@ export const getTransactions = async (
 
     // Attempt to fetch transactions from the SDK
     try {
-      const transactions = await rootStore?.fireblocksSDKStore.fireblocksEW.getTransactions({
+      const transactionsIncoming = await rootStore?.fireblocksSDKStore.fireblocksEW.getTransactions({
         incoming: true,
+      });
+
+      const transactionsOutgoing = await rootStore?.fireblocksSDKStore.fireblocksEW.getTransactions({
         outgoing: true,
       });
 
-      console.log(`[EmbeddedWallet] Retrieved ${transactions?.data?.length} transactions`);
-      return transactions.data.map(tx => ({
+      const allTransactions = [...(transactionsIncoming.data ?? []), ...(transactionsOutgoing?.data ?? [])];
+      return allTransactions.map((tx) => ({
         id: tx.id,
         status: tx.status as TTransactionStatus,
         createdAt: tx.createdAt,

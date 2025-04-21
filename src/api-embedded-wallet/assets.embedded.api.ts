@@ -118,7 +118,7 @@ export const getAsset = async (
       blockchain: asset.blockchain,
       blockchainDisplayName: asset.blockchainDisplayName,
       blockchainId: asset.blockchainId,
-      iconUrl: asset.iconUrl || '',
+      iconUrl: getCryptoIconUrl(asset.symbol),
       rate: asset.rate || 0,
       algorithm: asset.algorithm || '',
     };
@@ -149,7 +149,7 @@ export const getEmbeddedWalletAssets = async (rootStore: RootStore, accountId: n
     blockchain: asset.blockchain,
     blockchainDisplayName: asset.blockchainDisplayName,
     blockchainId: asset.blockchainId,
-    iconUrl: asset?.iconUrl || '',
+    iconUrl: getCryptoIconUrl(asset.symbol),
     rate: asset?.rate || 0,
     algorithm: asset?.algorithm || '',
   }));
@@ -176,7 +176,7 @@ export const getEmbeddedWalletAsset = async (rootStore: RootStore, assetId: stri
     blockchain: asset.blockchain,
     blockchainDisplayName: asset.blockchainDisplayName,
     blockchainId: asset.blockchainId,
-    iconUrl: asset?.iconUrl || '',
+    iconUrl: getCryptoIconUrl(asset.symbol),
     rate: asset?.rate || 0,
     algorithm: asset?.algorithm || '',
   };
@@ -232,7 +232,7 @@ export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accou
         blockchain: asset.blockchain,
         blockchainDisplayName: asset.blockchainDisplayName,
         blockchainId: asset.blockchainId,
-        iconUrl: asset?.blockchainSymbol || '',
+        iconUrl: getCryptoIconUrl(asset.symbol),
         rate: asset?.rate || 0,
         algorithm: asset?.algorithm || '',
       },
@@ -320,7 +320,7 @@ export const getSupportedAssets = async (
       blockchain: asset.blockchain,
       blockchainDisplayName: asset.blockchainDisplayName,
       blockchainId: asset.blockchainId,
-      iconUrl: asset?.iconUrl || '',
+      iconUrl: getCryptoIconUrl(asset.symbol),
       rate: asset?.rate || 0,
       algorithm: asset?.algorithm || '',
     }));
@@ -400,4 +400,9 @@ export const getBalance = async (
     console.error('getBalance error:', error);
     throw error;
   }
+};
+
+const getCryptoIconUrl = (symbol: string) => {
+  const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
+  return `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/${normalizedSymbol}.png`;
 };
