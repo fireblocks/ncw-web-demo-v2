@@ -403,5 +403,63 @@ export const getBalance = async (
 
 const getCryptoIconUrl = (symbol: string) => {
   const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
-  return `src/icons/crypto-icons/${normalizedSymbol}.png`;
+  return normalizedSymbol?.length && cryptoIconNamesLocally.includes(normalizedSymbol)
+    ? `src/icons/crypto-icons/${normalizedSymbol}.png`
+    : '';
 };
+
+// when you add new icons locally inside icons/crypto-icons folder, add the name here.
+const cryptoIconNamesLocally = [
+  'btc', // Bitcoin
+  'eth', // Ethereum
+  'usdt', // Tether
+  'bnb', // Binance Coin
+  'usdc', // USD Coin
+  'xrp', // XRP
+  'ada', // Cardano
+  'doge', // Dogecoin
+  'sol', // Solana
+  'dot', // Polkadot
+  'trx', // TRON
+  'shib', // Shiba Inu
+  'avax', // Avalanche
+  'dai', // DAI
+  'matic', // Polygon/Matic
+  'uni', // Uniswap
+  'link', // Chainlink
+  'etc', // Ethereum Classic
+  'ltc', // Litecoin
+  'atom', // Cosmos
+  'xlm', // Stellar
+  'algo', // Algorand
+  'near', // NEAR Protocol
+  'ftm', // Fantom
+  'egld', // Elrond
+  'xmr', // Monero
+  'cake', // PancakeSwap
+  'axs', // Axie Infinity
+  'vet', // VeChain
+  'hbar', // Hedera
+  'fil', // Filecoin
+  'sand', // The Sandbox
+  'mana', // Decentraland
+  'xtz', // Tezos
+  'theta', // Theta Network
+  'aave', // Aave
+  'one', // Harmony
+  'eos', // EOS
+  'grt', // The Graph
+  'ftt', // FTX Token
+  'zec', // Zcash
+  'bch', // Bitcoin Cash
+  'neo', // NEO
+  'bat', // Basic Attention Token
+  'enj', // Enjin Coin
+  'icp', // Internet Computer
+  'comp', // Compound
+  'mkr', // Maker
+  'waves', // Waves
+  'dash', // Dash
+  'crv', // Curve DAO Token
+  'yfi', // yearn.finance
+];
