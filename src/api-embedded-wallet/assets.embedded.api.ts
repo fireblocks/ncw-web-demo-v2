@@ -68,7 +68,7 @@ export const addAsset = async (
   if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
     throw new Error('Embedded wallet SDK is not initialized');
   }
-  
+
   try {
     const response = await rootStore.fireblocksSDKStore.fireblocksEW.addAsset(accountId, assetId);
     if (!response) {
@@ -119,7 +119,7 @@ export const getAsset = async (
       blockchainDisplayName: asset.blockchainDisplayName,
       blockchainId: asset.blockchainId,
       iconUrl: getCryptoIconUrl(asset.symbol),
-      rate: asset.rate || 0,
+      rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol)?.price || 0,
       algorithm: asset.algorithm || '',
     };
   } catch (error) {
@@ -150,13 +150,18 @@ export const getEmbeddedWalletAssets = async (rootStore: RootStore, accountId: n
     blockchainDisplayName: asset.blockchainDisplayName,
     blockchainId: asset.blockchainId,
     iconUrl: getCryptoIconUrl(asset.symbol),
-    rate: asset?.rate || 0,
+    rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol)?.price || 0,
     algorithm: asset?.algorithm || '',
   }));
 };
 
-export const getEmbeddedWalletAsset = async (rootStore: RootStore, assetId: string, accountId: number): Promise<IAssetDTO> => {
+export const getEmbeddedWalletAsset = async (
+  rootStore: RootStore,
+  assetId: string,
+  accountId: number,
+): Promise<IAssetDTO> => {
   const asset = await rootStore.fireblocksSDKStore.fireblocksEW.getAsset(accountId, assetId);
+
   return {
     id: asset.id,
     symbol: asset.symbol,
@@ -177,7 +182,7 @@ export const getEmbeddedWalletAsset = async (rootStore: RootStore, assetId: stri
     blockchainDisplayName: asset.blockchainDisplayName,
     blockchainId: asset.blockchainId,
     iconUrl: getCryptoIconUrl(asset.symbol),
-    rate: asset?.rate || 0,
+    rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol)?.price || 0,
     algorithm: asset?.algorithm || '',
   };
 };
@@ -211,7 +216,10 @@ let assetSummaryCache: {
 
 const CACHE_DURATION = 30000; // Changed from 5000 to 30000 (30 seconds)
 
-export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accountId: number): Promise<IAssetsSummaryDTO[]> => {
+export const getEmbeddedWalletAssetsSummary = async (
+  rootStore: RootStore,
+  accountId: number,
+): Promise<IAssetsSummaryDTO[]> => {
   // Check cache first
   // if (assetSummaryCache && (Date.now() - assetSummaryCache.timestamp) < CACHE_DURATION) {
   //   console.log('[EmbeddedWallet] Returning cached assets summary');
@@ -220,12 +228,12 @@ export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accou
 
   console.log('[EmbeddedWallet] Fetching fresh assets summary');
   const response = await rootStore.fireblocksSDKStore.fireblocksEW.getAssets(accountId);
-  
+
   // Batch all address and balance requests
   const promises = response.data.map(async (asset) => {
     const [addressResponse, balance] = await Promise.all([
       rootStore.fireblocksSDKStore.fireblocksEW.getAddresses(accountId, asset.id),
-      rootStore.fireblocksSDKStore.fireblocksEW.getBalance(accountId, asset.id)
+      rootStore.fireblocksSDKStore.fireblocksEW.getBalance(accountId, asset.id),
     ]);
 
     return {
@@ -249,11 +257,11 @@ export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accou
         blockchainDisplayName: asset.blockchainDisplayName,
         blockchainId: asset.blockchainId,
         iconUrl: getCryptoIconUrl(asset.symbol),
-        rate: asset?.rate || 0,
+        rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol)?.price || 0,
         algorithm: asset?.algorithm || '',
       },
       address: addressResponse.data[0],
-      balance: balance
+      balance: balance,
     };
   });
 
@@ -262,7 +270,7 @@ export const getEmbeddedWalletAssetsSummary = async (rootStore: RootStore, accou
   // Update cache
   assetSummaryCache = {
     data: summaries,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   };
 
   console.log('[EmbeddedWallet] Assets summary:', summaries);
@@ -299,8 +307,8 @@ export const getSupportedAssets = async (
     if (!supportedAssets?.data) {
       throw new Error('Failed to get supported assets');
     }
-    
-    return supportedAssets.data.map(asset => ({
+
+    return supportedAssets.data.map((asset) => ({
       id: asset.id,
       symbol: asset.symbol,
       name: asset.name,
@@ -320,7 +328,7 @@ export const getSupportedAssets = async (
       blockchainDisplayName: asset.blockchainDisplayName,
       blockchainId: asset.blockchainId,
       iconUrl: getCryptoIconUrl(asset.symbol),
-      rate: asset?.rate || 0,
+      rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol)?.price || 0,
       algorithm: asset?.algorithm || '',
     }));
   } catch (error) {
@@ -345,7 +353,7 @@ export const getAddress = async (
     if (!address?.data[0]) {
       throw new Error('Failed to get address');
     }
-    
+
     return {
       accountName: address?.data[0].accountName || '',
       accountId: address?.data[0].accountId || accountId.toString(),
@@ -355,7 +363,7 @@ export const getAddress = async (
       addressDescription: address?.data[0].addressDescription,
       tag: address?.data[0].tag,
       addressIndex: address?.data[0].addressIndex,
-      legacyAddress: address?.data[0].legacyAddress
+      legacyAddress: address?.data[0].legacyAddress,
     };
   } catch (error) {
     console.error('getAddress error:', error);
@@ -379,7 +387,7 @@ export const getBalance = async (
     if (!balance) {
       throw new Error('Failed to get balance');
     }
-    
+
     return {
       id: balance.id || assetId,
       total: balance.total || '0',
@@ -393,7 +401,7 @@ export const getBalance = async (
       totalStakedCPU: balance.totalStakedCPU,
       totalStakedNetwork: balance.totalStakedNetwork,
       blockHeight: balance.blockHeight,
-      blockHash: balance.blockHash
+      blockHash: balance.blockHash,
     };
   } catch (error) {
     console.error('getBalance error:', error);
@@ -561,3 +569,36 @@ const coinSymbolToIdMap = {
   yfi: 'yearn-finance',
 };
 
+const coinsUsdRate = [
+  { symbol: 'BTC', price: 103445.17 },
+  { symbol: 'ETH', price: 3929.31 },
+  { symbol: 'USDT', price: 1.001 },
+  { symbol: 'XRP', price: 2.3449 },
+  { symbol: 'SOL', price: 240.93 },
+  { symbol: 'BNB', price: 726.94 },
+  { symbol: 'DOGE', price: 0.4497 },
+  { symbol: 'ADA', price: 1.2065 },
+  { symbol: 'USDC', price: 1.0001 },
+  { symbol: 'TRX', price: 0.3308 },
+  { symbol: 'AVAX', price: 52.64 },
+  { symbol: 'SHIB', price: 0.00003189 },
+  { symbol: 'TON', price: 6.9704 },
+  { symbol: 'DOT', price: 10.7936 },
+  { symbol: 'LINK', price: 24.2128 },
+  { symbol: 'XLM', price: 0.4891 },
+  { symbol: 'SUI', price: 4.3577 },
+  { symbol: 'BCH', price: 612.92 },
+  { symbol: 'HBAR', price: 0.2936 },
+  { symbol: 'LTC', price: 139.36 },
+  { symbol: 'NEAR', price: 7.9209 },
+  { symbol: 'PEPE', price: 0.0000223 },
+  { symbol: 'UNI', price: 15.4836 },
+  { symbol: 'LEO', price: 9.3921 },
+  { symbol: 'APT', price: 14.2126 },
+  { symbol: 'ICP', price: 14.6189 },
+  { symbol: 'POL', price: 0.7088 },
+  { symbol: 'VET', price: 0.07011 },
+  { symbol: 'CRO', price: 0.2124 },
+  { symbol: 'ETC', price: 37.0979 },
+  { symbol: 'DAI', price: 1.0003 },
+];
