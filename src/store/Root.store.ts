@@ -9,17 +9,41 @@ import { NFTStore } from './NFT.store';
 import { TransactionsStore } from './Transactions.store';
 import { UserStore } from './User.store';
 
+/**
+ * RootStore serves as the main store that instantiates and holds references to all other stores.
+ * It acts as a central hub for state management across the application.
+ */
 export class RootStore {
+  /** Store for managing user-related state and operations */
   @observable public userStore: UserStore;
+
+  /** Store for managing device-related state and operations */
   @observable public deviceStore: DeviceStore;
+
+  /** Store for managing assets-related state and operations */
   @observable public assetsStore: AssetsStore;
+
+  /** Store for managing accounts-related state and operations */
   @observable public accountsStore: AccountsStore;
+
+  /** Store for managing transactions-related state and operations */
   @observable public transactionsStore: TransactionsStore;
+
+  /** Store for managing Fireblocks SDK state and operations */
   @observable public fireblocksSDKStore: FireblocksSDKStore;
+
+  /** Store for managing NFT-related state and operations */
   @observable public nftStore: NFTStore;
+
+  /** Store for managing backup and recovery operations */
   @observable public backupStore: BackupStore;
+
+  /** Store for managing authentication state and operations */
   @observable public authStore: AuthStore;
 
+  /**
+   * Initializes the RootStore and creates instances of all child stores
+   */
   constructor() {
     this.userStore = new UserStore(this);
     this.deviceStore = new DeviceStore(this);

@@ -15,20 +15,49 @@ import CloudKit from 'tsl-apple-cloudkit';
 import { RootStore } from './Root.store';
 import { ENV_CONFIG } from '../env_config.ts';
 
+/**
+ * BackupStore manages the backup and recovery operations for wallet keys.
+ * It handles interactions with cloud storage providers like Google Drive and iCloud
+ * for storing and retrieving passphrases used for key backup and recovery.
+ */
 export class BackupStore {
+  /** Collection of passphrase information indexed by passphraseId */
   @observable public passPhrases: TPassphrases | null;
+
+  /** Information about the most recent backup */
   @observable public latestBackup: IBackupInfo | null;
+
+  /** Reference to the CloudKit instance for iCloud operations */
   @observable public cloudkit: CloudKit.CloudKit | null;
+
+  /** Flag indicating whether the user is signed in with Apple ID */
   @observable public appleSignedIn: boolean | null;
+
+  /** Flag indicating whether a backup operation has completed */
   @observable public isBackupCompleted: boolean;
+
+  /** Flag indicating whether a backup operation is in progress */
   @observable public isBackupInProgress: boolean;
+
+  /** Flag indicating whether a recovery operation has completed */
   @observable public isRecoverCompleted: boolean;
+
+  /** Flag indicating whether a recovery operation is in progress */
   @observable public isRecoverInProgress: boolean;
+
+  /** User information for Google Drive operations */
   @observable public googleDriveUser: IUser | null;
+
+  /** Error message from the most recent operation */
   @observable public error: string | null;
 
+  /** Reference to the root store for accessing other stores */
   private _rootStore: RootStore;
 
+  /**
+   * Initializes the BackupStore with default values and references to the root store
+   * @param rootStore Reference to the root store for accessing other stores
+   */
   constructor(rootStore: RootStore) {
     this.passPhrases = null;
     this.latestBackup = null;
@@ -46,6 +75,10 @@ export class BackupStore {
     makeObservable(this);
   }
 
+  /**
+   * Initializes the store by fetching passphrase information and the latest backup
+   * This should be called when the store is first used
+   */
   public async init() {
     try {
       const response = await getPassphraseInfos(this._rootStore.userStore.accessToken, this._rootStore);
@@ -286,6 +319,10 @@ export class BackupStore {
     throw new Error('Not found backup location');
   }
 
+  /**
+   * Performs a backup of the wallet keys to the specified location
+   * @param location The cloud storage location to save the backup (GoogleDrive or iCloud)
+   */
   public async saveKeysBackup(location: TPassphraseLocation) {
     this.clearProgress();
     this.setIsBackupInProgress(true);
@@ -304,6 +341,10 @@ export class BackupStore {
     }
   }
 
+  /**
+   * Recovers wallet keys from a backup stored at the specified location
+   * @param location The cloud storage location to recover the backup from (GoogleDrive or iCloud)
+   */
   public async recoverKeyBackup(location: TPassphraseLocation) {
     this.clearProgress();
     this.setIsRecoverInProgress(true);

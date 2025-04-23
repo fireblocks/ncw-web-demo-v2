@@ -4,11 +4,21 @@ import { ENV_CONFIG } from '../env_config.ts';
 import { AccountStore } from './Account.store';
 import { RootStore } from './Root.store';
 
+/**
+ * AccountsStore manages a collection of accounts in the system.
+ * It provides methods for initializing, adding, and accessing accounts.
+ */
 export class AccountsStore {
+  /** Collection of account stores managed by this store */
   @observable public accounts: AccountStore[];
 
+  /** Reference to the root store for accessing other stores */
   private _rootStore: RootStore;
 
+  /**
+   * Initializes the AccountsStore with a reference to the root store
+   * @param rootStore Reference to the root store
+   */
   constructor(rootStore: RootStore) {
     this.accounts = [];
 
@@ -17,6 +27,10 @@ export class AccountsStore {
     makeObservable(this);
   }
 
+  /**
+   * Initializes the accounts by fetching them from the API
+   * If no accounts are found and embedded wallet SDK is enabled, creates a new account
+   */
   @action
   public async init(): Promise<void> {
     const deviceId = this._rootStore.deviceStore.deviceId;
@@ -39,6 +53,10 @@ export class AccountsStore {
     }
   }
 
+  /**
+   * Adds a new account to the collection
+   * @param dto The account data transfer object to create an account from
+   */
   @action
   public addAccount(dto: IAccountDTO): void {
     const accountStore = new AccountStore(dto, this._rootStore);
@@ -48,6 +66,10 @@ export class AccountsStore {
     });
   }
 
+  /**
+   * Gets the current active account (defaults to the first account)
+   * @returns The current account or undefined if no accounts exist
+   */
   @computed
   public get currentAccount(): AccountStore | undefined {
     return this.accounts.length > 0 ? this.accounts[0] : undefined;

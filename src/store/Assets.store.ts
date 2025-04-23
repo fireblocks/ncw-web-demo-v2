@@ -12,7 +12,14 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import { AssetStore, localizedCurrencyView } from './Asset.store';
 import { RootStore } from './Root.store';
 
-// Debounce utility function
+/**
+ * Debounce utility function
+ * Creates a debounced version of a function that delays its execution until after
+ * the specified wait time has elapsed since the last time it was invoked
+ * @param func The function to debounce
+ * @param wait The number of milliseconds to delay
+ * @returns A debounced version of the original function
+ */
 const debounce = <T extends (...args: any[]) => any>(
   func: T,
   wait: number
@@ -26,17 +33,41 @@ const debounce = <T extends (...args: any[]) => any>(
   };
 };
 
+/**
+ * AssetsStore manages the collection of cryptocurrency assets in the system.
+ * It handles fetching, storing, and updating asset data, balances, and addresses.
+ * It also provides methods for adding new assets and refreshing balances.
+ */
 export class AssetsStore {
+  /** Collection of assets owned by the user */
   @observable public myAssets: AssetStore[];
+
+  /** Collection of all assets supported by the system */
   @observable public supportedAssets: AssetStore[];
+
+  /** Flag indicating whether assets are currently being loaded */
   @observable public isLoading: boolean;
+
+  /** Flag indicating whether asset balances are currently being refreshed */
   @observable public isGettingBalances: boolean;
+
+  /** Error message from the most recent operation */
   @observable public error: string;
+
+  /** Timestamp of the last balance refresh operation */
   private _lastRefreshTime: number = 0;
+
+  /** Debounced function for refreshing balances */
   private _refreshDebounced: () => void;
 
+  /** Reference to the root store for accessing other stores */
   private _rootStore: RootStore;
 
+  /**
+   * Initializes the AssetsStore with default values and a reference to the root store
+   * Also sets up the debounced refresh function for balance updates
+   * @param rootStore Reference to the root store
+   */
   constructor(rootStore: RootStore) {
     this.myAssets = [];
     this.supportedAssets = [];
@@ -53,6 +84,10 @@ export class AssetsStore {
     makeObservable(this);
   }
 
+  /**
+   * Calculates the total value of all assets in USD
+   * @returns The total balance formatted as a currency string
+   */
   @computed
   public get totalAvailableBalanceInUSD(): string {
     const balance = this.myAssets.reduce((acc, a) => {
@@ -63,6 +98,10 @@ export class AssetsStore {
     return localizedCurrencyView(balance);
   }
 
+  /**
+   * Gets the user's assets sorted by their USD value (highest to lowest)
+   * @returns Sorted array of asset stores
+   */
   @computed
   public get myAssetsSortedByBalanceInUSD(): AssetStore[] {
     return this.myAssets.slice().sort((a, b) => {
@@ -74,16 +113,28 @@ export class AssetsStore {
     });
   }
 
+  /**
+   * Gets all base assets owned by the user
+   * @returns Array of base asset stores
+   */
   @computed
   public get myBaseAssets(): AssetStore[] {
     return this.myAssets.filter((a) => a.assetData?.type === 'BASE_ASSET');
   }
 
+  /**
+   * Gets all ECDSA assets owned by the user (using SECP256K1 curve)
+   * @returns Array of ECDSA asset stores
+   */
   @computed
   public get myECDSAAssets(): AssetStore[] {
     return this.myAssets.filter((a) => a.assetData?.algorithm === 'MPC_ECDSA_SECP256K1');
   }
 
+  /**
+   * Gets all EDDSA assets owned by the user (using ED25519 curve)
+   * @returns Array of EDDSA asset stores
+   */
   @computed
   public get myEDDSAAssets(): AssetStore[] {
     return this.myAssets.filter((a) => a.assetData?.algorithm === 'MPC_EDDSA_ED25519');
@@ -105,6 +156,10 @@ export class AssetsStore {
     });
   }
 
+  /**
+   * Initializes the assets store by fetching the user's assets and supported assets
+   * This should be called when the store is first used
+   */
   @action
   public async init(): Promise<void> {
     this.setIsLoading(true);
@@ -159,6 +214,11 @@ export class AssetsStore {
     this.supportedAssets.push(assetStore);
   }
 
+  /**
+   * Adds a new asset to the user's assets collection
+   * @param assetId The ID of the asset to add
+   * @throws Error if the asset cannot be added
+   */
   public async addAsset(assetId: string): Promise<void> {
     try {
       const deviceId = this._rootStore.deviceStore.deviceId;
@@ -232,6 +292,10 @@ export class AssetsStore {
     }
   }
 
+  /**
+   * Refreshes the balances of all assets
+   * Uses debouncing to prevent too frequent API calls
+   */
   public refreshBalances(): void {
     console.log('[AssetsStore] refreshBalances called', {
       timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
