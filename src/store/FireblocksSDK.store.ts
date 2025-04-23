@@ -116,6 +116,57 @@ export class FireblocksSDKStore {
 
     console.log('initEmbeddedWalletProcess: initializing_sdk');
     try {
+      let deviceId = prompt(
+        'Enter device ID (leave empty for a random uuid)',
+        this._rootStore.deviceStore.deviceId ?? '',
+      );
+
+      const logger = await IndexedDBLoggerFactory({
+        deviceId: this._rootStore.deviceStore.deviceId ?? '',
+        logger: ConsoleLoggerFactory(),
+      });
+      const ewOpts: IEmbeddedWalletOptions = {
+        env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
+        logLevel: 'VERBOSE',
+        logger,
+        authClientId: ENV_CONFIG.AUTH_CLIENT_ID,
+        authTokenRetriever: {
+          getAuthToken: () => this._rootStore.userStore.getAccessToken(),
+        },
+        reporting: {
+          enabled: false,
+        },
+      };
+      this.fireblocksEW = new EmbeddedWallet(ewOpts);
+
+      console.log('DeviceId: ', deviceId);
+      if (!deviceId) {
+        this._rootStore.userStore.getMyDevices(); // todo: we should initialize the sdk core first, but it also want deviceId
+        this._rootStore.userStore.setIsGettingUser(false);
+        // this._rootStore.userStore.setIsGettingUser(false);
+        // const latestBackup = await this._rootStore.backupStore.getMyLatestBackup();
+        // this._rootStore.backupStore.setLatestBackup(latestBackup);
+        // if (latestBackup) {
+        //   this._rootStore.userStore.setHasBackup(true);
+        // } else {
+        //   deviceId = generateDeviceId();
+        //   await this.initEmbeddedWalletCore(deviceId);
+        // }
+      } else {
+        await this.initEmbeddedWalletCore(deviceId);
+        this._rootStore.userStore.getMyDevices(); // todo: we should initialize the sdk core first, but it also want deviceId
+        this._rootStore.userStore.setIsGettingUser(false);
+      }
+
+    } catch (error) {
+      this.setIsMPCGenerating(false);
+      this.setSDKStatus('sdk_initialization_failed');
+      throw new Error(error.message);
+    }
+  }
+
+  public async initEmbeddedWalletCore(deviceId: string): Promise<void> {
+    try {
       const eventsHandler: IEventsHandler = {
         handleEvent: (event: TEvent) => {
           switch (event.type) {
@@ -137,7 +188,7 @@ export class FireblocksSDKStore {
               break;
             case 'transaction_signature_changed':
               console.log(`Transaction signature status: ${event.transactionSignature.transactionSignatureStatus}`);
-             //  this._rootStore.transactionsStore._refreshTransactions();
+              //  this._rootStore.transactionsStore._refreshTransactions();
               this._rootStore.transactionsStore
                 .getTransactionById(event.transactionSignature.txId)
                 ?.updateSignatureStatus(event.transactionSignature.transactionSignatureStatus);
@@ -160,15 +211,6 @@ export class FireblocksSDKStore {
           }
         },
       };
-
-      let deviceId = prompt(
-        'Enter device ID (leave empty for a random uuid)',
-        this._rootStore.deviceStore.deviceId ?? '',
-      );
-      if (!deviceId) {
-        deviceId = generateDeviceId();
-      }
-      console.log('embedded wallet set deviceId: ', deviceId);
       this._rootStore.deviceStore.setDeviceId(deviceId);
       saveDeviceIdToLocalStorage(deviceId, this._rootStore.userStore.userId);
       const storageProvider = new BrowserLocalStorageProvider();
@@ -180,22 +222,7 @@ export class FireblocksSDKStore {
         return Promise.resolve(password || '');
       });
       console.log('embedded wallet set logger: ', secureStorageProvider);
-      const logger = await IndexedDBLoggerFactory({
-        deviceId: this._rootStore.deviceStore.deviceId,
-        logger: ConsoleLoggerFactory(),
-      });
-      const ewOpts: IEmbeddedWalletOptions = {
-        env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
-        logLevel: 'VERBOSE',
-        logger,
-        authClientId: ENV_CONFIG.AUTH_CLIENT_ID,
-        authTokenRetriever: {
-          getAuthToken: () => this._rootStore.userStore.getAccessToken(),
-        },
-        reporting: {
-          enabled: false,
-        },
-      };
+
       // this.setLogger(logger);
       this.logger = await IndexedDBLoggerFactory({ deviceId, logger: ConsoleLoggerFactory() });
       const coreNCWOptions: ICoreOptions = {
@@ -204,7 +231,6 @@ export class FireblocksSDKStore {
         secureStorageProvider,
         storageProvider,
       };
-      this.fireblocksEW = new EmbeddedWallet(ewOpts);
       const sdkIns =
         getFireblocksNCWInstance(coreNCWOptions.deviceId) ?? (await this.fireblocksEW.initializeCore(coreNCWOptions));
       this.setSDKInstance(sdkIns);
@@ -226,6 +252,7 @@ export class FireblocksSDKStore {
         }
         this.setIsMPCGenerating(false);
       }
+      console.log('sdk_available');
       this.setSDKStatus('sdk_available');
     } catch (error) {
       this.setIsMPCGenerating(false);

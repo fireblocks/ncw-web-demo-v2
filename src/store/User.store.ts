@@ -92,15 +92,15 @@ export class UserStore {
     if (user) {
       this._authManager
         .getAccessToken()
-        .then((token) => {
+        .then(async (token): Promise<void> => {
           this.setAccessToken(token);
           if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
             // with embedded wallet
             if (this._authManager.loggedUser !== null) {
               const userFirebase = this._authManager.loggedUser;
-              this.setUserId(userFirebase.uid);
-              this.getMyDevices();
-              this.setIsGettingUser(false);
+              this.setUserId(userFirebase.uid); // this will also initialize the embedded wallet sdk
+              // this.getMyDevices(); // todo: we should initialize the sdk core first, but it also want deviceId
+              // this.setIsGettingUser(false);
             }
           } else {
             // with backend proxy
@@ -187,12 +187,22 @@ export class UserStore {
     return null;
   }
 
-  public checkLatestBackup(device: IDeviceDTO): void {
+  public checkLatestBackup(device: IDeviceDTO = {}): void {
     this.setIsCheckingBackup(true);
     this._rootStore.backupStore
-      .getMyLatestBackup(device.walletId)
+      .getMyLatestBackup(device.walletId ?? '')
       .then((result) => {
         if (result) {
+          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+            const devices = []
+            result.keys.forEach((key) => {
+              devices.push({
+                deviceId: key.deviceId,
+                walletId: key?.walletId ?? null,
+              });
+            });
+            this.setMyDevices(devices);
+          }
           this.setHasBackup(true);
         }
       })
@@ -228,8 +238,9 @@ export class UserStore {
     getDevices(this.accessToken, this._rootStore)
       .then((devices) => {
         this.setMyDevices(devices);
-        if (devices?.length) {
-          this.checkLatestBackup(devices[devices.length - 1]);
+        if (devices?.length || ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+          console.log('[UserStore] Checking latest backup');
+          this.checkLatestBackup(devices?.length ? devices[devices.length - 1] : []);
         }
       })
       .catch((e) => {

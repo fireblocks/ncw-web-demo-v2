@@ -2,6 +2,7 @@ import { TPassphraseLocation, getDeviceIdFromLocalStorage, saveDeviceIdToLocalSt
 import { RootStore } from '@store';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ENV_CONFIG } from '../env_config.ts';
+import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
 
 type TStatus = 'GENERATING' | 'RECOVERING' | 'READY' | 'ERROR' | 'LOGGING_IN' | null;
 
@@ -23,6 +24,8 @@ export class AuthStore {
     const savedDeviceId = getDeviceIdFromLocalStorage(this._rootStore.userStore.userId);
     if (savedDeviceId) {
       await this._automaticLogin();
+    } else {
+      await this._rootStore.fireblocksSDKStore.init();
     }
   }
 
@@ -35,7 +38,7 @@ export class AuthStore {
 
       // Initialize device
       console.log('[Auth] Initializing device');
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' && !this._rootStore.fireblocksSDKStore.fireblocksEW) {
         // Initialize the embedded wallet SDK
         console.log('[Auth] Initializing embedded wallet SDK');
         await this._rootStore.fireblocksSDKStore.init();
@@ -238,6 +241,7 @@ export class AuthStore {
 
   public async recoverMPCKeys(location: TPassphraseLocation): Promise<void> {
     try {
+      console.log('[Auth] Starting MPC key recovery process');
       const deviceInfo = this._rootStore.userStore.myLatestActiveDevice;
       if (deviceInfo) {
         try {

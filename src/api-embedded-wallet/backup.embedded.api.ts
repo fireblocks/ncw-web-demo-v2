@@ -7,7 +7,7 @@ export type TPassphraseLocation = 'GoogleDrive' | 'iCloud';
 export type TPassphrases = Record<string, IPassphraseInfo>;
 
 export const getLatestBackup = async (
-  walletId: string,
+  walletId: string = '',
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<IBackupInfo | null> => {
@@ -37,7 +37,9 @@ function determineLocation(passphraseId: string): TPassphraseLocation {
   } else if (passphraseId.startsWith('icloud')) {
     return 'iCloud';
   } else {
-    throw new Error(`Unknown passphraseId prefix: ${passphraseId}`);
+    // default to GoogleDrive
+    return 'GoogleDrive';
+    //throw new Error(`Unknown passphraseId prefix: ${passphraseId}`);
   }
 }
 
@@ -57,7 +59,7 @@ export const getPassphraseInfo = async (
 export const getPassphraseInfos = async (
   token: string,
   rootStore: RootStore | null = null,
-): Promise<IPassphraseInfo[]> => {
+): Promise<{ passphrases: IPassphraseInfo[] }> => {
   const passphrases: { passphrases: IPassphraseInfo[] } = {
     passphrases: [],
   };
@@ -77,13 +79,13 @@ export const getPassphraseInfos = async (
     console.error('backup.embedded.api.ts - getPassphraseInfo err: ', error);
     throw error;
   }
-  const reduced = passphrases.passphrases.reduce<TPassphrases>((p, v) => {
-    p[v.passphraseId] = v;
-    console.log('getPassphraseInfos embedded wallet - p: ', p);
-    return p;
-  }, {});
-  console.log('getPassphraseInfos embedded wallet - reduced: ', reduced);
-  return reduced;
+  // const reduced = passphrases.passphrases.reduce<TPassphrases>((p, v) => {
+  //   p[v.passphraseId] = v;
+  //   console.log('getPassphraseInfos embedded wallet - p: ', p);
+  //   return p;
+  // }, {});
+  // console.log('getPassphraseInfos embedded wallet - reduced: ', reduced);
+  return passphrases;
 };
 
 export const createPassphraseInfo = async (
@@ -94,7 +96,8 @@ export const createPassphraseInfo = async (
 ) => {
   try {
     console.log('createPassphraseInfo embedded wallet');
-    return Promise.resolve({ passphraseId: passphraseId, location: 'GoogleDrive' });
+    const startWith = location === 'GoogleDrive' ? 'gdrive' : 'icloud';
+    return Promise.resolve({ passphraseId: startWith + passphraseId, location: 'GoogleDrive' });
   } catch (e) {
     console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);
   }

@@ -52,18 +52,22 @@ export const getDevices = async (token: string, rootStore: RootStore | null = nu
   // console.log('[getDevices] assignResponse: ', assignResponse);
   console.log('[getDevices] getDevices embedded wallet: ', rootStore?.deviceStore?.deviceId);
   console.log('[getDevices] getDevices embedded wallet: ', rootStore?.deviceStore?.walletId);
-  new Promise((resolve) => {
-    resolve([
-      {
-        deviceId: rootStore?.deviceStore?.deviceId,
-        walletId: rootStore?.deviceStore?.walletId,
-        createdAt: Date.now(),
-      },
-      {
-        deviceId: rootStore?.deviceStore?.deviceId,
-        walletId: rootStore?.deviceStore?.walletId,
-        createdAt: Date.now(),
-      },
-    ]);
-  })
+  if (rootStore?.deviceStore?.walletId) {
+    new Promise((resolve) => {
+      resolve([
+        {
+          deviceId: rootStore?.deviceStore?.deviceId,
+          walletId: rootStore?.deviceStore?.walletId,
+          createdAt: Date.now(),
+        },
+        {
+          deviceId: rootStore?.deviceStore?.deviceId,
+          walletId: rootStore?.deviceStore?.walletId,
+          createdAt: Date.now(),
+        },
+      ]);
+    })
+  } else {
+    return [];
+  }
 }

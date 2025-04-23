@@ -147,16 +147,18 @@ export class BackupStore {
       const token = await this._rootStore.userStore.getGoogleDriveCredentials();
       await googleDriveBackup(token, passphrase, passphraseId);
     } catch (e: any) {
-      this.setError(e.message);
+      console.log('backupGoogleDrive error: ', e);
+      //this.setError(e.message);
     }
   }
 
-  public async getMyLatestBackup(walletId?: string): Promise<IBackupInfo | null> {
+  public async getMyLatestBackup(walletId?: string = ''): Promise<IBackupInfo | null> {
     try {
       console.log('@@@@@@@ getMyLatestBackup walletId: ', walletId, this._rootStore.deviceStore.walletId);
       console.log('@@@@@@@ getMyLatestBackup this._rootStore.userStore.accessToken: ', walletId);
+      const walletIdItem = walletId ? walletId : this._rootStore.deviceStore.walletId;
       const latestBackup = await getLatestBackup(
-        walletId ? walletId : this._rootStore.deviceStore.walletId,
+        walletIdItem ?? '',
         this._rootStore.userStore.accessToken,
         this._rootStore,
       );
@@ -252,6 +254,8 @@ export class BackupStore {
 
   public async recoverPassphraseId(passphraseId: string): Promise<string> {
     const { passphrases } = await getPassphraseInfos(this._rootStore.userStore.accessToken, this._rootStore);
+
+    console.log('@@@@@@@ recoverPassphraseId passphrases: ', passphrases);
 
     if (passphrases === null) {
       throw new Error();
