@@ -313,6 +313,10 @@ export class AssetsStore {
     }
   }
 
+  /**
+   * Fetches all assets supported by the system
+   * Updates the supportedAssets collection with the results
+   */
   public async getSupported(): Promise<void> {
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
@@ -324,6 +328,11 @@ export class AssetsStore {
     }
   }
 
+  /**
+   * Fetches all assets owned by the user
+   * Updates the myAssets collection with the results
+   * Attempts to initialize accounts if needed
+   */
   public async getMyAssets(): Promise<void> {
     try {
       const deviceId = this._rootStore.deviceStore.deviceId;
@@ -364,6 +373,11 @@ export class AssetsStore {
 
   }
 
+  /**
+   * Finds an asset in the user's assets collection by its ID
+   * @param assetId The ID of the asset to find
+   * @returns The asset store if found, undefined otherwise
+   */
   public getAssetById(assetId: string): AssetStore | undefined {
     return this.myAssets.find((a) => a.id === assetId);
   }

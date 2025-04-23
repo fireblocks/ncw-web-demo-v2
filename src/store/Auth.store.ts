@@ -6,11 +6,20 @@ import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
 
 type TStatus = 'GENERATING' | 'RECOVERING' | 'READY' | 'ERROR' | 'LOGGING_IN' | null;
 
+/**
+ * AuthStore manages authentication, device ID management, and MPC key operations.
+ * It handles the initialization of the wallet, automatic login, key generation,
+ * and recovery processes for the application.
+ */
 export class AuthStore {
   @observable public status: TStatus;
 
   private _rootStore: RootStore;
 
+  /**
+   * Initializes the AuthStore with a reference to the root store
+   * @param rootStore Reference to the root store
+   */
   constructor(rootStore: RootStore) {
     this.status = null;
 
@@ -19,6 +28,11 @@ export class AuthStore {
     makeObservable(this);
   }
 
+  /**
+   * Initializes the authentication process
+   * Checks for a saved device ID and performs automatic login if available,
+   * otherwise initializes the Fireblocks SDK
+   */
   @action
   public async init(): Promise<void> {
     const savedDeviceId = getDeviceIdFromLocalStorage(this._rootStore.userStore.userId);
@@ -29,6 +43,12 @@ export class AuthStore {
     }
   }
 
+  /**
+   * Performs automatic login using the saved device ID
+   * Initializes the device, SDK, and accounts, and starts transaction polling if needed
+   * Sets the authentication status to READY when complete
+   * @private
+   */
   private async _automaticLogin(): Promise<void> {
     try {
       console.log('[Auth] Starting automatic login process');
@@ -118,11 +138,20 @@ export class AuthStore {
     }
   }
 
+  /**
+   * Updates the authentication status
+   * @param status The new status to set
+   */
   @action
   public setStatus(status: TStatus): void {
     this.status = status;
   }
 
+  /**
+   * Determines if the workspace is currently being prepared
+   * This includes generating keys, recovering keys, logging in, or checking user/backup status
+   * @returns True if the workspace is being prepared, false otherwise
+   */
   @computed
   public get preparingWorkspace(): boolean {
     if (
@@ -137,6 +166,12 @@ export class AuthStore {
     return false;
   }
 
+  /**
+   * Determines if MPC keys need to be generated
+   * This is true if the device ID is not available or if the SDK is initialized
+   * but keys are not yet generated or ready
+   * @returns True if keys need to be generated, false otherwise
+   */
   @computed
   public get needToGenerateKeys(): boolean {
     const { userStore, fireblocksSDKStore } = this._rootStore;
@@ -153,6 +188,11 @@ export class AuthStore {
     );
   }
 
+  /**
+   * Determines if the device ID is not available
+   * This is true if the user is logged in but no device ID is set
+   * @returns True if the device ID is not available, false otherwise
+   */
   @computed
   public get deviceIdIsNotAvailable(): boolean {
     const { userStore, deviceStore } = this._rootStore;
@@ -160,6 +200,12 @@ export class AuthStore {
     return !!(userStore.loggedUser && !deviceStore.deviceId);
   }
 
+  /**
+   * Generates MPC keys for the wallet
+   * Initializes the SDK if needed, creates a device ID if needed,
+   * assigns the device to a wallet, and generates the MPC keys
+   * Also starts transaction polling if keys are successfully generated
+   */
   public async generateMPCKeys(): Promise<void> {
     try {
       if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
@@ -239,6 +285,10 @@ export class AuthStore {
     }
   }
 
+  /**
+   * Recovers MPC keys from a backup
+   * @param location The location where the backup is stored (e.g., GoogleDrive, iCloud)
+   */
   public async recoverMPCKeys(location: TPassphraseLocation): Promise<void> {
     try {
       console.log('[Auth] Starting MPC key recovery process');
@@ -259,6 +309,12 @@ export class AuthStore {
     }
   }
 
+  /**
+   * Starts the recovery process for MPC keys
+   * Sets the status to RECOVERING and attempts to recover keys from the specified location
+   * @param location The location where the backup is stored (e.g., GoogleDrive, iCloud)
+   * @private
+   */
   private async _startRecovery(location: TPassphraseLocation): Promise<void> {
     try {
       this.setStatus('RECOVERING');

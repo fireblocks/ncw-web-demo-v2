@@ -50,6 +50,12 @@ const createSafeLogger = (baseLogger: any) => {
   };
 };
 
+/**
+ * FireblocksSDKStore manages the integration with Fireblocks SDK.
+ * It handles initialization of the SDK, MPC key generation and management,
+ * wallet operations, and event handling for both embedded wallet and proxy backend modes.
+ * This store is central to the wallet's cryptographic operations and security features.
+ */
 export class FireblocksSDKStore {
   @observable public sdkStatus: TFireblocksNCWStatus;
   @observable public keysStatus: TKeysStatusRecord | null;
@@ -70,6 +76,11 @@ export class FireblocksSDKStore {
   private _rootStore: RootStore;
   private _unsubscribeTransactionsPolling: (() => void) | null;
 
+  /**
+   * Initializes the FireblocksSDKStore with default values and a reference to the root store
+   * Sets up initial state for SDK status, keys, and other properties
+   * @param rootStore Reference to the root store
+   */
   constructor(rootStore: RootStore) {
     this.sdkStatus = 'sdk_not_ready';
     this.keysStatus = null;
@@ -92,6 +103,10 @@ export class FireblocksSDKStore {
     makeObservable(this);
   }
 
+  /**
+   * Cleans up resources used by the SDK
+   * Stops transaction polling, disposes the SDK instance, and resets state
+   */
   @action
   public async dispose(): Promise<void> {
     if (!this.sdkInstance) {
@@ -109,6 +124,11 @@ export class FireblocksSDKStore {
     this.setSDKStatus('sdk_not_ready');
   }
 
+  /**
+   * Initializes the embedded wallet process
+   * Sets up the SDK with the embedded wallet configuration, initializes the logger,
+   * and prepares the device ID for wallet operations
+   */
   public async initEmbeddedWalletProcess(): Promise<void> {
     this.setIsMPCGenerating(true);
     this.setSDKInstance(null);
@@ -165,6 +185,11 @@ export class FireblocksSDKStore {
     }
   }
 
+  /**
+   * Initializes the core of the embedded wallet with a specific device ID
+   * Sets up event handlers for key operations, wallet joining, and transactions
+   * @param deviceId The device ID to use for initialization
+   */
   public async initEmbeddedWalletCore(deviceId: string): Promise<void> {
     try {
       const eventsHandler: IEventsHandler = {
@@ -261,6 +286,11 @@ export class FireblocksSDKStore {
     }
   }
 
+  /**
+   * Initializes the SDK using the proxy backend process
+   * Sets up message handlers, event handlers, and initializes the SDK with proxy backend configuration
+   * This is used when not using the embedded wallet mode
+   */
   public async initWithProxyBackendProcess(): Promise<void> {
     this.setIsMPCGenerating(true);
     this.setSDKInstance(null);
@@ -362,6 +392,11 @@ export class FireblocksSDKStore {
     }
   }
 
+  /**
+   * Initializes the SDK based on the configuration
+   * Calls either initEmbeddedWalletProcess or initWithProxyBackendProcess
+   * depending on the USE_EMBEDDED_WALLET_SDK environment variable
+   */
   @action
   public async init() {
     console.log('ENV_CONFIG.USE_EMBEDDED_WALLET_SDK: ', ENV_CONFIG.USE_EMBEDDED_WALLET_SDK);
@@ -412,6 +447,12 @@ export class FireblocksSDKStore {
     }
   }
 
+  /**
+   * Generates MPC keys for the wallet
+   * Checks if keys are already generated, and if not, generates new keys
+   * for both ECDSA and EDDSA algorithms
+   * @throws Error if the SDK is not initialized or key generation fails
+   */
   @action
   public async generateMPCKeys(): Promise<void> {
     if (!this.sdkInstance) {
@@ -438,6 +479,11 @@ export class FireblocksSDKStore {
     }
   }
 
+  /**
+   * Checks if MPC keys are already generated and available
+   * Updates the isMPCReady state based on the check result
+   * @throws Error if the SDK is not initialized
+   */
   public async checkMPCKeys() {
     if (!this.sdkInstance) {
       this.setError('fireblocksNCW is not initialized');
