@@ -85,6 +85,9 @@ export const translationToEnglish = {
       JOIN_WALLET: {
         SUCCESS_MESSAGE: 'Approve join wallet successfully',
         ERROR_MESSAGE: 'Failed to approve join wallet',
+        REQUEST_ID: 'Request ID',
+        POPUP_TITLE: 'Approve Join Wallet',
+        POPUP_DESCRIPTION: 'Use the ID to approve request',
       },
     },
     ITEMS: {

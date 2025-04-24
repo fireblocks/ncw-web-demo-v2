@@ -6,7 +6,6 @@ import IconKey from '@icons/key.svg';
 import IconLogs from '@icons/share_logs.svg';
 import IconWallet from '@icons/wallet.svg';
 import { useAssetsStore, useBackupStore, useFireblocksSDKStore } from '@store';
-import { decode } from 'js-base64';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -47,11 +46,10 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
   const approveJoinWallet = async (): Promise<void> => {
     if (!disableApproveJoinBtn) {
       setDisableApproveJoinBtn(true);
-      const requestData = prompt('Insert encoded request data');
+      const requestData = prompt('Insert request id');
       if (requestData) {
         try {
-          const decodedData: TRequestDecodedData = JSON.parse(decode(requestData));
-          const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(decodedData.requestId);
+          const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(requestData);
           console.log('approveJoinWallet result', result);
           enqueueSnackbar(t('SETTINGS.DIALOGS.JOIN_WALLET.SUCCESS_MESSAGE'), { variant: 'success' });
           setDisableApproveJoinBtn(false);

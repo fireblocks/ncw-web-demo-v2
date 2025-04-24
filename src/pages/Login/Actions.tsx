@@ -10,6 +10,7 @@ import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ENV_CONFIG } from '../../env_config.ts';
+import { JoinWalletDialog } from '../Settings/Dialogs/JoinWalletPopup.tsx';
 import { ActionPlate } from './ActionPlate';
 
 const RootStyled = styled('div')(({ theme }) => ({
@@ -32,14 +33,18 @@ export const Actions: React.FC = observer(function Actions() {
   const { t } = useTranslation();
   const authStore = useAuthStore();
   const { enqueueSnackbar } = useSnackbar();
+  const [isJoinWalletDialogOpen, setIsJoinWalletDialogOpen] = React.useState(false);
 
   /**
    * Joins existing wallet.
    */
   const joinExistingWallet = () => {
-    authStore.joinExistingWallet().catch(() => {
+    try {
+      const rest = authStore.joinExistingWallet();
+      setIsJoinWalletDialogOpen(true);
+    } catch (error) {
       enqueueSnackbar(t('LOGIN.JOIN_EXISTING_WALLET_ERROR'), { variant: 'error' });
-    });
+    }
   };
 
   const generateMPCKeys = () => {
@@ -73,22 +78,30 @@ export const Actions: React.FC = observer(function Actions() {
 
   if (authStore.needToGenerateKeys) {
     return (
-      <RootStyled>
-        {userStore.hasBackup && (
-          <ActionPlate iconSrc={IconRecovery} caption={t('LOGIN.RECOVERY_FROM_BACKUP')} onClick={recoverMPCKeys} />
-        )}
-        {isEmbeddedWallet && !userStore.hasBackup && (
-          // in an embedded wallet mode we can't generate keys if backup exists already'
-          <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
-        )}
-        {isEmbeddedWallet && userStore.hasBackup && (
-          // if we already have a backup we can't generate keys, so we need to allow 'join to existing wallet'
-          <ActionPlate iconSrc={IconWallet} caption={t('LOGIN.JOIN_EXISTING_WALLET')} onClick={joinExistingWallet} />
-        )}
-        {!isEmbeddedWallet && (
-          <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
-        )}
-      </RootStyled>
+      <>
+        <RootStyled>
+          {userStore.hasBackup && (
+            <ActionPlate iconSrc={IconRecovery} caption={t('LOGIN.RECOVERY_FROM_BACKUP')} onClick={recoverMPCKeys} />
+          )}
+          {isEmbeddedWallet && !userStore.hasBackup && (
+            // in an embedded wallet mode we can't generate keys if backup exists already'
+            <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
+          )}
+          {isEmbeddedWallet && userStore.hasBackup && (
+            // if we already have a backup we can't generate keys, so we need to allow 'join to existing wallet'
+            <ActionPlate iconSrc={IconWallet} caption={t('LOGIN.JOIN_EXISTING_WALLET')} onClick={joinExistingWallet} />
+          )}
+          {!isEmbeddedWallet && (
+            <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
+          )}
+        </RootStyled>
+        <JoinWalletDialog
+          isOpen={isJoinWalletDialogOpen}
+          onClose={() => {
+            setIsJoinWalletDialogOpen(false);
+          }}
+        />
+      </>
     );
   }
 

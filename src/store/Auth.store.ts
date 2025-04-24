@@ -1,6 +1,7 @@
 import { TPassphraseLocation, getDeviceIdFromLocalStorage, saveDeviceIdToLocalStorage } from '@api';
 import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
 import { RootStore } from '@store';
+import { encode } from 'js-base64';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ENV_CONFIG } from '../env_config.ts';
 
@@ -13,6 +14,7 @@ type TStatus = 'GENERATING' | 'RECOVERING' | 'READY' | 'ERROR' | 'LOGGING_IN' | 
  */
 export class AuthStore {
   @observable public status: TStatus;
+  @observable public capturedRequestId: string; // join existing wallet, requestId
 
   private _rootStore: RootStore;
 
@@ -22,6 +24,7 @@ export class AuthStore {
    */
   constructor(rootStore: RootStore) {
     this.status = null;
+    this.capturedRequestId = '';
 
     this._rootStore = rootStore;
 
@@ -204,14 +207,29 @@ export class AuthStore {
   public async joinExistingWallet(): Promise<void> {
     try {
       console.log('[Auth] Starting join existing wallet process');
+      let capturedRequestId: string | undefined;
       // todo:
       const response = await this._rootStore.fireblocksSDKStore.sdkInstance?.requestJoinExistingWallet({
         onRequestId(requestId: string) {
+          capturedRequestId = requestId;
           return { addDeviceRequestId: requestId };
         },
       });
+
       console.log('[Auth] Join existing wallet response: ', response);
+      console.log('[Auth] Request ID: ', capturedRequestId);
+
+      if (!capturedRequestId) {
+        throw new Error('Failed to obtain request ID');
+      }
+
+      if (capturedRequestId) {
+        this.capturedRequestId = capturedRequestId;
+      }
+
       // todo: what to do with response?
+      // we should open a popup with the requestId to copy paste OR using a QR code.
+      // the user will need to copy the requestId and paste it in the other device OR scan the QR code with the camera in the other device.
     } catch (error: any) {
       this.setStatus('ERROR');
       throw new Error(error.message);
