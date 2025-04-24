@@ -82,6 +82,10 @@ export const translationToEnglish = {
         LOCATION: 'Location',
         PASSPHRASE_ID: 'Passphrase ID',
       },
+      JOIN_WALLET: {
+        SUCCESS_MESSAGE: 'Approve join wallet successfully',
+        ERROR_MESSAGE: 'Failed to approve join wallet',
+      },
     },
     ITEMS: {
       CREATE_A_KEY_BACKUP: {
@@ -108,6 +112,10 @@ export const translationToEnglish = {
       SHARE_LOGS: {
         TITLE: 'Audit log',
         DESCRIPTION: 'Download and share your audit log.',
+      },
+      APPROVE_JOIN_DEVICE: {
+        TITLE: 'Approve join device',
+        DESCRIPTION: 'Add device (Approve join request)',
       },
     },
   },
@@ -174,12 +182,14 @@ export const translationToEnglish = {
     EXISTING_USER_DESCRIPTION: 'Sign in to your existing wallet.',
     NEW_USER_TITLE: 'New user',
     GENERATE_MPC_KEYS_ERROR: 'Failed to generate MPC keys',
+    JOIN_EXISTING_WALLET_ERROR: 'Failed to join wallet',
     RECOVERY_FROM_BACKUP_ERROR:
       'Failed to recover from backup. You may need to allow pop-ups on your browser to continue the key backup.',
     NEW_USER_DESCRIPTION: 'Create a new wallet.',
     SIGN_IN_WITH_GOOGLE: 'Sign in with Google',
     SIGN_IN_WITH_APPLE: 'Sign in with Apple',
     GENERATE_MPC_KEYS: 'Generate MPC keys',
+    JOIN_EXISTING_WALLET: 'Join Existing Wallet',
     RECOVERY_FROM_BACKUP: 'Recovery from backup',
     CHECKING_WORKSPACE: 'Checking workspace...',
     ILLUSTRATION: {

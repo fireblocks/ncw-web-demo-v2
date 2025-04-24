@@ -1,8 +1,8 @@
 import { TPassphraseLocation, getDeviceIdFromLocalStorage, saveDeviceIdToLocalStorage } from '@api';
+import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
 import { RootStore } from '@store';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ENV_CONFIG } from '../env_config.ts';
-import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
 
 type TStatus = 'GENERATING' | 'RECOVERING' | 'READY' | 'ERROR' | 'LOGGING_IN' | null;
 
@@ -97,7 +97,8 @@ export class AuthStore {
           try {
             if (
               this._rootStore.fireblocksSDKStore.isMPCReady &&
-              !this._rootStore.transactionsStore._hasTransactionsActivePollingForCurrentDevice) {
+              !this._rootStore.transactionsStore._hasTransactionsActivePollingForCurrentDevice
+            ) {
               console.log('[Auth] Starting transaction polling');
               await this._rootStore.transactionsStore.startPollingTransactions();
             }
@@ -200,6 +201,23 @@ export class AuthStore {
     return !!(userStore.loggedUser && !deviceStore.deviceId);
   }
 
+  public async joinExistingWallet(): Promise<void> {
+    try {
+      console.log('[Auth] Starting join existing wallet process');
+      // todo:
+      const response = await this._rootStore.fireblocksSDKStore.sdkInstance?.requestJoinExistingWallet({
+        onRequestId(requestId: string) {
+          return { addDeviceRequestId: requestId };
+        },
+      });
+      console.log('[Auth] Join existing wallet response: ', response);
+      // todo: what to do with response?
+    } catch (error: any) {
+      this.setStatus('ERROR');
+      throw new Error(error.message);
+    }
+  }
+
   /**
    * Generates MPC keys for the wallet
    * Initializes the SDK if needed, creates a device ID if needed,
@@ -231,7 +249,6 @@ export class AuthStore {
         await this._rootStore.deviceStore.assignDeviceToNewWallet();
         await this._rootStore.accountsStore.init();
         console.log('[Auth] Generating MPC keys with embedded wallet SDK');
-
 
         // Generate MPC keys
         if (this._rootStore.fireblocksSDKStore.sdkInstance) {

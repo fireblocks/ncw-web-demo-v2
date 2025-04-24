@@ -4,7 +4,9 @@ import IconGoogle from '@icons/google.svg';
 import IconInfo from '@icons/info.svg';
 import IconKey from '@icons/key.svg';
 import IconLogs from '@icons/share_logs.svg';
+import IconWallet from '@icons/wallet.svg';
 import { useAssetsStore, useBackupStore, useFireblocksSDKStore } from '@store';
+import { decode } from 'js-base64';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -22,17 +24,47 @@ const RootStyled = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(4),
 }));
 
+export type TRequestDecodedData = { email: string; requestId: string; platform: string };
+
 export const SettingsItems: React.FC = observer(function SettingsItems() {
   const { t } = useTranslation();
   const backupStore = useBackupStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
   const assetsStore = useAssetsStore();
+  const fireblockStore = useFireblocksSDKStore();
   const { enqueueSnackbar } = useSnackbar();
 
   const [isAdvancedInfoDialogOpen, setIsAdvancedInfoDialogOpen] = React.useState(false);
   const [isLogsDialogOpen, setIsLogsDialogOpen] = React.useState(false);
   const [isBackupDialogOpen, setIsBackupDialogOpen] = React.useState(false);
   const [isExportPrivateKeysDialogOpen, setIsExportPrivateKeysDialogOpen] = React.useState(false);
+  const [disableApproveJoinBtn, setDisableApproveJoinBtn] = React.useState(false);
+
+  /**
+   * Approves join wallet request.
+   * @param requestData - encoded request data from the other device we want to approve
+   */
+  const approveJoinWallet = async (): Promise<void> => {
+    if (!disableApproveJoinBtn) {
+      setDisableApproveJoinBtn(true);
+      const requestData = prompt('Insert encoded request data');
+      if (requestData) {
+        try {
+          const decodedData: TRequestDecodedData = JSON.parse(decode(requestData));
+          const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(decodedData.requestId);
+          console.log('approveJoinWallet result', result);
+          enqueueSnackbar(t('SETTINGS.DIALOGS.JOIN_WALLET.SUCCESS_MESSAGE'), { variant: 'success' });
+          setDisableApproveJoinBtn(false);
+        } catch (e) {
+          console.error(e);
+          enqueueSnackbar(t('LOGIN.DIALOGS.JOIN_WALLET.ERROR_MESSAGE'), { variant: 'error' });
+          setDisableApproveJoinBtn(false);
+        }
+      } else {
+        console.log('approveJoinWallet cancelled');
+      }
+    }
+  };
 
   return (
     <RootStyled>
@@ -90,6 +122,15 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         description={t('SETTINGS.ITEMS.ADVANCED_INFO.DESCRIPTION')}
         onClick={() => {
           setIsAdvancedInfoDialogOpen(true);
+        }}
+      />
+
+      <ActionPlate
+        iconSrc={IconWallet}
+        caption={t('SETTINGS.ITEMS.APPROVE_JOIN_DEVICE.TITLE')}
+        description={t('SETTINGS.ITEMS.APPROVE_JOIN_DEVICE.DESCRIPTION')}
+        onClick={() => {
+          void approveJoinWallet();
         }}
       />
 
