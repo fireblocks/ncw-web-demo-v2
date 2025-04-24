@@ -34,9 +34,26 @@ yarn install
 
 3. Create a `.env` file in the root directory with the following variables:
 ```env
-VITE_FIREBLOCKS_API_KEY=your_api_key
-VITE_FIREBLOCKS_API_SECRET=your_api_secret
-VITE_FIREBLOCKS_API_URL=https://sandbox-api.fireblocks.io/v1
+# With Proxy Backend Env Settings
+
+#VITE_BACKEND_BASE_URL=your-backend-url
+#VITE_NCW_SDK_ENV=sandbox
+#VITE_CLOUDKIT_APITOKEN=your-api-token
+#VITE_CLOUDKIT_CONTAINER_ID=your-container-id
+#VITE_CLOUDKIT_ENV=production
+#VITE_BASE_FOLDER=/ncw-web-demo-v2
+#VITE_USE_EMBEDDED_WALLET_SDK=false
+
+# Without Proxy Backend, buy with Embedded Wallet Env Settings
+
+VITE_BACKEND_BASE_URL=your-backend-url
+VITE_NCW_SDK_ENV=sandbox
+VITE_CLOUDKIT_APITOKEN=your-api-token
+VITE_CLOUDKIT_CONTAINER_ID=your-container-id
+VITE_CLOUDKIT_ENV=production
+VITE_BASE_FOLDER=/ncw-web-demo-v2
+VITE_AUTH_CLIENT_ID=your-client-id
+VITE_USE_EMBEDDED_WALLET_SDK=true
 ```
 
 ## 🏃‍♂️ Running the Application

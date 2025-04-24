@@ -12,8 +12,8 @@ import { IUser } from '@auth';
 import { cloudkitBackup, cloudkitRecover, googleDriveBackup, googleDriveRecover, randomPassPhrase } from '@services';
 import { action, makeObservable, observable } from 'mobx';
 import CloudKit from 'tsl-apple-cloudkit';
-import { RootStore } from './Root.store';
 import { ENV_CONFIG } from '../env_config.ts';
+import { RootStore } from './Root.store';
 
 /**
  * BackupStore manages the backup and recovery operations for wallet keys.
