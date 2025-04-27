@@ -5,13 +5,15 @@ import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
 import IconRecovery from '@icons/recover.svg';
 import IconWallet from '@icons/wallet.svg';
-import { useAuthStore, useUserStore } from '@store';
+import { useAuthStore, useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { ENV_CONFIG } from '../../env_config.ts';
 import { JoinWalletDialog } from '../Settings/Dialogs/JoinWalletPopup.tsx';
 import { ActionPlate } from './ActionPlate';
+import { IKeyDescriptor } from '@fireblocks/ncw-js-sdk';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -32,17 +34,60 @@ export const Actions: React.FC = observer(function Actions() {
   const userStore = useUserStore();
   const { t } = useTranslation();
   const authStore = useAuthStore();
+  const sdkWallet = useFireblocksSDKStore();
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
   const [isJoinWalletDialogOpen, setIsJoinWalletDialogOpen] = React.useState(false);
 
   /**
    * Joins existing wallet.
+   * 
+   * This function initiates the process of joining an existing wallet:
+   * 1. Opens a dialog with a QR code and request ID
+   * 2. Calls the auth store to get the request ID
+   * 3. The user can then use another device to scan the QR code or enter the request ID
+   * 4. Once the join process is complete, the dialog will close and the user will be navigated to the assets page
    */
-  const joinExistingWallet = () => {
+  const joinExistingWallet = async () => {
     try {
-      const rest = authStore.joinExistingWallet();
+      // First open the dialog to show the loading state
       setIsJoinWalletDialogOpen(true);
+
+      // Call joinExistingWallet to get the request ID
+      // This will set authStore.capturedRequestId which the dialog will display
+      const response: Set<IKeyDescriptor> = await authStore.joinExistingWallet();
+
+      // The dialog will remain open to allow the user to copy/scan the request ID
+      // The dialog has a timer and will automatically close after the time expires
+
+      // Monitor the response to determine when to close the dialog and navigate
+      if (response) {
+        console.log('joinExistingWallet response', response);
+
+        // Check if we have valid keys in the response
+        if (response instanceof Set && response.size > 0) {
+          console.log('response is of type Set, size is ', response.size);
+
+          // Check if all items in the response have keyId and are ready
+          const allItemsHaveKeyId = Array.from(response).every(
+            (item) => item.keyStatus === 'READY' && item.keyId !== '',
+          );
+
+          if (allItemsHaveKeyId) {
+            console.log('allItemsHaveKeyId is true, navigating to the home page');
+            // Close the dialog since we have valid keys
+            setIsJoinWalletDialogOpen(false);
+            // Show success message
+            enqueueSnackbar(t('LOGIN.JOIN_EXISTING_WALLET_SUCCESS'), { variant: 'success' });
+            // Navigate to the assets page
+            navigate('/assets');
+          }
+        }
+      }
     } catch (error) {
+      console.log('joinExistingWallet error', error);
+      // Close the dialog on error
+      setIsJoinWalletDialogOpen(false);
       enqueueSnackbar(t('LOGIN.JOIN_EXISTING_WALLET_ERROR'), { variant: 'error' });
     }
   };

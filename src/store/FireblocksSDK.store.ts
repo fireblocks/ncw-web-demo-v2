@@ -231,6 +231,9 @@ export class FireblocksSDKStore {
               break;
             case 'join_wallet_descriptor':
               console.log(`join wallet event: ${JSON.stringify(event.joinWalletDescriptor)}`);
+              if (event.joinWalletDescriptor?.requestId) {
+                this._rootStore.authStore.setCapturedRequestId(event.joinWalletDescriptor?.requestId);
+              }
               this.setJoinWalletEventDescriptor(JSON.stringify(event.joinWalletDescriptor));
               break;
           }

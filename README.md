@@ -187,3 +187,6 @@ This approach allows for:
     - Environment variable controls the implementation
     - Easy to switch between modes for testing
     - Consistent import paths using Vite's alias system
+
+
+## EQ Demo app.pdf → will include the flow for embedded wallet

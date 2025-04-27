@@ -62,16 +62,21 @@ export const App: React.FC = observer(function App() {
         <Routes>
           {canShowDashboard ? (
             <>
-              <Route path="assets" element={<AssetsPage />} />
-              <Route path="transactions" element={<TransactionsPage />} />
-              <Route path="nfts" element={<NFTsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="*" element={<Navigate to={lastVisitedPage ? lastVisitedPage : 'assets'} />} />
+              <Route path="/assets" element={<AssetsPage />} />
+              <Route path="assets" element={<Navigate to="/assets" />} />
+              <Route path="/transactions" element={<TransactionsPage />} />
+              <Route path="transactions" element={<Navigate to="/transactions" />} />
+              <Route path="/nfts" element={<NFTsPage />} />
+              <Route path="nfts" element={<Navigate to="/nfts" />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="settings" element={<Navigate to="/settings" />} />
+              <Route path="*" element={<Navigate to={lastVisitedPage ? (lastVisitedPage.startsWith('/') ? lastVisitedPage : `/${lastVisitedPage}`) : '/assets'} />} />
             </>
           ) : (
             <>
-              <Route path="login" element={<LoginPage />} />
-              <Route path="*" element={<Navigate to="login" />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="login" element={<Navigate to="/login" />} />
+              <Route path="*" element={<Navigate to="/login" />} />
             </>
           )}
         </Routes>

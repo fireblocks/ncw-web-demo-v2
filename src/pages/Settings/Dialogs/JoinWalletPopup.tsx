@@ -1,5 +1,5 @@
-import React from 'react';
-import { CopyText, Dialog, Typography, styled } from '@foundation';
+import React, { useEffect, useState } from 'react';
+import { CopyText, Dialog, Typography, styled, LoadingPage } from '@foundation';
 import { useAuthStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
@@ -21,7 +21,7 @@ const ParametersStyled = styled('div')(({ theme }) => ({
 
 const ParameterStyled = styled('div')(() => ({
   display: 'grid',
-  gridTemplateColumns: '150px 1fr',
+  gridTemplateColumns: '100px 1fr',
 }));
 
 const IconWrapperStyled = styled('div')(({ theme }) => ({
@@ -46,6 +46,21 @@ const AlignerStyled = styled('div')(({ theme }) => ({
   alignItems: 'center',
 }));
 
+const CountdownContainerStyled = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '10px',
+  justifyContent: 'center',
+  border: '1px solid #ccc',
+  padding: '3px',
+  borderRadius: '5px',
+  textAlign: 'center',
+}));
+
+const CountdownTimeStyled = styled('span')(() => ({
+  color: 'forestgreen',
+}));
+
 interface IProps {
   isOpen: boolean;
   onClose: () => void;
@@ -55,7 +70,43 @@ export const JoinWalletDialog: React.FC<IProps> = observer(function JoinWalletDi
   const { t } = useTranslation();
   const authStore = useAuthStore();
   const { enqueueSnackbar } = useSnackbar();
+  const [requestId, setRequestId] = React.useState<string | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState(180); // 3 minutes in seconds
 
+  useEffect(() => {
+    if (authStore.capturedRequestId && requestId !== authStore.capturedRequestId) {
+      setRequestId(authStore.capturedRequestId);
+    }
+  }, [authStore.capturedRequestId]);
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Reset timer when dialog opens
+    setTimeRemaining(180);
+
+    const timer = setInterval(() => {
+      setTimeRemaining((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer);
+          // Auto-close the dialog when timer reaches zero
+          onClose();
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isOpen, onClose]);
 
   // const onDriveClick = () => {
   //   backupStore
@@ -78,19 +129,31 @@ export const JoinWalletDialog: React.FC<IProps> = observer(function JoinWalletDi
       size="medium"
     >
       <RootStyled>
-        <IconWrapperStyled>
-          <div style={{ background: 'white', padding: '16px' }}>
-            <QRCode value={authStore.capturedRequestId} style={{ width: '80px', height: '80px' }} />
-          </div>
-        </IconWrapperStyled>
-        <ParametersStyled>
-          <ParameterStyled>
-            <Typography variant="h6" color="text.secondary">
-              {t('SETTINGS.DIALOGS.JOIN_WALLET.REQUEST_ID')}
-            </Typography>
-            <CopyText size="large" text={authStore.capturedRequestId} />
-          </ParameterStyled>
-        </ParametersStyled>
+        {requestId?.length ? (
+          <>
+            <IconWrapperStyled>
+              <div style={{ background: 'white', padding: '16px' }}>
+                <QRCode value={requestId} style={{ width: '80px', height: '80px' }} />
+              </div>
+            </IconWrapperStyled>
+            <ParametersStyled>
+              <ParameterStyled>
+                <Typography variant="h6" color="text.secondary" style={{ paddingTop: '3px' }}>
+                  {t('SETTINGS.DIALOGS.JOIN_WALLET.REQUEST_ID')}
+                </Typography>
+                <CopyText size="large" text={requestId} />
+              </ParameterStyled>
+              <CountdownContainerStyled>
+                <p>
+                  You have <CountdownTimeStyled>{formatTime(timeRemaining)}</CountdownTimeStyled> minutes to join the
+                  wallet.
+                </p>
+              </CountdownContainerStyled>
+            </ParametersStyled>
+          </>
+        ) : (
+          <LoadingPage />
+        )}
       </RootStyled>
     </Dialog>
   );

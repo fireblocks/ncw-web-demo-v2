@@ -186,6 +186,7 @@ export const translationToEnglish = {
     NEW_USER_TITLE: 'New user',
     GENERATE_MPC_KEYS_ERROR: 'Failed to generate MPC keys',
     JOIN_EXISTING_WALLET_ERROR: 'Failed to join wallet',
+    JOIN_EXISTING_WALLET_SUCCESS: 'Joined wallet successfully',
     RECOVERY_FROM_BACKUP_ERROR:
       'Failed to recover from backup. You may need to allow pop-ups on your browser to continue the key backup.',
     NEW_USER_DESCRIPTION: 'Create a new wallet.',

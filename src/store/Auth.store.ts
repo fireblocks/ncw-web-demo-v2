@@ -1,4 +1,4 @@
-import { TPassphraseLocation, getDeviceIdFromLocalStorage, saveDeviceIdToLocalStorage } from '@api';
+import { TPassphraseLocation, getDeviceIdFromLocalStorage, saveDeviceIdToLocalStorage, generateNewDeviceId } from '@api';
 import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
 import { RootStore } from '@store';
 import { encode } from 'js-base64';
@@ -151,6 +151,11 @@ export class AuthStore {
     this.status = status;
   }
 
+  @action
+  public setCapturedRequestId(requestId: string): void {
+    this.capturedRequestId = requestId;
+  }
+
   /**
    * Determines if the workspace is currently being prepared
    * This includes generating keys, recovering keys, logging in, or checking user/backup status
@@ -204,15 +209,26 @@ export class AuthStore {
     return !!(userStore.loggedUser && !deviceStore.deviceId);
   }
 
-  public async joinExistingWallet(): Promise<void> {
+  public async joinExistingWallet(): Promise<any> {
     try {
+      // first get or set a deviceId
+      const userID = this._rootStore.userStore.userId;
+      console.log('userID: ', userID);
+      const deviceId = generateNewDeviceId(userID);
+      this._rootStore.deviceStore.setDeviceId(deviceId);
+      // init SDK Core
+      console.log('deviceId: ', deviceId);
+      await this._rootStore.fireblocksSDKStore.initEmbeddedWalletCore(deviceId);
+      // request to join wallet
+      if (!this._rootStore.fireblocksSDKStore.sdkInstance) {
+        throw new Error('fireblocksNCW is not initialized');
+      }
       console.log('[Auth] Starting join existing wallet process');
       let capturedRequestId: string | undefined;
       // todo:
       const response = await this._rootStore.fireblocksSDKStore.sdkInstance?.requestJoinExistingWallet({
         onRequestId(requestId: string) {
           capturedRequestId = requestId;
-          return { addDeviceRequestId: requestId };
         },
       });
 
@@ -227,10 +243,34 @@ export class AuthStore {
         this.capturedRequestId = capturedRequestId;
       }
 
+      // Set status to READY when we have a successful response
+      if (response instanceof Set && response.size > 0) {
+        const allItemsHaveKeyId = Array.from(response).every(
+          (item) => item.keyStatus === 'READY' && item.keyId !== '',
+        );
+
+        if (allItemsHaveKeyId) {
+          console.log('[Auth] Setting status to READY after successful join wallet');
+          this.setStatus('READY');
+
+          // Initialize accounts to ensure accountId is available
+          try {
+            console.log('[Auth] Initializing accounts after joining wallet');
+            await this._rootStore.accountsStore.init();
+          } catch (accountError) {
+            console.error('[Auth] Error initializing accounts after joining wallet:', accountError);
+            // Continue despite account initialization errors
+          }
+        }
+      }
+
+      return response;
+
       // todo: what to do with response?
       // we should open a popup with the requestId to copy paste OR using a QR code.
       // the user will need to copy the requestId and paste it in the other device OR scan the QR code with the camera in the other device.
     } catch (error: any) {
+      console.error('[Auth] Error during join existing wallet process: ', error);
       this.setStatus('ERROR');
       throw new Error(error.message);
     }

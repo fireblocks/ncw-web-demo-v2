@@ -112,7 +112,7 @@ export const Header: React.FC = observer(function Header() {
           <IconButton
             large
             onClick={() => {
-              navigate('assets');
+              navigate('/assets');
             }}
           >
             <img src={IconLogo} />
@@ -162,7 +162,7 @@ export const Header: React.FC = observer(function Header() {
           large
           tooltip={t('SETTINGS.NAME')}
           onClick={() => {
-            navigate('settings');
+            navigate('/settings');
           }}
         >
           <img src={IconSettings} />
