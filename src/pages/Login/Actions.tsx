@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
+import { IKeyDescriptor } from '@fireblocks/ncw-js-sdk';
 import { Progress, Typography, styled } from '@foundation';
 import IconApple from '@icons/apple.svg';
 import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
 import IconRecovery from '@icons/recover.svg';
 import IconWallet from '@icons/wallet.svg';
-import { useAuthStore, useFireblocksSDKStore, useUserStore } from '@store';
+import { useAuthStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +14,6 @@ import { useNavigate } from 'react-router-dom';
 import { ENV_CONFIG } from '../../env_config.ts';
 import { JoinWalletDialog } from '../Settings/Dialogs/JoinWalletPopup.tsx';
 import { ActionPlate } from './ActionPlate';
-import { IKeyDescriptor } from '@fireblocks/ncw-js-sdk';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -34,21 +34,20 @@ export const Actions: React.FC = observer(function Actions() {
   const userStore = useUserStore();
   const { t } = useTranslation();
   const authStore = useAuthStore();
-  const sdkWallet = useFireblocksSDKStore();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [isJoinWalletDialogOpen, setIsJoinWalletDialogOpen] = React.useState(false);
 
   /**
    * Joins existing wallet.
-   * 
+   *
    * This function initiates the process of joining an existing wallet:
    * 1. Opens a dialog with a QR code and request ID
    * 2. Calls the auth store to get the request ID
    * 3. The user can then use another device to scan the QR code or enter the request ID
    * 4. Once the join process is complete, the dialog will close and the user will be navigated to the assets page
    */
-  const joinExistingWallet = async () => {
+  const joinExistingWallet = async (): Promise<void> => {
     try {
       // First open the dialog to show the loading state
       setIsJoinWalletDialogOpen(true);

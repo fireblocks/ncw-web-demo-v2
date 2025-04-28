@@ -70,7 +70,20 @@ export const App: React.FC = observer(function App() {
               <Route path="nfts" element={<Navigate to="/nfts" />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="settings" element={<Navigate to="/settings" />} />
-              <Route path="*" element={<Navigate to={lastVisitedPage ? (lastVisitedPage.startsWith('/') ? lastVisitedPage : `/${lastVisitedPage}`) : '/assets'} />} />
+              <Route
+                path="*"
+                element={
+                  <Navigate
+                    to={
+                      lastVisitedPage
+                        ? lastVisitedPage.startsWith('/')
+                          ? lastVisitedPage
+                          : `/${lastVisitedPage}`
+                        : '/assets'
+                    }
+                  />
+                }
+              />
             </>
           ) : (
             <>
