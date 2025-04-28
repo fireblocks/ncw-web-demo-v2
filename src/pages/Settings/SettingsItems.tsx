@@ -14,6 +14,7 @@ import { AdvancedInfoDialog } from './Dialogs/AdvancedInfoDialog';
 import { BackupDialog } from './Dialogs/BackupDialog';
 import { ExportPrivateKeysDialog } from './Dialogs/ExportKeys/ExportPrivateKeysDialog';
 import { LogsDialog } from './Dialogs/LogsDialog';
+import { decode } from 'js-base64';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -46,10 +47,11 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
   const approveJoinWallet = async (): Promise<void> => {
     if (!disableApproveJoinBtn) {
       setDisableApproveJoinBtn(true);
-      const requestData = prompt('Insert request id');
+      const requestData = prompt('Insert encoded request id');
       if (requestData) {
         try {
-          const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(requestData);
+          const decodedData: TRequestDecodedData = JSON.parse(decode(requestData));
+          const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(decodedData.requestId);
           console.log('approveJoinWallet result', result);
           enqueueSnackbar(t('SETTINGS.DIALOGS.JOIN_WALLET.SUCCESS_MESSAGE'), { variant: 'success' });
           setDisableApproveJoinBtn(false);

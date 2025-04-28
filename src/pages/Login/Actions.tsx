@@ -127,16 +127,13 @@ export const Actions: React.FC = observer(function Actions() {
           {userStore.hasBackup && (
             <ActionPlate iconSrc={IconRecovery} caption={t('LOGIN.RECOVERY_FROM_BACKUP')} onClick={recoverMPCKeys} />
           )}
-          {isEmbeddedWallet && !userStore.hasBackup && (
-            // in an embedded wallet mode we can't generate keys if backup exists already'
+          {((isEmbeddedWallet && !userStore.hasBackup) || !isEmbeddedWallet) && (
+            // in an embedded wallet mode we can't generate keys if backup exists already OR not embedded wallet mode
             <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
           )}
           {isEmbeddedWallet && userStore.hasBackup && (
             // if we already have a backup we can't generate keys, so we need to allow 'join to existing wallet'
             <ActionPlate iconSrc={IconWallet} caption={t('LOGIN.JOIN_EXISTING_WALLET')} onClick={joinExistingWallet} />
-          )}
-          {!isEmbeddedWallet && (
-            <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
           )}
         </RootStyled>
         <JoinWalletDialog

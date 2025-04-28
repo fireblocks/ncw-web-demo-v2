@@ -209,12 +209,29 @@ export class AuthStore {
     return !!(userStore.loggedUser && !deviceStore.deviceId);
   }
 
+  public stopJoinWallet(): void {
+    if (!this._rootStore.fireblocksSDKStore.sdkInstance) {
+      throw new Error('fireblocksNCW is not initialized');
+    }
+    try {
+      this._rootStore.fireblocksSDKStore.sdkInstance?.stopJoinWallet();
+    } catch (error) {
+      console.error('[Auth] Error stopping join wallet process: ', error);
+    }
+  }
+
   public async joinExistingWallet(): Promise<any> {
     try {
       // first get or set a deviceId
       const userID = this._rootStore.userStore.userId;
       console.log('userID: ', userID);
-      const deviceId = generateNewDeviceId(userID);
+      let deviceId = prompt(
+        'Enter device ID (leave empty for a random uuid)',
+        this._rootStore.deviceStore.deviceId ?? '',
+      );
+      if (!deviceId?.length) {
+        deviceId = generateNewDeviceId(userID);
+      }
       this._rootStore.deviceStore.setDeviceId(deviceId);
       // init SDK Core
       console.log('deviceId: ', deviceId);

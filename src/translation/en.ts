@@ -85,7 +85,7 @@ export const translationToEnglish = {
       JOIN_WALLET: {
         SUCCESS_MESSAGE: 'Approve join wallet successfully',
         ERROR_MESSAGE: 'Failed to approve join wallet',
-        REQUEST_ID: 'Request ID',
+        REQUEST_ID: 'Encoded Request ID',
         POPUP_TITLE: 'Approve Join Wallet',
         POPUP_DESCRIPTION: 'Use the ID to approve request',
       },
@@ -187,6 +187,7 @@ export const translationToEnglish = {
     GENERATE_MPC_KEYS_ERROR: 'Failed to generate MPC keys',
     JOIN_EXISTING_WALLET_ERROR: 'Failed to join wallet',
     JOIN_EXISTING_WALLET_SUCCESS: 'Joined wallet successfully',
+    CANCEL_JOIN_WALLET: 'Join Wallet Canceled',
     RECOVERY_FROM_BACKUP_ERROR:
       'Failed to recover from backup. You may need to allow pop-ups on your browser to continue the key backup.',
     NEW_USER_DESCRIPTION: 'Create a new wallet.',

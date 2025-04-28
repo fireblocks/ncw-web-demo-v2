@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { CopyText, Dialog, Typography, styled, LoadingPage } from '@foundation';
-import { useAuthStore } from '@store';
+import { useAuthStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
+import { encode } from 'js-base64';
 
 const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(7, 5),
@@ -21,7 +22,7 @@ const ParametersStyled = styled('div')(({ theme }) => ({
 
 const ParameterStyled = styled('div')(() => ({
   display: 'grid',
-  gridTemplateColumns: '100px 1fr',
+  gridTemplateColumns: '100px 350px',
 }));
 
 const IconWrapperStyled = styled('div')(({ theme }) => ({
@@ -70,12 +71,16 @@ export const JoinWalletDialog: React.FC<IProps> = observer(function JoinWalletDi
   const { t } = useTranslation();
   const authStore = useAuthStore();
   const { enqueueSnackbar } = useSnackbar();
+  const userStore = useUserStore();
   const [requestId, setRequestId] = React.useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(180); // 3 minutes in seconds
 
   useEffect(() => {
     if (authStore.capturedRequestId && requestId !== authStore.capturedRequestId) {
-      setRequestId(authStore.capturedRequestId);
+      const encodedRequestId = encode(
+        `{"email":"${userStore?.loggedUser?.email ?? 'not available'}","platform":"Web","requestId":"${authStore.capturedRequestId}"}`,
+      );
+      setRequestId(encodedRequestId);
     }
   }, [authStore.capturedRequestId]);
 
@@ -108,6 +113,13 @@ export const JoinWalletDialog: React.FC<IProps> = observer(function JoinWalletDi
     return () => clearInterval(timer);
   }, [isOpen, onClose]);
 
+  const cancelJoin = () => {
+    // todo: cancel join
+    authStore.stopJoinWallet();
+    enqueueSnackbar(t('LOGIN.CANCEL_JOIN_WALLET'), { variant: 'success' });
+    onClose();
+  };
+
   // const onDriveClick = () => {
   //   backupStore
   //     .saveKeysBackup('GoogleDrive')
@@ -125,7 +137,7 @@ export const JoinWalletDialog: React.FC<IProps> = observer(function JoinWalletDi
       title={t('SETTINGS.DIALOGS.JOIN_WALLET.POPUP_TITLE')}
       description={t('SETTINGS.DIALOGS.JOIN_WALLET.POPUP_DESCRIPTION')}
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={cancelJoin}
       size="medium"
     >
       <RootStyled>

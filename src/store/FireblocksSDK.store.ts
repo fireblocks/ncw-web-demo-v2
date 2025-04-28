@@ -136,10 +136,11 @@ export class FireblocksSDKStore {
 
     console.log('initEmbeddedWalletProcess: initializing_sdk');
     try {
-      let deviceId = prompt(
-        'Enter device ID (leave empty for a random uuid)',
-        this._rootStore.deviceStore.deviceId ?? '',
-      );
+      // let deviceId = prompt(
+      //   'Enter device ID (leave empty for a random uuid)',
+      //   this._rootStore.deviceStore.deviceId ?? '',
+      // );
+      const deviceId = this._rootStore.deviceStore.deviceId ?? '';
 
       const logger = await IndexedDBLoggerFactory({
         deviceId: this._rootStore.deviceStore.deviceId ?? '',
