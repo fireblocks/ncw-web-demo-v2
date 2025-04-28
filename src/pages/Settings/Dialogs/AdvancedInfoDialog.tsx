@@ -4,6 +4,7 @@ import { CopyText, Dialog, Typography, styled } from '@foundation';
 import { useDeviceStore, useFireblocksSDKStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
+import { ENV_CONFIG } from '../../../env_config.ts';
 
 const DataBlockStyled = styled('div')(({ theme }) => ({
   borderTop: `2px solid ${theme.palette.background.default}`,
@@ -84,6 +85,15 @@ export const AdvancedInfoDialog: React.FC<IProps> = observer(function AdvancedIn
               {t('SETTINGS.DIALOGS.ADVANCED_INFO.EDDSA_KEY')}
             </Typography>
             <CopyText size="large" text={fireblocksSDKStore.keysStatus.MPC_CMP_EDDSA_ED25519.keyId} />
+          </DataBlockStyled>
+        )}
+
+        {ENV_CONFIG.AUTH_CLIENT_ID && (
+          <DataBlockStyled>
+            <Typography variant="h6" color="text.secondary">
+              {t('SETTINGS.DIALOGS.ADVANCED_INFO.AUTH_CLIENT_ID')}
+            </Typography>
+            <CopyText size="large" text={ENV_CONFIG.AUTH_CLIENT_ID} />
           </DataBlockStyled>
         )}
       </>

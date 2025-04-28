@@ -56,6 +56,7 @@ export const translationToEnglish = {
         SDK_VERSION: 'SDK version',
         ECDSA_KEY: 'KEY (MPC_CMP_ECDSA_SECP256K1)',
         EDDSA_KEY: 'KEY (MPC_CMP_EDDSA_ED25519)',
+        AUTH_CLIENT_ID: 'Auth Client ID',
       },
       LOGS: {
         TITLE: 'Audit log',
