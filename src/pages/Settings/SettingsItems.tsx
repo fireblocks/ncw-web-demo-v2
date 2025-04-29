@@ -3,18 +3,19 @@ import { styled } from '@foundation';
 import IconGoogle from '@icons/google.svg';
 import IconInfo from '@icons/info.svg';
 import IconKey from '@icons/key.svg';
+import IconWallet from '@icons/new-wallet.svg';
 import IconLogs from '@icons/share_logs.svg';
-import IconWallet from '@icons/wallet.svg';
 import { useAssetsStore, useBackupStore, useFireblocksSDKStore } from '@store';
+import { decode } from 'js-base64';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ActionPlate } from './ActionPlate';
+import { AddNewDeviceDialog } from './Dialogs/AddNewDeviceDialog.tsx';
 import { AdvancedInfoDialog } from './Dialogs/AdvancedInfoDialog';
 import { BackupDialog } from './Dialogs/BackupDialog';
 import { ExportPrivateKeysDialog } from './Dialogs/ExportKeys/ExportPrivateKeysDialog';
 import { LogsDialog } from './Dialogs/LogsDialog';
-import { decode } from 'js-base64';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -38,32 +39,29 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
   const [isLogsDialogOpen, setIsLogsDialogOpen] = React.useState(false);
   const [isBackupDialogOpen, setIsBackupDialogOpen] = React.useState(false);
   const [isExportPrivateKeysDialogOpen, setIsExportPrivateKeysDialogOpen] = React.useState(false);
-  const [disableApproveJoinBtn, setDisableApproveJoinBtn] = React.useState(false);
+  // const [disableApproveJoinBtn, setDisableApproveJoinBtn] = React.useState(false);
+  const [isAddNewDeviceDialogOpen, setIsAddNewDeviceDialogOpen] = React.useState(false);
 
   /**
    * Approves join wallet request.
    * @param requestData - encoded request data from the other device we want to approve
    */
   const approveJoinWallet = async (): Promise<void> => {
-    if (!disableApproveJoinBtn) {
-      setDisableApproveJoinBtn(true);
-      const requestData = prompt('Insert encoded request id');
-      if (requestData) {
-        try {
-          const decodedData: TRequestDecodedData = JSON.parse(decode(requestData));
-          const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(decodedData.requestId);
-          console.log('approveJoinWallet result', result);
-          enqueueSnackbar(t('SETTINGS.DIALOGS.JOIN_WALLET.SUCCESS_MESSAGE'), { variant: 'success' });
-          setDisableApproveJoinBtn(false);
-        } catch (e) {
-          console.error(e);
-          enqueueSnackbar(t('LOGIN.DIALOGS.JOIN_WALLET.ERROR_MESSAGE'), { variant: 'error' });
-          setDisableApproveJoinBtn(false);
-        }
-      } else {
-        console.log('approveJoinWallet cancelled');
-      }
-    }
+    setIsAddNewDeviceDialogOpen(true);
+    // const requestData = prompt('Insert encoded request id');
+    // if (requestData) {
+    //   try {
+    //     const decodedData: TRequestDecodedData = JSON.parse(decode(requestData));
+    //     const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(decodedData.requestId);
+    //     console.log('approveJoinWallet result', result);
+    //     enqueueSnackbar(t('SETTINGS.DIALOGS.JOIN_WALLET.SUCCESS_MESSAGE'), { variant: 'success' });
+    //   } catch (e) {
+    //     console.error(e);
+    //     enqueueSnackbar(t('LOGIN.DIALOGS.JOIN_WALLET.ERROR_MESSAGE'), { variant: 'error' });
+    //   }
+    // } else {
+    //   console.log('approveJoinWallet cancelled');
+    // }
   };
 
   return (
@@ -159,6 +157,13 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         isOpen={isExportPrivateKeysDialogOpen}
         onClose={() => {
           setIsExportPrivateKeysDialogOpen(false);
+        }}
+      />
+
+      <AddNewDeviceDialog
+        isOpen={isAddNewDeviceDialogOpen}
+        onClose={() => {
+          setIsAddNewDeviceDialogOpen(false);
         }}
       />
     </RootStyled>
