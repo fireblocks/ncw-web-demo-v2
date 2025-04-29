@@ -4,7 +4,7 @@ import CloseSignIcon from '@icons/close-icon.svg';
 import VSignIcon from '@icons/v-sign.svg';
 import { Button } from '@mui/material';
 import { useFireblocksSDKStore } from '@store';
-import { decode } from 'js-base64';
+import { decode, encode } from 'js-base64';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -57,7 +57,7 @@ export const AddNewDeviceDialog: React.FC<IProps> = observer(function AddNewDevi
     try {
       console.log('Checking request ID:', requestId);
       // for testing only!!!
-      /// const a = encode(`{"email":"test@gmail.com","platform":"Web","requestId":"fsdd343dssa4332fdsfdsfsdsdf"}`);
+      // const a = encode(`{"email":"test@gmail.com","platform":"Web","requestId":"fsdd343dssa4332fdsfdsfsdsdf"}`);
       ////
       const decoded: TRequestDecodedData = JSON.parse(decode(requestId));
       if (decoded.requestId && decoded.email) {
@@ -86,8 +86,8 @@ export const AddNewDeviceDialog: React.FC<IProps> = observer(function AddNewDevi
   const addDevice = async (): Promise<void> => {
     if (requestId) {
       try {
-        const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(requestId);
-        console.log('approveJoinWallet result', result);
+       const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(requestId);
+       console.log('approveJoinWallet result', result);
         setPhase(2); // Set phase to 2 for success
       } catch (e) {
         console.error(e);
@@ -97,6 +97,13 @@ export const AddNewDeviceDialog: React.FC<IProps> = observer(function AddNewDevi
       console.log('approveJoinWallet cancelled');
       setPhase(3); // Set phase to 3 for error
     }
+  };
+
+  const tryAgain = () => {
+    setRequestId('');
+    setDecodedData(null);
+    setPhase(0);
+    setIsLoading(false);
   };
 
   return (
@@ -251,7 +258,7 @@ export const AddNewDeviceDialog: React.FC<IProps> = observer(function AddNewDevi
                   <ParametersStyled>
                     <div style={{ width: '100%', textAlign: 'center' }}>
                       <div
-                        style={{ marginBottom: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                        style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                       >
                         <IconWrapperStyled style={{ marginBottom: '24px' }}>
                           <img src={CloseSignIcon} alt="Success" />
@@ -262,6 +269,24 @@ export const AddNewDeviceDialog: React.FC<IProps> = observer(function AddNewDevi
                         <Typography variant="h6" color="text.secondary">
                           {t('SETTINGS.DIALOGS.ADD_DEVICE.FAILED_SUBTITLE')}
                         </Typography>
+                      </div>
+                      <div style={{ marginTop: '32px', marginBottom: '25px', width: '100%' }}>
+                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                          <style>
+                            {`
+                              .try-again-button .MuiButton-root {
+                                width: 100%;
+                              }
+                            `}
+                          </style>
+                          <div className="try-again-button" style={{ width: '156px' }}>
+                            <ActionButton
+                              caption={t('SETTINGS.DIALOGS.ADD_DEVICE.TRY_AGAIN')}
+                              onClick={() => tryAgain()}
+                              isDialog={true}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </ParametersStyled>

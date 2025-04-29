@@ -113,6 +113,7 @@ export const translationToEnglish = {
         SUCCESS_SUBTITLE: 'Destination device is enabled',
         FAILED_TITLE: 'Couldn’t add device',
         FAILED_SUBTITLE: 'The process was canceled.',
+        TRY_AGAIN: 'Try Again',
       },
     },
     ITEMS: {
