@@ -3,8 +3,8 @@ import { Dialog, Typography, styled, LoadingPage, TextInput, ActionButton } from
 import CloseSignIcon from '@icons/close-icon.svg';
 import VSignIcon from '@icons/v-sign.svg';
 import { Button } from '@mui/material';
-import { useAuthStore, useFireblocksSDKStore, useUserStore } from '@store';
-import { decode, encode } from 'js-base64';
+import { useFireblocksSDKStore } from '@store';
+import { decode } from 'js-base64';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -24,13 +24,6 @@ const ParametersStyled = styled('div')(({ theme }) => ({
   gap: theme.spacing(2),
   alignItems: 'center',
   width: '100%',
-}));
-
-const ParameterStyled = styled('div')(() => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  width: '100%',
-  alignItems: 'center',
 }));
 
 const IconWrapperStyled = styled('div')(({ theme }) => ({
