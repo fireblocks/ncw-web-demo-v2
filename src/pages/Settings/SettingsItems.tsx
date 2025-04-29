@@ -48,20 +48,6 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
    */
   const approveJoinWallet = async (): Promise<void> => {
     setIsAddNewDeviceDialogOpen(true);
-    // const requestData = prompt('Insert encoded request id');
-    // if (requestData) {
-    //   try {
-    //     const decodedData: TRequestDecodedData = JSON.parse(decode(requestData));
-    //     const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(decodedData.requestId);
-    //     console.log('approveJoinWallet result', result);
-    //     enqueueSnackbar(t('SETTINGS.DIALOGS.JOIN_WALLET.SUCCESS_MESSAGE'), { variant: 'success' });
-    //   } catch (e) {
-    //     console.error(e);
-    //     enqueueSnackbar(t('LOGIN.DIALOGS.JOIN_WALLET.ERROR_MESSAGE'), { variant: 'error' });
-    //   }
-    // } else {
-    //   console.log('approveJoinWallet cancelled');
-    // }
   };
 
   return (
