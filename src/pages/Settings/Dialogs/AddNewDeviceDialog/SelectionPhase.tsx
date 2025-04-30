@@ -71,7 +71,7 @@ export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({ onSelectQrScan,
           onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           <img src={ScanQRcodeIcon} alt="Search" style={iconStyle} />
-          <Typography variant="h6" align="center">
+          <Typography variant="h6" align="center" style={{ textTransform: 'none' }}>
             {t('SETTINGS.DIALOGS.ADD_DEVICE.SCAN_QR_CODE')}
           </Typography>
         </div>
@@ -89,7 +89,7 @@ export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({ onSelectQrScan,
           onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           <img src={NewDeviceIcon} alt="New Device" style={iconStyle} />
-          <Typography variant="h6" align="center">
+          <Typography variant="h6" align="center" style={{ textTransform: 'none' }}>
             {t('SETTINGS.DIALOGS.ADD_DEVICE.ENTER_ENCODED_ID')}
           </Typography>
         </div>

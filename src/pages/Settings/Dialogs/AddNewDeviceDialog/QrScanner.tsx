@@ -3,15 +3,15 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { Typography, ActionButton } from '@foundation';
-import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { IQrScannerProps } from './types';
+import { useTranslation } from 'react-i18next';
 import {
   QrScannerContainerStyled,
   QrReaderContainerStyled,
   QrScannerFallbackStyled,
   QrScannerPlaceholderStyled,
 } from './styled';
+import { IQrScannerProps } from './types';
 
 export const QrScanner: React.FC<IQrScannerProps> = ({ onScan, toggleQrScanner, onScanError }) => {
   const { t } = useTranslation();

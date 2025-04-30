@@ -3,10 +3,10 @@
  */
 
 // Request decoded data type
-export type TRequestDecodedData = { 
-  email: string; 
-  requestId: string; 
-  platform: string 
+export type TRequestDecodedData = {
+  email: string;
+  requestId: string;
+  platform: string;
 };
 
 // Base props for all dialog components

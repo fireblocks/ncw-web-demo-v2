@@ -3,15 +3,10 @@
  */
 import React from 'react';
 import { Typography } from '@foundation';
-import { useTranslation } from 'react-i18next';
 import VSignIcon from '@icons/v-sign.svg';
+import { useTranslation } from 'react-i18next';
+import { ParametersStyled, ResultMessageContainerStyled, ResultContentStyled, IconWrapperStyled } from './styled';
 import { ISuccessProps } from './types';
-import { 
-  ParametersStyled, 
-  ResultMessageContainerStyled, 
-  ResultContentStyled,
-  IconWrapperStyled 
-} from './styled';
 
 export const Success: React.FC<ISuccessProps> = () => {
   const { t } = useTranslation();

@@ -3,15 +3,10 @@
  */
 import React from 'react';
 import { Typography, ActionButton } from '@foundation';
-import { useTranslation } from 'react-i18next';
 import CloseSignIcon from '@icons/close-icon.svg';
+import { useTranslation } from 'react-i18next';
+import { ParametersStyled, ResultMessageContainerStyled, ResultContentStyled, IconWrapperStyled } from './styled';
 import { IErrorProps } from './types';
-import { 
-  ParametersStyled, 
-  ResultMessageContainerStyled, 
-  ResultContentStyled,
-  IconWrapperStyled 
-} from './styled';
 
 export const Error: React.FC<IErrorProps> = ({ tryAgain }) => {
   const { t } = useTranslation();
@@ -30,7 +25,7 @@ export const Error: React.FC<IErrorProps> = ({ tryAgain }) => {
             {t('SETTINGS.DIALOGS.ADD_DEVICE.FAILED_SUBTITLE')}
           </Typography>
         </ResultContentStyled>
-        
+
         <div style={{ marginTop: '32px', marginBottom: '25px', width: '100%' }}>
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <style>
@@ -41,11 +36,7 @@ export const Error: React.FC<IErrorProps> = ({ tryAgain }) => {
               `}
             </style>
             <div className="try-again-button" style={{ width: '156px' }}>
-              <ActionButton
-                caption={t('SETTINGS.DIALOGS.ADD_DEVICE.TRY_AGAIN')}
-                onClick={tryAgain}
-                isDialog={true}
-              />
+              <ActionButton caption={t('SETTINGS.DIALOGS.ADD_DEVICE.TRY_AGAIN')} onClick={tryAgain} isDialog={true} />
             </div>
           </div>
         </div>
