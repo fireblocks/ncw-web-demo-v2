@@ -115,6 +115,7 @@ export const translationToEnglish = {
         FAILED_SUBTITLE: 'The process was canceled.',
         TRY_AGAIN: 'Try Again',
         SCAN_QR_CODE: 'Scan QR Code',
+        ENTER_ENCODED_ID: 'Enter Encoded ID',
         QR_SCANNER_PLACEHOLDER: 'QR Code Scanner',
         QR_SCANNER_INSTRUCTION: 'Position the QR code within the frame to scan',
         BACK_TO_MANUAL: 'Back to Manual Entry',

@@ -11,7 +11,7 @@ import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ActionPlate } from './ActionPlate';
-import { AddNewDeviceDialog } from './Dialogs/AddNewDeviceDialog.tsx';
+import { AddNewDeviceDialog } from './Dialogs/AddNewDeviceDialog/AddNewDeviceDialog';
 import { AdvancedInfoDialog } from './Dialogs/AdvancedInfoDialog';
 import { BackupDialog } from './Dialogs/BackupDialog';
 import { ExportPrivateKeysDialog } from './Dialogs/ExportKeys/ExportPrivateKeysDialog';
