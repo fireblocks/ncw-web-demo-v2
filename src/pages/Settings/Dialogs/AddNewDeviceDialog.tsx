@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, Typography, styled, LoadingPage, TextInput, ActionButton } from '@foundation';
 import CloseSignIcon from '@icons/close-icon.svg';
 import VSignIcon from '@icons/v-sign.svg';
@@ -8,6 +8,7 @@ import { decode, encode } from 'js-base64';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+// Note: You need to install this package: npm install html5-qrcode
 
 const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(7, 5),
@@ -46,6 +47,9 @@ export const AddNewDeviceDialog: React.FC<IProps> = observer(function AddNewDevi
   const [isLoading, setIsLoading] = useState(false);
   const [phase, setPhase] = useState(0); // 0: enter request id, 1: recognize device info, 2. success, 3. error
   const [decodedData, setDecodedData] = useState<TRequestDecodedData | null>(null);
+  const [isQrScannerActive, setIsQrScannerActive] = useState(false);
+  const qrScannerRef = useRef<HTMLDivElement>(null);
+  const scannerInstanceRef = useRef<any>(null);
   const fireblockStore = useFireblocksSDKStore();
 
   const handleCheckRequestId = () => {
@@ -80,14 +84,138 @@ export const AddNewDeviceDialog: React.FC<IProps> = observer(function AddNewDevi
     setDecodedData(null);
     setPhase(0);
     setIsLoading(false);
+    setIsQrScannerActive(false);
     onClose();
   };
+
+  const handleQrScan = (result: string | null) => {
+    if (result) {
+      setRequestId(result);
+      setIsQrScannerActive(false);
+      // Automatically check the request ID after scanning
+      setTimeout(() => {
+        handleCheckRequestId();
+      }, 500);
+    }
+  };
+
+  const toggleQrScanner = () => {
+    setIsQrScannerActive(!isQrScannerActive);
+  };
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (isQrScannerActive) {
+      // Add a small delay to ensure the div is rendered
+      timeoutId = setTimeout(() => {
+        try {
+          if (!qrScannerRef.current) {
+            console.error('QR scanner container not found');
+            enqueueSnackbar('QR scanner initialization failed. Please try again.', { variant: 'error' });
+            return;
+          }
+
+          // Check if the element with the ID exists in the DOM
+          const qrContainer = document.getElementById('qr-reader-container');
+          if (!qrContainer) {
+            console.error('QR scanner container element not found in DOM');
+            enqueueSnackbar('QR scanner initialization failed. Please try again.', { variant: 'error' });
+            return;
+          }
+
+          // Dynamic import of html5-qrcode to avoid issues with SSR
+          import('html5-qrcode')
+            .then(({ Html5Qrcode }) => {
+              try {
+                const qrCodeSuccessCallback = (decodedText: string) => {
+                  handleQrScan(decodedText);
+                };
+
+                const config = {
+                  fps: 10,
+                  qrbox: { width: 250, height: 250 },
+                  aspectRatio: 1.0,
+                };
+
+                // Initialize the scanner
+                const scanner = new Html5Qrcode('qr-reader-container');
+                scannerInstanceRef.current = scanner;
+
+                // Start scanning
+                scanner
+                  .start({ facingMode: 'environment' }, config, qrCodeSuccessCallback, (errorMessage: string) => {
+                    console.error('QR Code scanning error:', errorMessage);
+                    if (errorMessage.includes('Camera access is not supported')) {
+                      enqueueSnackbar(
+                        'Camera access is not supported in this browser. Please try another browser or enter the code manually.',
+                        { variant: 'error' },
+                      );
+                      setIsQrScannerActive(false);
+                    } else if (errorMessage.includes('Permission denied')) {
+                      enqueueSnackbar('Camera access was denied. Please allow camera access and try again.', {
+                        variant: 'error',
+                      });
+                      setIsQrScannerActive(false);
+                    }
+                  })
+                  .catch((err: any) => {
+                    console.error('Failed to start scanner:', err);
+                    enqueueSnackbar('Failed to start QR scanner. Please try again or enter the code manually.', {
+                      variant: 'error',
+                    });
+                    setIsQrScannerActive(false);
+                  });
+              } catch (error) {
+                console.error('Error initializing QR scanner:', error);
+                enqueueSnackbar('Failed to initialize QR scanner. Please try again or enter the code manually.', {
+                  variant: 'error',
+                });
+                setIsQrScannerActive(false);
+              }
+            })
+            .catch((err) => {
+              console.error('Failed to load html5-qrcode:', err);
+              enqueueSnackbar('Failed to load QR scanner. Please try again or enter the code manually.', {
+                variant: 'error',
+              });
+              setIsQrScannerActive(false);
+            });
+        } catch (error) {
+          console.error('Unexpected error during QR scanner initialization:', error);
+          enqueueSnackbar('An unexpected error occurred. Please try again or enter the code manually.', {
+            variant: 'error',
+          });
+          setIsQrScannerActive(false);
+        }
+      }, 500); // Increased delay to 500ms to ensure the div is rendered
+    }
+
+    return () => {
+      // Clear the timeout if component unmounts or scanner is deactivated
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      // Clean up the scanner when component unmounts or scanner is deactivated
+      if (scannerInstanceRef.current) {
+        try {
+          scannerInstanceRef.current.stop().catch((err: any) => {
+            console.error('Failed to stop scanner:', err);
+          });
+        } catch (error) {
+          console.error('Error stopping scanner:', error);
+        }
+        scannerInstanceRef.current = null;
+      }
+    };
+  }, [isQrScannerActive, enqueueSnackbar]);
 
   const addDevice = async (): Promise<void> => {
     if (requestId) {
       try {
-       const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(requestId);
-       console.log('approveJoinWallet result', result);
+        const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(requestId);
+        console.log('approveJoinWallet result', result);
         setPhase(2); // Set phase to 2 for success
       } catch (e) {
         console.error(e);
@@ -121,22 +249,100 @@ export const AddNewDeviceDialog: React.FC<IProps> = observer(function AddNewDevi
               {phase === 0 && (
                 <>
                   <ParametersStyled>
-                    <div style={{ marginBottom: '20px', width: '100%' }}>
-                      <TextInput
-                        label={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID')}
-                        placeholder={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID_PLACEHOLDER')}
-                        value={requestId}
-                        setValue={setRequestId}
-                      />
-                    </div>
-                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                      <ActionButton
-                        caption={t('SETTINGS.DIALOGS.ADD_DEVICE.CHECK_REQUEST_ID')}
-                        onClick={handleCheckRequestId}
-                        disabled={!requestId}
-                        isDialog={true}
-                      />
-                    </div>
+                    {!isQrScannerActive ? (
+                      <>
+                        <div style={{ marginBottom: '20px', width: '100%' }}>
+                          <TextInput
+                            label={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID')}
+                            placeholder={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID_PLACEHOLDER')}
+                            value={requestId}
+                            setValue={setRequestId}
+                          />
+                        </div>
+                        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                          <ActionButton
+                            caption={t('SETTINGS.DIALOGS.ADD_DEVICE.SCAN_QR_CODE')}
+                            onClick={toggleQrScanner}
+                            isDialog={true}
+                            secondary={true}
+                          />
+                          <ActionButton
+                            caption={t('SETTINGS.DIALOGS.ADD_DEVICE.CHECK_REQUEST_ID')}
+                            onClick={handleCheckRequestId}
+                            disabled={!requestId}
+                            isDialog={true}
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ marginBottom: '20px', width: '100%', height: '300px' }}>
+                          {isQrScannerActive ? (
+                            <>
+                              <div
+                                id="qr-reader-container"
+                                ref={qrScannerRef}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  position: 'relative',
+                                }}
+                              >
+                                {/* Fallback message that will be replaced by the scanner UI */}
+                                <div
+                                  style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    flexDirection: 'column',
+                                    gap: '10px',
+                                    zIndex: 0,
+                                  }}
+                                >
+                                  <Typography variant="body2" color="text.secondary">
+                                    Initializing camera...
+                                  </Typography>
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <div
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                border: '1px dashed #ccc',
+                                borderRadius: '4px',
+                                flexDirection: 'column',
+                                gap: '10px',
+                              }}
+                            >
+                              <Typography variant="h6">
+                                {t('SETTINGS.DIALOGS.ADD_DEVICE.QR_SCANNER_PLACEHOLDER')}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                {t('SETTINGS.DIALOGS.ADD_DEVICE.QR_SCANNER_INSTRUCTION')}
+                              </Typography>
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                          <ActionButton
+                            caption={t('SETTINGS.DIALOGS.ADD_DEVICE.BACK_TO_MANUAL')}
+                            onClick={toggleQrScanner}
+                            isDialog={true}
+                            secondary={true}
+                          />
+                        </div>
+                      </>
+                    )}
                   </ParametersStyled>
                 </>
               )}
@@ -282,7 +488,9 @@ export const AddNewDeviceDialog: React.FC<IProps> = observer(function AddNewDevi
                           <div className="try-again-button" style={{ width: '156px' }}>
                             <ActionButton
                               caption={t('SETTINGS.DIALOGS.ADD_DEVICE.TRY_AGAIN')}
-                              onClick={() => tryAgain()}
+                              onClick={() => {
+                                tryAgain();
+                              }}
                               isDialog={true}
                             />
                           </div>
