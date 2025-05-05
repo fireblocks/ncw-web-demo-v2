@@ -3,6 +3,7 @@ export const translationToEnglish = {
     ASSETS: 'Assets',
     NFTs: 'NFTs',
     TRANSACTIONS: 'Transactions',
+    WEB3: 'Web3',
     TRANSACTIONS_NOTIFICATION: 'There is a transaction awaiting your signature.',
   },
   TRANSACTIONS: {
@@ -183,7 +184,7 @@ export const translationToEnglish = {
       TITLE: 'Add an asset',
       DESCRIPTION: 'Choose an asset from the supported asset list.',
       SEARCH: 'SEARCH FOR AN ASSET',
-      ERROR_MESSAGE: 'Asset not added',
+      ERROR_MESSAGE: 'Asset not added, make sure you created a backup for the wallet before adding an asset.',
       SUCCESS_MESSAGE: 'Asset added',
     },
     NEW_TRANSACTION_DIALOG: {
@@ -258,6 +259,30 @@ export const translationToEnglish = {
         DATE: 'Date',
         STANDARD: 'Standard',
         TOKEN_ID: 'Token ID',
+      },
+    },
+  },
+  WEB3: {
+    EMPTY_PAGE_TITLE: 'No connections to display',
+    EMPTY_PAGE_DESCRIPTION: 'Get started by adding your first connection.',
+    TITLE: 'WEB3',
+    CONNECTIONS: 'Connections',
+    SEARCH: 'Search for a DAPP connection',
+    ADD_CONNECTION: 'Add Connection',
+    UNLINK: 'Unlink',
+    ADD_DIALOG: {
+      TITLE: 'Add a connection',
+      DESCRIPTION: 'Connect to a new DApp.',
+      SEARCH: 'SEARCH FOR A DAPP',
+      ERROR_MESSAGE: 'Connection failed',
+      SUCCESS_MESSAGE: 'Connection added',
+    },
+    TABLE: {
+      HEADERS: {
+        DAPP: 'DAPP',
+        DESCRIPTION: 'DESCRIPTION',
+        WEBSITE: 'WEBSITE',
+        CONNECTION_DATE: 'Connection Date',
       },
     },
   },

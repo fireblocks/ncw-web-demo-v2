@@ -88,7 +88,7 @@ const TableHeaderRowStyled = styled('div')(({ theme }) => ({
 }));
 
 interface IProps {
-  page: 'ASSETS' | 'NFT' | 'TRANSACTIONS';
+  page: 'ASSETS' | 'NFT' | 'TRANSACTIONS' | 'WEB3';
   onAddAsset?: () => void;
 }
 
@@ -128,6 +128,9 @@ export const EmptyPage: React.FC<IProps> = ({ page, onAddAsset }) => {
       icon = IconEmptyPageNoNft;
       break;
     case 'TRANSACTIONS':
+      icon = IconEmptyPageNoTx;
+      break;
+    default:
       icon = IconEmptyPageNoTx;
       break;
   }

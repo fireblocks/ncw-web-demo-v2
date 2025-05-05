@@ -24,6 +24,7 @@ export * from './table/cells/TableTransferCell';
 export * from './table/cells/TableCell';
 export * from './table/cells/TableStatusCell';
 export * from './table/cells/TableSignCell';
+export * from './table/cells/TableUnlinkCell';
 export * from './ModeSwitcher';
 export * from './ContentSection';
 export * from './Dialog';

@@ -84,6 +84,7 @@ export const Header: React.FC = observer(function Header() {
   const isAssetsPage = location.pathname === '/assets';
   const isTransactionsPage = location.pathname === '/transactions';
   const isNftsPage = location.pathname === '/nfts';
+  const isWeb3Page = location.pathname === '/web3';
   const isUserMenuOpen = Boolean(userMenuAnchorEl);
   const showTransactionsNotification = transactionsStore.hasPendingSignature;
 
@@ -153,6 +154,12 @@ export const Header: React.FC = observer(function Header() {
                   <NotificationBadgeStyled />
                 </Tooltip>
               )}
+            </NavLinkStyled>
+            <NavLinkStyled to="web3">
+              <Typography variant="h6" color="inherit">
+                {t('NAVIGATION.WEB3')}
+              </Typography>
+              {isWeb3Page && <LinkMarkerStyled />}
             </NavLinkStyled>
           </>
         )}
