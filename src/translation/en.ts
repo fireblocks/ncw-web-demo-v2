@@ -269,7 +269,7 @@ export const translationToEnglish = {
     CONNECTIONS: 'Connections',
     SEARCH: 'Search for a DAPP connection',
     ADD_CONNECTION: 'Add Connection',
-    UNLINK: 'Unlink',
+    UNLINK: 'Remove Connection',
     ADD_DIALOG: {
       TITLE: 'Add connection',
       DESCRIPTION: 'Connect to a new DApp.',
@@ -284,6 +284,19 @@ export const translationToEnglish = {
       ERROR_MESSAGE: 'Connection failed',
       SUCCESS_MESSAGE: 'Connection added',
       DAPP_CONNECTED: 'DAPP CONNECTED',
+    },
+    DETAILS_DIALOG: {
+      TITLE: 'Connection Details',
+      CONNECTED_DAPP: 'Connected dapp',
+      CONNECTION_DATE: 'Connection date',
+      SUPPORTED_BLOCKCHAINS: 'Supported blockchains',
+      FIREBLOCKS_CONNECTION_ID: 'Fireblocks connection ID',
+      REMOVE_CONNECTION: 'Remove Connection',
+      CONNECTION_REMOVED: 'Connection removed',
+      ERROR_REMOVING: 'Failed to remove connection',
+      REMOVE_CONFIRMATION_TITLE: 'Remove connection?',
+      REMOVE_CONFIRMATION_TEXT: 'The wallet will be disconnected from {{dappName}}. You can re-connect the dApp again at any time.',
+      CANCEL: 'Cancel',
     },
     TABLE: {
       HEADERS: {

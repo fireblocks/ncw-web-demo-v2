@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { LoadingPage, Typography, styled } from '@foundation';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
 import { EmptyPage } from '../common/EmptyPage';
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { AddConnectionDialog } from './AddConnectionDialog/AddConnectionDialog';
-import { Web3List } from './Web3List';
+import { DAppDetailsDialog } from './DAppDetailsDialog/DAppDetailsDialog';
+import { Connection, Web3List } from './Web3List';
 import { preloadAllImages } from './Web3ListItem';
 
 const RootStyled = styled('div')(() => ({
@@ -56,7 +58,10 @@ const mockConnections = [
 
 export const Web3Page: React.FC = observer(function Web3Page() {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const [isAddConnectionDialogOpen, setIsAddConnectionDialogOpen] = React.useState(false);
+  const [isDAppDetailsDialogOpen, setIsDAppDetailsDialogOpen] = React.useState(false);
+  const [selectedConnection, setSelectedConnection] = React.useState<Connection | null>(null);
   const [connections, setConnections] = React.useState(mockConnections);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -66,8 +71,31 @@ export const Web3Page: React.FC = observer(function Web3Page() {
     preloadAllImages(mockConnections);
   }, []);
 
+  // Preload the image for the selected connection when it changes
+  useEffect(() => {
+    if (selectedConnection && selectedConnection.icon) {
+      preloadAllImages([selectedConnection]);
+    }
+  }, [selectedConnection]);
+
   // Set the visited page in localStorage
   localStorage.setItem('VISITED_PAGE', 'web3');
+
+  // Handle opening the DApp details dialog
+  const handleOpenDAppDetailsDialog = (connection: Connection) => {
+    // Preload the image for the selected connection
+    if (connection && connection.icon) {
+      preloadAllImages([connection]);
+    }
+    setSelectedConnection(connection);
+    setIsDAppDetailsDialogOpen(true);
+  };
+
+  // Handle removing a connection
+  const handleRemoveConnection = (connectionId: string) => {
+    setConnections(connections.filter(conn => conn.id !== connectionId));
+    enqueueSnackbar(t('WEB3.DETAILS_DIALOG.CONNECTION_REMOVED'), { variant: 'success' });
+  };
 
   if (isLoading) {
     return <LoadingPage />;
@@ -101,6 +129,7 @@ export const Web3Page: React.FC = observer(function Web3Page() {
             onAddConnectionDialogOpen={() => {
               setIsAddConnectionDialogOpen(true);
             }}
+            onOpenDAppDetailsDialog={handleOpenDAppDetailsDialog}
           />
         </>
       )}
@@ -113,6 +142,15 @@ export const Web3Page: React.FC = observer(function Web3Page() {
           setConnections([...connections, connection]);
           setIsAddConnectionDialogOpen(false);
         }}
+      />
+      <DAppDetailsDialog
+        isOpen={isDAppDetailsDialogOpen}
+        onClose={() => {
+          setIsDAppDetailsDialogOpen(false);
+          setSelectedConnection(null);
+        }}
+        connection={selectedConnection}
+        onRemoveConnection={handleRemoveConnection}
       />
     </RootStyled>
   );

@@ -23,9 +23,10 @@ export interface Connection {
 interface IProps {
   connections: Connection[];
   onAddConnectionDialogOpen: () => void;
+  onOpenDAppDetailsDialog: (connection: Connection) => void;
 }
 
-export const Web3List: React.FC<IProps> = observer(function Web3List({ connections, onAddConnectionDialogOpen }) {
+export const Web3List: React.FC<IProps> = observer(function Web3List({ connections, onAddConnectionDialogOpen, onOpenDAppDetailsDialog }) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [selectedConnectionId, setSelectedConnectionId] = useState<string | null>(null);
@@ -117,6 +118,7 @@ export const Web3List: React.FC<IProps> = observer(function Web3List({ connectio
                       style={style} 
                       selectedConnectionId={selectedConnectionId}
                       setSelectedConnectionId={setSelectedConnectionId}
+                      onOpenDAppDetailsDialog={onOpenDAppDetailsDialog}
                     />
                   )}
                 </FixedSizeList>

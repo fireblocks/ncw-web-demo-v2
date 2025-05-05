@@ -152,12 +152,7 @@ export const AddConnectionDialog: React.FC<IProps> = observer(function AddConnec
   };
 
   const handleCancel = () => {
-    if (isConfirmationScreen) {
-      setIsConfirmationScreen(false);
-      setConnectionDetails(null);
-    } else {
-      onClose();
-    }
+    onClose();
   };
 
   return (

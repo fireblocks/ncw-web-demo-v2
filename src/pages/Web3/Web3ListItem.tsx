@@ -34,7 +34,7 @@ const DAppIconImageStyled = styled('img')(() => ({
 }));
 
 // Global image cache to prevent reloading on hover
-const imageCache: Record<string, HTMLImageElement> = {};
+export const imageCache: Record<string, HTMLImageElement> = {};
 // Global cache for failed URLs to prevent repeated attempts to load them
 export const failedUrlsCache: Set<string> = new Set();
 
@@ -172,6 +172,7 @@ interface IProps {
   filteredConnections: Connection[];
   selectedConnectionId: string | null;
   setSelectedConnectionId: (id: string | null) => void;
+  onOpenDAppDetailsDialog: (connection: Connection) => void;
 }
 
 export const Web3ListItem: React.FC<IProps> = observer(function Web3ListItem({
@@ -180,6 +181,7 @@ export const Web3ListItem: React.FC<IProps> = observer(function Web3ListItem({
   filteredConnections,
   selectedConnectionId,
   setSelectedConnectionId,
+  onOpenDAppDetailsDialog,
 }) {
   // Preload all images when component mounts
   useEffect(() => {
@@ -242,8 +244,8 @@ export const Web3ListItem: React.FC<IProps> = observer(function Web3ListItem({
               {connection.id === selectedConnectionId && (
                 <TableUnlinkCell
                   onUnlink={() => {
-                    // Handle unlink action here
-                    console.log(`Unlink connection: ${connection.id}`);
+                    // Open the DApp details dialog
+                    onOpenDAppDetailsDialog(connection);
                   }}
                 />
               )}
