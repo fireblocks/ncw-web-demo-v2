@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { ActionButton, SearchInput, Table, TableBody, TableHead, TableHeaderCell } from '@foundation';
+import React, { useEffect, useState } from 'react';
+import { ActionButton, SearchInput, SortableTableHeaderCell, Table, TableBody, TableHead, TableHeaderCell, SortDirection } from '@foundation';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -27,14 +27,28 @@ interface IProps {
 
 export const Web3List: React.FC<IProps> = observer(function Web3List({ connections, onAddConnectionDialogOpen }) {
   const { t } = useTranslation();
-  const [query, setQuery] = React.useState('');
-  const [selectedConnectionId, setSelectedConnectionId] = React.useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [selectedConnectionId, setSelectedConnectionId] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<string | null>('connectionDate');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   // Preload all images when component mounts
   useEffect(() => {
     // Preload images for all connections as early as possible
     preloadAllImages(connections);
   }, [connections]);
+
+  // Handle sorting
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new field and default to descending
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
 
   // Filter connections based on search query
   const filteredConnections = connections.filter(
@@ -43,6 +57,19 @@ export const Web3List: React.FC<IProps> = observer(function Web3List({ connectio
       connection.description.toLowerCase().includes(query.toLowerCase()) ||
       connection.website.toLowerCase().includes(query.toLowerCase())
   );
+
+  // Sort connections based on sort field and direction
+  const sortedConnections = [...filteredConnections].sort((a, b) => {
+    if (!sortField) return 0;
+
+    if (sortField === 'connectionDate') {
+      const dateA = a.connectionDate.getTime();
+      const dateB = b.connectionDate.getTime();
+      return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+    }
+
+    return 0;
+  });
 
   return (
     <>
@@ -60,13 +87,19 @@ export const Web3List: React.FC<IProps> = observer(function Web3List({ connectio
             <TableHeaderCell title={t('WEB3.TABLE.HEADERS.DAPP')} />
             <TableHeaderCell title={t('WEB3.TABLE.HEADERS.DESCRIPTION')} />
             <TableHeaderCell title={t('WEB3.TABLE.HEADERS.WEBSITE')} />
-            <TableHeaderCell title={t('WEB3.TABLE.HEADERS.CONNECTION_DATE')} />
+            <SortableTableHeaderCell 
+              title={t('WEB3.TABLE.HEADERS.CONNECTION_DATE')}
+              sortField="connectionDate"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
           </RowStyled>
         </TableHead>
         <TableBody>
           <AutoSizer>
             {({ height, width }) => {
-              if (filteredConnections.length === 0) {
+              if (sortedConnections.length === 0) {
                 return <EmptySearch height={height} width={width} />;
               }
 
@@ -74,12 +107,12 @@ export const Web3List: React.FC<IProps> = observer(function Web3List({ connectio
                 <FixedSizeList
                   height={height}
                   width={width}
-                  itemCount={filteredConnections.length}
+                  itemCount={sortedConnections.length}
                   itemSize={TABLE_ROW_HEIGHT}
                 >
                   {({ index, style }) => (
                     <Web3ListItem 
-                      filteredConnections={filteredConnections} 
+                      filteredConnections={sortedConnections} 
                       index={index} 
                       style={style} 
                       selectedConnectionId={selectedConnectionId}

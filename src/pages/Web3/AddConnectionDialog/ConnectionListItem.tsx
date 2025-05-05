@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ActionButton, Progress, TableCell, TableRow, styled } from '@foundation';
+import IconNoAsset from '@icons/no_asset_image.svg';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { Connection } from '../Web3List';
+import { failedUrlsCache } from '../Web3ListItem';
 
 const RowStyled = styled('div')(() => ({
   display: 'grid',
@@ -26,6 +28,12 @@ const DAppIconImageStyled = styled('img')(() => ({
   width: 38,
   height: 38,
   objectFit: 'contain',
+  // Prevent flickering during transitions
+  willChange: 'transform',
+  backfaceVisibility: 'hidden',
+  transform: 'translateZ(0)', // Force GPU acceleration
+  WebkitFontSmoothing: 'antialiased', // Smooth rendering
+  imageRendering: 'auto', // Use browser's default algorithm for image scaling
 }));
 
 // Custom TableTitleCell with white background for the icon
@@ -34,11 +42,29 @@ const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: strin
   subtitle, 
   iconUrl 
 }) => {
+  // Initialize error state from the global cache
+  const [hasImageError, setHasImageError] = useState(failedUrlsCache.has(iconUrl));
+
+  // Update error state if the URL is already in the failed cache
+  useEffect(() => {
+    if (failedUrlsCache.has(iconUrl) && !hasImageError) {
+      setHasImageError(true);
+    }
+  }, [iconUrl, hasImageError]);
+
   return (
     <TableCell>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <DAppIconStyled>
-          <DAppIconImageStyled src={iconUrl} alt={title} />
+          <DAppIconImageStyled 
+            src={hasImageError ? IconNoAsset : iconUrl} 
+            alt={title} 
+            onError={() => {
+              setHasImageError(true);
+              // Add to global failed cache
+              failedUrlsCache.add(iconUrl);
+            }}
+          />
         </DAppIconStyled>
         <div>
           <div style={{ fontWeight: 'bold' }}>{title}</div>
@@ -73,7 +99,7 @@ export const ConnectionListItem: React.FC<IProps> = observer(function Connection
 
   const handleAddConnection = (connection: Connection) => {
     setIsAddingConnection(true);
-    
+
     // Simulate an API call with a timeout
     setTimeout(() => {
       try {
@@ -82,7 +108,7 @@ export const ConnectionListItem: React.FC<IProps> = observer(function Connection
           ...connection,
           connectionDate: new Date(),
         };
-        
+
         onAddConnection(newConnection);
         onDialogClose();
         setIsAddingConnection(false);

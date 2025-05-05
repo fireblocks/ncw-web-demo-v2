@@ -1,78 +1,26 @@
 import React, { useEffect } from 'react';
-import { Dialog, SearchInput, Table, TableBody, styled, LoadingPage } from '@foundation';
+import { Dialog, TextInput, ActionButton, styled } from '@foundation';
+import { Button } from '@mui/material';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import { FixedSizeList } from 'react-window';
-import { EmptySearch } from '../../common/EmptySearch';
+import { useSnackbar } from 'notistack';
 import { Connection } from '../Web3List';
-import { ConnectionListItem } from './ConnectionListItem';
-import { preloadAllImages } from '../Web3ListItem';
+import { preloadAllImages, failedUrlsCache } from '../Web3ListItem';
+import { ConnectionConfirmation } from './ConnectionConfirmation';
 
-const TABLE_ROW_HEIGHT = 114;
-
-const TableWrapperStyled = styled('div')(() => ({
+const FormContainerStyled = styled('div')(({ theme }) => ({
+  padding: theme.spacing(3),
   display: 'flex',
   flexDirection: 'column',
-  height: 340,
+  gap: theme.spacing(3),
 }));
 
-const SearchWrapperStyled = styled('div')(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.secondary.main}`,
-  backgroundColor: theme.palette.background.paper,
+const ButtonsContainerStyled = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: theme.spacing(2),
+  marginTop: theme.spacing(2),
 }));
-
-// Mock data for available connections
-const availableConnections: Connection[] = [
-  {
-    id: '1',
-    name: 'Metamask',
-    description: 'A crypto wallet & gateway to blockchain apps',
-    website: 'https://metamask.io',
-    connectionDate: new Date(),
-    icon: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
-  },
-  {
-    id: '2',
-    name: 'Uniswap',
-    description: 'Swap, earn, and build on the leading decentralized crypto trading protocol',
-    website: 'https://uniswap.org',
-    connectionDate: new Date(),
-    icon: 'https://cryptologos.cc/logos/uniswap-uni-logo.png',
-  },
-  {
-    id: '3',
-    name: 'Opensea',
-    description: 'The world\'s first and largest NFT marketplace',
-    website: 'https://opensea.io',
-    connectionDate: new Date(),
-    icon: 'https://opensea.io/static/images/logos/opensea.svg',
-  },
-  {
-    id: '4',
-    name: 'Magic Eden',
-    description: 'The leading cross-chain NFT platform',
-    website: 'https://magiceden.io',
-    connectionDate: new Date(),
-    icon: 'https://seeklogo.com/images/M/magic-eden-logo-F5E54454C5-seeklogo.com.png',
-  },
-  {
-    id: '5',
-    name: 'Aave',
-    description: 'Open Source Liquidity Protocol',
-    website: 'https://aave.com',
-    connectionDate: new Date(),
-    icon: 'https://cryptoicons.org/api/icon/aave/200',
-  },
-  {
-    id: '6',
-    name: 'Compound',
-    description: 'Algorithmic, autonomous interest rate protocol',
-    website: 'https://compound.finance',
-    connectionDate: new Date(),
-    icon: 'https://cryptoicons.org/api/icon/comp/200',
-  },
-];
 
 interface IProps {
   isOpen: boolean;
@@ -86,80 +34,182 @@ export const AddConnectionDialog: React.FC<IProps> = observer(function AddConnec
   onAddConnection 
 }) {
   const { t } = useTranslation();
-  const [query, setQuery] = React.useState('');
+  const { enqueueSnackbar } = useSnackbar();
+  const [connectionLink, setConnectionLink] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isConfirmationScreen, setIsConfirmationScreen] = React.useState(false);
+  const [connectionDetails, setConnectionDetails] = React.useState<Connection | null>(null);
 
-  // Preload all images when component mounts
+  // Default icon URL used for new connections
+  const defaultIconUrl = 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg';
+
+  // Preload the default icon when component mounts
   useEffect(() => {
-    if (isOpen) {
-      // Preload images for all available connections
-      preloadAllImages(availableConnections);
+    // Skip if already in failed cache
+    if (failedUrlsCache.has(defaultIconUrl)) {
+      return;
     }
-  }, [isOpen]);
 
-  const filteredConnections = availableConnections.filter(
-    (connection) => 
-      connection.name.toLowerCase().includes(query.toLowerCase()) || 
-      connection.description.toLowerCase().includes(query.toLowerCase()) ||
-      connection.website.toLowerCase().includes(query.toLowerCase())
-  );
+    const img = new Image();
+    img.src = defaultIconUrl;
+    img.onerror = () => {
+      // Mark as failed if it doesn't load
+      failedUrlsCache.add(defaultIconUrl);
+    };
+  }, []);
 
   const handleDialogExited = () => {
-    setQuery('');
+    setConnectionLink('');
+    setIsConfirmationScreen(false);
+    setConnectionDetails(null);
+  };
+
+  // Preload the connection details icon when it changes
+  useEffect(() => {
+    if (connectionDetails && connectionDetails.icon) {
+      // Skip if already in failed cache
+      if (failedUrlsCache.has(connectionDetails.icon)) {
+        return;
+      }
+
+      const img = new Image();
+      img.src = connectionDetails.icon;
+      img.onerror = () => {
+        // Mark as failed if it doesn't load
+        failedUrlsCache.add(connectionDetails.icon);
+      };
+    }
+  }, [connectionDetails]);
+
+  // Preload all icons when dialog is opened
+  useEffect(() => {
+    if (isOpen) {
+      // Create a mock connection with the default icon to preload it
+      const mockConnections: Connection[] = [
+        {
+          id: 'default',
+          name: 'Default',
+          description: '',
+          website: '',
+          connectionDate: new Date(),
+          icon: defaultIconUrl,
+        }
+      ];
+
+      // Add the current connection details if available
+      if (connectionDetails) {
+        mockConnections.push(connectionDetails);
+      }
+
+      // Preload all icons
+      preloadAllImages(mockConnections);
+    }
+  }, [isOpen, connectionDetails, defaultIconUrl]);
+
+  const handleContinue = () => {
+    if (!connectionLink) return;
+
+    setIsLoading(true);
+
+    // Simulate an API call with a timeout to get connection details
+    setTimeout(() => {
+      try {
+        // Create a new connection with the link
+        const newConnection: Connection = {
+          id: Date.now().toString(),
+          name: 'Custom Connection',
+          description: connectionLink,
+          website: connectionLink,
+          connectionDate: new Date(),
+          icon: defaultIconUrl, // Use the defaultIconUrl variable
+        };
+
+        setConnectionDetails(newConnection);
+        setIsConfirmationScreen(true);
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+        enqueueSnackbar(t('WEB3.ADD_DIALOG.ERROR_MESSAGE'), { variant: 'error' });
+      }
+    }, 500); // Simulate a delay
+  };
+
+  const handleConnect = (connection: Connection) => {
+    setIsLoading(true);
+
+    // Simulate an API call with a timeout
+    setTimeout(() => {
+      try {
+        onAddConnection(connection);
+        onClose();
+        setIsLoading(false);
+        enqueueSnackbar(t('WEB3.ADD_DIALOG.DAPP_CONNECTED'), { variant: 'success' });
+      } catch (error) {
+        setIsLoading(false);
+        enqueueSnackbar(t('WEB3.ADD_DIALOG.ERROR_MESSAGE'), { variant: 'error' });
+      }
+    }, 500); // Simulate a delay
+  };
+
+  const handleCancel = () => {
+    if (isConfirmationScreen) {
+      setIsConfirmationScreen(false);
+      setConnectionDetails(null);
+    } else {
+      onClose();
+    }
   };
 
   return (
     <Dialog
-      title={t('WEB3.ADD_DIALOG.TITLE')}
+      title={isConfirmationScreen ? t('WEB3.ADD_DIALOG.CONFIRM_TITLE') : t('WEB3.ADD_DIALOG.TITLE')}
       description={t('WEB3.ADD_DIALOG.DESCRIPTION')}
       isOpen={isOpen}
       onClose={onClose}
       size="small"
       onExited={handleDialogExited}
     >
-      <div>
-        {isLoading ? (
-          <LoadingPage />
-        ) : (
-          <>
-            <SearchWrapperStyled>
-              <SearchInput query={query} setQuery={setQuery} placeholder={t('WEB3.ADD_DIALOG.SEARCH')} />
-            </SearchWrapperStyled>
-            <TableWrapperStyled>
-              <Table>
-                <TableBody>
-                  <AutoSizer>
-                    {({ height, width }) => {
-                      if (filteredConnections.length === 0) {
-                        return <EmptySearch height={height} width={width} />;
-                      }
+      {isConfirmationScreen && connectionDetails ? (
+        <ConnectionConfirmation
+          connection={connectionDetails}
+          onCancel={handleCancel}
+          onConnect={handleConnect}
+          isLoading={isLoading}
+        />
+      ) : (
+        <FormContainerStyled>
+          <TextInput
+            label={t('WEB3.ADD_DIALOG.CONNECTION_LINK')}
+            value={connectionLink}
+            setValue={setConnectionLink}
+            placeholder=""
+            disabled={isLoading}
+          />
 
-                      return (
-                        <FixedSizeList
-                          height={height}
-                          width={width}
-                          itemCount={filteredConnections.length}
-                          itemSize={TABLE_ROW_HEIGHT}
-                        >
-                          {({ index, style }) => (
-                            <ConnectionListItem
-                              filteredConnections={filteredConnections}
-                              index={index}
-                              style={style}
-                              onDialogClose={onClose}
-                              onAddConnection={onAddConnection}
-                            />
-                          )}
-                        </FixedSizeList>
-                      );
-                    }}
-                  </AutoSizer>
-                </TableBody>
-              </Table>
-            </TableWrapperStyled>
-          </>
-        )}
-      </div>
+          <ButtonsContainerStyled>
+            <Button
+              onClick={handleCancel}
+              sx={{
+                textTransform: 'none',
+                color: 'white',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                lineHeight: 1.43,
+                letterSpacing: '0.01071em',
+              }}
+            >
+              {t('WEB3.ADD_DIALOG.CANCEL')}
+            </Button>
+
+            <ActionButton
+              caption={t('WEB3.ADD_DIALOG.CONTINUE')}
+              onClick={handleContinue}
+              disabled={!connectionLink || isLoading}
+              isDialog={true}
+            />
+          </ButtonsContainerStyled>
+        </FormContainerStyled>
+      )}
     </Dialog>
   );
 });

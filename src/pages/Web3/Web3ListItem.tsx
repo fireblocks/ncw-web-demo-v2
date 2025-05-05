@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { TableCell, TableRow, TableTextCell, TableUnlinkCell, styled } from '@foundation';
+import IconNoAsset from '@icons/no_asset_image.svg';
 import { observer } from 'mobx-react';
 import { Connection } from './Web3List';
 
@@ -27,19 +28,44 @@ const DAppIconImageStyled = styled('img')(() => ({
   // Prevent flickering during transitions
   willChange: 'transform',
   backfaceVisibility: 'hidden',
+  transform: 'translateZ(0)', // Force GPU acceleration
+  WebkitFontSmoothing: 'antialiased', // Smooth rendering
+  imageRendering: 'auto', // Use browser's default algorithm for image scaling
 }));
 
 // Global image cache to prevent reloading on hover
 const imageCache: Record<string, HTMLImageElement> = {};
+// Global cache for failed URLs to prevent repeated attempts to load them
+export const failedUrlsCache: Set<string> = new Set();
 
 // Preload all images for the connections
 export const preloadAllImages = (connections: Connection[]) => {
+  // Preload the fallback icon first
+  if (!imageCache[IconNoAsset]) {
+    const fallbackImg = new Image();
+    fallbackImg.src = IconNoAsset;
+    fallbackImg.onload = () => {
+      imageCache[IconNoAsset] = fallbackImg;
+    };
+  }
+
   connections.forEach(connection => {
+    // Skip already failed URLs
+    if (failedUrlsCache.has(connection.icon)) {
+      return;
+    }
+
     if (!imageCache[connection.icon]) {
       const img = new Image();
       img.src = connection.icon;
       img.onload = () => {
         imageCache[connection.icon] = img;
+      };
+      img.onerror = () => {
+        // Mark URL as failed
+        failedUrlsCache.add(connection.icon);
+        // Don't cache failed images
+        delete imageCache[connection.icon];
       };
     }
   });
@@ -50,35 +76,69 @@ const getImage = (url: string): HTMLImageElement | null => {
   return imageCache[url] || null;
 };
 
+// Check if URL is in the failed cache
+const isFailedUrl = (url: string): boolean => {
+  return failedUrlsCache.has(url);
+};
+
 // Custom TableTitleCell with white background for the icon
 const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: string }> = ({
   title,
   subtitle,
   iconUrl,
 }) => {
+  // Check if URL is already known to fail before any state or effects
+  const initiallyFailed = isFailedUrl(iconUrl);
+
   // Use a ref to store the image element
   const imgRef = React.useRef<HTMLImageElement | null>(null);
   // Track if the image is loaded
-  const [isLoaded, setIsLoaded] = useState<boolean>(!!getImage(iconUrl));
+  const [isLoaded, setIsLoaded] = useState<boolean>(!!getImage(iconUrl) || initiallyFailed);
+  // Track if the image has failed to load - initialize from the global cache
+  const [hasError, setHasError] = useState<boolean>(initiallyFailed);
 
-  // Get the image URL - either from cache or the original
+  // Get the image URL - either from cache or the original, or fallback if error
   const imageUrl = React.useMemo(() => {
+    // If URL is known to fail, use fallback immediately
+    if (initiallyFailed || hasError) {
+      return IconNoAsset;
+    }
     const cachedImage = getImage(iconUrl);
     return cachedImage ? cachedImage.src : iconUrl;
-  }, [iconUrl]);
+  }, [iconUrl, hasError, initiallyFailed]);
 
   // Handle image load event
   const handleImageLoad = React.useCallback(() => {
-    setIsLoaded(true);
+    // Only update state if not already failed
+    if (!failedUrlsCache.has(iconUrl)) {
+      setIsLoaded(true);
+      setHasError(false);
 
-    // Store in cache if not already there
-    if (!getImage(iconUrl)) {
-      const img = new Image();
-      img.src = iconUrl;
-      img.onload = () => {
-        imageCache[iconUrl] = img;
-      };
+      // Store in cache if not already there
+      if (!getImage(iconUrl)) {
+        const img = new Image();
+        img.src = iconUrl;
+        img.onload = () => {
+          imageCache[iconUrl] = img;
+        };
+        img.onerror = () => {
+          // Mark URL as failed globally
+          failedUrlsCache.add(iconUrl);
+          // Don't cache failed images
+          delete imageCache[iconUrl];
+        };
+      }
     }
+  }, [iconUrl]);
+
+  // Handle image error event
+  const handleImageError = React.useCallback(() => {
+    // Mark URL as failed globally
+    failedUrlsCache.add(iconUrl);
+    setHasError(true);
+    setIsLoaded(true); // Set as loaded so it's visible
+    // Remove from cache if it was cached
+    delete imageCache[iconUrl];
   }, [iconUrl]);
 
   return (
@@ -90,6 +150,7 @@ const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: strin
             src={imageUrl} 
             alt={title} 
             onLoad={handleImageLoad}
+            onError={handleImageError}
             style={{ 
               opacity: isLoaded ? 1 : 0,
               transition: 'opacity 0.2s ease-in-out'

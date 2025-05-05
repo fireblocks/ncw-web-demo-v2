@@ -271,11 +271,19 @@ export const translationToEnglish = {
     ADD_CONNECTION: 'Add Connection',
     UNLINK: 'Unlink',
     ADD_DIALOG: {
-      TITLE: 'Add a connection',
+      TITLE: 'Add connection',
       DESCRIPTION: 'Connect to a new DApp.',
-      SEARCH: 'SEARCH FOR A DAPP',
+      CONNECTION_LINK: 'CONNECTION LINK',
+      CANCEL: 'Cancel',
+      CONTINUE: 'Continue',
+      CONNECT: 'Connect',
+      CONFIRM_TITLE: 'Confirm connection',
+      DESCRIPTION_LABEL: 'Description',
+      URL_LABEL: 'URL',
+      NA: 'N/A',
       ERROR_MESSAGE: 'Connection failed',
       SUCCESS_MESSAGE: 'Connection added',
+      DAPP_CONNECTED: 'DAPP CONNECTED',
     },
     TABLE: {
       HEADERS: {
