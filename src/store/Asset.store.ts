@@ -163,4 +163,13 @@ export class AssetStore {
   public get rate(): string {
     return this.assetData.rate ? localizedCurrencyView(this.assetData.rate) : NOT_AVAILABLE_PLACEHOLDER;
   }
+
+  /**
+   * Gets the network protocol of this asset
+   * @returns The network protocol
+   */
+  @computed
+  public get networkProtocol(): string {
+    return this.assetData.networkProtocol || '';
+  }
 }

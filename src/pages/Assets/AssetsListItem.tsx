@@ -47,9 +47,9 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
       title: currentAsset.name,
       subtitle: currentAsset.symbol,
       iconUrl: currentAsset.iconUrl || IconNoAsset,
-      assetSymbol: currentAsset.symbol, // Pass the asset symbol for the secondary icon
+      assetSymbol: currentAsset.networkProtocol || IconNoAsset, // Pass the network protocol for the secondary icon
     }),
-    [currentAsset.name, currentAsset.symbol, currentAsset.iconUrl],
+    [currentAsset.name, currentAsset.symbol, currentAsset.iconUrl, currentAsset.networkProtocol],
   );
 
   // Generate a random number between -5 and 20 for the 24H change

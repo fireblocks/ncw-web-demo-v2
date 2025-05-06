@@ -40,11 +40,17 @@ export const TableTextCell: React.FC<IProps> = ({ text, mode = 'REGULAR' }) => {
 
   return (
     <RootStyled>
-      <Tooltip title={textContent} arrow placement="top">
+      {textContent && textContent !== '--' ? (
+        <Tooltip title={textContent} arrow placement="top">
+          <TypographyStyled component="p" variant="body1" color={color}>
+            {textContent}
+          </TypographyStyled>
+        </Tooltip>
+      ) : (
         <TypographyStyled component="p" variant="body1" color={color}>
           {textContent}
         </TypographyStyled>
-      </Tooltip>
+      )}
     </RootStyled>
   );
 };
