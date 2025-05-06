@@ -9,6 +9,12 @@ const RootStyled = styled('div')(() => ({
   maxWidth: '100%',
 }));
 
+const TypographyStyled = styled(Typography)(() => ({
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+}));
+
 interface IProps {
   text: string | number;
   mode?: 'REGULAR' | 'POSITIVE' | 'NEGATIVE';
@@ -30,9 +36,9 @@ export const TableTextCell: React.FC<IProps> = ({ text, mode = 'REGULAR' }) => {
 
   return (
     <RootStyled>
-      <Typography component="p" variant="body1" color={color}>
+      <TypographyStyled component="p" variant="body1" color={color}>
         {text}
-      </Typography>
+      </TypographyStyled>
     </RootStyled>
   );
 };

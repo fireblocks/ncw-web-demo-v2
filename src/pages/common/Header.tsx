@@ -4,6 +4,7 @@ import IconArrowLeft from '@icons/arrow-left.svg';
 import IconLogo from '@icons/logo.svg';
 import IconSettings from '@icons/settings.svg';
 import { useTransactionsStore, useUserStore } from '@store';
+import { ENV_CONFIG } from 'env_config';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -155,12 +156,14 @@ export const Header: React.FC = observer(function Header() {
                 </Tooltip>
               )}
             </NavLinkStyled>
-            <NavLinkStyled to="web3">
-              <Typography variant="h6" color="inherit">
-                {t('NAVIGATION.WEB3')}
-              </Typography>
-              {isWeb3Page && <LinkMarkerStyled />}
-            </NavLinkStyled>
+            {ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' && (
+              <NavLinkStyled to="web3">
+                <Typography variant="h6" color="inherit">
+                  {t('NAVIGATION.WEB3')}
+                </Typography>
+                {isWeb3Page && <LinkMarkerStyled />}
+              </NavLinkStyled>
+            )}
           </>
         )}
       </TreasuryPagesStyled>

@@ -8,6 +8,7 @@ import { FireblocksSDKStore } from './FireblocksSDK.store';
 import { NFTStore } from './NFT.store';
 import { TransactionsStore } from './Transactions.store';
 import { UserStore } from './User.store';
+import { Web3Store } from './Web3.store';
 
 /**
  * RootStore serves as the main store that instantiates and holds references to all other stores.
@@ -41,6 +42,9 @@ export class RootStore {
   /** Store for managing authentication state and operations */
   @observable public authStore: AuthStore;
 
+  /** Store for managing Web3 connections */
+  @observable public web3Store: Web3Store;
+
   /**
    * Initializes the RootStore and creates instances of all child stores
    */
@@ -54,6 +58,7 @@ export class RootStore {
     this.transactionsStore = new TransactionsStore(this);
     this.nftStore = new NFTStore(this);
     this.authStore = new AuthStore(this);
+    this.web3Store = new Web3Store(this);
 
     makeObservable(this);
   }

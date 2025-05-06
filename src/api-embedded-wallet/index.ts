@@ -6,4 +6,4 @@ export * from './accounts.embedded.api';
 export * from './fireblocksSDK.embedded.api';
 export * from './nft.embedded.api';
 export * from './backup.embedded.api';
-
+export * from './web3.embedded.api';

@@ -2,6 +2,7 @@ import React from 'react';
 import { styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Header, SettingsPage, TransactionsPage, Web3Page } from '@pages';
 import { useAssetsStore, useAuthStore, useNFTStore, useTransactionsStore, useUserStore } from '@store';
+import { ENV_CONFIG } from 'env_config';
 import { observer } from 'mobx-react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -68,8 +69,12 @@ export const App: React.FC = observer(function App() {
               <Route path="transactions" element={<Navigate to="/transactions" />} />
               <Route path="/nfts" element={<NFTsPage />} />
               <Route path="nfts" element={<Navigate to="/nfts" />} />
-              <Route path="/web3" element={<Web3Page />} />
-              <Route path="web3" element={<Navigate to="/web3" />} />
+              {ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' && (
+                <>
+                  <Route path="/web3" element={<Web3Page />} />
+                  <Route path="web3" element={<Navigate to="/web3" />} />
+                </>
+              )}
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="settings" element={<Navigate to="/settings" />} />
               <Route

@@ -233,6 +233,11 @@ export const Web3ListItem: React.FC<IProps> = observer(function Web3ListItem({
                 letterSpacing: '0.5px',
                 fontFamily: 'Figtree',
                 color: '#FFFFFF',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: 'block',
+                maxWidth: '100%',
               }}
             >
               {connection.website}

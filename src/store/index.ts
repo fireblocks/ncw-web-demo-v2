@@ -10,3 +10,4 @@ export * from './Transaction.store';
 export * from './NFT.store';
 export * from './NFTToken.store';
 export * from './Auth.store';
+export * from './Web3.store';
