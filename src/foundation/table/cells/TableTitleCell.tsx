@@ -37,6 +37,7 @@ const SecondaryIconStyled = styled('div')(() => ({
   borderRadius: '50%',
   backgroundColor: 'white',
   boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.2)',
+  border: '2px solid black',
 }));
 
 const TextStyled = styled('div')(({ theme }) => ({
