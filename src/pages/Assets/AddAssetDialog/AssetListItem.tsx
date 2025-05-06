@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
-  gridTemplateColumns: '1fr 150px 130px',
+  gridTemplateColumns: '250px 100px 130px',
   columnGap: theme.spacing(2), // Add spacing between columns
   '& > *': {
     maxWidth: '100%', // Ensure each child has max width
