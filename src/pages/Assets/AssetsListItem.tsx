@@ -14,11 +14,16 @@ import {
 import IconNoAsset from '@icons/no_asset_image.svg';
 import { AssetStore } from '@store';
 import { observer } from 'mobx-react';
+import { top100Cryptos } from '@services';
 
 export const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1.5fr 1fr 0.7fr 0.7fr 0.7fr 0.7fr 1fr 0.6fr',
   columnGap: theme.spacing(2), // Add spacing between columns
+  '& > *': {
+    maxWidth: '100%', // Ensure each child has max width
+    overflow: 'hidden', // Hide overflow
+  },
 }));
 
 interface IProps {
@@ -100,6 +105,46 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
     }).format(volume24h);
   }, [volume24h]);
 
+  // Get price from top100Cryptos based on asset symbol
+  const formattedPrice = useMemo(() => {
+    // Get the price from top100Cryptos using the asset symbol
+    // Try different variations of the symbol to find a match
+    const symbol = currentAsset.symbol.toUpperCase();
+    let cryptoData = top100Cryptos[symbol];
+
+    // If not found, try to find it by name
+    if (!cryptoData) {
+      // Log the symbol for debugging
+      console.log('Symbol not found in top100Cryptos:', symbol);
+
+      // Try to find a match by comparing the asset name with the titles in top100Cryptos
+      const assetNameLower = currentAsset.name.toLowerCase();
+
+      // Find a matching cryptocurrency by comparing the asset name with the titles in top100Cryptos
+      const matchingSymbol = Object.keys(top100Cryptos).find(key => {
+        const cryptoTitle = top100Cryptos[key].title.toLowerCase();
+        return assetNameLower.includes(cryptoTitle) || cryptoTitle.includes(assetNameLower);
+      });
+
+      if (matchingSymbol) {
+        cryptoData = top100Cryptos[matchingSymbol];
+      }
+    }
+
+    // If we don't have price data for this coin, return "N/A" instead of "$0"
+    if (!cryptoData) {
+      return "N/A";
+    }
+
+    const price = cryptoData.price;
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    }).format(price);
+  }, [currentAsset.symbol, currentAsset.name]);
+
   return (
     <div
       key={currentAsset.id}
@@ -115,7 +160,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
         <RowStyled>
           <TableTitleCell {...titleCellProps} />
           <TableBalanceCell balance={currentAsset.totalBalance} balanceInUsd={currentAsset.totalBalanceInUSD} />
-          <TableTextCell text={currentAsset.rate} />
+          <TableTextCell text={formattedPrice} />
           <TableChangeCell change={change24h} />
           <TableTextCell text={formattedMarketCap} />
           <TableTextCell text={formattedVolume24h} />

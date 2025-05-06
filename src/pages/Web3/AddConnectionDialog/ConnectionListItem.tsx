@@ -7,9 +7,14 @@ import { useTranslation } from 'react-i18next';
 import { Connection } from '../Web3List';
 import { failedUrlsCache } from '../Web3ListItem';
 
-const RowStyled = styled('div')(() => ({
+const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1fr 130px',
+  columnGap: theme.spacing(2), // Add spacing between columns
+  '& > *': {
+    maxWidth: '100%', // Ensure each child has max width
+    overflow: 'hidden', // Hide overflow
+  },
 }));
 
 // Custom styled component for the DApp icon with white background
@@ -66,9 +71,25 @@ const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: strin
             }}
           />
         </DAppIconStyled>
-        <div>
-          <div style={{ fontWeight: 'bold' }}>{title}</div>
-          {subtitle && <div style={{ opacity: 0.7 }}>{subtitle}</div>}
+        <div style={{ overflow: 'hidden', maxWidth: '100%' }}>
+          <div style={{ 
+            fontWeight: 'bold', 
+            whiteSpace: 'nowrap', 
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis' 
+          }}>
+            {title}
+          </div>
+          {subtitle && (
+            <div style={{ 
+              opacity: 0.7, 
+              whiteSpace: 'nowrap', 
+              overflow: 'hidden', 
+              textOverflow: 'ellipsis' 
+            }}>
+              {subtitle}
+            </div>
+          )}
         </div>
       </div>
     </TableCell>

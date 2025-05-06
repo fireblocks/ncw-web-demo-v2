@@ -19,9 +19,14 @@ import { TransactionStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 
-export const RowStyled = styled('div')(() => ({
+export const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1.8fr 0.9fr 1fr 0.7fr 1fr 1fr 0.6fr',
+  columnGap: theme.spacing(2), // Add spacing between columns
+  '& > *': {
+    maxWidth: '100%', // Ensure each child has max width
+    overflow: 'hidden', // Hide overflow
+  },
 }));
 
 const ActionsStyled = styled('div')(() => ({

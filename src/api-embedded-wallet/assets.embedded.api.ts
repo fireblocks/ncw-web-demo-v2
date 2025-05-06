@@ -119,7 +119,7 @@ export const getAsset = async (
       blockchainDisplayName: asset.blockchainDisplayName,
       blockchainId: asset.blockchainId,
       iconUrl: getCryptoIconUrl(asset.symbol),
-      rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol)?.price || 0,
+      rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol.toLowerCase())?.price || 0,
       algorithm: asset.algorithm || '',
     };
   } catch (error) {
@@ -150,7 +150,7 @@ export const getEmbeddedWalletAssets = async (rootStore: RootStore, accountId: n
     blockchainDisplayName: asset.blockchainDisplayName,
     blockchainId: asset.blockchainId,
     iconUrl: getCryptoIconUrl(asset.symbol),
-    rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol)?.price || 0,
+    rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol.toLowerCase())?.price || 0,
     algorithm: asset?.algorithm || '',
   }));
 };
@@ -182,7 +182,7 @@ export const getEmbeddedWalletAsset = async (
     blockchainDisplayName: asset.blockchainDisplayName,
     blockchainId: asset.blockchainId,
     iconUrl: getCryptoIconUrl(asset.symbol),
-    rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol)?.price || 0,
+    rate: coinsUsdRate.find((item) => item.symbol.toLowerCase() === asset.symbol.toLowerCase())?.price || 0,
     algorithm: asset?.algorithm || '',
   };
 };

@@ -8,6 +8,10 @@ export const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1.5fr 2fr 1fr 1fr',
   columnGap: theme.spacing(2), // Add spacing between columns
+  '& > *': {
+    maxWidth: '100%', // Ensure each child has max width
+    overflow: 'hidden', // Hide overflow
+  },
 }));
 
 // Custom styled component for the DApp icon with white background
@@ -158,9 +162,28 @@ const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: strin
             }}
           />
         </DAppIconStyled>
-        <div>
-          <div style={{ color: 'white', fontSize: '14px' }}>{title}</div>
-          {subtitle && <div style={{ opacity: 0.7, color: 'white', fontSize: '14px' }}>{subtitle}</div>}
+        <div style={{ overflow: 'hidden', maxWidth: '100%' }}>
+          <div style={{ 
+            color: 'white', 
+            fontSize: '14px',
+            whiteSpace: 'nowrap', 
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis' 
+          }}>
+            {title}
+          </div>
+          {subtitle && (
+            <div style={{ 
+              opacity: 0.7, 
+              color: 'white', 
+              fontSize: '14px',
+              whiteSpace: 'nowrap', 
+              overflow: 'hidden', 
+              textOverflow: 'ellipsis' 
+            }}>
+              {subtitle}
+            </div>
+          )}
         </div>
       </div>
     </TableCell>

@@ -38,6 +38,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@api': apiPath,
+      '@services': resolve(__dirname, './src/services'),
     },
   },
 });
