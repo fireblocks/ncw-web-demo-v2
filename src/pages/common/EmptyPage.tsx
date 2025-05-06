@@ -3,6 +3,7 @@ import { ActionButton, Skeleton, Typography, styled } from '@foundation';
 import IconEmptyPageNoAssets from '@icons/empty_page_no_assets.svg';
 import IconEmptyPageNoNft from '@icons/empty_page_no_nft.svg';
 import IconEmptyPageNoTx from '@icons/empty_page_no_tx.svg';
+import IconEmptyPageNoWeb3 from '@icons/empty_page_no_web3.svg';
 import { useTranslation } from 'react-i18next';
 
 const RootStyled = styled('div')(() => ({
@@ -130,6 +131,9 @@ export const EmptyPage: React.FC<IProps> = ({ page, onAddAsset }) => {
     case 'TRANSACTIONS':
       icon = IconEmptyPageNoTx;
       break;
+    case 'WEB3':
+      icon = IconEmptyPageNoWeb3;
+      break;
     default:
       icon = IconEmptyPageNoTx;
       break;
@@ -147,7 +151,12 @@ export const EmptyPage: React.FC<IProps> = ({ page, onAddAsset }) => {
           <Typography color="text.secondary" variant="body2">
             {t(`${page}.EMPTY_PAGE_DESCRIPTION`)}
           </Typography>
-          {onAddAsset && <ActionButton onClick={onAddAsset} caption={t('ASSETS.ADD_ASSET')} />}
+          {onAddAsset && (
+            <ActionButton
+              onClick={onAddAsset}
+              caption={page === 'WEB3' ? t('WEB3.ADD_CONNECTION') : t('ASSETS.ADD_ASSET')}
+            />
+          )}
         </HeadingTextStyled>
       </HeadingStyled>
       <TableStyled>
