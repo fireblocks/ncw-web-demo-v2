@@ -165,6 +165,9 @@ export const DAppDetailsDialog: React.FC<IProps> = ({ isOpen, onClose, connectio
   // Track if the image is loaded
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Track which blockchain icons have failed to load
+  const [failedBlockchainIcons, setFailedBlockchainIcons] = useState<Record<string, boolean>>({});
+
   // Preload the image when the connection changes
   useEffect(() => {
     if (connection) {
@@ -232,8 +235,8 @@ export const DAppDetailsDialog: React.FC<IProps> = ({ isOpen, onClose, connectio
     }
   };
 
-  // Mock Fireblocks connection ID
-  const fireblocksConnectionId = connection ? `fb-${connection.id}-${Date.now().toString(36)}` : '';
+  // Use the actual connection ID from the API response
+  const fireblocksConnectionId = connection ? connection.id : '';
 
   const handleShowRemoveConfirmation = () => {
     setIsRemoveConfirmation(true);
@@ -390,7 +393,17 @@ export const DAppDetailsDialog: React.FC<IProps> = ({ isOpen, onClose, connectio
             <BlockchainLogosStyled>
               {mockBlockchains.map((blockchain) => (
                 <BlockchainLogoRowStyled key={blockchain.id}>
-                  <BlockchainLogoStyled src={blockchain.logo} alt={blockchain.name} />
+                  <BlockchainLogoStyled 
+                    src={failedBlockchainIcons[blockchain.id] ? IconNoAsset : blockchain.logo} 
+                    alt={blockchain.name}
+                    onError={() => {
+                      // Update the failedBlockchainIcons state when an icon fails to load
+                      setFailedBlockchainIcons(prev => ({
+                        ...prev,
+                        [blockchain.id]: true
+                      }));
+                    }}
+                  />
                   <ValueStyled>{blockchain.name}</ValueStyled>
                 </BlockchainLogoRowStyled>
               ))}
