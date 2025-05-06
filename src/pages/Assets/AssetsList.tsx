@@ -64,12 +64,36 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
 
   // Sort assets based on sort field and direction
   const filteredAssets = React.useMemo(() => {
-    if (!sortField || (sortField !== 'marketCap' && sortField !== 'volume24h')) {
+    if (!sortField) {
       return filteredBySearch;
     }
 
     return [...filteredBySearch].sort((a, b) => {
-      if (sortField === 'marketCap') {
+      if (sortField === 'balance') {
+        // Sort by total balance
+        const balanceA = a.totalBalance;
+        const balanceB = b.totalBalance;
+
+        return sortDirection === 'asc' ? balanceA - balanceB : balanceB - balanceA;
+      } else if (sortField === 'price') {
+        // Sort by price (rate)
+        const rateA = a.assetData?.rate || 0;
+        const rateB = b.assetData?.rate || 0;
+
+        return sortDirection === 'asc' ? rateA - rateB : rateB - rateA;
+      } else if (sortField === 'change24h') {
+        // Generate change24h values for comparison
+        const getChange24h = (asset: AssetStore) => {
+          const seed = parseInt(asset.id.replace(/\D/g, '') || '0', 10);
+          const random = Math.abs(Math.sin(seed) * 10000);
+          return (random % 25) - 5; // Range from -5 to 20
+        };
+
+        const change24hA = getChange24h(a);
+        const change24hB = getChange24h(b);
+
+        return sortDirection === 'asc' ? change24hA - change24hB : change24hB - change24hA;
+      } else if (sortField === 'marketCap') {
         // Generate market cap values for comparison
         const getMarketCap = (asset: AssetStore) => {
           const seed = parseInt(asset.id.replace(/\D/g, '') || '0', 10) + 1000;
@@ -133,9 +157,27 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
         <TableHead>
           <RowStyled>
             <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.CURRENCY')} />
-            <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.BALANCE')} />
-            <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.PRICE')} />
-            <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.CHANGE_24H')} />
+            <SortableTableHeaderCell 
+              title={t('ASSETS.TABLE.HEADERS.BALANCE')}
+              sortField="balance"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
+            <SortableTableHeaderCell 
+              title={t('ASSETS.TABLE.HEADERS.PRICE')}
+              sortField="price"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
+            <SortableTableHeaderCell 
+              title={t('ASSETS.TABLE.HEADERS.CHANGE_24H')}
+              sortField="change24h"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
             <SortableTableHeaderCell 
               title={t('ASSETS.TABLE.HEADERS.MARKET_CAP')}
               sortField="marketCap"
