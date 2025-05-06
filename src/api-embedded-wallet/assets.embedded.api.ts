@@ -451,7 +451,7 @@ const getAllRatesLive = async (coinSymbolToIdMap: CoinSymbolToIdMap): Promise<Co
   }
 };
 
-const getCryptoIconUrl = (symbol: string) => {
+export const getCryptoIconUrl = (symbol: string) => {
   const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
   return normalizedSymbol?.length && cryptoIconNamesLocally.includes(normalizedSymbol)
     ? `src/icons/crypto-icons/${normalizedSymbol}.png`

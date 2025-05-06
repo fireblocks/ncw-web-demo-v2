@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { LoadingPage, Typography, styled } from '@foundation';
 import { Button } from '@mui/material';
-import { observer } from 'mobx-react';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
 import { useStores } from '@store';
 import { ENV_CONFIG } from 'env_config';
+import { observer } from 'mobx-react';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { EmptyPage } from '../common/EmptyPage';
 import { AmountsStyled, HeadingAmount } from '../common/HeadingAmount';
 import { AddConnectionDialog } from './AddConnectionDialog/AddConnectionDialog';
@@ -138,7 +138,7 @@ export const Web3Page: React.FC = observer(function Web3Page() {
   const handleRemoveConnection = async (connectionId: string) => {
     if (useMockData) {
       // Use mock data
-      setConnections(connections.filter(conn => conn.id !== connectionId));
+      setConnections(connections.filter((conn) => conn.id !== connectionId));
       enqueueSnackbar(t('WEB3.DETAILS_DIALOG.CONNECTION_REMOVED'), { variant: 'success' });
     } else {
       // Use real API
@@ -218,12 +218,12 @@ export const Web3Page: React.FC = observer(function Web3Page() {
         }
 
         // Check if the new connection is already in the connections array
-        const connectionExists = connections.some(conn => conn.id === newConnection.id);
+        const connectionExists = connections.some((conn) => conn.id === newConnection.id);
 
         if (!connectionExists) {
           console.log('[Web3Page] Adding new connection directly to state:', newConnection);
           // Update the connections state directly
-          setConnections(prev => [...prev, newConnection]);
+          setConnections((prev) => [...prev, newConnection]);
         }
 
         setIsAddConnectionDialogOpen(false);

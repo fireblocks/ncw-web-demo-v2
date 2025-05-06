@@ -4,9 +4,10 @@ import IconNoAsset from '@icons/no_asset_image.svg';
 import { observer } from 'mobx-react';
 import { Connection } from './Web3List';
 
-export const RowStyled = styled('div')(() => ({
+export const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1.5fr 2fr 1fr 1fr',
+  columnGap: theme.spacing(2), // Add spacing between columns
 }));
 
 // Custom styled component for the DApp icon with white background

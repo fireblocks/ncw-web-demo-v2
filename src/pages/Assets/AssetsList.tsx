@@ -5,6 +5,8 @@ import {
   IconButton,
   Progress,
   SearchInput,
+  SortableTableHeaderCell,
+  SortDirection,
   Table,
   TableBody,
   TableHead,
@@ -40,9 +42,62 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
 
   const [isNewTransactionDialogOpen, setIsNewTransactionDialogOpen] = React.useState(false);
 
-  const filteredAssets = assetsStore.myAssetsSortedByBalanceInUSD.filter(
+  const [sortField, setSortField] = React.useState<string | null>('marketCap');
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>('desc');
+
+  // Handle sorting
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new field and default to descending
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  // Filter assets based on search query
+  const filteredBySearch = assetsStore.myAssetsSortedByBalanceInUSD.filter(
     (a) => a.name.toLowerCase().includes(query.toLowerCase()) || a.symbol.toLowerCase().includes(query.toLowerCase()),
   );
+
+  // Sort assets based on sort field and direction
+  const filteredAssets = React.useMemo(() => {
+    if (!sortField || (sortField !== 'marketCap' && sortField !== 'volume24h')) {
+      return filteredBySearch;
+    }
+
+    return [...filteredBySearch].sort((a, b) => {
+      if (sortField === 'marketCap') {
+        // Generate market cap values for comparison
+        const getMarketCap = (asset: AssetStore) => {
+          const seed = parseInt(asset.id.replace(/\D/g, '') || '0', 10) + 1000;
+          const randomBillions = Math.abs(Math.sin(seed) * 10000) % 2000 + 1;
+          return randomBillions * 1000000000;
+        };
+
+        const marketCapA = getMarketCap(a);
+        const marketCapB = getMarketCap(b);
+
+        return sortDirection === 'asc' ? marketCapA - marketCapB : marketCapB - marketCapA;
+      } else if (sortField === 'volume24h') {
+        // Generate 24H volume values for comparison
+        const getVolume24h = (asset: AssetStore) => {
+          const seed = parseInt(asset.id.replace(/\D/g, '') || '0', 10) + 2000;
+          const randomMillions = Math.abs(Math.sin(seed) * 10000) % 1000 + 1;
+          return randomMillions * 1000000;
+        };
+
+        const volume24hA = getVolume24h(a);
+        const volume24hB = getVolume24h(b);
+
+        return sortDirection === 'asc' ? volume24hA - volume24hB : volume24hB - volume24hA;
+      }
+
+      return 0;
+    });
+  }, [filteredBySearch, sortField, sortDirection]);
 
   const onNewTransactionDialogOpen = () => {
     setIsNewTransactionDialogOpen(true);
@@ -80,6 +135,21 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
             <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.CURRENCY')} />
             <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.BALANCE')} />
             <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.PRICE')} />
+            <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.CHANGE_24H')} />
+            <SortableTableHeaderCell 
+              title={t('ASSETS.TABLE.HEADERS.MARKET_CAP')}
+              sortField="marketCap"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
+            <SortableTableHeaderCell 
+              title={t('ASSETS.TABLE.HEADERS.VOLUME_24H')}
+              sortField="volume24h"
+              currentSortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
             <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.ADDRESS')} />
             <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.BASE_ASSET')} />
           </RowStyled>
