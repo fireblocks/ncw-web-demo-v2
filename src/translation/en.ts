@@ -38,9 +38,8 @@ export const translationToEnglish = {
     DESCRIPTION: 'Manage your account settings.',
     DIALOGS: {
       EXPORT_PRIVATE_KEYS: {
-        TITLE: 'Export private key',
-        DESCRIPTION:
-          'Copy the Private Keys and save them in a secure location. You are now the responsible for their security.',
+        TITLE: 'Create a key backup',
+        DESCRIPTION: 'Create a private key to move your assets to a different location.',
         ERROR_MESSAGE: 'Private key not exported',
         SHOW_KEY: 'Show key',
         HIDE_KEY: 'Hide key',
