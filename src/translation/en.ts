@@ -130,7 +130,7 @@ export const translationToEnglish = {
       },
       RECOVER_WALLET: {
         TITLE: 'Recover wallet',
-        DESCRIPTION: 'Retrieve a backed up wallet.',
+        DESCRIPTION: 'Recover wallet that was backed up in your Google drive.',
       },
       EXPORT_PRIVATE_KEY: {
         TITLE: 'Export private key',

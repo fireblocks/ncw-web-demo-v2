@@ -381,7 +381,7 @@ export class AuthStore {
    * Recovers MPC keys from a backup
    * @param location The location where the backup is stored (e.g., GoogleDrive, iCloud)
    */
-  public async recoverMPCKeys(location: TPassphraseLocation): Promise<void> {
+  public async recoverMPCKeys(location: TPassphraseLocation, fromSettingPage = false): Promise<void> {
     try {
       console.log('[Auth] Starting MPC key recovery process');
       const deviceInfo = this._rootStore.userStore.myLatestActiveDevice;
@@ -389,7 +389,7 @@ export class AuthStore {
         try {
           this._rootStore.deviceStore.setDeviceId(deviceInfo.deviceId);
           saveDeviceIdToLocalStorage(deviceInfo.deviceId, this._rootStore.userStore.userId);
-          await this._startRecovery(location);
+          await this._startRecovery(location, fromSettingPage);
         } catch (error) {
           this.setStatus('ERROR');
           throw new Error('Error while starting recovery process.');
@@ -407,17 +407,23 @@ export class AuthStore {
    * @param location The location where the backup is stored (e.g., GoogleDrive, iCloud)
    * @private
    */
-  private async _startRecovery(location: TPassphraseLocation): Promise<void> {
+  private async _startRecovery(location: TPassphraseLocation, fromSettingPage = false): Promise<void> {
     try {
-      this.setStatus('RECOVERING');
+      if (!fromSettingPage) {
+        this.setStatus('RECOVERING');
+      }
       await this._rootStore.deviceStore.assignDeviceToNewWallet();
       await this._rootStore.accountsStore.init();
       await this._rootStore.fireblocksSDKStore.init();
       await this._rootStore.backupStore.init();
       await this._rootStore.backupStore.recoverKeyBackup(location);
-      this.setStatus('READY');
+      if (!fromSettingPage) {
+        this.setStatus('READY');
+      }
     } catch (error: any) {
-      this.setStatus('ERROR');
+      if (!fromSettingPage) {
+        this.setStatus('ERROR');
+      }
       throw new Error(error.message);
     }
   }

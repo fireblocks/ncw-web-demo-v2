@@ -5,7 +5,8 @@ import IconInfo from '@icons/info.svg';
 import IconKey from '@icons/key.svg';
 import IconWallet from '@icons/new-wallet.svg';
 import IconLogs from '@icons/share_logs.svg';
-import { useAssetsStore, useBackupStore, useFireblocksSDKStore } from '@store';
+import IconRecoverWallet from '@icons/setting-recover-wallet.svg';
+import { useAssetsStore, useAuthStore, useBackupStore, useFireblocksSDKStore } from '@store';
 import { decode } from 'js-base64';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
@@ -16,6 +17,7 @@ import { AdvancedInfoDialog } from './Dialogs/AdvancedInfoDialog';
 import { BackupDialog } from './Dialogs/BackupDialog';
 import { ExportPrivateKeysDialog } from './Dialogs/ExportKeys/ExportPrivateKeysDialog';
 import { LogsDialog } from './Dialogs/LogsDialog';
+import { RecoverWalletDialog } from './Dialogs/RecoverWalletDialog';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -41,6 +43,7 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
   const [isExportPrivateKeysDialogOpen, setIsExportPrivateKeysDialogOpen] = React.useState(false);
   // const [disableApproveJoinBtn, setDisableApproveJoinBtn] = React.useState(false);
   const [isAddNewDeviceDialogOpen, setIsAddNewDeviceDialogOpen] = React.useState(false);
+  const [isRecoverWalletDialogOpen, setIsRecoverWalletDialogOpen] = React.useState(false);
 
   /**
    * Approves join wallet request.
@@ -62,6 +65,16 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         description={t('SETTINGS.ITEMS.CREATE_A_KEY_BACKUP.DESCRIPTION')}
         onClick={() => {
           setIsBackupDialogOpen(true);
+        }}
+      />
+
+      <ActionPlate
+        iconSrc={IconRecoverWallet}
+        isLoading={backupStore.isRecoverInProgress}
+        caption={t('SETTINGS.ITEMS.RECOVER_WALLET.TITLE')}
+        description={t('SETTINGS.ITEMS.RECOVER_WALLET.DESCRIPTION')}
+        onClick={() => {
+          setIsRecoverWalletDialogOpen(true);
         }}
       />
 
@@ -150,6 +163,13 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         isOpen={isAddNewDeviceDialogOpen}
         onClose={() => {
           setIsAddNewDeviceDialogOpen(false);
+        }}
+      />
+
+      <RecoverWalletDialog
+        isOpen={isRecoverWalletDialogOpen}
+        onClose={() => {
+          setIsRecoverWalletDialogOpen(false);
         }}
       />
     </RootStyled>
