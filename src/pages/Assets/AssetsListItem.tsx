@@ -141,7 +141,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 0,
     }).format(price);
   }, [currentAsset.symbol, currentAsset.name]);
 
