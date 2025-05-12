@@ -60,7 +60,7 @@ const mockConnections = [
   },
 ];
 
-export const Web3Page: React.FC = observer(function Web3Page() {
+export const Web3Page: React.FC = observer(() => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { web3Store, accountsStore } = useStores();

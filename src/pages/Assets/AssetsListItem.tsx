@@ -5,6 +5,7 @@ import {
   TableBalanceCell,
   TableCell,
   TableChangeCell,
+  TablePriceCell,
   TableRow,
   TableTextCell,
   TableTitleCell,
@@ -12,7 +13,7 @@ import {
   styled,
 } from '@foundation';
 import IconNoAsset from '@icons/no_asset_image.svg';
-import { AssetStore } from '@store';
+import { AssetStore, NOT_AVAILABLE_PLACEHOLDER } from '@store';
 import { observer } from 'mobx-react';
 import { top100Cryptos } from '@services';
 
@@ -106,7 +107,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
   }, [volume24h]);
 
   // Get price from top100Cryptos based on asset symbol
-  const formattedPrice = useMemo(() => {
+  const { formattedPrice, totalValue } = useMemo(() => {
     // Get the price from top100Cryptos using the asset symbol
     // Try different variations of the symbol to find a match
     const symbol = currentAsset.symbol.toUpperCase();
@@ -131,19 +132,43 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
       }
     }
 
-    // If we don't have price data for this coin, return "N/A" instead of "$0"
+    // If we don't have price data for this coin, return placeholder instead of "$0"
     if (!cryptoData) {
-      return "N/A";
+      return {
+        formattedPrice: NOT_AVAILABLE_PLACEHOLDER,
+        totalValue: NOT_AVAILABLE_PLACEHOLDER
+      };
     }
 
     const price = cryptoData.price;
 
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(price);
-  }, [currentAsset.symbol, currentAsset.name]);
+    // Check if the amount is 0 or null
+    if (currentAsset.totalBalance === 0 || currentAsset.totalBalance === null) {
+      return {
+        formattedPrice: new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          maximumFractionDigits: 0,
+        }).format(price),
+        totalValue: '--'
+      };
+    }
+
+    const totalValueAmount = price * currentAsset.totalBalance;
+
+    return {
+      formattedPrice: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(price),
+      totalValue: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(totalValueAmount)
+    };
+  }, [currentAsset.symbol, currentAsset.name, currentAsset.totalBalance]);
 
   return (
     <div
@@ -159,8 +184,8 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
       <TableRow>
         <RowStyled>
           <TableTitleCell {...titleCellProps} />
-          <TableBalanceCell balance={currentAsset.totalBalance} balanceInUsd={currentAsset.totalBalanceInUSD} />
-          <TableTextCell text={formattedPrice} />
+          <TableBalanceCell balance={currentAsset.totalBalance} balanceInUsd={totalValue} assetSymbol={currentAsset.symbol} />
+          <TablePriceCell price={formattedPrice} />
           <TableChangeCell change={change24h} />
           <TableTextCell text={formattedMarketCap} />
           <TableTextCell text={formattedVolume24h} />

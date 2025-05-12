@@ -18,6 +18,7 @@ export * from './table/TableRow';
 export * from './table/TableBody';
 export * from './table/cells/TableBalanceCell';
 export * from './table/cells/TableHeaderCell';
+export * from './table/cells/TablePriceCell';
 export * from './table/cells/TableTextCell';
 export * from './table/cells/TableTitleCell';
 export * from './table/cells/TableTransferCell';

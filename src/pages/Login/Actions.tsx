@@ -7,6 +7,7 @@ import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
 import IconRecovery from '@icons/recover.svg';
 import IconWallet from '@icons/wallet.svg';
+import { Button as MUIButton } from '@mui/material';
 import { useAuthStore, useBackupStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
@@ -15,7 +16,6 @@ import { useNavigate } from 'react-router-dom';
 import { ENV_CONFIG } from '../../env_config.ts';
 import { JoinWalletDialog } from '../Settings/Dialogs/JoinWalletPopup.tsx';
 import { ActionPlate } from './ActionPlate';
-import { Button as MUIButton } from '@mui/material';
 
 const SkipButtonWrapperStyled = styled('div')(({ theme }) => ({
   alignSelf: 'flex-start',

@@ -54,7 +54,7 @@ export const preloadAllImages = (connections: Connection[]) => {
     };
   }
 
-  connections.forEach(connection => {
+  connections.forEach((connection) => {
     // Skip already failed URLs
     if (failedUrlsCache.has(connection.icon)) {
       return;
@@ -77,14 +77,10 @@ export const preloadAllImages = (connections: Connection[]) => {
 };
 
 // Get image from cache or load it
-const getImage = (url: string): HTMLImageElement | null => {
-  return imageCache[url] || null;
-};
+const getImage = (url: string): HTMLImageElement | null => imageCache[url] || null;
 
 // Check if URL is in the failed cache
-const isFailedUrl = (url: string): boolean => {
-  return failedUrlsCache.has(url);
-};
+const isFailedUrl = (url: string): boolean => failedUrlsCache.has(url);
 
 // Custom TableTitleCell with white background for the icon
 const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: string }> = ({
@@ -150,37 +146,41 @@ const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: strin
     <TableCell>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <DAppIconStyled>
-          <DAppIconImageStyled 
+          <DAppIconImageStyled
             ref={imgRef}
-            src={imageUrl} 
-            alt={title} 
+            src={imageUrl}
+            alt={title}
             onLoad={handleImageLoad}
             onError={handleImageError}
-            style={{ 
+            style={{
               opacity: isLoaded ? 1 : 0,
-              transition: 'opacity 0.2s ease-in-out'
+              transition: 'opacity 0.2s ease-in-out',
             }}
           />
         </DAppIconStyled>
         <div style={{ overflow: 'hidden', maxWidth: '100%' }}>
-          <div style={{ 
-            color: 'white', 
-            fontSize: '14px',
-            whiteSpace: 'nowrap', 
-            overflow: 'hidden', 
-            textOverflow: 'ellipsis' 
-          }}>
+          <div
+            style={{
+              color: 'white',
+              fontSize: '14px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
             {title}
           </div>
           {subtitle && (
-            <div style={{ 
-              opacity: 0.7, 
-              color: 'white', 
-              fontSize: '14px',
-              whiteSpace: 'nowrap', 
-              overflow: 'hidden', 
-              textOverflow: 'ellipsis' 
-            }}>
+            <div
+              style={{
+                opacity: 0.7,
+                color: 'white',
+                fontSize: '14px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               {subtitle}
             </div>
           )}
@@ -199,89 +199,84 @@ interface IProps {
   onOpenDAppDetailsDialog: (connection: Connection) => void;
 }
 
-export const Web3ListItem: React.FC<IProps> = observer(function Web3ListItem({
-  index,
-  style,
-  filteredConnections,
-  selectedConnectionId,
-  setSelectedConnectionId,
-  onOpenDAppDetailsDialog,
-}) {
-  // Preload all images when component mounts
-  useEffect(() => {
-    preloadAllImages(filteredConnections);
-  }, [filteredConnections]);
+export const Web3ListItem: React.FC<IProps> = observer(
+  ({ index, style, filteredConnections, selectedConnectionId, setSelectedConnectionId, onOpenDAppDetailsDialog }) => {
+    // Preload all images when component mounts
+    useEffect(() => {
+      preloadAllImages(filteredConnections);
+    }, [filteredConnections]);
 
-  const connection = filteredConnections[index];
+    const connection = filteredConnections[index];
 
-  // Format the connection date
-  const formattedDate = useMemo(
-    () =>
-      connection.connectionDate.toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-      }),
-    [connection.connectionDate],
-  );
+    // Format the connection date
+    const formattedDate = useMemo(
+      () =>
+        connection.connectionDate.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+        }),
+      [connection.connectionDate],
+    );
 
-  return (
-    <div
-      key={connection.id}
-      style={style}
-      onMouseEnter={() => {
-        setSelectedConnectionId(connection.id);
-      }}
-      onMouseLeave={() => {
-        setSelectedConnectionId(null);
-      }}
-    >
-      <TableRow>
-        <RowStyled>
-          <DAppTitleCell title={connection.name} iconUrl={connection.icon} />
-          <TableTextCell text={connection.description} />
-          <TableCell>
-            <a
-              href={connection.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                textDecoration: 'none',
-                margin: 0,
-                fontSize: '14px',
-                lineHeight: '24px',
-                fontWeight: 500,
-                letterSpacing: '0.5px',
-                fontFamily: 'Figtree',
-                color: '#FFFFFF',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: 'block',
-                maxWidth: '100%',
-              }}
-            >
-              {connection.website}
-            </a>
-          </TableCell>
-          <TableCell>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <TableTextCell text={formattedDate} />
-              {connection.id === selectedConnectionId && (
-                <TableUnlinkCell
-                  onUnlink={() => {
-                    // Open the DApp details dialog
-                    onOpenDAppDetailsDialog(connection);
-                  }}
-                />
-              )}
-            </div>
-          </TableCell>
-        </RowStyled>
-      </TableRow>
-    </div>
-  );
-});
+    return (
+      <div
+        key={connection.id}
+        style={style}
+        onMouseEnter={() => {
+          setSelectedConnectionId(connection.id);
+        }}
+        onMouseLeave={() => {
+          setSelectedConnectionId(null);
+        }}
+      >
+        <TableRow>
+          <RowStyled>
+            <DAppTitleCell title={connection.name} iconUrl={connection.icon} />
+            <TableTextCell text={connection.description} />
+            <TableCell>
+              <a
+                href={connection.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  textDecoration: 'none',
+                  margin: 0,
+                  fontSize: '14px',
+                  lineHeight: '24px',
+                  fontWeight: 500,
+                  letterSpacing: '0.5px',
+                  fontFamily: 'Figtree',
+                  color: '#FFFFFF',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: 'block',
+                  maxWidth: '100%',
+                }}
+              >
+                {connection.website}
+              </a>
+            </TableCell>
+            <TableCell>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <TableTextCell text={formattedDate} />
+                {connection.id === selectedConnectionId && (
+                  <TableUnlinkCell
+                    onUnlink={() => {
+                      // Open the DApp details dialog
+                      onOpenDAppDetailsDialog(connection);
+                    }}
+                  />
+                )}
+              </div>
+            </TableCell>
+          </RowStyled>
+        </TableRow>
+      </div>
+    );
+  },
+);

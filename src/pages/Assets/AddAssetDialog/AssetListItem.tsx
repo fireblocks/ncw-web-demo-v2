@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { ActionButton, Progress, TableCell, TableRow, TableTextCell, TableTitleCell, styled } from '@foundation';
 import IconNoAsset from '@icons/no_asset_image.svg';
 import { top100Cryptos } from '@services';
-import { AssetStore, useAssetsStore } from '@store';
+import { AssetStore, NOT_AVAILABLE_PLACEHOLDER, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -88,9 +88,9 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
       }
     }
 
-    // If we don't have price data for this coin, return "N/A" instead of "$0"
+    // If we don't have price data for this coin, return placeholder instead of "$0"
     if (!cryptoData) {
-      return "N/A";
+      return NOT_AVAILABLE_PLACEHOLDER;
     }
 
     const price = cryptoData.price;

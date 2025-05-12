@@ -30,11 +30,11 @@ interface IProps {
   onAddConnection: (connection: Connection) => void;
 }
 
-export const AddConnectionDialog: React.FC<IProps> = observer(function AddConnectionDialog({ 
+export const AddConnectionDialog: React.FC<IProps> = observer(({ 
   isOpen, 
   onClose,
   onAddConnection 
-}) {
+}) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { web3Store, accountsStore } = useStores();

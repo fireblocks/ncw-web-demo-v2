@@ -286,7 +286,7 @@ export const translationToEnglish = {
       CONFIRM_TITLE: 'Confirm connection',
       DESCRIPTION_LABEL: 'Description',
       URL_LABEL: 'URL',
-      NA: 'N/A',
+      NA: '--',
       ERROR_MESSAGE: 'Connection failed',
       SUCCESS_MESSAGE: 'Connection added',
       DAPP_CONNECTED: 'DAPP CONNECTED',

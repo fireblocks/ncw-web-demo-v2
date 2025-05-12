@@ -14,37 +14,30 @@ const TypographyStyled = styled(Typography)(() => ({
 }));
 
 interface IProps {
-  balance: number;
+  balance: number | string;
   balanceInUsd: string;
+  assetSymbol?: string;
 }
 
-export const TableBalanceCell: React.FC<IProps> = ({ balance, balanceInUsd }) => {
+export const TableBalanceCell: React.FC<IProps> = ({ balance, balanceInUsd, assetSymbol }) => {
   const balanceStr = String(balance);
+  // If balance is already a string, assume it might already include the symbol
+  const balanceWithSymbol = typeof balance === 'string' 
+    ? balance 
+    : (assetSymbol ? `${balance} ${assetSymbol}` : String(balance));
 
   return (
     <RootStyled>
-      {balance !== 0 ? (
-        <Tooltip title={balanceStr} arrow placement="top">
-          <TypographyStyled component="p" color="text.primary" variant="body1">
-            {balance}
-          </TypographyStyled>
-        </Tooltip>
-      ) : (
+      <Tooltip title={balanceWithSymbol} arrow placement="top">
         <TypographyStyled component="p" color="text.primary" variant="body1">
-          {balance}
+          {balanceWithSymbol}
         </TypographyStyled>
-      )}
-      {balanceInUsd && balanceInUsd !== '--' ? (
-        <Tooltip title={balanceInUsd} arrow placement="top">
-          <TypographyStyled component="p" color="text.primary" variant="body1">
-            {balanceInUsd}
-          </TypographyStyled>
-        </Tooltip>
-      ) : (
+      </Tooltip>
+      <Tooltip title={balanceInUsd} arrow placement="top">
         <TypographyStyled component="p" color="text.primary" variant="body1">
           {balanceInUsd}
         </TypographyStyled>
-      )}
+      </Tooltip>
     </RootStyled>
   );
 };
