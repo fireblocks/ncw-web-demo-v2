@@ -23,6 +23,7 @@ const ButtonStyled = styled(MUIButton)(({ theme }) => ({
     padding: theme.spacing(0, 4),
     height: 40,
     textTransform: 'capitalize',
+    color: 'white',
   },
 }));
 

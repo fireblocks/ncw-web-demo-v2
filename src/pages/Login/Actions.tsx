@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import { IKeyDescriptor } from '@fireblocks/ncw-js-sdk';
-import { Progress, Typography, styled } from '@foundation';
+import { ActionButton, Progress, Typography, styled } from '@foundation';
 import IconApple from '@icons/apple.svg';
+import IconCloud from '@icons/cloud.svg';
 import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
 import IconRecovery from '@icons/recover.svg';
 import IconWallet from '@icons/wallet.svg';
-import IconCloud from '@icons/cloud.svg';
-import IconArrowRight from '@icons/arrow-right.svg';
 import { useAuthStore, useBackupStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
@@ -16,6 +15,12 @@ import { useNavigate } from 'react-router-dom';
 import { ENV_CONFIG } from '../../env_config.ts';
 import { JoinWalletDialog } from '../Settings/Dialogs/JoinWalletPopup.tsx';
 import { ActionPlate } from './ActionPlate';
+import { Button as MUIButton } from '@mui/material';
+
+const SkipButtonWrapperStyled = styled('div')(({ theme }) => ({
+  alignSelf: 'flex-start',
+  marginTop: theme.spacing(2),
+}));
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -29,6 +34,25 @@ const ProcessingStyled = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   gap: theme.spacing(1),
   marginTop: theme.spacing(7),
+}));
+
+const ButtonDarkStyledSpecial = styled(MUIButton)(({ theme }) => ({
+  '&.MuiButton-outlined': {
+    border: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    gap: theme.spacing(1),
+    paddingTop: theme.spacing(1.5),
+    paddingBottom: theme.spacing(1.5),
+    paddingLeft: '24px',
+    paddingRight: '24px',
+    fontWeight: 600,
+    fontSize: theme.typography.body2.fontSize,
+    lineHeight: theme.typography.body2.lineHeight,
+    letterSpacing: theme.typography.body2.letterSpacing,
+    textTransform: 'capitalize',
+    color: theme.palette.text.primary,
+  },
 }));
 
 interface IProps {
@@ -101,10 +125,11 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
   };
 
   const generateMPCKeys = () => {
-    authStore.generateMPCKeys()
+    setIsInBackupPhase(true); // Set parent component state
+    authStore
+      .generateMPCKeys()
       .then(() => {
         setIsBackupPhase(true);
-        setIsInBackupPhase(true); // Set parent component state
       })
       .catch(() => {
         enqueueSnackbar(t('LOGIN.GENERATE_MPC_KEYS_ERROR'), { variant: 'error' });
@@ -119,11 +144,13 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
 
   const createBackup = () => {
     setIsBackupInProgress(true);
-    backupStore.saveKeysBackup('GoogleDrive')
+    backupStore
+      .saveKeysBackup('GoogleDrive')
       .then(() => {
         setIsBackupInProgress(false);
         setIsInBackupPhase(false); // Set parent component state to false when exiting backup phase
         enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.SUCCESS_MESSAGE'), { variant: 'success' });
+        authStore.setStatus('READY');
         navigate('/assets');
       })
       .catch(() => {
@@ -134,6 +161,7 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
 
   const continueWithoutBackup = () => {
     setIsInBackupPhase(false); // Set parent component state to false when exiting backup phase
+    authStore.setStatus('READY');
     navigate('/assets');
   };
 
@@ -143,7 +171,7 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
     }
   }, []);
 
-  if (authStore.preparingWorkspace) {
+  if (authStore.preparingWorkspace && !isBackupPhase) {
     return (
       <ProcessingStyled>
         <Progress size="medium" />
@@ -157,17 +185,17 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
   if (isBackupPhase) {
     return (
       <RootStyled>
-        <ActionPlate 
-          iconSrc={IconCloud} 
-          caption={t('Create key backup on your Google drive')} 
-          onClick={createBackup} 
+        <ActionPlate
+          iconSrc={IconCloud}
+          caption={t('Create key backup on your Google drive')}
+          onClick={createBackup}
           isLoading={isBackupInProgress}
         />
-        <ActionPlate 
-          iconSrc={IconArrowRight} 
-          caption={t('Continue without backup')} 
-          onClick={continueWithoutBackup} 
-        />
+        <SkipButtonWrapperStyled>
+          <ButtonDarkStyledSpecial size="large" variant={'outlined'} onClick={continueWithoutBackup}>
+            {t('Skip for now')}
+          </ButtonDarkStyledSpecial>
+        </SkipButtonWrapperStyled>
       </RootStyled>
     );
   }

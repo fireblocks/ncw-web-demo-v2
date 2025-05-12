@@ -66,6 +66,7 @@ export class FireblocksSDKStore {
   @observable public joinWalletEventDescriptor: string;
   @observable public isMPCReady: boolean;
   @observable public isMPCGenerating: boolean;
+  @observable public isBackupPhase: boolean;
   @observable public isKeysExportInProcess: boolean;
   @observable public exportedKeys: IFullKey[] | null;
   @observable public error: string;
@@ -96,6 +97,7 @@ export class FireblocksSDKStore {
     this.exportedKeys = null;
     this.fprvKey = null;
     this.xprvKey = null;
+    this.isBackupPhase = false;
 
     this._unsubscribeTransactionsPolling = null;
     this._rootStore = rootStore;
@@ -475,6 +477,12 @@ export class FireblocksSDKStore {
         await this.sdkInstance.generateMPCKeys(ALGORITHMS);
         console.log(`// @@@ DEBUGS: took ${Date.now() - started}ms to generate keys`);
         this.setIsMPCReady(true);
+
+        // Update keysStatus after generating MPC keys
+        const keyStatus = await this.sdkInstance.getKeysStatus();
+        if (Object.keys(keyStatus).length > 0) {
+          this.setKeysStatus(keyStatus);
+        }
       } catch (error: any) {
         throw new Error(error.message);
       } finally {
@@ -495,6 +503,11 @@ export class FireblocksSDKStore {
       this.setIsMPCReady(false);
       this.setIsMPCGenerating(true);
       const keysStatus = await this.sdkInstance.getKeysStatus();
+
+      // Update keysStatus to ensure keysAreReady is updated correctly
+      if (Object.keys(keysStatus).length > 0) {
+        this.setKeysStatus(keysStatus);
+      }
 
       const secP256K1Status = keysStatus.MPC_CMP_ECDSA_SECP256K1?.keyStatus ?? null;
       const ed25519Status = keysStatus.MPC_CMP_EDDSA_ED25519?.keyStatus ?? null;
@@ -607,6 +620,11 @@ export class FireblocksSDKStore {
     this.isMPCReady = false;
     this.isMPCGenerating = false;
     this.error = '';
+  }
+
+  @action
+  public backupPhase(isBackupPage: boolean) {
+    this.isBackupPhase = isBackupPage;
   }
 
   @computed
