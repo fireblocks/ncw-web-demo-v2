@@ -19,8 +19,9 @@ export const TransactionsList: React.FC = observer(function TransactionsList() {
     <Table>
       <TableHead>
         <RowStyled>
-          <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.ACTION')} />
+          <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.TX_ACTION')} />
           <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.AMOUNT')} />
+          <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.ACTION')} />
           <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.FEE')} />
           <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.STATUS')} />
           <TableHeaderCell title={t('TRANSACTIONS.TABLE.HEADERS.DATE')} />

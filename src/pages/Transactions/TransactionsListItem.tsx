@@ -1,8 +1,6 @@
 import React from 'react';
 import {
   CopyText,
-  DropDownMenu,
-  MenuItem,
   TableBalanceCell,
   TableCell,
   TableRow,
@@ -12,6 +10,7 @@ import {
   TableTitleCell,
   styled,
 } from '@foundation';
+import { TransactionDetailsDialog } from './TransactionDetailsDialog';
 import IconDots from '@icons/dots.svg';
 import IconNoAsset from '@icons/no_asset_image.svg';
 import IconNoNft from '@icons/no_nft_image.svg';
@@ -21,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 export const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
-  gridTemplateColumns: '1.8fr 0.9fr 1fr 0.7fr 1fr 1fr 0.6fr',
+  gridTemplateColumns: '1fr 0.9fr 1.2fr 0.8fr 0.7fr 1fr 1fr 0.6fr',
   columnGap: theme.spacing(2), // Add spacing between columns
   '& > *': {
     maxWidth: '100%', // Ensure each child has max width
@@ -43,17 +42,15 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
   const { t } = useTranslation();
   const transactionsStore = useTransactionsStore();
 
-  const [txMenuAnchorEl, setTxMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = React.useState(false);
   const [selectedTx, setSelectedTx] = React.useState<TransactionStore | null>(null);
 
-  const isTxMenuOpen = Boolean(txMenuAnchorEl);
-
-  const onOpenTxMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    setTxMenuAnchorEl(event.currentTarget);
+  const onOpenDetailsDialog = () => {
+    setIsDetailsDialogOpen(true);
   };
 
-  const onCloseTxMenuClick = () => {
-    setTxMenuAnchorEl(null);
+  const onCloseDetailsDialog = () => {
+    setIsDetailsDialogOpen(false);
   };
 
   const transaction = transactionsStore.transactionsSortedByCreationDate[index];
@@ -64,17 +61,22 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
     <div key={transaction.id} style={style}>
       <TableRow>
         <RowStyled>
+          <TableTextCell text={
+            transaction.isSubmitted
+              ? t('TRANSACTIONS.TABLE.SUBMITTED')
+              : `${t(transaction.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${transaction.asset?.symbol || ''}`
+          } />
+          <TableBalanceCell 
+            balance={`${transaction.amount} ${transaction.asset?.symbol || ''}`} 
+            balanceInUsd={transaction.amountInUSD} 
+          />
           <TableTitleCell
-            title={
-              transaction.isSubmitted
-                ? t('TRANSACTIONS.TABLE.SUBMITTED')
-                : `${t(transaction.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${transaction.asset?.name || ''}`
-            }
+            title={transaction.asset?.name || ''}
             subtitle={transaction.asset?.symbol || ''}
             iconUrl={transaction.asset?.iconUrl || iconPlaceholder}
+            assetSymbol={transaction.asset?.networkProtocol || IconNoAsset}
           />
-          <TableBalanceCell balance={transaction.amount} balanceInUsd={transaction.amountInUSD} />
-          <TableTextCell text={transaction.fee} />
+          <TableTextCell text={transaction.fee !== '--' ? `${transaction.fee} ${transaction.asset?.symbol || ''}` : transaction.fee} />
           <TableStatusCell status={transaction.status} isSigning={transaction.isSigning} />
           <TableTextCell text={transaction.createdAt ? new Date(transaction.createdAt).toLocaleString() : ''} />
           <TableCell>
@@ -93,9 +95,9 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
               />
             ) : (
               <ActionsStyled
-                onClick={(e) => {
+                onClick={() => {
                   setSelectedTx(transaction);
-                  onOpenTxMenuClick(e);
+                  onOpenDetailsDialog();
                 }}
               >
                 <img src={IconDots} />
@@ -105,16 +107,11 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
         </RowStyled>
       </TableRow>
 
-      <DropDownMenu anchorEl={txMenuAnchorEl} isOpen={isTxMenuOpen} onClose={onCloseTxMenuClick}>
-        <MenuItem
-          onClick={() => {
-            navigator.clipboard.writeText(selectedTx?.id || '').catch(() => {});
-            onCloseTxMenuClick();
-          }}
-        >
-          {t('TRANSACTIONS.TABLE.COPY_TX_ID')}
-        </MenuItem>
-      </DropDownMenu>
+      <TransactionDetailsDialog
+        isOpen={isDetailsDialogOpen}
+        onClose={onCloseDetailsDialog}
+        transaction={selectedTx}
+      />
     </div>
   );
 });

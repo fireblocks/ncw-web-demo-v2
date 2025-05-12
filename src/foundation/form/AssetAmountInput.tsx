@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { styled } from '@foundation';
+import { styled, Typography } from '@foundation';
 import InputAdornment from '@mui/material/InputAdornment/InputAdornment';
 import { NumericFormat } from 'react-number-format';
 import { InputLabelStyled, FormControlRootStyled, InputStyled } from './commonStyledComponents';
+import { useEffect } from 'react';
 
 const InputAdornmentStyled = styled(InputAdornment)(({ theme }) => ({
   '&.MuiInputAdornment-root .MuiTypography-root': {
@@ -15,6 +16,11 @@ const InputAdornmentStyled = styled(InputAdornment)(({ theme }) => ({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
+}));
+
+const PriceDisplayStyled = styled('div')(({ theme }) => ({
+  marginTop: theme.spacing(0.5),
+  textAlign: 'right',
 }));
 
 interface IProps {
@@ -51,7 +57,7 @@ export const AssetAmountInput: React.FC<IProps> = ({
   return (
     <FormControlRootStyled>
       <InputLabelStyled htmlFor={label} shrink={false}>
-        {label} {assetSymbol}
+        {label}
       </InputLabelStyled>
       <NumericFormat allowNegative={false} value={value} customInput={InputStyled} {...materialUIInputProps} />
     </FormControlRootStyled>

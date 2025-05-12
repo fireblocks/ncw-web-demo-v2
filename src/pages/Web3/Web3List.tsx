@@ -76,7 +76,7 @@ export const Web3List: React.FC<IProps> = observer(function Web3List({ connectio
     <>
       <ActionsBoxWrapperStyled>
         <SearchWrapperStyled>
-          <SearchInput query={query} setQuery={setQuery} placeholder={t('WEB3.SEARCH')} />
+          <SearchInput query={query} setQuery={setQuery} placeholder={t('WEB3.SEARCH') + (sortedConnections.length > 0 ? ' (' + `${sortedConnections.length}` + ')' : '')} />
         </SearchWrapperStyled>
         <ActionsWrapperStyled>
           <ActionButton onClick={onAddConnectionDialogOpen} caption={t('WEB3.ADD_CONNECTION')} />

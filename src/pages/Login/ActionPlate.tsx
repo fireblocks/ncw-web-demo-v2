@@ -1,4 +1,4 @@
-import { Typography, styled } from '@foundation';
+import { Progress, Typography, styled } from '@foundation';
 
 const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(4, 3),
@@ -34,12 +34,13 @@ interface IProps {
   caption: string;
   description?: string;
   iconSrc: string;
+  isLoading?: boolean;
 }
 
-export const ActionPlate: React.FC<IProps> = ({ onClick, caption, description, iconSrc }) => (
+export const ActionPlate: React.FC<IProps> = ({ onClick, caption, description, iconSrc, isLoading }) => (
   <RootStyled onClick={onClick}>
     <IconStyled className="IconStyled">
-      <img src={iconSrc} width={16} />
+      {isLoading ? <Progress size="small" /> : <img src={iconSrc} width={16} />}
     </IconStyled>
     <TextStyled>
       <Typography variant="body2" color="text.primary">

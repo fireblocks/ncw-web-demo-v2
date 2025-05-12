@@ -40,6 +40,13 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
   const [selectedTokenStore, setSelectedTokenStore] = React.useState<NFTTokenStore | undefined>(undefined);
   const [isNewTransactionDialogOpen, setIsNewTransactionDialogOpen] = React.useState(false);
 
+  // Filter tokens based on search query
+  const filteredTokens = NFTStore.tokens.filter(
+    (token) =>
+      (token.name?.toLowerCase() || '').includes(query.toLowerCase()) ||
+      (token.tokenId?.toLowerCase() || '').includes(query.toLowerCase()),
+  );
+
   localStorage.setItem('VISITED_PAGE', 'nfts');
 
   const onSetMode = (viewMode: TViewMode) => {
@@ -83,7 +90,7 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
           </HeadingStyled>
           <ActionsBoxWrapperStyled>
             <SearchWrapperStyled>
-              <SearchInput query={query} setQuery={setQuery} placeholder={t('NFT.SEARCH')} />
+              <SearchInput query={query} setQuery={setQuery} placeholder={t('NFT.SEARCH') + (filteredTokens.length > 0 ? ' (' + `${filteredTokens.length}` + ')' : '')} />
             </SearchWrapperStyled>
             <ActionsWrapperStyled>
               <ModeSwitcher value={mode} onChange={onSetMode} />

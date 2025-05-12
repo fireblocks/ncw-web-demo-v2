@@ -28,8 +28,8 @@ export const NFTsList: React.FC<IProps> = observer(function NFTsList({
 
   const filteredTokens = NFTStore.tokens.filter(
     (token) =>
-      token.name.toLowerCase().includes(query.toLowerCase()) ||
-      token.tokenId.toLowerCase().includes(query.toLowerCase()),
+      (token.name?.toLowerCase() || '').includes(query.toLowerCase()) ||
+      (token.tokenId?.toLowerCase() || '').includes(query.toLowerCase()),
   );
 
   return (

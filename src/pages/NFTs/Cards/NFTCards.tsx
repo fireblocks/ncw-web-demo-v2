@@ -28,7 +28,7 @@ export const NFTCards: React.FC<IProps> = observer(function NFTCards({
   const NFTStore = useNFTStore();
 
   const filteredTokens = NFTStore.tokens.filter(
-    (t) => t.name.toLowerCase().includes(query.toLowerCase()) || t.tokenId.toLowerCase().includes(query.toLowerCase()),
+    (t) => (t.name?.toLowerCase() || '').includes(query.toLowerCase()) || (t.tokenId?.toLowerCase() || '').includes(query.toLowerCase()),
   );
 
   const columnsCount = filteredTokens.length < COLUMN_COUNT ? filteredTokens.length : COLUMN_COUNT;

@@ -138,7 +138,7 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
     <>
       <ActionsBoxWrapperStyled>
         <SearchWrapperStyled>
-          <SearchInput query={query} setQuery={setQuery} placeholder={t('ASSETS.ADD_DIALOG.SEARCH')} />
+          <SearchInput query={query} setQuery={setQuery} placeholder={t('ASSETS.ADD_DIALOG.SEARCH') + (filteredAssets.length > 0 ? ' (' + `${filteredAssets.length}` + ')' : '')} />
         </SearchWrapperStyled>
         <ActionsWrapperStyled>
           <ActionButton onClick={onAddAssetDialogOpen} caption={t('ASSETS.ADD_ASSET')} />

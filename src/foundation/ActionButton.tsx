@@ -4,13 +4,16 @@ import { Button as MUIButton } from '@mui/material';
 
 const ButtonStyled = styled(MUIButton)(({ theme }) => ({
   '&.MuiButton-contained': {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.main,
     display: 'flex',
     flexDirection: 'row',
     gap: theme.spacing(1),
     padding: theme.spacing(0, 4),
     height: 40,
     textTransform: 'capitalize',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.dark,
+    },
   },
   '&.MuiButton-outlined': {
     border: 0,
@@ -35,6 +38,9 @@ const ButtonDarkStyled = styled(MUIButton)(({ theme }) => ({
     lineHeight: theme.typography.body2.lineHeight,
     letterSpacing: theme.typography.body2.letterSpacing,
     textTransform: 'capitalize',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.dark,
+    },
   },
   '&.MuiButton-outlined': {
     border: 0,

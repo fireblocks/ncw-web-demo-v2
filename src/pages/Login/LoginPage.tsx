@@ -110,10 +110,16 @@ export const LoginPage: React.FC = observer(function LoginPage() {
   const { t } = useTranslation();
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
   const fireblocksSDKStore = useFireblocksSDKStore();
+  const [isInBackupPhase, setIsInBackupPhase] = React.useState(false);
 
-  if (fireblocksSDKStore.keysAreReady) {
-    redirect(lastVisitedPage ? lastVisitedPage : 'assets');
-  }
+  // Pass this state to Actions component to know if we're in backup phase
+  React.useEffect(() => {
+    // This effect will run when keysAreReady changes
+    // If keys are ready and we're not in backup phase, redirect to assets
+    if (fireblocksSDKStore.keysAreReady && !isInBackupPhase) {
+      redirect(lastVisitedPage ? lastVisitedPage : 'assets');
+    }
+  }, [fireblocksSDKStore.keysAreReady, isInBackupPhase, lastVisitedPage]);
 
   return (
     <RootStyled>
@@ -144,7 +150,7 @@ export const LoginPage: React.FC = observer(function LoginPage() {
                 {t('LOGIN.DESCRIPTION')}
               </Typography>
             </ActionsHeadingStyled>
-            <Actions />
+            <Actions setIsInBackupPhase={setIsInBackupPhase} />
           </ActionsContentStyled>
         </ActionsBlockStyled>
       </ContentWrapperStyled>

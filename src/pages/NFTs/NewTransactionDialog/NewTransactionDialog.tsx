@@ -81,7 +81,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
         <SelectedToken token={token} />
         <TextInput
           placeholder={t('NFT.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
-          label={t('NFT.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
+          label={t('NFT.NEW_TRANSACTION_DIALOG.SEND_TO')}
           value={address}
           setValue={setAddress}
         />

@@ -5,6 +5,7 @@ import { AssetStore, localizedCurrencyView, useAccountsStore, useDeviceStore, us
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { top100Cryptos } from '@services';
 import { FeeLevel } from '../../common/FeeLevel';
 import { SelectedAsset } from './SelectedAsset';
 import { TxType } from './TxType';
@@ -119,11 +120,48 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
     }
   }, [mode, asset]);
 
+  // Get price from top100Cryptos based on asset symbol, myRate --> (true) do we want to calculate the amount based
+  // on what we have in our wallet or (false) based on the amount entered in the text input amount
+  const getAssetPriceFromTop100Cryptos = (asset, myRate = true) => {
+    if (!asset) return '--';
+
+    // Get the price from top100Cryptos using the asset symbol
+    const symbol = asset.symbol.toUpperCase();
+    let cryptoData = top100Cryptos[symbol];
+
+    // If not found, try to find it by name
+    if (!cryptoData) {
+      // Try to find a match by comparing the asset name with the titles in top100Cryptos
+      const assetNameLower = asset.name.toLowerCase();
+
+      // Find a matching cryptocurrency by comparing the asset name with the titles in top100Cryptos
+      const matchingSymbol = Object.keys(top100Cryptos).find(key => {
+        const cryptoTitle = top100Cryptos[key].title.toLowerCase();
+        return assetNameLower.includes(cryptoTitle) || cryptoTitle.includes(assetNameLower);
+      });
+
+      if (matchingSymbol) {
+        cryptoData = top100Cryptos[matchingSymbol];
+      }
+    }
+
+    // If we don't have price data for this coin, return asset.rate as fallback
+    if (!cryptoData) {
+      return asset.rate;
+    }
+
+    const price = cryptoData.price;
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    }).format(amount && !myRate ? price * amount : price * asset.totalBalance);
+  };
+
   if (!asset) {
     return null;
   }
-
-  const convertedAmount = asset.assetData.rate ? localizedCurrencyView(Number(amount) * asset.assetData.rate) : '--';
 
   return (
     <Dialog
@@ -142,23 +180,23 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       actionCaption={t('ASSETS.NEW_TRANSACTION_DIALOG.ACTION')}
     >
       <RootStyled>
-        <SelectedAsset asset={asset} />
+        <SelectedAsset asset={asset} rate={getAssetPriceFromTop100Cryptos(asset)} />
         {mode === 'SEND' ? (
           <>
             <TxType setType={setTxType} type={txType} disabled={asset?.totalBalance === 0} />
             <AssetAmountInput
               disabled={txType !== 'TRANSFER'}
-              placeholder="0"
+              placeholder={'0' + ' ' + asset.symbol}
               label={t('ASSETS.NEW_TRANSACTION_DIALOG.AMOUNT')}
               value={amount}
               setValue={setAmount}
               assetSymbol={asset.symbol}
-              adornment={convertedAmount}
+              adornment={amount > 0 ? getAssetPriceFromTop100Cryptos(asset, false) : asset.rate}
             />
             <TextInput
               disabled={txType !== 'TRANSFER'}
               placeholder={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
-              label={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
+              label={t('ASSETS.NEW_TRANSACTION_DIALOG.SEND_TO')}
               value={address}
               setValue={setAddress}
             />

@@ -45,9 +45,10 @@ const TextStyled = styled('div')(({ theme }) => ({
 
 interface IProps {
   asset: AssetStore;
+  rate: string;
 }
 
-export const SelectedAsset: React.FC<IProps> = ({ asset }) => (
+export const SelectedAsset: React.FC<IProps> = ({ asset, rate }) => (
   <RootStyled>
     <AssetInfoStyled>
       <ImageStyled>
@@ -65,7 +66,7 @@ export const SelectedAsset: React.FC<IProps> = ({ asset }) => (
     <AssetValueStyled>
       <Typography variant="body1">{asset.totalBalance}</Typography>
       <Typography color="text.secondary" variant="body1">
-        {asset.totalBalanceInUSD}
+        {rate}
       </Typography>
     </AssetValueStyled>
   </RootStyled>

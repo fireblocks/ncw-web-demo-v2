@@ -6,7 +6,9 @@ import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
 import IconRecovery from '@icons/recover.svg';
 import IconWallet from '@icons/wallet.svg';
-import { useAuthStore, useUserStore } from '@store';
+import IconCloud from '@icons/cloud.svg';
+import IconArrowRight from '@icons/arrow-right.svg';
+import { useAuthStore, useBackupStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -29,11 +31,18 @@ const ProcessingStyled = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(7),
 }));
 
-export const Actions: React.FC = observer(function Actions() {
+interface IProps {
+  setIsInBackupPhase: (isInBackupPhase: boolean) => void;
+}
+
+export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBackupPhase }) {
   const [isEmbeddedWallet, setIsEmbeddedWallet] = React.useState(false);
+  const [isBackupPhase, setIsBackupPhase] = React.useState(false);
+  const [isBackupInProgress, setIsBackupInProgress] = React.useState(false);
   const userStore = useUserStore();
   const { t } = useTranslation();
   const authStore = useAuthStore();
+  const backupStore = useBackupStore();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [isJoinWalletDialogOpen, setIsJoinWalletDialogOpen] = React.useState(false);
@@ -92,15 +101,40 @@ export const Actions: React.FC = observer(function Actions() {
   };
 
   const generateMPCKeys = () => {
-    authStore.generateMPCKeys().catch(() => {
-      enqueueSnackbar(t('LOGIN.GENERATE_MPC_KEYS_ERROR'), { variant: 'error' });
-    });
+    authStore.generateMPCKeys()
+      .then(() => {
+        setIsBackupPhase(true);
+        setIsInBackupPhase(true); // Set parent component state
+      })
+      .catch(() => {
+        enqueueSnackbar(t('LOGIN.GENERATE_MPC_KEYS_ERROR'), { variant: 'error' });
+      });
   };
 
   const recoverMPCKeys = () => {
     authStore.recoverMPCKeys('GoogleDrive').catch(() => {
       enqueueSnackbar(t('LOGIN.RECOVERY_FROM_BACKUP_ERROR'), { variant: 'error' });
     });
+  };
+
+  const createBackup = () => {
+    setIsBackupInProgress(true);
+    backupStore.saveKeysBackup('GoogleDrive')
+      .then(() => {
+        setIsBackupInProgress(false);
+        setIsInBackupPhase(false); // Set parent component state to false when exiting backup phase
+        enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.SUCCESS_MESSAGE'), { variant: 'success' });
+        navigate('/assets');
+      })
+      .catch(() => {
+        setIsBackupInProgress(false);
+        enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.ERROR_MESSAGE'), { variant: 'error' });
+      });
+  };
+
+  const continueWithoutBackup = () => {
+    setIsInBackupPhase(false); // Set parent component state to false when exiting backup phase
+    navigate('/assets');
   };
 
   useEffect(() => {
@@ -117,6 +151,24 @@ export const Actions: React.FC = observer(function Actions() {
           {t('LOGIN.CHECKING_WORKSPACE')}
         </Typography>
       </ProcessingStyled>
+    );
+  }
+
+  if (isBackupPhase) {
+    return (
+      <RootStyled>
+        <ActionPlate 
+          iconSrc={IconCloud} 
+          caption={t('Create key backup on your Google drive')} 
+          onClick={createBackup} 
+          isLoading={isBackupInProgress}
+        />
+        <ActionPlate 
+          iconSrc={IconArrowRight} 
+          caption={t('Continue without backup')} 
+          onClick={continueWithoutBackup} 
+        />
+      </RootStyled>
     );
   }
 
