@@ -261,6 +261,8 @@ export const translationToEnglish = {
     TABLE: {
       HEADERS: {
         NFT: 'NFT',
+        AMOUNT: 'Amount',
+        NETWORK: 'NETWORK',
         COLLECTION: 'Collection',
         DATE: 'Date',
         STANDARD: 'Standard',

@@ -10,7 +10,7 @@ import {
   TableTitleCell,
   styled,
 } from '@foundation';
-import { Button as MUIButton } from '@mui/material';
+import { Button as MUIButton, Tooltip } from '@mui/material';
 import { TransactionDetailsDialog } from './TransactionDetailsDialog';
 import IconDots from '@icons/dots.svg';
 import IconNoAsset from '@icons/no_asset_image.svg';
@@ -115,14 +115,16 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
               />
             ) : (
               <ActionButtonStyled>
-                <CustomActionButton
-                  onClick={() => {
-                    setSelectedTx(transaction);
-                    onOpenDetailsDialog();
-                  }}
-                >
-                  <img src={IconDots} alt="Actions" />
-                </CustomActionButton>
+                <Tooltip title="More info" arrow placement="top">
+                  <CustomActionButton
+                    onClick={() => {
+                      setSelectedTx(transaction);
+                      onOpenDetailsDialog();
+                    }}
+                  >
+                    <img src={IconDots} alt="Actions" />
+                  </CustomActionButton>
+                </Tooltip>
               </ActionButtonStyled>
             )}
           </TableCell>
