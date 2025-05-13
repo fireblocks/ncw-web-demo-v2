@@ -19,9 +19,8 @@ const apiPath = useEmbeddedWalletSDK
   ? resolve(__dirname, './src/api-embedded-wallet')
   : resolve(__dirname, './src/api');
 
-
 export default defineConfig({
-  base: '/ncw-web-demo-v2/',
+  base: process.env.VITE_BASE_FOLDER,
   plugins: [react(), svgr(), tsconfigPaths(), splitVendorChunkPlugin()],
   server: {
     open: true,

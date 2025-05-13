@@ -1,11 +1,10 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+# Simple workflow for deploying multiple sites (both static content) to GitHub Pages
+name: Deploy Multiple Sites to Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting the specified branches
   push:
-    branches: ['main']
-
+    branches: ['main', 'v2-embbeded-wallet']
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -21,17 +20,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: ['main', 'v2-embbeded-wallet']
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
@@ -39,13 +39,47 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
-          # Upload dist repository
+          name: build-${{ matrix.branch }}
           path: './dist'
+          retention-days: 1
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download main build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-main
+          path: ncw-content
+
+      - name: Download secondary build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-v2-embbeded-wallet
+          path: ew-content
+
+      - name: Prepare final structure
+        run: |
+          mkdir -p merged-content
+          cp -r ncw-content/* merged-content/
+          mkdir -p merged-content/ew
+          cp -r ew-content/* merged-content/ew/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload merged artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './merged-content'
+
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
