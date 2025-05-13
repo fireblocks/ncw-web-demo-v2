@@ -277,7 +277,7 @@ export const translationToEnglish = {
     ADD_CONNECTION: 'Connect dApp',
     UNLINK: 'Remove Connection',
     ADD_DIALOG: {
-      TITLE: 'Add connection',
+      TITLE: 'Connect a dApp',
       DESCRIPTION: 'Connect to a new DApp.',
       CONNECTION_LINK: 'CONNECTION LINK',
       CANCEL: 'Cancel',

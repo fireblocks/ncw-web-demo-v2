@@ -10,6 +10,7 @@ import {
   TableTitleCell,
   styled,
 } from '@foundation';
+import { Button as MUIButton } from '@mui/material';
 import { TransactionDetailsDialog } from './TransactionDetailsDialog';
 import IconDots from '@icons/dots.svg';
 import IconNoAsset from '@icons/no_asset_image.svg';
@@ -28,9 +29,28 @@ export const RowStyled = styled('div')(({ theme }) => ({
   },
 }));
 
-const ActionsStyled = styled('div')(() => ({
+// Create a custom button component
+const CustomActionButton = styled(MUIButton)(({ theme }) => ({
+  width: '42px',
+  height: '42px',
+  minWidth: '42px',
+  padding: 0,
+  backgroundColor: 'transparent',
+  border: 'none',
+  borderRadius: '4px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
+}));
+
+const ActionButtonStyled = styled('div')(() => ({
   width: '100%',
-  textAlign: 'right',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
 }));
 
 interface IProps {
@@ -94,14 +114,16 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
                 }}
               />
             ) : (
-              <ActionsStyled
-                onClick={() => {
-                  setSelectedTx(transaction);
-                  onOpenDetailsDialog();
-                }}
-              >
-                <img src={IconDots} />
-              </ActionsStyled>
+              <ActionButtonStyled>
+                <CustomActionButton
+                  onClick={() => {
+                    setSelectedTx(transaction);
+                    onOpenDetailsDialog();
+                  }}
+                >
+                  <img src={IconDots} alt="Actions" />
+                </CustomActionButton>
+              </ActionButtonStyled>
             )}
           </TableCell>
         </RowStyled>

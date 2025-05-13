@@ -219,7 +219,6 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({
   return (
     <Dialog
       title={isConfirmationScreen ? t('WEB3.ADD_DIALOG.CONFIRM_TITLE') : t('WEB3.ADD_DIALOG.TITLE')}
-      description={t('WEB3.ADD_DIALOG.DESCRIPTION')}
       isOpen={isOpen}
       onClose={onClose}
       size="small"
@@ -238,7 +237,7 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({
             label={t('WEB3.ADD_DIALOG.CONNECTION_LINK')}
             value={connectionLink}
             setValue={setConnectionLink}
-            placeholder=""
+            placeholder="Enter the connection link"
             disabled={isLoading}
           />
 
