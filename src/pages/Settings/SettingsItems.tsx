@@ -21,7 +21,7 @@ import { RecoverWalletDialog } from './Dialogs/RecoverWalletDialog';
 
 const RootStyled = styled('div')(({ theme }) => ({
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
   columnGap: '2px',
   rowGap: '2px',
   marginTop: theme.spacing(4),

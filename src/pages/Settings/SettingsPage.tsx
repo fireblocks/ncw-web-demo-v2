@@ -8,7 +8,9 @@ import { SettingsItems } from './SettingsItems';
 const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  minHeight: '100%',
+  // overflowY: 'auto',
+  marginBottom: '25px',
 }));
 
 const PageHeadingStyled = styled('div')(({ theme }) => ({

@@ -16,11 +16,14 @@ const RootStyled = styled('div')(({ theme }) => ({
 
 const ContentStyled = styled('div')(() => ({
   maxWidth: 1440,
-  width: 1440,
+  width: '100%',
+  maxHeight: '100vh',
   margin: '0 auto',
+  padding: '0 20px',
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
+  overflowX: 'auto',
 }));
 
 export const App: React.FC = observer(function App() {
