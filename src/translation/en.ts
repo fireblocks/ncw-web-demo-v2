@@ -318,12 +318,12 @@ export const translationToEnglish = {
   },
   USER_MENU: {
     RESTART_WALLET: {
-      MENU_ITEM: 'Restart wallet',
+      MENU_ITEM: 'Reset wallet',
       DIALOG: {
-        TITLE: 'Restart wallet',
+        TITLE: 'Reset wallet',
         WARNING: 'Are you sure?',
-        TEXT: 'You will lose access to your existing wallet after you restart your wallet.',
-        RESTART: 'Restart Wallet',
+        TEXT: 'You will lose access to your existing wallet.',
+        RESTART: 'Reset Wallet',
         CANCEL: 'Cancel',
       },
     },

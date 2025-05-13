@@ -42,7 +42,7 @@ export const RestartWalletDialog: React.FC<IProps> = observer(function RestartWa
       size="small"
     >
       <RootStyled>
-        <Typography variant="h3">{t('USER_MENU.RESTART_WALLET.DIALOG.WARNING')}</Typography>
+        {/*<Typography variant="h3">{t('USER_MENU.RESTART_WALLET.DIALOG.WARNING')}</Typography>*/}
         <Typography variant="body2">{t('USER_MENU.RESTART_WALLET.DIALOG.TEXT')}</Typography>
       </RootStyled>
     </Dialog>
