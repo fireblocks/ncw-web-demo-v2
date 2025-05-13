@@ -160,7 +160,7 @@ export const translationToEnglish = {
     },
   },
   ASSETS: {
-    EMPTY_PAGE_TITLE: 'No assets to display',
+    EMPTY_PAGE_TITLE: 'Track your assets',
     EMPTY_PAGE_DESCRIPTION: 'Get started by adding your first asset.',
     EMPTY_SEARCH_TITLE: 'No results found',
     EMPTY_SEARCH_DESCRIPTION: 'Try revising your search.',
@@ -243,7 +243,7 @@ export const translationToEnglish = {
   },
   NFT: {
     EMPTY_PAGE_TITLE: 'No NFTs to display',
-    EMPTY_PAGE_DESCRIPTION: 'Get started by adding your first NFT.',
+    EMPTY_PAGE_DESCRIPTION: 'NFTs in your wallets will appear here.',
     TITLE: 'NFTs',
     ITEMS: 'Items',
     COLLECTIONS: 'Collections',
@@ -269,8 +269,8 @@ export const translationToEnglish = {
     },
   },
   WEB3: {
-    EMPTY_PAGE_TITLE: 'No connections to display',
-    EMPTY_PAGE_DESCRIPTION: 'Get started by adding your first connection.',
+    EMPTY_PAGE_TITLE: 'No dApp connections to display',
+    EMPTY_PAGE_DESCRIPTION: 'Your connected dApps will appear here.',
     TITLE: 'WEB3',
     CONNECTIONS: 'Connections',
     SEARCH: 'Search for a dApp',

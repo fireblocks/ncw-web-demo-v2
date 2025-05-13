@@ -34,6 +34,7 @@ export * from './Dialog';
 export * from './IconButton';
 export * from './LoadingPage';
 export * from './ActionButton';
+export * from './BlueButton';
 export * from './DropDownMenu';
 export * from './CopyText';
 export * from './form/TextInput';

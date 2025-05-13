@@ -1,9 +1,10 @@
 import React from 'react';
-import { ActionButton, Skeleton, Typography, styled } from '@foundation';
+import { BlueButton, Skeleton, Typography, styled } from '@foundation';
 import IconEmptyPageNoAssets from '@icons/empty_page_no_assets.svg';
 import IconEmptyPageNoNft from '@icons/empty_page_no_nft.svg';
 import IconEmptyPageNoTx from '@icons/empty_page_no_tx.svg';
-import IconEmptyPageNoWeb3 from '@icons/empty_page_no_web3.svg';
+import IconEmptyPageNoWeb3 from '@icons/web3-main-icon.svg';
+import IconPlus from '@icons/plus-icon.svg';
 import { useTranslation } from 'react-i18next';
 
 const RootStyled = styled('div')(() => ({
@@ -152,8 +153,9 @@ export const EmptyPage: React.FC<IProps> = ({ page, onAddAsset }) => {
             {t(`${page}.EMPTY_PAGE_DESCRIPTION`)}
           </Typography>
           {onAddAsset && (
-            <ActionButton
+            <BlueButton
               onClick={onAddAsset}
+              icon={IconPlus}
               caption={page === 'WEB3' ? t('WEB3.ADD_CONNECTION') : t('ASSETS.ADD_ASSET')}
             />
           )}
