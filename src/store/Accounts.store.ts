@@ -42,7 +42,7 @@ export class AccountsStore {
       if (!myAccounts?.length && ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
         console.log('No accounts found, creat!ing new account');
         const newAccount = await this._rootStore.fireblocksSDKStore.fireblocksEW.createAccount();
-        console.log('newAccount: ', newAccount)
+        console.log('newAccount: ', newAccount);
         this.addAccount(newAccount);
       } else {
         console.log('Found accounts: ', myAccounts);

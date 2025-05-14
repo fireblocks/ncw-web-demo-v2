@@ -39,8 +39,9 @@ export const assignDeviceToNewWallet = async (
   rootStore: RootStore | null = null,
 ): Promise<string> => {
   try {
+    console.log('[assignDeviceToNewWallet] assignDeviceToNewWallet embedded wallet: ', deviceId, token);
     const assignResponse = await rootStore?.fireblocksSDKStore.fireblocksEW.assignWallet();
-    return assignResponse?.walletId;
+    return assignResponse?.walletId ?? '';
   } catch (e) {
     console.error('device.embedded.api.ts - assignDeviceToNewWallet err: ', e);
     return '';
@@ -50,10 +51,11 @@ export const assignDeviceToNewWallet = async (
 export const getDevices = async (token: string, rootStore: RootStore | null = null): Promise<IDeviceDTO[]> => {
   // const assignResponse = await rootStore?.fireblocksSDKStore.fireblocksEW.getAccounts();
   // console.log('[getDevices] assignResponse: ', assignResponse);
-  console.log('[getDevices] getDevices embedded wallet: ', rootStore?.deviceStore?.deviceId);
-  console.log('[getDevices] getDevices embedded wallet: ', rootStore?.deviceStore?.walletId);
+  console.log('[getDevices] getDevices EW token: ', token);
+  console.log('[getDevices] getDevices EW deviceId: ', rootStore?.deviceStore?.deviceId);
+  console.log('[getDevices] getDevices EW walletId: ', rootStore?.deviceStore?.walletId);
   if (rootStore?.deviceStore?.walletId) {
-    new Promise((resolve) => {
+    return new Promise((resolve) => {
       resolve([
         {
           deviceId: rootStore?.deviceStore?.deviceId,
@@ -66,8 +68,8 @@ export const getDevices = async (token: string, rootStore: RootStore | null = nu
           createdAt: Date.now(),
         },
       ]);
-    })
+    });
   } else {
     return [];
   }
-}
+};

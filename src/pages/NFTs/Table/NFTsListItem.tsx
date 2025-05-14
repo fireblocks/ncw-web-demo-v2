@@ -1,8 +1,8 @@
 import React from 'react';
 import { TableRow, TableTextCell, TableTitleCell, TableTransferCell, styled } from '@foundation';
-import IconNoNft from '@icons/no_nft_image.svg';
-import IconNoAsset from '@icons/no_asset_image.svg';
 import IconEth from '@icons/crypto-icons/eth.png';
+import IconNoAsset from '@icons/no_asset_image.svg';
+import IconNoNft from '@icons/no_nft_image.svg';
 import { NFTTokenStore } from '@store';
 import { observer } from 'mobx-react';
 
@@ -60,10 +60,7 @@ export const NFTsListItem: React.FC<IProps> = observer(function NFTsListItem({
             iconUrl={token.imageUrl || IconNoNft}
           />
           <TableTextCell text="--" />
-          <TableTitleCell
-            title={token.blockchainDescriptor || '--'}
-            iconUrl={IconEth}
-          />
+          <TableTitleCell title={token.blockchainDescriptor || '--'} subtitle="" iconUrl={IconEth} />
           <TableTextCell text={token.collectionName} />
           <TableTextCell text={date} />
           <TableTextCell text={token.standard} />

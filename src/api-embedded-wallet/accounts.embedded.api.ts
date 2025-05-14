@@ -2,8 +2,8 @@ import { IAccountResponse } from '@fireblocks/embedded-wallet-sdk';
 import { RootStore } from '@store';
 
 export const getAccounts = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAccountResponse[]> => {
   try {

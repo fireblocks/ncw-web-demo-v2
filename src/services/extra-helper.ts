@@ -1,4 +1,9 @@
-export const top100Cryptos = {
+export interface CryptoData {
+  title: string;
+  price: number;
+}
+
+export const top100Cryptos: Record<string, CryptoData> = {
   BTC: { title: 'Bitcoin', price: 93901.46 },
   ETH: { title: 'Ethereum', price: 1766.78 },
   USDT: { title: 'Tether', price: 0.9998 },

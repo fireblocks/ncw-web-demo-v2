@@ -97,7 +97,7 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
         // Generate market cap values for comparison
         const getMarketCap = (asset: AssetStore) => {
           const seed = parseInt(asset.id.replace(/\D/g, '') || '0', 10) + 1000;
-          const randomBillions = Math.abs(Math.sin(seed) * 10000) % 2000 + 1;
+          const randomBillions = (Math.abs(Math.sin(seed) * 10000) % 2000) + 1;
           return randomBillions * 1000000000;
         };
 
@@ -109,7 +109,7 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
         // Generate 24H volume values for comparison
         const getVolume24h = (asset: AssetStore) => {
           const seed = parseInt(asset.id.replace(/\D/g, '') || '0', 10) + 2000;
-          const randomMillions = Math.abs(Math.sin(seed) * 10000) % 1000 + 1;
+          const randomMillions = (Math.abs(Math.sin(seed) * 10000) % 1000) + 1;
           return randomMillions * 1000000;
         };
 
@@ -138,7 +138,13 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
     <>
       <ActionsBoxWrapperStyled>
         <SearchWrapperStyled>
-          <SearchInput query={query} setQuery={setQuery} placeholder={t('ASSETS.ADD_DIALOG.SEARCH') + (filteredAssets.length > 0 ? ' (' + `${filteredAssets.length}` + ')' : '')} />
+          <SearchInput
+            query={query}
+            setQuery={setQuery}
+            placeholder={
+              t('ASSETS.ADD_DIALOG.SEARCH') + (filteredAssets.length > 0 ? ' (' + `${filteredAssets.length}` + ')' : '')
+            }
+          />
         </SearchWrapperStyled>
         <ActionsWrapperStyled>
           <ActionButton onClick={onAddAssetDialogOpen} caption={t('ASSETS.ADD_ASSET')} />
@@ -157,35 +163,35 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
         <TableHead>
           <RowStyled>
             <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.CURRENCY')} />
-            <SortableTableHeaderCell 
+            <SortableTableHeaderCell
               title={t('ASSETS.TABLE.HEADERS.BALANCE')}
               sortField="balance"
               currentSortField={sortField}
               sortDirection={sortDirection}
               onSort={handleSort}
             />
-            <SortableTableHeaderCell 
+            <SortableTableHeaderCell
               title={t('ASSETS.TABLE.HEADERS.PRICE')}
               sortField="price"
               currentSortField={sortField}
               sortDirection={sortDirection}
               onSort={handleSort}
             />
-            <SortableTableHeaderCell 
+            <SortableTableHeaderCell
               title={t('ASSETS.TABLE.HEADERS.CHANGE_24H')}
               sortField="change24h"
               currentSortField={sortField}
               sortDirection={sortDirection}
               onSort={handleSort}
             />
-            <SortableTableHeaderCell 
+            <SortableTableHeaderCell
               title={t('ASSETS.TABLE.HEADERS.MARKET_CAP')}
               sortField="marketCap"
               currentSortField={sortField}
               sortDirection={sortDirection}
               onSort={handleSort}
             />
-            <SortableTableHeaderCell 
+            <SortableTableHeaderCell
               title={t('ASSETS.TABLE.HEADERS.VOLUME_24H')}
               sortField="volume24h"
               currentSortField={sortField}

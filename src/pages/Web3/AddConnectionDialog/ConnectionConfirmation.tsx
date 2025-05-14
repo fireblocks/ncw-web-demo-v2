@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { styled, Typography, ActionButton } from '@foundation';
-import { Button } from '@mui/material';
 import IconNoAsset from '@icons/no_asset_image.svg';
+import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Connection } from '../Web3List';
 import { failedUrlsCache } from '../Web3ListItem';
@@ -82,12 +82,7 @@ interface IProps {
   isLoading: boolean;
 }
 
-export const ConnectionConfirmation: React.FC<IProps> = ({ 
-  connection, 
-  onCancel, 
-  onConnect,
-  isLoading 
-}) => {
+export const ConnectionConfirmation: React.FC<IProps> = ({ connection, onCancel, onConnect, isLoading }) => {
   const { t } = useTranslation();
   // Initialize error state from the global cache
   const [hasImageError, setHasImageError] = useState(failedUrlsCache.has(connection.icon));
@@ -104,9 +99,9 @@ export const ConnectionConfirmation: React.FC<IProps> = ({
       {/* DApp Icon and Name */}
       <DAppRowStyled>
         <DAppIconStyled>
-          <DAppIconImageStyled 
-            src={hasImageError ? IconNoAsset : connection.icon} 
-            alt={connection.name} 
+          <DAppIconImageStyled
+            src={hasImageError ? IconNoAsset : connection.icon}
+            alt={connection.name}
             onError={() => {
               setHasImageError(true);
               // Add to global failed cache
@@ -121,22 +116,14 @@ export const ConnectionConfirmation: React.FC<IProps> = ({
 
       {/* Description */}
       <InfoRowStyled>
-        <LabelStyled>
-          {t('WEB3.ADD_DIALOG.DESCRIPTION_LABEL')}
-        </LabelStyled>
-        <ValueStyled>
-          {connection.description || t('WEB3.ADD_DIALOG.NA')}
-        </ValueStyled>
+        <LabelStyled>{t('WEB3.ADD_DIALOG.DESCRIPTION_LABEL')}</LabelStyled>
+        <ValueStyled>{connection.description || t('WEB3.ADD_DIALOG.NA')}</ValueStyled>
       </InfoRowStyled>
 
       {/* URL */}
       <InfoRowStyled>
-        <LabelStyled>
-          {t('WEB3.ADD_DIALOG.URL_LABEL')}
-        </LabelStyled>
-        <ValueStyled>
-          {connection.website || t('WEB3.ADD_DIALOG.NA')}
-        </ValueStyled>
+        <LabelStyled>{t('WEB3.ADD_DIALOG.URL_LABEL')}</LabelStyled>
+        <ValueStyled>{connection.website || t('WEB3.ADD_DIALOG.NA')}</ValueStyled>
       </InfoRowStyled>
 
       {/* Buttons */}
@@ -157,7 +144,9 @@ export const ConnectionConfirmation: React.FC<IProps> = ({
 
         <ActionButton
           caption={t('WEB3.ADD_DIALOG.CONNECT')}
-          onClick={() => onConnect(connection)}
+          onClick={() => {
+            onConnect(connection);
+          }}
           disabled={isLoading}
           isDialog={true}
         />

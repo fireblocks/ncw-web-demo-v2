@@ -39,23 +39,14 @@ export const TransactionDetailsDialog: React.FC<IProps> = ({ isOpen, onClose, tr
   }
 
   return (
-    <Dialog
-      size="small"
-      title={t('TRANSACTIONS.DETAILS_DIALOG.TITLE')}
-      isOpen={isOpen}
-      onClose={onClose}
-    >
+    <Dialog size="small" title={t('TRANSACTIONS.DETAILS_DIALOG.TITLE')} isOpen={isOpen} onClose={onClose}>
       <ContentContainerStyled>
         <InfoRowStyled>
-          <LabelStyled>
-            {t('TRANSACTIONS.DETAILS_DIALOG.TRANSACTION_HASH')}
-          </LabelStyled>
+          <LabelStyled>{t('TRANSACTIONS.DETAILS_DIALOG.TRANSACTION_HASH')}</LabelStyled>
           <CopyText size="large" text={transaction.details?.txHash || ''} />
         </InfoRowStyled>
         <InfoRowStyled>
-          <LabelStyled>
-            {t('TRANSACTIONS.DETAILS_DIALOG.FIREBLOCKS_TRANSACTION_ID')}
-          </LabelStyled>
+          <LabelStyled>{t('TRANSACTIONS.DETAILS_DIALOG.FIREBLOCKS_TRANSACTION_ID')}</LabelStyled>
           <CopyText size="large" text={transaction.id} />
         </InfoRowStyled>
       </ContentContainerStyled>

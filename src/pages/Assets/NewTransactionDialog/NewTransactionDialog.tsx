@@ -1,11 +1,11 @@
 import React from 'react';
 import { TNewTransactionMode, TFeeLevel } from '@api';
 import { AddressField, AssetAmountInput, Dialog, QRField, TextInput, styled } from '@foundation';
+import { top100Cryptos } from '@services';
 import { AssetStore, localizedCurrencyView, useAccountsStore, useDeviceStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { top100Cryptos } from '@services';
 import { FeeLevel } from '../../common/FeeLevel';
 import { SelectedAsset } from './SelectedAsset';
 import { TxType } from './TxType';
@@ -66,14 +66,10 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
     setFeeLevel('LOW');
   };
 
-  const shouldDisableAction = (
-    txType === 'TRANSFER' &&
-    mode === 'SEND' &&
-    (!amount || !address || isAmountTooHigh)
-  ) || isCreatingTransfer;
+  const shouldDisableAction =
+    (txType === 'TRANSFER' && mode === 'SEND' && (!amount || !address || isAmountTooHigh)) || isCreatingTransfer;
 
-
-    const createNewTransaction = () => {
+  const createNewTransaction = () => {
     setIsCreatingTransfer(true);
     if (txType === 'TRANSFER') {
       transactionsStore
@@ -122,7 +118,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
 
   // Get price from top100Cryptos based on asset symbol, myRate --> (true) do we want to calculate the amount based
   // on what we have in our wallet or (false) based on the amount entered in the text input amount
-  const getAssetPriceFromTop100Cryptos = (asset, myRate = true) => {
+  const getAssetPriceFromTop100Cryptos = (asset: any, myRate = true) => {
     if (!asset) return '--';
 
     // Get the price from top100Cryptos using the asset symbol
@@ -135,7 +131,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       const assetNameLower = asset.name.toLowerCase();
 
       // Find a matching cryptocurrency by comparing the asset name with the titles in top100Cryptos
-      const matchingSymbol = Object.keys(top100Cryptos).find(key => {
+      const matchingSymbol = Object.keys(top100Cryptos).find((key) => {
         const cryptoTitle = top100Cryptos[key].title.toLowerCase();
         return assetNameLower.includes(cryptoTitle) || cryptoTitle.includes(assetNameLower);
       });
@@ -156,7 +152,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       style: 'currency',
       currency: 'USD',
       maximumFractionDigits: 2,
-    }).format(amount && !myRate ? price * amount : price * asset.totalBalance);
+    }).format(amount && !myRate ? price * Number(amount) : price * asset.totalBalance);
   };
 
   if (!asset) {
@@ -191,7 +187,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
               value={amount}
               setValue={setAmount}
               assetSymbol={asset.symbol}
-              adornment={amount > 0 ? getAssetPriceFromTop100Cryptos(asset, false) : asset.rate}
+              adornment={Number(amount) > 0 ? getAssetPriceFromTop100Cryptos(asset, false) : asset.rate}
             />
             <TextInput
               disabled={txType !== 'TRANSFER'}

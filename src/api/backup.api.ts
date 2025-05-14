@@ -1,5 +1,5 @@
-import { getCall, postCall } from './utils.api';
 import { RootStore } from '@store';
+import { getCall, postCall } from './utils.api';
 
 export type TPassphraseLocation = 'GoogleDrive' | 'iCloud';
 
@@ -32,7 +32,6 @@ export interface IPassphrase {
 export const getLatestBackup = async (
   walletId: string,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<IBackupInfo | null> => {
   const response = await getCall(`api/wallets/${walletId}/backup/latest`, token);
   if (response.status >= 200 && response.status < 300) {
@@ -47,7 +46,6 @@ export const getLatestBackup = async (
 export const getPassphraseInfo = async (
   passphraseId: string,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<{ location: TPassphraseLocation }> => {
   const response = await getCall(`api/passphrase/${passphraseId}`, token);
   return response.json();
@@ -55,7 +53,6 @@ export const getPassphraseInfo = async (
 
 export const getPassphraseInfos = async (
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<{ passphrases: IPassphraseInfo[] }> => {
   const response = await getCall(`api/passphrase/`, token);
   return response.json();
@@ -65,7 +62,6 @@ export const createPassphraseInfo = async (
   passphraseId: string,
   location: TPassphraseLocation,
   token: string,
-  rootStore: RootStore | null = null,
 ) => {
   const response = await postCall(`api/passphrase/${passphraseId}`, token, { location });
   return response;

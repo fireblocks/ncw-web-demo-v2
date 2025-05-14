@@ -1,8 +1,8 @@
 import { INewTransactionDTO, ITransactionDTO, TX_POLL_INTERVAL, createTransaction, getTransactions, sleep } from '@api';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import { ENV_CONFIG } from '../env_config.ts';
 import { RootStore } from './Root.store';
 import { TransactionStore } from './Transaction.store';
-import { ENV_CONFIG } from '../env_config.ts';
 
 type TTransactionHandler = (tx: ITransactionDTO) => void;
 
@@ -120,7 +120,7 @@ export class TransactionsStore {
           this._rootStore.deviceStore.deviceId,
           startDate,
           this._rootStore.userStore.accessToken,
-          this._rootStore
+          this._rootStore,
         );
 
         if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'false' && !response?.ok) {

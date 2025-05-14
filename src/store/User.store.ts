@@ -1,8 +1,8 @@
 import { IDeviceDTO, getDevices, getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
-import { RootStore } from './Root.store';
 import { ENV_CONFIG } from '../env_config.ts';
+import { RootStore } from './Root.store';
 
 export class UserStore {
   @observable public loggedUser: IUser | null;
@@ -105,17 +105,17 @@ export class UserStore {
           } else {
             // with backend proxy
             getUserId(token)
-              .then((userId) => {
+              .then((userId: string) => {
                 this.setUserId(userId);
                 this.getMyDevices();
                 this.setIsGettingUser(false);
               })
-              .catch((e) => {
+              .catch((e: Error) => {
                 this.setError(e.message);
               });
           }
         })
-        .catch((e) => {
+        .catch((e: Error) => {
           this.setError(e.message);
         });
     }
@@ -187,18 +187,19 @@ export class UserStore {
     return null;
   }
 
-  public checkLatestBackup(device: IDeviceDTO = {}): void {
+  public checkLatestBackup(device: IDeviceDTO | undefined = undefined): void {
     this.setIsCheckingBackup(true);
     this._rootStore.backupStore
-      .getMyLatestBackup(device.walletId ?? '')
+      .getMyLatestBackup(device?.walletId ?? '')
       .then((result) => {
         if (result) {
           if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
-            const devices = []
-            result.keys.forEach((key) => {
+            const devices: IDeviceDTO[] = [];
+            result.keys?.forEach((key: { deviceId: string; walletId?: string }) => {
               devices.push({
                 deviceId: key.deviceId,
-                walletId: key?.walletId ?? null,
+                walletId: key?.walletId ?? '',
+                createdAt: new Date().getTime(), // Adding required property as number
               });
             });
             this.setMyDevices(devices);
@@ -206,7 +207,7 @@ export class UserStore {
           this.setHasBackup(true);
         }
       })
-      .catch((e) => {
+      .catch((e: Error) => {
         throw new Error(e.message);
       })
       .finally(() => {
@@ -236,14 +237,14 @@ export class UserStore {
     }
 
     getDevices(this.accessToken, this._rootStore)
-      .then((devices) => {
+      .then((devices: IDeviceDTO[]) => {
         this.setMyDevices(devices);
         if (devices?.length || ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
           console.log('[UserStore] Checking latest backup');
-          this.checkLatestBackup(devices?.length ? devices[devices.length - 1] : []);
+          this.checkLatestBackup(devices?.length ? devices[devices.length - 1] : undefined);
         }
       })
-      .catch((e) => {
+      .catch((e: Error) => {
         this.setError(e.message);
       });
   }

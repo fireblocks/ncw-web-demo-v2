@@ -1,7 +1,7 @@
 import { IGetTransactionsParams, ITransactionRequest } from '@fireblocks/embedded-wallet-sdk';
+import { RootStore } from '@store';
 import { TransactionResponse } from 'ethers';
 import { CreateTransactionResponse } from 'fireblocks-sdk';
-import { RootStore } from '@store';
 
 export type TTransactionStatus =
   | 'PENDING_SIGNATURE'
@@ -166,7 +166,8 @@ export const getTransactions = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<ITransactionDTO[]> => {
-  console.log('[EmbeddedWallet] Getting transactions, SDK instance:',
+  console.log(
+    '[EmbeddedWallet] Getting transactions, SDK instance:',
     rootStore?.fireblocksSDKStore.fireblocksEW ? 'exists' : 'missing',
   );
 
@@ -218,7 +219,17 @@ export const createTransaction = async (
   rootStore: RootStore | null = null,
 ): Promise<CreateTransactionResponse | null> => {
   try {
-    console.log('[EmbeddedWallet] Creating transaction dataToSend: ', dataToSend);
+    console.log('[EmbeddedWallet] Creating transaction dataToSend: ', dataToSend, deviceId, token);
+    if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
+      console.error('[EmbeddedWallet] Embedded wallet SDK is not initialized');
+      throw new Error('Embedded wallet SDK is not initialized');
+    }
+    console.log(
+      `[EmbeddedWallet] Creating transaction for device ${deviceId} with data: `,
+      dataToSend,
+      'token: ',
+      token,
+    );
     const assetId = dataToSend?.assetId;
     const destAddress = dataToSend?.destAddress ?? '';
     const amount = dataToSend?.amount || '0.00000001';

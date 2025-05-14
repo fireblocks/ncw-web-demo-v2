@@ -6,7 +6,6 @@ export const getNFTTokens = async (
   deviceId: string,
   accountId: number,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<TokenWithBalance[]> => {
   const response = await getCall(
     `api/devices/${deviceId}/accounts/${accountId.toString()}/nfts/ownership/tokens`,

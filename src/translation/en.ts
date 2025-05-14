@@ -303,7 +303,8 @@ export const translationToEnglish = {
       CONNECTION_REMOVED: 'Connection removed',
       ERROR_REMOVING: 'Failed to remove connection',
       REMOVE_CONFIRMATION_TITLE: 'Remove connection?',
-      REMOVE_CONFIRMATION_TEXT: 'The wallet will be disconnected from {{dappName}}. You can re-connect the dApp again at any time.',
+      REMOVE_CONFIRMATION_TEXT:
+        'The wallet will be disconnected from {{dappName}}. You can re-connect the dApp again at any time.',
       CANCEL: 'Cancel',
     },
     TABLE: {

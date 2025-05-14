@@ -146,16 +146,13 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
       onClose={resetBeforeClose}
       size="medium"
     >
-      <RootStyled >
+      <RootStyled>
         <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
           {!isLoading ? (
             <>
               {/* Phase 0: Selection between QR scan and manual entry */}
               {phase === 0 && (
-                <SelectionPhase
-                  onSelectQrScan={handleSelectQrScan}
-                  onSelectManualEntry={handleSelectManualEntry}
-                />
+                <SelectionPhase onSelectQrScan={handleSelectQrScan} onSelectManualEntry={handleSelectManualEntry} />
               )}
 
               {/* Phase 1: Request ID Entry */}

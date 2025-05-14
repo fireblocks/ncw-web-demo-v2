@@ -78,7 +78,7 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
       const assetNameLower = currentAsset.name.toLowerCase();
 
       // Find a matching cryptocurrency by comparing the asset name with the titles in top100Cryptos
-      const matchingSymbol = Object.keys(top100Cryptos).find(key => {
+      const matchingSymbol = Object.keys(top100Cryptos).find((key) => {
         const cryptoTitle = top100Cryptos[key].title.toLowerCase();
         return assetNameLower.includes(cryptoTitle) || cryptoTitle.includes(assetNameLower);
       });

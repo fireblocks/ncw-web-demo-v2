@@ -3,9 +3,9 @@ import { SecondaryIconButton, styled } from '@foundation';
 import IconCopy from '@icons/copy.svg';
 import IconCopyWhite from '@icons/copy_white.svg';
 import IconEye from '@icons/eye.svg';
-import IconEyeWhite from '@icons/eye_white.svg';
 import IconEyeOff from '@icons/eye_off.svg';
 import IconEyeOffWhite from '@icons/eye_off_white.svg';
+import IconEyeWhite from '@icons/eye_white.svg';
 import Tooltip from '@mui/material/Tooltip/Tooltip';
 import { useTranslation } from 'react-i18next';
 

@@ -393,14 +393,14 @@ export const DAppDetailsDialog: React.FC<IProps> = ({ isOpen, onClose, connectio
             <BlockchainLogosStyled>
               {mockBlockchains.map((blockchain) => (
                 <BlockchainLogoRowStyled key={blockchain.id}>
-                  <BlockchainLogoStyled 
-                    src={failedBlockchainIcons[blockchain.id] ? IconNoAsset : blockchain.logo} 
+                  <BlockchainLogoStyled
+                    src={failedBlockchainIcons[blockchain.id] ? IconNoAsset : blockchain.logo}
                     alt={blockchain.name}
                     onError={() => {
                       // Update the failedBlockchainIcons state when an icon fails to load
-                      setFailedBlockchainIcons(prev => ({
+                      setFailedBlockchainIcons((prev) => ({
                         ...prev,
-                        [blockchain.id]: true
+                        [blockchain.id]: true,
                       }));
                     }}
                   />

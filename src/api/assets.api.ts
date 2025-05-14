@@ -64,7 +64,6 @@ export const addAsset = async (
   accountId: number,
   assetId: string,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<IAssetAddressDTO> => {
   const response = await postCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}`, token);
   return response;
@@ -75,7 +74,6 @@ export const getAsset = async (
   accountId: number,
   assetId: string,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<IAssetDTO> => {
   const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}`, token);
   return response.json();
@@ -85,7 +83,6 @@ export const getAssets = async (
   deviceId: string,
   accountId: number,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<IAssetDTO[]> => {
   const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets`, token);
   return response.json();
@@ -95,7 +92,6 @@ export const getAssetsSummary = async (
   deviceId: string,
   accountId: number,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<IAssetsSummaryDTO[]> => {
   const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets/summary`, token);
   const assetsMap = await response.json();
@@ -106,7 +102,6 @@ export const getSupportedAssets = async (
   deviceId: string,
   accountId: number,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<IAssetDTO[]> => {
   const response = await getCall(
     `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/supported_assets`,
@@ -120,7 +115,6 @@ export const getAddress = async (
   accountId: number,
   assetId: string,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<IAssetAddressDTO> => {
   const response = await getCall(
     `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}/address`,
@@ -134,7 +128,6 @@ export const getBalance = async (
   accountId: number,
   assetId: string,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<IAssetBalanceDTO> => {
   const response = await getCall(
     `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/${assetId}/balance`,

@@ -90,23 +90,23 @@ export const TableTitleCell: React.FC<IProps> = ({ title, subtitle, iconUrl, ass
       <TextStyled>
         {title && title !== '--' ? (
           <Tooltip title={title} arrow placement="top">
-            <TypographyStyled component="p" color="text.primary" variant="body1">
+            <TypographyStyled color="text.primary" variant="body1">
               {title}
             </TypographyStyled>
           </Tooltip>
         ) : (
-          <TypographyStyled component="p" color="text.primary" variant="body1">
+          <TypographyStyled color="text.primary" variant="body1">
             {title}
           </TypographyStyled>
         )}
         {subtitle && subtitle !== '--' ? (
           <Tooltip title={subtitle} arrow placement="top">
-            <TypographyStyled component="p" color="text.secondary" variant="body1">
+            <TypographyStyled color="text.secondary" variant="body1">
               {subtitle}
             </TypographyStyled>
           </Tooltip>
         ) : (
-          <TypographyStyled component="p" color="text.secondary" variant="body1">
+          <TypographyStyled color="text.secondary" variant="body1">
             {subtitle}
           </TypographyStyled>
         )}

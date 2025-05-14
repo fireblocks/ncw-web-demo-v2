@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { Dialog, TextInput, ActionButton, styled } from '@foundation';
 import { Button } from '@mui/material';
-import { observer } from 'mobx-react';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
 import { useStores } from '@store';
+import { observer } from 'mobx-react';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { Connection } from '../Web3List';
 import { preloadAllImages, failedUrlsCache } from '../Web3ListItem';
 import { mapSessionDTOToConnection } from '../mappers';
@@ -30,11 +30,7 @@ interface IProps {
   onAddConnection: (connection: Connection) => void;
 }
 
-export const AddConnectionDialog: React.FC<IProps> = observer(({ 
-  isOpen, 
-  onClose,
-  onAddConnection 
-}) => {
+export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose, onAddConnection }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { web3Store, accountsStore } = useStores();
@@ -98,7 +94,7 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({
           website: '',
           connectionDate: new Date(),
           icon: defaultIconUrl,
-        }
+        },
       ];
 
       // Add the current connection details if available

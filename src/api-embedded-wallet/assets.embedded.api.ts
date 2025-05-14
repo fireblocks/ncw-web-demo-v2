@@ -1,4 +1,5 @@
 import { RootStore } from '@store';
+import { ENV_CONFIG } from '../env_config';
 
 export interface IAssetDTO {
   id: string;
@@ -59,10 +60,10 @@ export interface IAssetsSummaryDTO {
 }
 
 export const addAsset = async (
-  deviceId: string,
+  _deviceId: string,
   accountId: number,
   assetId: string,
-  token: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetAddressDTO> => {
   if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
@@ -83,10 +84,10 @@ export const addAsset = async (
 };
 
 export const getAsset = async (
-  deviceId: string,
+  _deviceId: string,
   accountId: number,
   assetId: string,
-  token: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetDTO> => {
   if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
@@ -109,7 +110,7 @@ export const getAsset = async (
       hasFee: asset.hasFee,
       type: asset.type,
       baseAsset: asset.baseAsset,
-      ethNetwork: asset.ethNetwork,
+      ethNetwork: asset.ethNetwork ? Number(asset.ethNetwork) : undefined,
       ethContractAddress: asset.ethContractAddress,
       issuerAddress: asset.issuerAddress,
       blockchainSymbol: asset.blockchainSymbol,
@@ -140,7 +141,7 @@ export const getEmbeddedWalletAssets = async (rootStore: RootStore, accountId: n
     hasFee: asset.hasFee,
     type: asset.type,
     baseAsset: asset.baseAsset,
-    ethNetwork: asset.ethNetwork,
+    ethNetwork: asset.ethNetwork ? Number(asset.ethNetwork) : undefined,
     ethContractAddress: asset.ethContractAddress,
     issuerAddress: asset.issuerAddress,
     blockchainSymbol: asset.blockchainSymbol,
@@ -172,7 +173,7 @@ export const getEmbeddedWalletAsset = async (
     hasFee: asset.hasFee,
     type: asset.type,
     baseAsset: asset.baseAsset,
-    ethNetwork: asset.ethNetwork,
+    ethNetwork: asset.ethNetwork ? Number(asset.ethNetwork) : undefined,
     ethContractAddress: asset.ethContractAddress,
     issuerAddress: asset.issuerAddress,
     blockchainSymbol: asset.blockchainSymbol,
@@ -188,9 +189,9 @@ export const getEmbeddedWalletAsset = async (
 };
 
 export const getAssets = async (
-  deviceId: string,
+  _deviceId: string,
   accountId: number,
-  token: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<Promise<IAssetDTO>[]> => {
   console.log('[EmbeddedWallet] Getting assets');
@@ -247,7 +248,7 @@ export const getEmbeddedWalletAssetsSummary = async (
         hasFee: asset.hasFee,
         type: asset.type,
         baseAsset: asset.baseAsset,
-        ethNetwork: asset.ethNetwork,
+        ethNetwork: asset.ethNetwork ? Number(asset.ethNetwork) : undefined,
         ethContractAddress: asset.ethContractAddress,
         issuerAddress: asset.issuerAddress,
         blockchainSymbol: asset.blockchainSymbol,
@@ -278,13 +279,16 @@ export const getEmbeddedWalletAssetsSummary = async (
 };
 
 export const getAssetsSummary = async (
-  deviceId: string,
+  _deviceId: string,
   accountId: number,
-  token: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetsSummaryDTO[]> => {
   console.log('[EmbeddedWallet] Getting assets summary');
   try {
+    if (!rootStore) {
+      throw new Error('Embedded wallet SDK is not initialized');
+    }
     return await getEmbeddedWalletAssetsSummary(rootStore, accountId);
   } catch (error) {
     console.log('[EmbeddedWallet] Error getting assets summary:', error);
@@ -293,9 +297,9 @@ export const getAssetsSummary = async (
 };
 
 export const getSupportedAssets = async (
-  deviceId: string,
-  accountId: number,
-  token: string,
+  _deviceId: string,
+  _accountId: number,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetDTO[]> => {
   if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
@@ -318,7 +322,7 @@ export const getSupportedAssets = async (
       hasFee: asset.hasFee || false,
       type: asset.type,
       baseAsset: asset.baseAsset,
-      ethNetwork: asset.ethNetwork,
+      ethNetwork: asset.ethNetwork ? Number(asset.ethNetwork) : undefined,
       ethContractAddress: asset.ethContractAddress,
       issuerAddress: asset.issuerAddress,
       blockchainSymbol: asset.blockchainSymbol,
@@ -338,10 +342,10 @@ export const getSupportedAssets = async (
 };
 
 export const getAddress = async (
-  deviceId: string,
+  _deviceId: string,
   accountId: number,
   assetId: string,
-  token: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetAddressDTO> => {
   if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
@@ -372,10 +376,10 @@ export const getAddress = async (
 };
 
 export const getBalance = async (
-  deviceId: string,
+  _deviceId: string,
   accountId: number,
   assetId: string,
-  token: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetBalanceDTO> => {
   if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
@@ -454,7 +458,7 @@ const getAllRatesLive = async (coinSymbolToIdMap: CoinSymbolToIdMap): Promise<Co
 export const getCryptoIconUrl = (symbol: string) => {
   const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
   return normalizedSymbol?.length && cryptoIconNamesLocally.includes(normalizedSymbol)
-    ? `src/icons/crypto-icons/${normalizedSymbol}.png`
+    ? `${ENV_CONFIG.VITE_BASE_FOLDER}/src/icons/crypto-icons/${normalizedSymbol}.png`
     : '';
 };
 

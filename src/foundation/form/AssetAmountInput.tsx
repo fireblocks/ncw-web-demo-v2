@@ -1,9 +1,9 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { styled, Typography } from '@foundation';
 import InputAdornment from '@mui/material/InputAdornment/InputAdornment';
 import { NumericFormat } from 'react-number-format';
 import { InputLabelStyled, FormControlRootStyled, InputStyled } from './commonStyledComponents';
-import { useEffect } from 'react';
 
 const InputAdornmentStyled = styled(InputAdornment)(({ theme }) => ({
   '&.MuiInputAdornment-root .MuiTypography-root': {

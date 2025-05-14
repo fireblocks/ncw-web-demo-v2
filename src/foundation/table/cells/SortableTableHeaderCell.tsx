@@ -52,11 +52,7 @@ export const SortableTableHeaderCell: React.FC<IProps> = ({
         {title}
       </Typography>
       {isCurrentlySorted && sortDirection && (
-        <SortIconStyled 
-          src={IconArrowDownBlue} 
-          alt={sortDirection} 
-          isAscending={sortDirection === 'asc'} 
-        />
+        <SortIconStyled src={IconArrowDownBlue} alt={sortDirection} isAscending={sortDirection === 'asc'} />
       )}
     </RootStyled>
   );

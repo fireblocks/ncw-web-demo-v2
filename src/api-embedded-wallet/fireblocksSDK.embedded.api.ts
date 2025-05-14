@@ -11,5 +11,9 @@ export const sendMessage = async (
   rootStore: RootStore | null = null,
 ): Promise<any> => {
   // todo: what is the sensMessage mechanism on the embedded wallet?
-  console.log('sendMessage embedded wallet: ', message);
+  console.log('sendMessage embedded wallet: ', deviceId, token, message, rootStore);
+  return {
+    status: 'ok',
+    message: 'ok',
+  };
 };

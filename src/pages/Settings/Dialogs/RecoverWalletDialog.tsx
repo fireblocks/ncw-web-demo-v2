@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Dialog, Progress, Typography, styled } from '@foundation';
-import IconVSign from '@icons/v-sign.svg';
 import IconCloseIcon from '@icons/close-icon.svg';
+import IconVSign from '@icons/v-sign.svg';
+import { Button } from '@mui/material';
 import { useAuthStore, useBackupStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@mui/material';
 
 const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(7, 5),
@@ -82,7 +82,8 @@ export const RecoverWalletDialog: React.FC<IProps> = observer(function RecoverWa
 
   const handleRecoverWallet = () => {
     setRecoveryPhase('loading');
-    authStore.recoverMPCKeys('GoogleDrive', true)
+    authStore
+      .recoverMPCKeys('GoogleDrive', true)
       .then(() => {
         setRecoveryPhase('success');
         enqueueSnackbar(t('LOGIN.RECOVERY_FROM_BACKUP'), { variant: 'success' });
@@ -132,9 +133,7 @@ export const RecoverWalletDialog: React.FC<IProps> = observer(function RecoverWa
               </Typography>
             </CenteredTextContainerStyled>
             <ButtonContainerStyled>
-              <RecoverButtonStyled onClick={handleTryAgain}>
-                Try again
-              </RecoverButtonStyled>
+              <RecoverButtonStyled onClick={handleTryAgain}>Try again</RecoverButtonStyled>
             </ButtonContainerStyled>
           </RootStyled>
         );
@@ -149,12 +148,7 @@ export const RecoverWalletDialog: React.FC<IProps> = observer(function RecoverWa
   };
 
   return (
-    <Dialog
-      title="Recover wallet"
-      isOpen={isOpen}
-      onClose={handleClose}
-      size="medium"
-    >
+    <Dialog title="Recover wallet" isOpen={isOpen} onClose={handleClose} size="medium">
       {recoveryPhase === 'initial' ? (
         <RootStyled>
           <TextContainerStyled>
@@ -163,15 +157,13 @@ export const RecoverWalletDialog: React.FC<IProps> = observer(function RecoverWa
             </Typography>
           </TextContainerStyled>
           <ButtonContainerStyled>
-            <CancelButtonStyled onClick={handleClose}>
-              Cancel
-            </CancelButtonStyled>
-            <RecoverButtonStyled onClick={handleRecoverWallet}>
-              Recover wallet
-            </RecoverButtonStyled>
+            <CancelButtonStyled onClick={handleClose}>Cancel</CancelButtonStyled>
+            <RecoverButtonStyled onClick={handleRecoverWallet}>Recover wallet</RecoverButtonStyled>
           </ButtonContainerStyled>
         </RootStyled>
-      ) : renderDialogContent()}
+      ) : (
+        renderDialogContent() || <></>
+      )}
     </Dialog>
   );
 });

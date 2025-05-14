@@ -13,9 +13,9 @@ import {
   styled,
 } from '@foundation';
 import IconNoAsset from '@icons/no_asset_image.svg';
+import { top100Cryptos } from '@services';
 import { AssetStore, NOT_AVAILABLE_PLACEHOLDER } from '@store';
 import { observer } from 'mobx-react';
-import { top100Cryptos } from '@services';
 
 export const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -73,38 +73,42 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
     // Use a different seed for market cap to ensure different values
     const seed = parseInt(currentAsset.id.replace(/\D/g, '') || '0', 10) + 1000;
     // Generate a random value between 1 and 2000 billion
-    const randomBillions = Math.abs(Math.sin(seed) * 10000) % 2000 + 1;
+    const randomBillions = (Math.abs(Math.sin(seed) * 10000) % 2000) + 1;
     // Convert to actual value (multiply by 1 billion)
     return randomBillions * 1000000000;
   }, [currentAsset.id]);
 
   // Format market cap as a dollar amount with commas
-  const formattedMarketCap = useMemo(() => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(marketCap);
-  }, [marketCap]);
+  const formattedMarketCap = useMemo(
+    () =>
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(marketCap),
+    [marketCap],
+  );
 
   // Generate a random 24H volume value in millions
   const volume24h = useMemo(() => {
     // Use a different seed for 24H volume to ensure different values
     const seed = parseInt(currentAsset.id.replace(/\D/g, '') || '0', 10) + 2000;
     // Generate a random value between 1 and 1000 million
-    const randomMillions = Math.abs(Math.sin(seed) * 10000) % 1000 + 1;
+    const randomMillions = (Math.abs(Math.sin(seed) * 10000) % 1000) + 1;
     // Convert to actual value (multiply by 1 million)
     return randomMillions * 1000000;
   }, [currentAsset.id]);
 
   // Format 24H volume as a dollar amount with commas
-  const formattedVolume24h = useMemo(() => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(volume24h);
-  }, [volume24h]);
+  const formattedVolume24h = useMemo(
+    () =>
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(volume24h),
+    [volume24h],
+  );
 
   // Get price from top100Cryptos based on asset symbol
   const { formattedPrice, totalValue } = useMemo(() => {
@@ -122,7 +126,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
       const assetNameLower = currentAsset.name.toLowerCase();
 
       // Find a matching cryptocurrency by comparing the asset name with the titles in top100Cryptos
-      const matchingSymbol = Object.keys(top100Cryptos).find(key => {
+      const matchingSymbol = Object.keys(top100Cryptos).find((key) => {
         const cryptoTitle = top100Cryptos[key].title.toLowerCase();
         return assetNameLower.includes(cryptoTitle) || cryptoTitle.includes(assetNameLower);
       });
@@ -136,7 +140,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
     if (!cryptoData) {
       return {
         formattedPrice: NOT_AVAILABLE_PLACEHOLDER,
-        totalValue: NOT_AVAILABLE_PLACEHOLDER
+        totalValue: NOT_AVAILABLE_PLACEHOLDER,
       };
     }
 
@@ -150,7 +154,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
           currency: 'USD',
           maximumFractionDigits: 0,
         }).format(price),
-        totalValue: '--'
+        totalValue: '--',
       };
     }
 
@@ -166,7 +170,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
         style: 'currency',
         currency: 'USD',
         maximumFractionDigits: 0,
-      }).format(totalValueAmount)
+      }).format(totalValueAmount),
     };
   }, [currentAsset.symbol, currentAsset.name, currentAsset.totalBalance]);
 
@@ -184,7 +188,11 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
       <TableRow>
         <RowStyled>
           <TableTitleCell {...titleCellProps} />
-          <TableBalanceCell balance={currentAsset.totalBalance} balanceInUsd={totalValue} assetSymbol={currentAsset.symbol} />
+          <TableBalanceCell
+            balance={currentAsset.totalBalance}
+            balanceInUsd={totalValue}
+            assetSymbol={currentAsset.symbol}
+          />
           <TablePriceCell price={formattedPrice} />
           <TableChangeCell change={change24h} />
           <TableTextCell text={formattedMarketCap} />

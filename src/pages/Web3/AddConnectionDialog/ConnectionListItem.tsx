@@ -42,10 +42,10 @@ const DAppIconImageStyled = styled('img')(() => ({
 }));
 
 // Custom TableTitleCell with white background for the icon
-const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: string }> = ({ 
-  title, 
-  subtitle, 
-  iconUrl 
+const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: string }> = ({
+  title,
+  subtitle,
+  iconUrl,
 }) => {
   // Initialize error state from the global cache
   const [hasImageError, setHasImageError] = useState(failedUrlsCache.has(iconUrl));
@@ -61,9 +61,9 @@ const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: strin
     <TableCell>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <DAppIconStyled>
-          <DAppIconImageStyled 
-            src={hasImageError ? IconNoAsset : iconUrl} 
-            alt={title} 
+          <DAppIconImageStyled
+            src={hasImageError ? IconNoAsset : iconUrl}
+            alt={title}
             onError={() => {
               setHasImageError(true);
               // Add to global failed cache
@@ -72,21 +72,25 @@ const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: strin
           />
         </DAppIconStyled>
         <div style={{ overflow: 'hidden', maxWidth: '100%' }}>
-          <div style={{ 
-            fontWeight: 'bold', 
-            whiteSpace: 'nowrap', 
-            overflow: 'hidden', 
-            textOverflow: 'ellipsis' 
-          }}>
+          <div
+            style={{
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
             {title}
           </div>
           {subtitle && (
-            <div style={{ 
-              opacity: 0.7, 
-              whiteSpace: 'nowrap', 
-              overflow: 'hidden', 
-              textOverflow: 'ellipsis' 
-            }}>
+            <div
+              style={{
+                opacity: 0.7,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               {subtitle}
             </div>
           )}
@@ -154,11 +158,7 @@ export const ConnectionListItem: React.FC<IProps> = observer(function Connection
     >
       <TableRow>
         <RowStyled>
-          <DAppTitleCell 
-            title={connection.name} 
-            subtitle={connection.description}
-            iconUrl={connection.icon} 
-          />
+          <DAppTitleCell title={connection.name} subtitle={connection.description} iconUrl={connection.icon} />
           <TableCell>
             {hoveredLine === connection.id ? (
               <>

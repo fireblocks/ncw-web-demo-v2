@@ -126,11 +126,11 @@ export class TransactionStore {
     console.log('[TransactionStore] Status update:', {
       transactionId: this.id,
       oldStatus: this.status,
-      newStatus: status
+      newStatus: status,
     });
 
     this.status = status;
-    
+
     // Only refresh balances for significant status changes
     const significantStatuses: TTransactionStatus[] = ['COMPLETED', 'FAILED', 'CANCELLED'];
     if (this.isNFT) {

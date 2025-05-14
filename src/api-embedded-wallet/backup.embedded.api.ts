@@ -12,7 +12,7 @@ export const getLatestBackup = async (
   rootStore: RootStore | null = null,
 ): Promise<IBackupInfo | null> => {
   try {
-    console.log('[EmbeddedWalletSDK] Getting latest backup');
+    console.log('[EmbeddedWalletSDK] Getting latest backup: ', walletId, token);
     const response = await rootStore?.fireblocksSDKStore.fireblocksEW.getLatestBackup();
     console.log('[EmbeddedWalletSDK] Latest backup: ', response);
     if (response) {
@@ -49,7 +49,7 @@ export const getPassphraseInfo = async (
   rootStore: RootStore | null = null,
 ): Promise<IPassphraseInfo> => {
   try {
-    console.log('getPassphraseInfo embedded wallet');
+    console.log('getPassphraseInfo embedded wallet: ', token, passphraseId, rootStore);
     return Promise.resolve({ passphraseId: passphraseId, location: 'GoogleDrive' });
   } catch (e) {
     console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);
@@ -63,7 +63,7 @@ export const getPassphraseInfos = async (
   const passphrases: { passphrases: IPassphraseInfo[] } = {
     passphrases: [],
   };
-  console.log('getPassphraseInfos embedded wallet');
+  console.log('getPassphraseInfos embedded wallet: ', token);
   try {
     const res = await rootStore?.fireblocksSDKStore.fireblocksEW.getLatestBackup();
     console.log('getPassphraseInfos res: ', res);
@@ -88,6 +88,7 @@ export const getPassphraseInfos = async (
   return passphrases;
 };
 
+// @ts-ignore
 export const createPassphraseInfo = async (
   passphraseId: string,
   location: TPassphraseLocation,
@@ -95,7 +96,7 @@ export const createPassphraseInfo = async (
   rootStore: RootStore | null = null,
 ) => {
   try {
-    console.log('createPassphraseInfo embedded wallet');
+    console.log('createPassphraseInfo embedded wallet: ', token, passphraseId, location, rootStore);
     const startWith = location === 'GoogleDrive' ? 'gdrive' : 'icloud';
     return Promise.resolve({ passphraseId: startWith + passphraseId, location: 'GoogleDrive' });
   } catch (e) {

@@ -99,7 +99,6 @@ export const getTransactions = async (
   deviceId: string,
   startDate: number,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<Response> => {
   const response = await getCall(
     `api/devices/${deviceId}/transactions?poll=true&startDate=${startDate.toString()}&details=true`,
@@ -112,7 +111,6 @@ export const createTransaction = async (
   deviceId: string,
   token: string,
   dataToSend?: INewTransactionDTO,
-  rootStore: RootStore | null = null,
 ): Promise<ITransactionDTO> => {
   const createTxResponse = await postCall(`api/devices/${deviceId}/transactions`, token, dataToSend);
   return createTxResponse;
@@ -122,7 +120,6 @@ export const cancelTransaction = async (
   deviceId: string,
   token: string,
   txId: string,
-  rootStore: RootStore | null = null,
 ): Promise<void> => {
   const response = await postCall(`api/devices/${deviceId}/transactions/${txId}/cancel`, token);
   return response;

@@ -1,4 +1,4 @@
-import { getWeb3Connections, createWeb3Connection, submitWeb3Connection, removeWeb3Connection } from '@api';
+import { getWeb3Connections, createWeb3Connection, submitWeb3Connection, removeWeb3Connection } from '../api-embedded-wallet';
 import { ICreateNcwConnectionRequest } from '@fireblocks/embedded-wallet-sdk';
 import { RespondToConnectionRequest, SessionDTO } from '@fireblocks/ts-sdk';
 import { action, makeObservable, observable } from 'mobx';

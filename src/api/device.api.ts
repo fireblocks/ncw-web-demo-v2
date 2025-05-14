@@ -1,6 +1,6 @@
 import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
-import { getCall, postCall } from './utils.api';
 import { RootStore } from '@store';
+import { getCall, postCall } from './utils.api';
 
 const DEVICE_ID_KEY = 'DEMO_APP:deviceId';
 
@@ -37,13 +37,12 @@ export const generateNewDeviceId = (userId: string) => {
 export const assignDeviceToNewWallet = async (
   deviceId: string,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<string> => {
   const response = await postCall(`api/devices/${deviceId}/assign`, token);
   return response.walletId;
 };
 
-export const getDevices = async (token: string, rootStore: RootStore | null = null): Promise<IDeviceDTO[]> => {
+export const getDevices = async (token: string): Promise<IDeviceDTO[]> => {
   const response = await getCall('api/devices/', token);
   const { devices } = await response.json();
   return devices;

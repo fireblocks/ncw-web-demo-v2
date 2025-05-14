@@ -3,8 +3,8 @@ import { BlueButton, Skeleton, Typography, styled } from '@foundation';
 import IconEmptyPageNoAssets from '@icons/empty_page_no_assets.svg';
 import IconEmptyPageNoNft from '@icons/empty_page_no_nft.svg';
 import IconEmptyPageNoTx from '@icons/empty_page_no_tx.svg';
-import IconEmptyPageNoWeb3 from '@icons/web3-main-icon.svg';
 import IconPlus from '@icons/plus-icon.svg';
+import IconEmptyPageNoWeb3 from '@icons/web3-main-icon.svg';
 import { useTranslation } from 'react-i18next';
 
 const RootStyled = styled('div')(() => ({

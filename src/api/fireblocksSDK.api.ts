@@ -9,5 +9,4 @@ export const sendMessage = async (
   deviceId: string,
   token: string,
   message: string,
-  rootStore: RootStore | null = null,
 ): Promise<any> => postCall(`api/devices/${deviceId}/rpc`, token, { message });

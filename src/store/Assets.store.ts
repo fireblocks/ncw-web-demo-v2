@@ -20,10 +20,7 @@ import { RootStore } from './Root.store';
  * @param wait The number of milliseconds to delay
  * @returns A debounced version of the original function
  */
-const debounce = <T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): ((...args: Parameters<T>) => void) => {
+const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout | null = null;
   return (...args: Parameters<T>) => {
     if (timeout) {
@@ -93,7 +90,7 @@ export class AssetsStore {
     const balance = this.myAssets.reduce((acc, a) => {
       const rate = a.assetData?.rate || 0;
       const total = Number(a.totalBalance || 0);
-      return acc + (total * rate);
+      return acc + total * rate;
     }, 0);
     return localizedCurrencyView(balance);
   }
@@ -109,7 +106,7 @@ export class AssetsStore {
       const bRate = b.assetData?.rate || 0;
       const aBalance = a.totalBalance || 0;
       const bBalance = b.totalBalance || 0;
-      return (bBalance * bRate) - (aBalance * aRate);
+      return bBalance * bRate - aBalance * aRate;
     });
   }
 
@@ -183,7 +180,7 @@ export class AssetsStore {
         assetData.asset,
         assetData.balance || null,
         assetData.address || null,
-        this._rootStore
+        this._rootStore,
       );
 
       runInAction(() => {
@@ -239,7 +236,7 @@ export class AssetsStore {
       const [assetDTO, balanceDTO, addressDTO] = await Promise.all([
         getAsset(deviceId, accountId, assetId, accessToken, this._rootStore),
         getBalance(deviceId, accountId, assetId, accessToken, this._rootStore),
-        getAddress(deviceId, accountId, assetId, accessToken, this._rootStore)
+        getAddress(deviceId, accountId, assetId, accessToken, this._rootStore),
       ]);
 
       if (!assetDTO) {
@@ -250,7 +247,7 @@ export class AssetsStore {
       this.addMyAsset({
         asset: assetDTO,
         balance: balanceDTO || null,
-        address: addressDTO || null
+        address: addressDTO || null,
       });
     } catch (error) {
       console.error('Error adding asset:', error);
@@ -262,7 +259,7 @@ export class AssetsStore {
   private _doRefreshBalances(): void {
     console.log('[AssetsStore] Starting balance refresh', {
       timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
-      isGettingBalances: this.isGettingBalances
+      isGettingBalances: this.isGettingBalances,
     });
 
     this.setIsGettingBalances(true);
@@ -299,7 +296,7 @@ export class AssetsStore {
   public refreshBalances(): void {
     console.log('[AssetsStore] refreshBalances called', {
       timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
-      isGettingBalances: this.isGettingBalances
+      isGettingBalances: this.isGettingBalances,
     });
 
     // Only allow refresh if at least 5 seconds have passed since last refresh

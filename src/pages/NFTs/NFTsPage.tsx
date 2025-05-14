@@ -90,7 +90,13 @@ export const NFTsPage: React.FC = observer(function NFTsPage() {
           </HeadingStyled>
           <ActionsBoxWrapperStyled>
             <SearchWrapperStyled>
-              <SearchInput query={query} setQuery={setQuery} placeholder={t('NFT.SEARCH') + (filteredTokens.length > 0 ? ' (' + `${filteredTokens.length}` + ')' : '')} />
+              <SearchInput
+                query={query}
+                setQuery={setQuery}
+                placeholder={
+                  t('NFT.SEARCH') + (filteredTokens.length > 0 ? ' (' + `${filteredTokens.length}` + ')' : '')
+                }
+              />
             </SearchWrapperStyled>
             <ActionsWrapperStyled>
               <ModeSwitcher value={mode} onChange={onSetMode} />

@@ -17,14 +17,12 @@ interface IProps {
   price: string;
 }
 
-export const TablePriceCell: React.FC<IProps> = ({ price }) => {
-  return (
-    <RootStyled>
-      <Tooltip title={price} arrow placement="top">
-        <TypographyStyled component="p" color="text.primary" variant="body1">
-          {price}
-        </TypographyStyled>
-      </Tooltip>
-    </RootStyled>
-  );
-};
+export const TablePriceCell: React.FC<IProps> = ({ price }) => (
+  <RootStyled>
+    <Tooltip title={price} arrow placement="top">
+      <TypographyStyled color="text.primary" variant="body1">
+        {price}
+      </TypographyStyled>
+    </Tooltip>
+  </RootStyled>
+);
