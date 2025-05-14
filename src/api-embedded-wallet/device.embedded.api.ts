@@ -40,7 +40,7 @@ export const assignDeviceToNewWallet = async (
 ): Promise<string> => {
   try {
     console.log('[assignDeviceToNewWallet] assignDeviceToNewWallet embedded wallet: ', deviceId, token);
-    const assignResponse = await rootStore?.fireblocksSDKStore.fireblocksEW.assignWallet();
+    const assignResponse = await rootStore?.fireblocksSDKStore?.fireblocksEW?.assignWallet();
     return assignResponse?.walletId ?? '';
   } catch (e) {
     console.error('device.embedded.api.ts - assignDeviceToNewWallet err: ', e);

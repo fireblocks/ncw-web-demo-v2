@@ -7,7 +7,10 @@ export const getAccounts = async (
   rootStore: RootStore | null = null,
 ): Promise<IAccountResponse[]> => {
   try {
-    const accounts = await rootStore?.fireblocksSDKStore.fireblocksEW.getAccounts();
+    if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {
+      return [];
+    }
+    const accounts = await rootStore.fireblocksSDKStore.fireblocksEW.getAccounts();
     console.log('getAccounts embedded wallet: ', accounts);
     return accounts?.data ?? [];
   } catch (error) {

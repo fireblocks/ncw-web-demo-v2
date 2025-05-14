@@ -236,6 +236,7 @@ export class UserStore {
       this.setError('User is not logged in');
     }
 
+    // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
     getDevices(this.accessToken, this._rootStore)
       .then((devices: IDeviceDTO[]) => {
         this.setMyDevices(devices);

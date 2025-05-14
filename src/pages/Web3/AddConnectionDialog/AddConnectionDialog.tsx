@@ -9,6 +9,7 @@ import { Connection } from '../Web3List';
 import { preloadAllImages, failedUrlsCache } from '../Web3ListItem';
 import { mapSessionDTOToConnection } from '../mappers';
 import { ConnectionConfirmation } from './ConnectionConfirmation';
+import { CreateNcwConnectionRequestFeeLevelEnum } from '@fireblocks/ts-sdk/models/create-ncw-connection-request.ts';
 
 const FormContainerStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(3),
@@ -128,12 +129,12 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
         icon: defaultIconUrl,
         // Add required parameters
         ncwAccountId: currentAccountId,
-        feeLevel: 'MEDIUM', // Use MEDIUM as default fee level
+        feeLevel: CreateNcwConnectionRequestFeeLevelEnum.Medium, // Use MEDIUM as the default fee level
         uri: connectionLink, // uri is the same as url/website
       };
 
       console.log('[AddConnectionDialog] Creating connection with payload:', payload);
-      const response = await web3Store.createConnection(payload);
+      const response: any = await web3Store.createConnection(payload);
       console.log('[AddConnectionDialog] Connection created successfully:', response);
 
       if (response && response.id) {
@@ -151,11 +152,11 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
           // Fallback to a basic connection object
           newConnection = {
             id: response.id,
-            name: response.name || 'Custom Connection',
-            description: response.description || connectionLink,
-            website: response.url || connectionLink,
+            name: response?.name || 'Custom Connection',
+            description: response?.description || connectionLink,
+            website: response?.url || connectionLink,
             connectionDate: new Date(),
-            icon: response.icon || defaultIconUrl,
+            icon: response?.icon || defaultIconUrl,
           };
         }
 

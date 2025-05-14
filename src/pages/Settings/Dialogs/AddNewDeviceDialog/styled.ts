@@ -23,7 +23,7 @@ export const ParametersStyled = styled('div')(({ theme }) => ({
 }));
 
 // Wrapper for icons (success, error)
-export const IconWrapperStyled = styled('div')(({ theme }) => ({
+export const IconWrapperStyled = styled('div')(() => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',

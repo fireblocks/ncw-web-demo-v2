@@ -13,7 +13,7 @@ export const getLatestBackup = async (
 ): Promise<IBackupInfo | null> => {
   try {
     console.log('[EmbeddedWalletSDK] Getting latest backup: ', walletId, token);
-    const response = await rootStore?.fireblocksSDKStore.fireblocksEW.getLatestBackup();
+    const response = await rootStore?.fireblocksSDKStore?.fireblocksEW?.getLatestBackup();
     console.log('[EmbeddedWalletSDK] Latest backup: ', response);
     if (response) {
       return {
@@ -61,13 +61,13 @@ export const getPassphraseInfo = async (
 export const getPassphraseInfos = async (
   token: string,
   rootStore: RootStore | null = null,
-): Promise<{ passphrases: IPassphraseInfo[] }> => {
+): Promise<{ passphrases: IPassphraseInfo[] } | null> => {
   const passphrases: { passphrases: IPassphraseInfo[] } = {
     passphrases: [],
   };
   console.log('getPassphraseInfos embedded wallet: ', token);
   try {
-    const res = await rootStore?.fireblocksSDKStore.fireblocksEW.getLatestBackup();
+    const res: any = await rootStore?.fireblocksSDKStore?.fireblocksEW?.getLatestBackup();
     console.log('getPassphraseInfos res: ', res);
     passphrases.passphrases.push({ passphraseId: res.passphraseId, location: 'GoogleDrive' });
   } catch (error: any) {

@@ -3,7 +3,7 @@ import IconCancel from '@icons/unlink.svg';
 import { useTranslation } from 'react-i18next';
 import { IconButton } from '../../IconButton';
 
-const RootStyled = styled('div')(({ theme }) => ({
+const RootStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'flex-end',

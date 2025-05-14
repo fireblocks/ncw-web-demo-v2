@@ -34,7 +34,7 @@
         "@pages": ["./pages"],
         "@translation": ["./translation"],
         "@auth": ["./auth"],
-        "@icons/*": ["./icons/*"],
+        "@icons/*": ["../public/icons/*"],
       }
     },
     "include": ["./src/**/*", "vite.config.ts", ".eslintrc.cjs"],

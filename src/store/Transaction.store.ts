@@ -178,6 +178,7 @@ export class TransactionStore {
 
     if (deviceId && accessToken) {
       this.updateStatus('CANCELLING');
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       cancelTransaction(deviceId, accessToken, this.id, this._rootStore)
         .then(() => {
           this.updateStatus('CANCELLED');

@@ -163,7 +163,7 @@ export class AssetsStore {
     try {
       await this.getMyAssets();
       await this.getSupported();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error initializing assets:', error);
       this.setError(error.message);
     } finally {
@@ -227,6 +227,7 @@ export class AssetsStore {
       }
 
       // Add the asset first
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       const addedAsset = await addAsset(deviceId, accountId, assetId, accessToken, this._rootStore);
       if (!addedAsset) {
         throw new Error('Failed to add asset');
@@ -234,8 +235,11 @@ export class AssetsStore {
 
       // Get asset details
       const [assetDTO, balanceDTO, addressDTO] = await Promise.all([
+        // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         getAsset(deviceId, accountId, assetId, accessToken, this._rootStore),
+        // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         getBalance(deviceId, accountId, assetId, accessToken, this._rootStore),
+        // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         getAddress(deviceId, accountId, assetId, accessToken, this._rootStore),
       ]);
 
@@ -249,7 +253,7 @@ export class AssetsStore {
         balance: balanceDTO || null,
         address: addressDTO || null,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding asset:', error);
       this.setError(error.message);
       throw error;
@@ -268,6 +272,7 @@ export class AssetsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (accountId !== undefined) {
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       getAssetsSummary(deviceId, accountId, accessToken, this._rootStore)
         .then((assetsSummary) => {
           console.log('[AssetsStore] Balance refresh completed successfully');
@@ -320,6 +325,7 @@ export class AssetsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId !== undefined && accessToken) {
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       const assets = await getSupportedAssets(deviceId, accountId, accessToken, this._rootStore);
       this.setSupportedAssets(assets);
     }
@@ -354,6 +360,7 @@ export class AssetsStore {
 
       if (deviceId && accountId !== undefined && accessToken) {
         console.log('Fetching assets with deviceId, accountId, and accessToken');
+        // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken, this._rootStore);
         this.setMyAssets(assetsSummary);
       } else {

@@ -130,6 +130,10 @@ export const getAsset = async (
 };
 
 export const getEmbeddedWalletAssets = async (rootStore: RootStore, accountId: number): Promise<IAssetDTO[]> => {
+  if (!rootStore.fireblocksSDKStore.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
+
   const response = await rootStore.fireblocksSDKStore.fireblocksEW.getAssets(accountId);
   return response.data.map((asset) => ({
     id: asset.id,
@@ -161,6 +165,10 @@ export const getEmbeddedWalletAsset = async (
   assetId: string,
   accountId: number,
 ): Promise<IAssetDTO> => {
+  if (!rootStore.fireblocksSDKStore.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
+
   const asset = await rootStore.fireblocksSDKStore.fireblocksEW.getAsset(accountId, assetId);
 
   return {
@@ -228,13 +236,22 @@ export const getEmbeddedWalletAssetsSummary = async (
   // }
 
   console.log('[EmbeddedWallet] Fetching fresh assets summary');
+  if (!rootStore.fireblocksSDKStore.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
+  }
   const response = await rootStore.fireblocksSDKStore.fireblocksEW.getAssets(accountId);
 
   // Batch all address and balance requests
   const promises = response.data.map(async (asset) => {
+    // Store reference to fireblocksEW to ensure it's not null
+    const fireblocksEW = rootStore.fireblocksSDKStore.fireblocksEW;
+    if (!fireblocksEW) {
+      throw new Error('Embedded wallet SDK is not initialized');
+    }
+
     const [addressResponse, balance] = await Promise.all([
-      rootStore.fireblocksSDKStore.fireblocksEW.getAddresses(accountId, asset.id),
-      rootStore.fireblocksSDKStore.fireblocksEW.getBalance(accountId, asset.id),
+      fireblocksEW.getAddresses(accountId, asset.id),
+      fireblocksEW.getBalance(accountId, asset.id),
     ]);
 
     return {
@@ -458,7 +475,7 @@ const getAllRatesLive = async (coinSymbolToIdMap: CoinSymbolToIdMap): Promise<Co
 export const getCryptoIconUrl = (symbol: string) => {
   const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
   return normalizedSymbol?.length && cryptoIconNamesLocally.includes(normalizedSymbol)
-    ? `${ENV_CONFIG.VITE_BASE_FOLDER}/src/icons/crypto-icons/${normalizedSymbol}.png`
+    ? `${ENV_CONFIG.VITE_BASE_FOLDER}/icons/crypto-icons/${normalizedSymbol}.png`
     : '';
 };
 

@@ -42,6 +42,7 @@ export const AssetAmountInput: React.FC<IProps> = ({
   disabled,
   setValue,
 }) => {
+  console.log('assetSymbol: ', assetSymbol);
   const materialUIInputProps = {
     id: label,
     disableUnderline: true,

@@ -59,7 +59,7 @@ const createSafeLogger = (baseLogger: any) => {
 export class FireblocksSDKStore {
   @observable public sdkStatus: TFireblocksNCWStatus;
   @observable public keysStatus: TKeysStatusRecord | null;
-  @observable public fireblocksEW: EmbeddedWallet;
+  @observable public fireblocksEW: EmbeddedWallet | null;
   @observable public sdkInstance: IFireblocksNCW | null;
   @observable public keysBackupStatus: string;
   @observable public keysRecoveryStatus: string;
@@ -85,6 +85,7 @@ export class FireblocksSDKStore {
   constructor(rootStore: RootStore) {
     this.sdkStatus = 'sdk_not_ready';
     this.keysStatus = null;
+    this.fireblocksEW = null;
     this.sdkInstance = null;
     this.logger = null;
     this.keysBackupStatus = '';
@@ -181,7 +182,7 @@ export class FireblocksSDKStore {
         this._rootStore.userStore.setIsGettingUser(false);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
       throw new Error(error.message);
@@ -263,8 +264,10 @@ export class FireblocksSDKStore {
         storageProvider,
       };
       const sdkIns =
-        getFireblocksNCWInstance(coreNCWOptions.deviceId) ?? (await this.fireblocksEW.initializeCore(coreNCWOptions));
-      this.setSDKInstance(sdkIns);
+        getFireblocksNCWInstance(coreNCWOptions.deviceId) ?? (await this?.fireblocksEW?.initializeCore(coreNCWOptions));
+      if (sdkIns) {
+        this.setSDKInstance(sdkIns);
+      }
 
       // const txSubscriber = await TransactionSubscriberService.initialize(this.fireblocksEW);
 
@@ -285,7 +288,7 @@ export class FireblocksSDKStore {
       }
       console.log('sdk_available');
       this.setSDKStatus('sdk_available');
-    } catch (error) {
+    } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
       throw new Error(error.message);
@@ -313,6 +316,7 @@ export class FireblocksSDKStore {
             this._rootStore.deviceStore.deviceId,
             this._rootStore.userStore.accessToken,
             message,
+            // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
             this._rootStore,
           );
         },

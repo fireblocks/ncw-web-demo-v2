@@ -150,9 +150,9 @@ export const fetchTransactionsAllPages = async (
     if (pageCursor) {
       filter.pageCursor = pageCursor;
     }
-    const response = await rootStore.fireblocksSDKStore.fireblocksEW.getTransactions(filter);
-    pageCursor = response.paging?.next ?? null;
-    if (response.data) {
+    const response = await rootStore?.fireblocksSDKStore?.fireblocksEW?.getTransactions(filter);
+    pageCursor = response?.paging?.next ?? null;
+    if (response?.data) {
       transactions.push(...(response.data as any));
     }
   } while (pageCursor);
@@ -194,6 +194,7 @@ export const getTransactions = async (
       });
 
       const allTransactions = [...(transactionsIncoming.data ?? []), ...(transactionsOutgoing?.data ?? [])];
+      // @ts-ignore
       return allTransactions.map((tx) => ({
         id: tx.id,
         status: tx.status as TTransactionStatus,
@@ -218,7 +219,7 @@ export const createTransaction = async (
   token: string,
   dataToSend?: INewTransactionDTO,
   rootStore: RootStore | null = null,
-): Promise<ITransactionDTO | CreateTransactionResponse> => {
+): Promise<ITransactionDTO> => {
   try {
     console.log('[EmbeddedWallet] Creating transaction dataToSend: ', dataToSend, deviceId, token);
     if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
@@ -250,10 +251,10 @@ export const createTransaction = async (
     console.log(`[EmbeddedWallet] Creating transaction for asset ${assetId} with amount ${amount}`);
     const createdTrans = await rootStore?.fireblocksSDKStore.fireblocksEW.createTransaction(params);
     console.log('created transaction res: ', createdTrans);
-    return createdTrans;
+    return transactionResponseToTransactionData(createdTrans);
   } catch (e) {
     console.error('transactions.embedded.api.ts - createTransaction err: ', e);
-    return;
+    return transactionResponseToTransactionData({});
   }
 };
 

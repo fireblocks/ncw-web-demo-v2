@@ -78,6 +78,7 @@ export class DeviceStore {
 
     if (deviceId && accessToken) {
       try {
+        // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         const newWalletId = await assignDeviceToNewWallet(deviceId, accessToken, this._rootStore);
         this.setWalletId(newWalletId);
       } catch (error: any) {

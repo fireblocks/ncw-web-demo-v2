@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { LoadingPage, Typography, styled } from '@foundation';
-import { Button } from '@mui/material';
 import { useStores } from '@store';
 import { ENV_CONFIG } from 'env_config';
 import { observer } from 'mobx-react';
@@ -13,6 +12,7 @@ import { DAppDetailsDialog } from './DAppDetailsDialog/DAppDetailsDialog';
 import { Connection, Web3List } from './Web3List';
 import { preloadAllImages } from './Web3ListItem';
 import { mapSessionDTOsToConnections, mapSessionDTOToConnection } from './mappers';
+import { CreateNcwConnectionRequestFeeLevelEnum } from '@fireblocks/ts-sdk/models/create-ncw-connection-request.ts';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -185,10 +185,11 @@ export const Web3Page: React.FC = observer(() => {
           icon: connection.icon,
           // Add required parameters
           ncwAccountId: currentAccountId,
-          feeLevel: 'MEDIUM', // Use MEDIUM as default fee level
+          feeLevel: CreateNcwConnectionRequestFeeLevelEnum.Medium, // Use MEDIUM as the default fee level
           uri: connection.website, // uri is the same as url/website
         };
         console.log('[Web3Page] Creating connection with payload:', payload);
+        // Import the enum if not already imported at the top of the file
         const response = await web3Store.createConnection(payload);
         console.log('[Web3Page] Connection created successfully:', response);
         console.log('[Web3Page] Current web3Store.connections:', web3Store.connections);
@@ -202,7 +203,7 @@ export const Web3Page: React.FC = observer(() => {
         let newConnection: Connection;
 
         // Check if we got a 201 response with sessionMetadata
-        if (response && response.id && response.sessionMetadata) {
+        if (response && response?.id && response?.sessionMetadata) {
           // Use the mapSessionDTOToConnection function to map the response to a Connection
           newConnection = mapSessionDTOToConnection(response);
         } else {

@@ -120,6 +120,7 @@ export class TransactionsStore {
           this._rootStore.deviceStore.deviceId,
           startDate,
           this._rootStore.userStore.accessToken,
+          // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
           this._rootStore,
         );
 
@@ -178,6 +179,7 @@ export class TransactionsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId !== undefined && accessToken) {
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       const newTxData = await createTransaction(deviceId, accessToken, dataToSend, this._rootStore);
       this.addTransaction(newTxData);
     }

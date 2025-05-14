@@ -44,7 +44,9 @@ export class NFTStore {
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
 
     if (deviceId && accountId !== undefined && accessToken) {
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       const myCollections = await getNFTCollections(deviceId, accessToken, this._rootStore);
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       const myTokens = await getNFTTokens(deviceId, accountId, accessToken, this._rootStore);
 
       this.setCollections(myCollections);

@@ -17,6 +17,7 @@ export const getWeb3Connections = async (
   rootStore: RootStore | null = null,
 ): Promise<SessionDTO[]> => {
   try {
+    console.log('[EmbeddedWallet] Getting Web3 connections:', deviceId, token, payload);
     console.log('[EmbeddedWallet] Getting Web3 connections, SDK instance:',
       rootStore?.fireblocksSDKStore.fireblocksEW ? 'exists' : 'missing',
     );
@@ -51,6 +52,7 @@ export const createWeb3Connection = async (
   rootStore: RootStore | null = null,
 ) => {
   try {
+    console.log('[EmbeddedWallet] Creating Web3 connection:', deviceId, token, payload);
     console.log('[EmbeddedWallet] Creating Web3 connection, SDK instance:',
       rootStore?.fireblocksSDKStore.fireblocksEW ? 'exists' : 'missing',
     );
@@ -87,6 +89,7 @@ export const submitWeb3Connection = async (
   rootStore: RootStore | null = null,
 ): Promise<void> => {
   try {
+    console.log('[EmbeddedWallet] Submitting Web3 connection response:', deviceId, token, id, payload);
     console.log('[EmbeddedWallet] Submitting Web3 connection response, SDK instance:',
       rootStore?.fireblocksSDKStore.fireblocksEW ? 'exists' : 'missing',
     );
@@ -120,7 +123,9 @@ export const removeWeb3Connection = async (
   rootStore: RootStore | null = null,
 ): Promise<void> => {
   try {
-    console.log('[EmbeddedWallet] Removing Web3 connection, SDK instance:',
+    console.log('[EmbeddedWallet] Removing Web3 connection:', deviceId, token, id);
+    console.log(
+      '[EmbeddedWallet] Removing Web3 connection, SDK instance:',
       rootStore?.fireblocksSDKStore.fireblocksEW ? 'exists' : 'missing',
     );
 

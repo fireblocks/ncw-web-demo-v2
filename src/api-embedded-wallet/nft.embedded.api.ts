@@ -17,7 +17,8 @@ export const getNFTTokens = async (
   rootStore: RootStore | null = null,
 ): Promise<TokenWithBalance[]> => {
   try {
-    const NFTtokens = await rootStore?.fireblocksSDKStore.fireblocksEW.getOwnedNFTs();
+    console.log('[getNFTTokens] getNFTTokens embedded wallet: ', deviceId, accountId, token);
+    const NFTtokens = await rootStore?.fireblocksSDKStore?.fireblocksEW?.getOwnedNFTs();
     if (!NFTtokens?.data) return [];
 
     return NFTtokens.data.map((tokenItem: TokenOwnershipResponse) => {
@@ -79,7 +80,8 @@ export const getNFTCollections = async (
   rootStore: RootStore | null = null,
 ): Promise<CollectionOwnership[]> => {
   try {
-    const NFTtokens = await rootStore?.fireblocksSDKStore.fireblocksEW.getOwnedNFTs();
+    console.log('[getNFTCollections] getNFTCollections embedded wallet: ', deviceId, token);
+    const NFTtokens = await rootStore?.fireblocksSDKStore?.fireblocksEW?.getOwnedNFTs();
     if (!NFTtokens?.data) return [];
 
     // Group tokens by collection
@@ -119,7 +121,8 @@ export const getNFTAssets = async (
   rootStore: RootStore | null = null,
 ): Promise<Token[]> => {
   try {
-    const NFTtokens = await rootStore?.fireblocksSDKStore.fireblocksEW.getOwnedNFTs();
+    console.log('[getNFTAssets] getNFTAssets embedded wallet: ', deviceId, token);
+    const NFTtokens = await rootStore?.fireblocksSDKStore?.fireblocksEW?.getOwnedNFTs();
     if (!NFTtokens?.data) return [];
 
     return NFTtokens.data.map((tokenItem) => ({
@@ -174,6 +177,7 @@ export const getSingleNFTAsset = async (
   }
 
   try {
+    console.log('[getSingleNFTAsset] getSingleNFTAsset embedded wallet: ', assetId, token);
     const nft = await rootStore.fireblocksSDKStore.fireblocksEW.getNFT({ id: assetId });
     if (!nft) {
       throw new Error('NFT not found');
