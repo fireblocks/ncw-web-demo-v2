@@ -17,7 +17,6 @@ export const getNFTTokens = async (
 export const getNFTCollections = async (
   deviceId: string,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<CollectionOwnership[]> => {
   const response = await getCall(`api/devices/${deviceId}/nfts/ownership/collections`, token);
   return response.json();
@@ -26,7 +25,6 @@ export const getNFTCollections = async (
 export const getNFTAssets = async (
   deviceId: string,
   token: string,
-  rootStore: RootStore | null = null,
 ): Promise<Token[]> => {
   const response = await getCall(`api/devices/${deviceId}/nfts/ownership/assets`, token);
   return response.json();

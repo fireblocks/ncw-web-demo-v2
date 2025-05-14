@@ -153,8 +153,9 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
         authStore.setStatus('READY');
         navigate('/assets');
       })
-      .catch(() => {
+      .catch((e: any) => {
         setIsBackupInProgress(false);
+        console.error('Backup Error: ', e);
         enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.ERROR_MESSAGE'), { variant: 'error' });
       });
   };

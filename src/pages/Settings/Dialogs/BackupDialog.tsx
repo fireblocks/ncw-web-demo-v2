@@ -65,7 +65,8 @@ export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ i
         enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.SUCCESS_MESSAGE'), { variant: 'success' });
         onClose();
       })
-      .catch(() => {
+      .catch((e: any) => {
+        console.error('Backup Error: ', e);
         enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.ERROR_MESSAGE'), { variant: 'error' });
       });
   };

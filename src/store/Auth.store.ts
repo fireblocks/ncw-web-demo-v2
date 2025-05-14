@@ -326,15 +326,19 @@ export class AuthStore {
         console.log('[Auth] Generating MPC keys with embedded wallet SDK');
 
         // Generate MPC keys
-        if (this._rootStore.fireblocksSDKStore.sdkInstance) {
-          console.log('[Auth] Generating MPC keys');
-          try {
+        try {
+          if (this._rootStore.fireblocksSDKStore.sdkInstance) {
+            console.log('[Auth] Generating MPC keys');
             await this._rootStore.fireblocksSDKStore.generateMPCKeys();
             console.log('[Auth] MPC keys generated successfully');
-          } catch (keyGenError) {
-            console.error('[Auth] Error generating MPC keys:', keyGenError);
-            // Continue despite key generation errors
+          } else {
+            if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+              await this._rootStore.fireblocksSDKStore.initEmbeddedWalletCore(this._rootStore.deviceStore.deviceId);
+              await this._rootStore.fireblocksSDKStore.generateMPCKeys();
+            }
           }
+        } catch (e: any) {
+          console.error('[Auth] Error generating MPC keys:', e);
         }
 
         // Ensure account exists

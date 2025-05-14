@@ -166,6 +166,7 @@ export const getTransactions = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<ITransactionDTO[]> => {
+  console.log('[EmbeddedWallet] getTransactions called, token: ', token);
   console.log(
     '[EmbeddedWallet] Getting transactions, SDK instance:',
     rootStore?.fireblocksSDKStore.fireblocksEW ? 'exists' : 'missing',
@@ -173,7 +174,7 @@ export const getTransactions = async (
 
   if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
     console.error('[EmbeddedWallet] Embedded wallet SDK is not initialized');
-    // Return empty array instead of throwing
+    // Return an empty array instead of throwing
     return [];
   }
 
@@ -203,7 +204,7 @@ export const getTransactions = async (
     } catch (sdkError) {
       // Log SDK error but don't throw
       console.error('[EmbeddedWallet] Error fetching transactions from SDK:', sdkError);
-      // Return empty array to avoid breaking the application
+      // Return an empty array to avoid breaking the application
       return [];
     }
   } catch (error) {
@@ -217,7 +218,7 @@ export const createTransaction = async (
   token: string,
   dataToSend?: INewTransactionDTO,
   rootStore: RootStore | null = null,
-): Promise<CreateTransactionResponse | null> => {
+): Promise<ITransactionDTO | CreateTransactionResponse> => {
   try {
     console.log('[EmbeddedWallet] Creating transaction dataToSend: ', dataToSend, deviceId, token);
     if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
@@ -252,7 +253,7 @@ export const createTransaction = async (
     return createdTrans;
   } catch (e) {
     console.error('transactions.embedded.api.ts - createTransaction err: ', e);
-    return null;
+    return;
   }
 };
 
@@ -262,6 +263,7 @@ export const cancelTransaction = async (
   txId: string,
   rootStore: RootStore | null = null,
 ): Promise<any> => {
+  console.log('[EmbeddedWallet] cancelTransaction called: ', deviceId, token);
   console.log(`[EmbeddedWallet] Cancelling transaction: ${txId}`);
 
   if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
