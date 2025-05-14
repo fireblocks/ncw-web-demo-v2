@@ -43,11 +43,19 @@ export const TransactionDetailsDialog: React.FC<IProps> = ({ isOpen, onClose, tr
       <ContentContainerStyled>
         <InfoRowStyled>
           <LabelStyled>{t('TRANSACTIONS.DETAILS_DIALOG.TRANSACTION_HASH')}</LabelStyled>
-          <CopyText size="large" text={transaction.details?.txHash || ''} />
+          {transaction.details?.txHash && transaction.details.txHash !== '--' ? (
+            <CopyText size="large" text={transaction.details.txHash} />
+          ) : (
+            <Typography variant="body1">--</Typography>
+          )}
         </InfoRowStyled>
         <InfoRowStyled>
           <LabelStyled>{t('TRANSACTIONS.DETAILS_DIALOG.FIREBLOCKS_TRANSACTION_ID')}</LabelStyled>
-          <CopyText size="large" text={transaction.id} />
+          {transaction.id && transaction.id !== '--' ? (
+            <CopyText size="large" text={transaction.id} />
+          ) : (
+            <Typography variant="body1">--</Typography>
+          )}
         </InfoRowStyled>
       </ContentContainerStyled>
     </Dialog>
