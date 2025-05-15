@@ -131,31 +131,31 @@ export const translationToEnglish = {
       CREATE_A_KEY_BACKUP: {
         TITLE_NO_BACKUP: 'Create a Google Drive key backup',
         TITLE_BACKUP: 'Update key backup',
-        DESCRIPTION: 'Back up your key for future recovery.',
+        DESCRIPTION: 'Ensure your wallet keys are safely backed up and up to date.',
       },
       RECOVER_WALLET: {
         TITLE: 'Recover wallet',
-        DESCRIPTION: 'Recover wallet that was backed up in your Google drive.',
+        DESCRIPTION: 'Restore a wallet from a previous backup in your Google Drive.',
       },
       EXPORT_PRIVATE_KEY: {
         TITLE: 'Export private key',
-        DESCRIPTION: 'Move your private key to another device.',
+        DESCRIPTION: 'Move your private key to a different device for recovery or backup.',
       },
       ADVANCED_INFO: {
         TITLE: 'Advanced info',
-        DESCRIPTION: 'Access your device ID and keys.',
+        DESCRIPTION: 'View advanced wallet details, including device and wallet IDs.',
       },
       ADD_NEW_DEVICE: {
         TITLE: 'Add new device',
-        DESCRIPTION: 'Add a device to your account.',
+        DESCRIPTION: 'Allow a new device to access this wallet.',
       },
       SHARE_LOGS: {
-        TITLE: 'Audit log',
-        DESCRIPTION: 'Download and share your audit log.',
+        TITLE: 'Share log',
+        DESCRIPTION: 'Download your audit log for troubleshooting or review.',
       },
       APPROVE_JOIN_DEVICE: {
         TITLE: 'Add new device',
-        DESCRIPTION: 'Add device (Approve join request)',
+        DESCRIPTION: 'Allow a new device to access this wallet.',
       },
     },
   },

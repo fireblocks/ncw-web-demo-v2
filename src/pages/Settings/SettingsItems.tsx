@@ -16,6 +16,7 @@ import { AddNewDeviceDialog } from './Dialogs/AddNewDeviceDialog/AddNewDeviceDia
 import { AdvancedInfoDialog } from './Dialogs/AdvancedInfoDialog';
 import { BackupDialog } from './Dialogs/BackupDialog';
 import { ExportPrivateKeysDialog } from './Dialogs/ExportKeys/ExportPrivateKeysDialog';
+import { ExportPrivateKeyErrorDialog } from './Dialogs/ExportPrivateKeyErrorDialog';
 import { LogsDialog } from './Dialogs/LogsDialog';
 import { RecoverWalletDialog } from './Dialogs/RecoverWalletDialog';
 
@@ -41,6 +42,7 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
   const [isLogsDialogOpen, setIsLogsDialogOpen] = React.useState(false);
   const [isBackupDialogOpen, setIsBackupDialogOpen] = React.useState(false);
   const [isExportPrivateKeysDialogOpen, setIsExportPrivateKeysDialogOpen] = React.useState(false);
+  const [isExportPrivateKeyErrorDialogOpen, setIsExportPrivateKeyErrorDialogOpen] = React.useState(false);
   const [isAddNewDeviceDialogOpen, setIsAddNewDeviceDialogOpen] = React.useState(false);
   const [isRecoverWalletDialogOpen, setIsRecoverWalletDialogOpen] = React.useState(false);
 
@@ -90,7 +92,7 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
                 setIsExportPrivateKeysDialogOpen(true);
               })
               .catch(() => {
-                enqueueSnackbar(t('SETTINGS.DIALOGS.EXPORT_PRIVATE_KEYS.ERROR_MESSAGE'), { variant: 'error' });
+                setIsExportPrivateKeyErrorDialogOpen(true);
               });
           }}
         />
@@ -163,6 +165,24 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         isOpen={isRecoverWalletDialogOpen}
         onClose={() => {
           setIsRecoverWalletDialogOpen(false);
+        }}
+      />
+
+      <ExportPrivateKeyErrorDialog
+        isOpen={isExportPrivateKeyErrorDialogOpen}
+        onClose={() => {
+          setIsExportPrivateKeyErrorDialogOpen(false);
+        }}
+        onTryAgain={() => {
+          setIsExportPrivateKeyErrorDialogOpen(false);
+          fireblocksSDKStore
+            .takeover()
+            .then(() => {
+              setIsExportPrivateKeysDialogOpen(true);
+            })
+            .catch(() => {
+              setIsExportPrivateKeyErrorDialogOpen(true);
+            });
         }}
       />
     </RootStyled>

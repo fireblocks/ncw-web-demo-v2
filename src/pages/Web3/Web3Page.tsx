@@ -248,7 +248,7 @@ export const Web3Page: React.FC = observer(() => {
             </Typography>
             <AmountsStyled>
               <HeadingAmount
-                title={t('WEB3.CONNECTIONS')}
+                title="DAPPS"
                 titleColor="text.secondary"
                 value={connections.length.toString()}
               />

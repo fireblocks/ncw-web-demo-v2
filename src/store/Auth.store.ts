@@ -63,9 +63,7 @@ export class AuthStore {
       console.log('[Auth] Initializing device');
       if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' && !this._rootStore.fireblocksSDKStore.fireblocksEW) {
         // Initialize the embedded wallet SDK
-        console.log('[Auth] Initializing embedded wallet SDK');
         await this._rootStore.fireblocksSDKStore.init();
-        console.log('[Auth] Embedded wallet SDK initialized successfully');
       }
       await this._rootStore.deviceStore.assignDeviceToNewWallet();
       await this._rootStore.accountsStore.init();
@@ -86,15 +84,6 @@ export class AuthStore {
           } else {
             console.log('[Auth] MPC keys are already ready');
           }
-
-          // Ensure account exists
-          // try {
-          //   console.log('[Auth] Ensuring account exists');
-          //   await this._rootStore.accountsStore.init();
-          // } catch (accountError) {
-          //   console.error('[Auth] Error fetching accounts:', accountError);
-          //   // Continue despite account fetching errors
-          // }
 
           // Start transaction polling
           try {
@@ -176,7 +165,7 @@ export class AuthStore {
   }
 
   /**
-   * Determines if MPC keys need to be generated
+   * Determines if MPC keys need to be generated,
    * This is true if the device ID is not available or if the SDK is initialized
    * but keys are not yet generated or ready
    * @returns True if keys need to be generated, false otherwise

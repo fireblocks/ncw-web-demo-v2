@@ -29,7 +29,6 @@ export const AdvancedInfoDialog: React.FC<IProps> = observer(function AdvancedIn
   return (
     <Dialog
       title={t('SETTINGS.DIALOGS.ADVANCED_INFO.TITLE')}
-      description={t('SETTINGS.DIALOGS.ADVANCED_INFO.DESCRIPTION')}
       isOpen={isOpen}
       onClose={onClose}
       size="small"
