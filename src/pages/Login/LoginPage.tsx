@@ -3,10 +3,11 @@ import { Typography, alpha, styled } from '@foundation';
 import IconAssets from '@icons/login_assets.svg';
 import IconBG from '@icons/login_bg.svg';
 import IconLogo from '@icons/logo.svg';
-import { useFireblocksSDKStore } from '@store';
+import { useAuthStore, useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { redirect } from 'react-router-dom';
+import { ENV_CONFIG } from '../../env_config.ts';
 import { Actions } from './Actions';
 
 const RootStyled = styled('div')(() => ({
@@ -110,6 +111,21 @@ export const LoginPage: React.FC = observer(function LoginPage() {
   const { t } = useTranslation();
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
   const fireblocksSDKStore = useFireblocksSDKStore();
+  const authStore = useAuthStore();
+
+  const getWelcomeText = () => {
+    if (authStore.needToGenerateKeys) {
+      return t('LOGIN.GET_STARTED');
+    }
+    return ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' ? t('LOGIN.WELCOME_EW') : t('LOGIN.WELCOME');
+  };
+
+  const getDescriptionText = () => {
+    if (authStore.needToGenerateKeys) {
+      return t('LOGIN.JOIN_OR_RECOVER_DESCRIPTION');
+    }
+    return ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' ? t('LOGIN.DESCRIPTION_EW') : t('LOGIN.DESCRIPTION');
+  };
 
   const updateBackupPupdateBackupPhasehase = (backupPage: boolean) => {
     fireblocksSDKStore.backupPhase(backupPage);
@@ -152,11 +168,11 @@ export const LoginPage: React.FC = observer(function LoginPage() {
               <LogoWrapperStyled>
                 <img src={IconLogo} />
               </LogoWrapperStyled>
-              <Typography variant="h3" color="text.primary">
-                {t('LOGIN.WELCOME')}
+              <Typography variant="h3" color="text.primary" sx={{ textTransform: 'uppercase' }}>
+                {getWelcomeText()}
               </Typography>
-              <Typography variant="h6" color="text.secondary">
-                {t('LOGIN.DESCRIPTION')}
+              <Typography variant="h6" color="text.secondary" sx={{ textTransform: 'uppercase' }}>
+                {getDescriptionText()}
               </Typography>
             </ActionsHeadingStyled>
             <Actions setIsInBackupPhase={updateBackupPupdateBackupPhasehase} />

@@ -4,9 +4,9 @@ import { ActionButton, Progress, Typography, styled } from '@foundation';
 import IconApple from '@icons/apple.svg';
 import IconCloud from '@icons/cloud.svg';
 import IconGoogle from '@icons/google.svg';
+import IconWallet from '@icons/join_existing_wallet.svg';
 import IconKey from '@icons/key.svg';
 import IconRecovery from '@icons/recover.svg';
-import IconWallet from '@icons/wallet.svg';
 import { Button as MUIButton } from '@mui/material';
 import { useAuthStore, useBackupStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
@@ -199,16 +199,16 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
     return (
       <>
         <RootStyled>
+          {isEmbeddedWallet && userStore.hasBackup && (
+            // if we already have a backup we can't generate keys, so we need to allow 'join to existing wallet'
+            <ActionPlate iconSrc={IconWallet} caption={t('LOGIN.JOIN_EXISTING_WALLET')} onClick={joinExistingWallet} />
+          )}
           {userStore.hasBackup && (
             <ActionPlate iconSrc={IconRecovery} caption={t('LOGIN.RECOVERY_FROM_BACKUP')} onClick={recoverMPCKeys} />
           )}
           {((isEmbeddedWallet && !userStore.hasBackup) || !isEmbeddedWallet) && (
             // in an embedded wallet mode we can't generate keys if backup exists already OR not embedded wallet mode
             <ActionPlate iconSrc={IconKey} caption={t('LOGIN.GENERATE_MPC_KEYS')} onClick={generateMPCKeys} />
-          )}
-          {isEmbeddedWallet && userStore.hasBackup && (
-            // if we already have a backup we can't generate keys, so we need to allow 'join to existing wallet'
-            <ActionPlate iconSrc={IconWallet} caption={t('LOGIN.JOIN_EXISTING_WALLET')} onClick={joinExistingWallet} />
           )}
         </RootStyled>
         <JoinWalletDialog
