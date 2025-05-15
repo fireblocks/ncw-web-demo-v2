@@ -40,6 +40,7 @@ const IllustrationBlockBGStyled = styled('img')(() => ({
   position: 'absolute',
   top: 0,
   left: 0,
+  height: '100%',
 }));
 
 const IllustrationContentStyled = styled('div')(() => ({
@@ -83,7 +84,7 @@ const ActionsBlockStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   width: '48%',
-  height: 700,
+  height: '100%',
   minHeight: 700,
   boxSizing: 'border-box',
   margin: theme.spacing(3, 3, 3, 0),
