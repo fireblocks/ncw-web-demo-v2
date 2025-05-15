@@ -198,7 +198,7 @@ export const translationToEnglish = {
       DESCRIPTION: 'Send an asset to a any recipient.',
       AMOUNT: 'Amount',
       SEND_TO: 'Send to',
-      RECEIVING_ADDRESS: 'Enter an address',
+      RECEIVING_ADDRESS: 'address',
       ERROR_MESSAGE: 'Transaction failed',
       SUCCESS_MESSAGE: 'Transaction queued',
       FEE_LEVEL: {
@@ -208,7 +208,7 @@ export const translationToEnglish = {
         CAPTION: 'Fee',
       },
       ACTION: 'Transfer asset',
-      QR_DETAILS: 'QR details',
+      QR_DETAILS: 'QR',
       TRANSACTION_TYPE: {
         CAPTION: 'Transaction type',
         TRANSFER: 'Transfer',
