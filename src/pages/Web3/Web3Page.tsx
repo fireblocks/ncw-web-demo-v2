@@ -104,7 +104,6 @@ export const Web3Page: React.FC = observer(() => {
   useEffect(() => {
     if (!useMockData && !web3Store.isLoading) {
       const apiConnections = mapSessionDTOsToConnections(web3Store.connections);
-      console.log('[Web3Page] Updating connections from web3Store:', apiConnections);
       setConnections(apiConnections);
     }
   }, [web3Store.connections, web3Store.isLoading, useMockData]);
@@ -188,16 +187,11 @@ export const Web3Page: React.FC = observer(() => {
           feeLevel: CreateNcwConnectionRequestFeeLevelEnum.Medium, // Use MEDIUM as the default fee level
           uri: connection.website, // uri is the same as url/website
         };
-        console.log('[Web3Page] Creating connection with payload:', payload);
         // Import the enum if not already imported at the top of the file
         const response = await web3Store.createConnection(payload);
-        console.log('[Web3Page] Connection created successfully:', response);
-        console.log('[Web3Page] Current web3Store.connections:', web3Store.connections);
 
         // Manually refresh connections
-        console.log('[Web3Page] Manually refreshing connections...');
         await web3Store.getConnections(false);
-        console.log('[Web3Page] After refresh, web3Store.connections:', web3Store.connections);
 
         // Create a new connection object from the API response
         let newConnection: Connection;
@@ -222,7 +216,6 @@ export const Web3Page: React.FC = observer(() => {
         const connectionExists = connections.some((conn) => conn.id === newConnection.id);
 
         if (!connectionExists) {
-          console.log('[Web3Page] Adding new connection directly to state:', newConnection);
           // Update the connections state directly
           setConnections((prev) => [...prev, newConnection]);
         }
@@ -259,23 +252,6 @@ export const Web3Page: React.FC = observer(() => {
                 titleColor="text.secondary"
                 value={connections.length.toString()}
               />
-              {/*/!* Toggle button for switching between mock and real data *!/*/}
-              {/*{ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' && (*/}
-              {/*  <Button*/}
-              {/*    onClick={toggleDataSource}*/}
-              {/*    sx={{*/}
-              {/*      textTransform: 'none',*/}
-              {/*      color: 'white',*/}
-              {/*      fontSize: '0.875rem',*/}
-              {/*      fontWeight: 600,*/}
-              {/*      lineHeight: 1.43,*/}
-              {/*      letterSpacing: '0.01071em',*/}
-              {/*      marginLeft: '16px',*/}
-              {/*    }}*/}
-              {/*  >*/}
-              {/*    {useMockData ? 'Use Real API' : 'Use Mock Data'}*/}
-              {/*  </Button>*/}
-              {/*)}*/}
             </AmountsStyled>
           </HeadingStyled>
           <Web3List

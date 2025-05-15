@@ -94,19 +94,14 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
 
       // Monitor the response to determine when to close the dialog and navigate
       if (response) {
-        console.log('joinExistingWallet response', response);
-
         // Check if we have valid keys in the response
         if (response instanceof Set && response.size > 0) {
-          console.log('response is of type Set, size is ', response.size);
-
           // Check if all items in the response have keyId and are ready
           const allItemsHaveKeyId = Array.from(response).every(
             (item) => item.keyStatus === 'READY' && item.keyId !== '',
           );
 
           if (allItemsHaveKeyId) {
-            console.log('allItemsHaveKeyId is true, navigating to the home page');
             // Close the dialog since we have valid keys
             setIsJoinWalletDialogOpen(false);
             // Show success message
@@ -117,7 +112,6 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
         }
       }
     } catch (error) {
-      console.log('joinExistingWallet error', error);
       // Close the dialog on error
       setIsJoinWalletDialogOpen(false);
       enqueueSnackbar(t('LOGIN.JOIN_EXISTING_WALLET_ERROR'), { variant: 'error' });
@@ -154,8 +148,8 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
         navigate('/assets');
       })
       .catch((e: any) => {
-        setIsBackupInProgress(false);
         console.error('Backup Error: ', e);
+        setIsBackupInProgress(false);
         enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.ERROR_MESSAGE'), { variant: 'error' });
       });
   };

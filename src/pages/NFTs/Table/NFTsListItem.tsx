@@ -1,7 +1,6 @@
 import React from 'react';
 import { TableRow, TableTextCell, TableTitleCell, TableTransferCell, styled } from '@foundation';
 import IconEth from '@icons/crypto-icons/eth.png';
-import IconNoAsset from '@icons/no_asset_image.svg';
 import IconNoNft from '@icons/no_nft_image.svg';
 import { NFTTokenStore } from '@store';
 import { observer } from 'mobx-react';

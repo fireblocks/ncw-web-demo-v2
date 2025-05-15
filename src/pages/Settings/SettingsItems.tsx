@@ -41,7 +41,6 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
   const [isLogsDialogOpen, setIsLogsDialogOpen] = React.useState(false);
   const [isBackupDialogOpen, setIsBackupDialogOpen] = React.useState(false);
   const [isExportPrivateKeysDialogOpen, setIsExportPrivateKeysDialogOpen] = React.useState(false);
-  // const [disableApproveJoinBtn, setDisableApproveJoinBtn] = React.useState(false);
   const [isAddNewDeviceDialogOpen, setIsAddNewDeviceDialogOpen] = React.useState(false);
   const [isRecoverWalletDialogOpen, setIsRecoverWalletDialogOpen] = React.useState(false);
 
@@ -97,12 +96,6 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         />
       )}
 
-      {/* <ActionPlate
-        iconSrc={IconNewDevice}
-        caption={t('SETTINGS.ITEMS.ADD_NEW_DEVICE.TITLE')}
-        description={t('SETTINGS.ITEMS.ADD_NEW_DEVICE.DESCRIPTION')}
-        onClick={() => {}}
-      /> */}
 
       <ActionPlate
         iconSrc={IconLogs}

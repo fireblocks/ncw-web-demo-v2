@@ -10,14 +10,14 @@ import {
   TableTitleCell,
   styled,
 } from '@foundation';
-import { Button as MUIButton, Tooltip } from '@mui/material';
-import { TransactionDetailsDialog } from './TransactionDetailsDialog';
 import IconDots from '@icons/dots.svg';
 import IconNoAsset from '@icons/no_asset_image.svg';
 import IconNoNft from '@icons/no_nft_image.svg';
+import { Button as MUIButton, Tooltip } from '@mui/material';
 import { TransactionStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
+import { TransactionDetailsDialog } from './TransactionDetailsDialog';
 
 export const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -81,14 +81,16 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
     <div key={transaction.id} style={style}>
       <TableRow>
         <RowStyled>
-          <TableTextCell text={
-            transaction.isSubmitted
-              ? t('TRANSACTIONS.TABLE.SUBMITTED')
-              : `${t(transaction.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${transaction.asset?.symbol || ''}`
-          } />
-          <TableBalanceCell 
-            balance={`${transaction.amount} ${transaction.asset?.symbol || ''}`} 
-            balanceInUsd={transaction.amountInUSD} 
+          <TableTextCell
+            text={
+              transaction.isSubmitted
+                ? t('TRANSACTIONS.TABLE.SUBMITTED')
+                : `${t(transaction.isOutgoing ? 'TRANSACTIONS.TABLE.SENT' : 'TRANSACTIONS.TABLE.RECEIVED')} ${transaction.asset?.symbol || ''}`
+            }
+          />
+          <TableBalanceCell
+            balance={`${transaction.amount} ${transaction.asset?.symbol || ''}`}
+            balanceInUsd={transaction.amountInUSD}
           />
           <TableTitleCell
             title={transaction.asset?.name || ''}
@@ -96,7 +98,9 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
             iconUrl={transaction.asset?.iconUrl || iconPlaceholder}
             assetSymbol={transaction.asset?.networkProtocol || IconNoAsset}
           />
-          <TableTextCell text={transaction.fee !== '--' ? `${transaction.fee} ${transaction.asset?.symbol || ''}` : transaction.fee} />
+          <TableTextCell
+            text={transaction.fee !== '--' ? `${transaction.fee} ${transaction.asset?.symbol || ''}` : transaction.fee}
+          />
           <TableStatusCell status={transaction.status} isSigning={transaction.isSigning} />
           <TableTextCell text={transaction.createdAt ? new Date(transaction.createdAt).toLocaleString() : ''} />
           <TableCell>
@@ -131,11 +135,7 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
         </RowStyled>
       </TableRow>
 
-      <TransactionDetailsDialog
-        isOpen={isDetailsDialogOpen}
-        onClose={onCloseDetailsDialog}
-        transaction={selectedTx}
-      />
+      <TransactionDetailsDialog isOpen={isDetailsDialogOpen} onClose={onCloseDetailsDialog} transaction={selectedTx} />
     </div>
   );
 });

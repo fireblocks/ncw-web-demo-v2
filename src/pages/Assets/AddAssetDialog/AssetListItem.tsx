@@ -71,9 +71,6 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
 
     // If not found, try to find it by name
     if (!cryptoData) {
-      // Log the symbol for debugging
-      console.log('Symbol not found in top100Cryptos:', symbol);
-
       // Try to find a match by comparing the asset name with the titles in top100Cryptos
       const assetNameLower = currentAsset.name.toLowerCase();
 
