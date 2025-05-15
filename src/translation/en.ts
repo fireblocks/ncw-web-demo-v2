@@ -188,7 +188,7 @@ export const translationToEnglish = {
     ADD_DIALOG: {
       TITLE: 'Add an asset',
       DESCRIPTION: 'Choose an asset from the supported asset list.',
-      SEARCH: 'Search for assets',
+      SEARCH: 'Search for an asset',
       ERROR_MESSAGE: 'Asset not added, make sure you created a backup for the wallet before adding an asset.',
       SUCCESS_MESSAGE: 'Asset added',
     },
