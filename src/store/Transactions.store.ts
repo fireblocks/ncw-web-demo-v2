@@ -124,12 +124,12 @@ export class TransactionsStore {
           this._rootStore,
         );
 
-        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'false' && !response?.ok) {
+        if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && !response?.ok) {
           await sleep(TX_POLL_INTERVAL);
           continue;
         }
 
-        const transactions = ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' ? response : await response.json();
+        const transactions = ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? response : await response.json();
 
         transactions.forEach((tx: ITransactionDTO) => {
           if (tx.id && tx.lastUpdated) {
@@ -147,7 +147,7 @@ export class TransactionsStore {
           }
         });
 
-        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
           await sleep(TX_POLL_INTERVAL);
           continue;
         }

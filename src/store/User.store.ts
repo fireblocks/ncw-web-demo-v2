@@ -94,7 +94,7 @@ export class UserStore {
         .getAccessToken()
         .then(async (token): Promise<void> => {
           this.setAccessToken(token);
-          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
             // with embedded wallet
             if (this._authManager.loggedUser !== null) {
               const userFirebase = this._authManager.loggedUser;
@@ -193,7 +193,7 @@ export class UserStore {
       .getMyLatestBackup(device?.walletId ?? '')
       .then((result) => {
         if (result) {
-          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
             const devices: IDeviceDTO[] = [];
             result.keys?.forEach((key: { deviceId: string; walletId?: string }) => {
               devices.push({
@@ -240,7 +240,7 @@ export class UserStore {
     getDevices(this.accessToken, this._rootStore)
       .then((devices: IDeviceDTO[]) => {
         this.setMyDevices(devices);
-        if (devices?.length || ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+        if (devices?.length || ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
           console.log('[UserStore] Checking latest backup');
           this.checkLatestBackup(devices?.length ? devices[devices.length - 1] : undefined);
         }

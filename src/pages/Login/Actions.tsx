@@ -123,7 +123,7 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
   };
 
   useEffect(() => {
-    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
       setIsEmbeddedWallet(true);
     }
   }, []);

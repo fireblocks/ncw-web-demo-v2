@@ -410,7 +410,7 @@ export class FireblocksSDKStore {
   @action
   public async init() {
     console.log('ENV_CONFIG.USE_EMBEDDED_WALLET_SDK: ', ENV_CONFIG.USE_EMBEDDED_WALLET_SDK);
-    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
       await this.initEmbeddedWalletProcess();
     } else {
       await this.initWithProxyBackendProcess();

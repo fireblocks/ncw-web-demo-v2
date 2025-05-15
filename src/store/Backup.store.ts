@@ -248,7 +248,7 @@ export class BackupStore {
 
   public async passphrasePersist(location: TPassphraseLocation): Promise<IPassphrase> {
     if (this.passPhrases === null) {
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
         console.log('create passPhrases if not found');
         await this.init();
       } else {

@@ -70,7 +70,7 @@ export const Web3Page: React.FC = observer(() => {
   const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [useMockData, setUseMockData] = useState(ENV_CONFIG.USE_EMBEDDED_WALLET_SDK !== 'true');
+  const [useMockData, setUseMockData] = useState(!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK);
 
   // Initialize connections
   useEffect(() => {

@@ -156,7 +156,7 @@ export const Header: React.FC = observer(function Header() {
                 </Tooltip>
               )}
             </NavLinkStyled>
-            {ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' && (
+            {ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && (
               <NavLinkStyled to="web3">
                 <Typography variant="h6" color="inherit">
                   {t('NAVIGATION.WEB3')}

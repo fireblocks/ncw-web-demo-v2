@@ -118,14 +118,14 @@ export const LoginPage: React.FC = observer(function LoginPage() {
     if (authStore.needToGenerateKeys) {
       return t('LOGIN.GET_STARTED');
     }
-    return ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' ? t('LOGIN.WELCOME_EW') : t('LOGIN.WELCOME');
+    return ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? t('LOGIN.WELCOME_EW') : t('LOGIN.WELCOME');
   };
 
   const getDescriptionText = () => {
     if (authStore.needToGenerateKeys) {
       return t('LOGIN.JOIN_OR_RECOVER_DESCRIPTION');
     }
-    return ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' ? t('LOGIN.DESCRIPTION_EW') : t('LOGIN.DESCRIPTION');
+    return ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? t('LOGIN.DESCRIPTION_EW') : t('LOGIN.DESCRIPTION');
   };
 
   const updateBackupPupdateBackupPhasehase = (backupPage: boolean) => {

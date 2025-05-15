@@ -72,7 +72,7 @@ export const App: React.FC = observer(function App() {
               <Route path="transactions" element={<Navigate to="/transactions" />} />
               <Route path="/nfts" element={<NFTsPage />} />
               <Route path="nfts" element={<Navigate to="/nfts" />} />
-              {ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' && (
+              {ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && (
                 <>
                   <Route path="/web3" element={<Web3Page />} />
                   <Route path="web3" element={<Navigate to="/web3" />} />

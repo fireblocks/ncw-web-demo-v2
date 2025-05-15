@@ -61,14 +61,14 @@ export class AuthStore {
 
       // Initialize device
       console.log('[Auth] Initializing device');
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true' && !this._rootStore.fireblocksSDKStore.fireblocksEW) {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && !this._rootStore.fireblocksSDKStore.fireblocksEW) {
         // Initialize the embedded wallet SDK
         await this._rootStore.fireblocksSDKStore.init();
       }
       await this._rootStore.deviceStore.assignDeviceToNewWallet();
       await this._rootStore.accountsStore.init();
 
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
         console.log('[Auth] Using embedded wallet SDK');
         try {
           // After initialization, check if we need to generate keys
@@ -121,7 +121,7 @@ export class AuthStore {
     } catch (error) {
       console.error('[Auth] Error during automatic login:', error);
       // Only set ERROR status if we're not using embedded wallet SDK
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK !== 'true') {
+      if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
         this.setStatus('ERROR');
         throw new Error('Error while starting automatic login process.');
       } else {
@@ -290,7 +290,7 @@ export class AuthStore {
    */
   public async generateMPCKeys(): Promise<void> {
     try {
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
         // Initialize the SDK if it's not already initialized
         if (!this._rootStore.fireblocksSDKStore.fireblocksEW) {
           console.log('[Auth] Initializing embedded wallet SDK');
@@ -321,7 +321,7 @@ export class AuthStore {
             await this._rootStore.fireblocksSDKStore.generateMPCKeys();
             console.log('[Auth] MPC keys generated successfully');
           } else {
-            if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK === 'true') {
+            if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
               await this._rootStore.fireblocksSDKStore.initEmbeddedWalletCore(this._rootStore.deviceStore.deviceId);
               await this._rootStore.fireblocksSDKStore.generateMPCKeys();
             }
