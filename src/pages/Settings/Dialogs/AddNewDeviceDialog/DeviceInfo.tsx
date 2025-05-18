@@ -5,10 +5,7 @@ import React from 'react';
 import { Typography, ActionButton, BlueButton } from '@foundation';
 import ConfirmDeviceIcon from '@icons/confirm-device.svg';
 import { useTranslation } from 'react-i18next';
-import {
-  ParametersStyled,
-  DeviceInfoRowStyled,
-} from './styled';
+import { ParametersStyled, DeviceInfoRowStyled } from './styled';
 import { IDeviceInfoProps } from './types';
 
 export const DeviceInfo: React.FC<IDeviceInfoProps> = ({ decodedData, addDevice, onCancel }) => {
@@ -20,7 +17,11 @@ export const DeviceInfo: React.FC<IDeviceInfoProps> = ({ decodedData, addDevice,
       <div style={{ display: 'flex', width: '100%', marginBottom: '24px' }}>
         {/* First column - Icon */}
         <div style={{ width: '35%', display: 'flex', alignItems: 'flex-start' }}>
-          <img src={ConfirmDeviceIcon} alt="Confirm Device" style={{ width: '118px', height: '118px', marginLeft: '42px' }} />
+          <img
+            src={ConfirmDeviceIcon}
+            alt="Confirm Device"
+            style={{ width: '118px', height: '118px', marginLeft: '42px' }}
+          />
         </div>
 
         {/* Second column - Device Info */}
@@ -66,12 +67,7 @@ export const DeviceInfo: React.FC<IDeviceInfoProps> = ({ decodedData, addDevice,
       {/* Buttons row aligned to the right */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', width: '100%' }}>
         {/* Cancel Button */}
-        <ActionButton
-          caption="Cancel"
-          onClick={onCancel}
-          isDialog={true}
-          secondary={true}
-        />
+        <ActionButton caption="Cancel" onClick={onCancel} isDialog={true} secondary={true} />
 
         {/* Add Device Button - Blue background with white text */}
         <BlueButton

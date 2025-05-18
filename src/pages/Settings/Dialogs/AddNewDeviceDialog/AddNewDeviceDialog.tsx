@@ -17,7 +17,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { DeviceInfo } from './DeviceInfo';
 import { Error } from './Error';
-import { RequestIdEntry } from './RequestIdEntry';
 import { SelectionPhase } from './SelectionPhase';
 import { Success } from './Success';
 import { RootStyled } from './styled';
@@ -78,7 +77,6 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
     onClose();
   };
 
-
   /**
    * Handles selection of QR scan option from the initial screen
    */
@@ -127,29 +125,25 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
   };
 
   return (
-    <Dialog
-      title={t('SETTINGS.DIALOGS.ADD_DEVICE.TITLE')}
-      isOpen={isOpen}
-      onClose={resetBeforeClose}
-      size="medium"
-    >
+    <Dialog title={t('SETTINGS.DIALOGS.ADD_DEVICE.TITLE')} isOpen={isOpen} onClose={resetBeforeClose} size="medium">
       <RootStyled>
         <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
           {!isLoading ? (
             <>
               {/* Phase 0: Selection between QR scan and manual entry with direct request ID input */}
               {phase === 0 && (
-                <SelectionPhase 
-                  onSelectQrScan={handleSelectQrScan} 
+                <SelectionPhase
+                  onSelectQrScan={handleSelectQrScan}
                   requestId={requestId}
                   setRequestId={setRequestId}
                   handleCheckRequestId={handleCheckRequestId}
                   isQrScannerActive={isQrScannerActive}
-                  toggleQrScanner={() => setIsQrScannerActive(!isQrScannerActive)}
+                  toggleQrScanner={() => {
+                    setIsQrScannerActive(!isQrScannerActive);
+                  }}
                   onScanError={handleScanError}
                 />
               )}
-
 
               {/* Phase 1: Device Info */}
               {phase === 1 && decodedData && (
