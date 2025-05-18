@@ -65,6 +65,8 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
       }
     } catch (error) {
       // Hide the join wallet UI on error
+      // in case of a max device, you need to remove some devices, it's a limit not related to the front-end side
+      console.error('Error joining existing wallet: ', error);
       setIsJoiningWallet(false);
       enqueueSnackbar(t('LOGIN.JOIN_EXISTING_WALLET_ERROR'), { variant: 'error' });
     }

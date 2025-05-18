@@ -3,10 +3,10 @@
  *
  * This component displays two options for adding a new device:
  * - Scan QR Code: Initiates the QR code scanning process
- * - Enter Encoded ID: Allows manual entry of the request ID
+ * - Enter Encoded ID: Shows input field for manual entry of the request ID
  */
 import React from 'react';
-import { Typography } from '@foundation';
+import { Typography, TextInput, ActionButton } from '@foundation';
 import NewDeviceIcon from '@icons/pencil-icon-with-frame.svg';
 import ScanQRcodeIcon from '@icons/scan-qr-code.svg';
 import { useTranslation } from 'react-i18next';
@@ -14,10 +14,17 @@ import { ParametersStyled } from './styled';
 
 interface ISelectionPhaseProps {
   onSelectQrScan: () => void;
-  onSelectManualEntry: () => void;
+  requestId: string;
+  setRequestId: (value: string) => void;
+  handleCheckRequestId: () => void;
 }
 
-export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({ onSelectQrScan, onSelectManualEntry }) => {
+export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({ 
+  onSelectQrScan, 
+  requestId, 
+  setRequestId, 
+  handleCheckRequestId 
+}) => {
   const { t } = useTranslation();
 
   // Common styles for the option containers
@@ -27,6 +34,19 @@ export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({ onSelectQrScan,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: '20px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+    height: '200px',
+  };
+
+  // Common styles for the option containers
+  const optionContainerQRStyle: React.CSSProperties = {
+    width: '50%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     padding: '20px',
     cursor: 'pointer',
     transition: 'background-color 0.3s',
@@ -65,13 +85,17 @@ export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({ onSelectQrScan,
       <div style={{ width: '100%', display: 'flex', justifyContent: 'center', position: 'relative' }}>
         {/* QR Code Scanning Option */}
         <div
-          style={optionContainerStyle}
+          style={optionContainerQRStyle}
           onClick={onSelectQrScan}
           onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)')}
           onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           <img src={ScanQRcodeIcon} alt="Search" style={iconStyle} />
-          <Typography variant="h6" align="center" style={{ textTransform: 'none' }}>
+          <Typography
+            variant="h6"
+            align="center"
+            style={{ textTransform: 'none', maxWidth: '248px', textAlign: 'left' }}
+          >
             {t('SETTINGS.DIALOGS.ADD_DEVICE.SCAN_QR_CODE')}
           </Typography>
         </div>
@@ -82,16 +106,23 @@ export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({ onSelectQrScan,
         </div>
 
         {/* Manual Entry Option */}
-        <div
-          style={optionContainerStyle}
-          onClick={onSelectManualEntry}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-        >
-          <img src={NewDeviceIcon} alt="New Device" style={iconStyle} />
-          <Typography variant="h6" align="center" style={{ textTransform: 'none' }}>
-            {t('SETTINGS.DIALOGS.ADD_DEVICE.ENTER_ENCODED_ID')}
-          </Typography>
+        <div style={optionContainerStyle}>
+          <div style={{ width: '100%', marginBottom: '16px' }}>
+            <TextInput
+              label={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID')}
+              placeholder={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID_PLACEHOLDER')}
+              value={requestId}
+              setValue={setRequestId}
+            />
+          </div>
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'left' }}>
+            <ActionButton
+              caption={t('SETTINGS.DIALOGS.ADD_DEVICE.CHECK_REQUEST_ID')}
+              onClick={handleCheckRequestId}
+              disabled={!requestId}
+              isDialog={true}
+            />
+          </div>
         </div>
       </div>
     </ParametersStyled>

@@ -93,13 +93,7 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
     setPhase(1); // Go to request ID entry phase with QR scanner active
   };
 
-  /**
-   * Handles selection of manual entry option from the initial screen
-   */
-  const handleSelectManualEntry = () => {
-    setIsQrScannerActive(false);
-    setPhase(1); // Go to request ID entry phase
-  };
+  // Manual entry is now handled directly in the SelectionPhase component
 
   /**
    * Returns to the selection phase when QR scanning fails
@@ -141,7 +135,6 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
   return (
     <Dialog
       title={t('SETTINGS.DIALOGS.ADD_DEVICE.TITLE')}
-      description={t('SETTINGS.DIALOGS.ADD_DEVICE.DESCRIPTION')}
       isOpen={isOpen}
       onClose={resetBeforeClose}
       size="medium"
@@ -150,9 +143,14 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
         <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
           {!isLoading ? (
             <>
-              {/* Phase 0: Selection between QR scan and manual entry */}
+              {/* Phase 0: Selection between QR scan and manual entry with direct request ID input */}
               {phase === 0 && (
-                <SelectionPhase onSelectQrScan={handleSelectQrScan} onSelectManualEntry={handleSelectManualEntry} />
+                <SelectionPhase 
+                  onSelectQrScan={handleSelectQrScan} 
+                  requestId={requestId}
+                  setRequestId={setRequestId}
+                  handleCheckRequestId={handleCheckRequestId}
+                />
               )}
 
               {/* Phase 1: Request ID Entry */}

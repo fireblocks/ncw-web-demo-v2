@@ -2,15 +2,12 @@
  * DeviceInfo component for displaying and approving device information
  */
 import React from 'react';
-import { Typography, ActionButton } from '@foundation';
-import { Button } from '@mui/material';
+import { Typography, ActionButton, BlueButton } from '@foundation';
+import ConfirmDeviceIcon from '@icons/confirm-device.svg';
 import { useTranslation } from 'react-i18next';
 import {
   ParametersStyled,
-  DeviceInfoContainerStyled,
-  DeviceInfoHeaderStyled,
   DeviceInfoRowStyled,
-  ActionButtonContainerStyled,
 } from './styled';
 import { IDeviceInfoProps } from './types';
 
@@ -19,82 +16,70 @@ export const DeviceInfo: React.FC<IDeviceInfoProps> = ({ decodedData, addDevice,
 
   return (
     <ParametersStyled>
-      <DeviceInfoContainerStyled>
-        <DeviceInfoHeaderStyled>
-          <Typography style={{ fontSize: '25px', width: '100%' }}>
+      {/* Two-column layout */}
+      <div style={{ display: 'flex', width: '100%', marginBottom: '24px' }}>
+        {/* First column - Icon */}
+        <div style={{ width: '35%', display: 'flex', alignItems: 'flex-start' }}>
+          <img src={ConfirmDeviceIcon} alt="Confirm Device" style={{ width: '118px', height: '118px', marginLeft: '42px' }} />
+        </div>
+
+        {/* Second column - Device Info */}
+        <div style={{ flex: 1, paddingTop: '7px' }}>
+          {/* Title */}
+          <Typography style={{ fontSize: '25px', width: '100%', marginBottom: '16px' }}>
             {t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_INFO')}
           </Typography>
-        </DeviceInfoHeaderStyled>
+          {/* Device Type Row */}
+          <DeviceInfoRowStyled>
+            <Typography variant="h6" color="text.secondary">
+              {t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE')}:
+            </Typography>
+            <Typography variant="h6" color="text.primary">
+              {decodedData.platform === 'mobile'
+                ? t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_MOBILE')
+                : decodedData.platform === 'desktop'
+                  ? t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_DESKTOP')
+                  : t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_UNKNOWN')}
+            </Typography>
+          </DeviceInfoRowStyled>
 
-        {/* Device Type Row */}
-        <DeviceInfoRowStyled>
-          <Typography variant="h6" color="text.secondary">
-            {t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE')}:
-          </Typography>
-          <Typography variant="h6" color="text.primary">
-            {decodedData.platform === 'mobile'
-              ? t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_MOBILE')
-              : decodedData.platform === 'desktop'
-                ? t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_DESKTOP')
-                : t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_UNKNOWN')}
-          </Typography>
-        </DeviceInfoRowStyled>
-
-        {/* Email Row */}
-        <DeviceInfoRowStyled>
-          <Typography variant="h6" color="text.secondary">
-            {t('SETTINGS.DIALOGS.ADD_DEVICE.EMAIL')}:
-          </Typography>
-          <Typography
-            variant="h6"
-            color="text.primary"
-            style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {decodedData.email}
-          </Typography>
-        </DeviceInfoRowStyled>
-
-        {/* Approve Button */}
-        <ActionButtonContainerStyled>
-          <div style={{ width: '100%' }}>
-            <style>
-              {`
-                .approve-device-button .MuiButton-root {
-                  width: 100%;
-                }
-              `}
-            </style>
-            <div className="approve-device-button" style={{ width: '100%' }}>
-              <ActionButton
-                caption={t('SETTINGS.DIALOGS.ADD_DEVICE.APPROVE_DEVICE')}
-                onClick={() => addDevice()}
-                isDialog={true}
-              />
-            </div>
-          </div>
-        </ActionButtonContainerStyled>
-
-        {/* Cancel Button */}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <Button
-            sx={{
-              textTransform: 'none',
-              color: 'white',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              lineHeight: 1.43,
-              letterSpacing: '0.01071em',
-            }}
-            onClick={onCancel}
-          >
-            Cancel
-          </Button>
+          {/* Email Row */}
+          <DeviceInfoRowStyled>
+            <Typography variant="h6" color="text.secondary">
+              {t('SETTINGS.DIALOGS.ADD_DEVICE.EMAIL')}:
+            </Typography>
+            <Typography
+              variant="h6"
+              color="text.primary"
+              style={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {decodedData.email}
+            </Typography>
+          </DeviceInfoRowStyled>
         </div>
-      </DeviceInfoContainerStyled>
+      </div>
+
+      {/* Buttons row aligned to the right */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', width: '100%' }}>
+        {/* Cancel Button */}
+        <ActionButton
+          caption="Cancel"
+          onClick={onCancel}
+          isDialog={true}
+          secondary={true}
+        />
+
+        {/* Add Device Button - Blue background with white text */}
+        <BlueButton
+          caption={t('SETTINGS.DIALOGS.ADD_DEVICE.APPROVE_DEVICE')}
+          onClick={() => addDevice()}
+          isDialog={true}
+        />
+      </div>
     </ParametersStyled>
   );
 };
