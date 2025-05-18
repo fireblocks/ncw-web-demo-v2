@@ -34,7 +34,7 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
   // State management
   const [requestId, setRequestId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
-  const [phase, setPhase] = useState(0); // 0: selection, 1: enter request id, 2: recognize device info, 3: success, 4: error
+  const [phase, setPhase] = useState(0); // 0: selection with QR scan or manual entry, 1: device info, 2: success, 3: error
   const [decodedData, setDecodedData] = useState<TRequestDecodedData | null>(null);
   const [isQrScannerActive, setIsQrScannerActive] = useState(false);
 
@@ -54,7 +54,7 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
       if (decoded.requestId && decoded.email) {
         setDecodedData(decoded);
         setIsLoading(false);
-        setPhase(2); // Phase 2: Display device info
+        setPhase(1); // Phase 1: Display device info
       } else {
         setIsLoading(false);
         enqueueSnackbar(t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID_CHECK_ERROR'), { variant: 'error' });
@@ -78,29 +78,23 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
     onClose();
   };
 
-  /**
-   * Toggles the QR scanner
-   */
-  const toggleQrScanner = () => {
-    setIsQrScannerActive(!isQrScannerActive);
-  };
 
   /**
    * Handles selection of QR scan option from the initial screen
    */
   const handleSelectQrScan = () => {
     setIsQrScannerActive(true);
-    setPhase(1); // Go to request ID entry phase with QR scanner active
+    // Keep phase at 0 since we're integrating QR scanning into the selection phase
   };
 
   // Manual entry is now handled directly in the SelectionPhase component
 
   /**
-   * Returns to the selection phase when QR scanning fails
+   * Disables QR scanner when scanning fails
    */
   const handleScanError = () => {
     setIsQrScannerActive(false);
-    setPhase(0); // Return to selection phase
+    // We're already in phase 0, so no need to change the phase
   };
 
   /**
@@ -111,14 +105,14 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
       try {
         const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(requestId);
         console.log('approveJoinWallet result', result);
-        setPhase(3); // Set phase to 3 for success
+        setPhase(2); // Set phase to 2 for success
       } catch (e) {
         console.error(e);
-        setPhase(4); // Set phase to 4 for error
+        setPhase(3); // Set phase to 3 for error
       }
     } else {
       console.log('approveJoinWallet cancelled');
-      setPhase(4); // Set phase to 4 for error
+      setPhase(3); // Set phase to 3 for error
     }
   };
 
@@ -150,31 +144,23 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
                   requestId={requestId}
                   setRequestId={setRequestId}
                   handleCheckRequestId={handleCheckRequestId}
-                />
-              )}
-
-              {/* Phase 1: Request ID Entry */}
-              {phase === 1 && (
-                <RequestIdEntry
-                  requestId={requestId}
-                  setRequestId={setRequestId}
-                  handleCheckRequestId={handleCheckRequestId}
                   isQrScannerActive={isQrScannerActive}
-                  toggleQrScanner={toggleQrScanner}
+                  toggleQrScanner={() => setIsQrScannerActive(!isQrScannerActive)}
                   onScanError={handleScanError}
                 />
               )}
 
-              {/* Phase 2: Device Info */}
-              {phase === 2 && decodedData && (
+
+              {/* Phase 1: Device Info */}
+              {phase === 1 && decodedData && (
                 <DeviceInfo decodedData={decodedData} addDevice={addDevice} onCancel={resetBeforeClose} />
               )}
 
-              {/* Phase 3: Success */}
-              {phase === 3 && <Success />}
+              {/* Phase 2: Success */}
+              {phase === 2 && <Success />}
 
-              {/* Phase 4: Error */}
-              {phase === 4 && <Error tryAgain={tryAgain} />}
+              {/* Phase 3: Error */}
+              {phase === 3 && <Error tryAgain={tryAgain} />}
             </>
           ) : (
             <LoadingPage></LoadingPage>

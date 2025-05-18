@@ -10,6 +10,7 @@ import { Typography, TextInput, ActionButton } from '@foundation';
 import NewDeviceIcon from '@icons/pencil-icon-with-frame.svg';
 import ScanQRcodeIcon from '@icons/scan-qr-code.svg';
 import { useTranslation } from 'react-i18next';
+import { QrScanner } from './QrScanner';
 import { ParametersStyled } from './styled';
 
 interface ISelectionPhaseProps {
@@ -17,15 +18,32 @@ interface ISelectionPhaseProps {
   requestId: string;
   setRequestId: (value: string) => void;
   handleCheckRequestId: () => void;
+  isQrScannerActive: boolean;
+  toggleQrScanner: () => void;
+  onScanError?: () => void;
 }
 
 export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({ 
   onSelectQrScan, 
   requestId, 
   setRequestId, 
-  handleCheckRequestId 
+  handleCheckRequestId,
+  isQrScannerActive,
+  toggleQrScanner,
+  onScanError
 }) => {
   const { t } = useTranslation();
+
+  // Handle QR scan result
+  const handleQrScan = (result: string | null) => {
+    if (result) {
+      setRequestId(result);
+      // Automatically check the request ID after scanning
+      setTimeout(() => {
+        handleCheckRequestId();
+      }, 500);
+    }
+  };
 
   // Common styles for the option containers
   const optionContainerStyle: React.CSSProperties = {
@@ -82,49 +100,55 @@ export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({
 
   return (
     <ParametersStyled>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', position: 'relative' }}>
-        {/* QR Code Scanning Option */}
-        <div
-          style={optionContainerQRStyle}
-          onClick={onSelectQrScan}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-        >
-          <img src={ScanQRcodeIcon} alt="Search" style={iconStyle} />
-          <Typography
-            variant="h6"
-            align="center"
-            style={{ textTransform: 'none', maxWidth: '248px', textAlign: 'left' }}
+      {!isQrScannerActive ? (
+        // Selection UI
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', position: 'relative' }}>
+          {/* QR Code Scanning Option */}
+          <div
+            style={optionContainerQRStyle}
+            onClick={onSelectQrScan}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
-            {t('SETTINGS.DIALOGS.ADD_DEVICE.SCAN_QR_CODE')}
-          </Typography>
-        </div>
-
-        {/* Separator Line with "OR" text */}
-        <div style={separatorContainerStyle}>
-          <div style={separatorTextStyle}>OR</div>
-        </div>
-
-        {/* Manual Entry Option */}
-        <div style={optionContainerStyle}>
-          <div style={{ width: '100%', marginBottom: '16px' }}>
-            <TextInput
-              label={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID')}
-              placeholder={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID_PLACEHOLDER')}
-              value={requestId}
-              setValue={setRequestId}
-            />
+            <img src={ScanQRcodeIcon} alt="Search" style={iconStyle} />
+            <Typography
+              variant="h6"
+              align="center"
+              style={{ textTransform: 'none', maxWidth: '248px', textAlign: 'left', fontSize: '20px' }}
+            >
+              {t('SETTINGS.DIALOGS.ADD_DEVICE.SCAN_QR_CODE')}
+            </Typography>
           </div>
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'left' }}>
-            <ActionButton
-              caption={t('SETTINGS.DIALOGS.ADD_DEVICE.CHECK_REQUEST_ID')}
-              onClick={handleCheckRequestId}
-              disabled={!requestId}
-              isDialog={true}
-            />
+
+          {/* Separator Line with "OR" text */}
+          <div style={separatorContainerStyle}>
+            <div style={separatorTextStyle}>OR</div>
+          </div>
+
+          {/* Manual Entry Option */}
+          <div style={optionContainerStyle}>
+            <div style={{ width: '100%', marginBottom: '16px' }}>
+              <TextInput
+                label={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID')}
+                placeholder={t('SETTINGS.DIALOGS.ADD_DEVICE.REQUEST_ID_PLACEHOLDER')}
+                value={requestId}
+                setValue={setRequestId}
+              />
+            </div>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'left' }}>
+              <ActionButton
+                caption={t('SETTINGS.DIALOGS.ADD_DEVICE.CHECK_REQUEST_ID')}
+                onClick={handleCheckRequestId}
+                disabled={!requestId}
+                isDialog={true}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        // QR Scanner
+        <QrScanner onScan={handleQrScan} toggleQrScanner={toggleQrScanner} onScanError={onScanError} />
+      )}
     </ParametersStyled>
   );
 };

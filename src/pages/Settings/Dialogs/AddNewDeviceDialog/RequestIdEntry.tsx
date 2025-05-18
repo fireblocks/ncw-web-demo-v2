@@ -52,7 +52,7 @@ export const RequestIdEntry: React.FC<IRequestIdEntryProps> = ({
         </>
       ) : (
         // QR Scanner
-        <QrScanner onScan={handleQrScan} toggleQrScanner={toggleQrScanner} />
+        <QrScanner onScan={handleQrScan} toggleQrScanner={toggleQrScanner} onScanError={onScanError} />
       )}
     </ParametersStyled>
   );
