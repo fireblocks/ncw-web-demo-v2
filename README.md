@@ -23,9 +23,11 @@ see .env file to adjust settings.
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
+git clone https://github.com/your-organization/ncw-web-demo-v2.git
 cd ncw-web-demo-v2
 ```
+
+Note: Replace the URL above with the actual repository URL.
 
 2. Install dependencies:
 ```bash
@@ -33,19 +35,9 @@ yarn install
 ```
 
 3. Create a `.env` file in the root directory with the following variables:
+
+### Option 1: Using Embedded Wallet SDK (Direct Integration)
 ```env
-# With Proxy Backend Env Settings
-
-#VITE_BACKEND_BASE_URL=your-backend-url
-#VITE_NCW_SDK_ENV=sandbox
-#VITE_CLOUDKIT_APITOKEN=your-api-token
-#VITE_CLOUDKIT_CONTAINER_ID=your-container-id
-#VITE_CLOUDKIT_ENV=production
-#VITE_BASE_FOLDER=/ncw-web-demo-v2
-#VITE_USE_EMBEDDED_WALLET_SDK=false
-
-# Without Proxy Backend, buy with Embedded Wallet Env Settings
-
 VITE_BACKEND_BASE_URL=your-backend-url
 VITE_NCW_SDK_ENV=sandbox
 VITE_CLOUDKIT_APITOKEN=your-api-token
@@ -55,6 +47,19 @@ VITE_BASE_FOLDER=/ncw-web-demo-v2
 VITE_AUTH_CLIENT_ID=your-client-id
 VITE_USE_EMBEDDED_WALLET_SDK=true
 ```
+
+### Option 2: Using Proxy Backend
+```env
+VITE_BACKEND_BASE_URL=your-backend-url
+VITE_NCW_SDK_ENV=sandbox
+VITE_CLOUDKIT_APITOKEN=your-api-token
+VITE_CLOUDKIT_CONTAINER_ID=your-container-id
+VITE_CLOUDKIT_ENV=production
+VITE_BASE_FOLDER=/ncw-web-demo-v2
+VITE_USE_EMBEDDED_WALLET_SDK=false
+```
+
+Note: Choose one of the options above based on your implementation needs. The key difference is the `VITE_USE_EMBEDDED_WALLET_SDK` setting, which determines whether the application uses direct integration with Fireblocks' Embedded Wallet SDK or communicates through a proxy backend server.
 
 ## 🏃‍♂️ Running the Application
 
@@ -189,4 +194,4 @@ This approach allows for:
     - Consistent import paths using Vite's alias system
 
 
-## EQ Demo app.pdf → will include the flow for embedded wallet
+## EW_Demo_app_flow.pdf → includes the flow for embedded wallet
