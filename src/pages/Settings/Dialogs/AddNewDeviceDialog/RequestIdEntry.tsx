@@ -14,6 +14,7 @@ export const RequestIdEntry: React.FC<IRequestIdEntryProps> = ({
   handleCheckRequestId,
   isQrScannerActive,
   toggleQrScanner,
+  onScanError,
 }) => {
   const { t } = useTranslation();
 
