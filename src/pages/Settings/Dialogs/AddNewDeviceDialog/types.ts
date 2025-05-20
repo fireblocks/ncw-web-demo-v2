@@ -41,6 +41,7 @@ export interface IDeviceInfoProps {
   decodedData: TRequestDecodedData;
   addDevice: () => Promise<void>;
   onCancel: () => void;
+  isLoading?: boolean; // Flag to indicate if the device addition is in progress
 }
 
 // Props for the Success component

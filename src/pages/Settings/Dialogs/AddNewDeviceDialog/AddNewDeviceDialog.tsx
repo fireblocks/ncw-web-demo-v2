@@ -99,13 +99,17 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
    * Approves the device join request
    */
   const addDevice = async (): Promise<void> => {
-    if (requestId) {
+    if (decodedData && decodedData.requestId) {
       try {
-        const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(requestId);
+        setIsLoading(true); // Set loading state to true before making the API call
+        console.log('addDevice requestId: ', decodedData.requestId);
+        const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(decodedData.requestId);
         console.log('approveJoinWallet result', result);
+        setIsLoading(false); // Set loading state to false after API call completes
         setPhase(2); // Set phase to 2 for success
       } catch (e) {
         console.error(e);
+        setIsLoading(false); // Set loading state to false if there's an error
         setPhase(3); // Set phase to 3 for error
       }
     } else {
@@ -147,7 +151,7 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
 
               {/* Phase 1: Device Info */}
               {phase === 1 && decodedData && (
-                <DeviceInfo decodedData={decodedData} addDevice={addDevice} onCancel={resetBeforeClose} />
+                <DeviceInfo decodedData={decodedData} addDevice={addDevice} onCancel={resetBeforeClose} isLoading={isLoading} />
               )}
 
               {/* Phase 2: Success */}
