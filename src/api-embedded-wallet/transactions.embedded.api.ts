@@ -194,7 +194,7 @@ export const getTransactions = async (
       });
 
       const allTransactions = [...(transactionsIncoming.data ?? []), ...(transactionsOutgoing?.data ?? [])];
-      // @ts-ignore
+      // @ts-expect-error
       return allTransactions.map((tx) => ({
         id: tx.id,
         status: tx.status as TTransactionStatus,
@@ -247,8 +247,11 @@ export const createTransaction = async (
         },
       },
       amount,
+      feeLevel: dataToSend?.feeLevel || 'MEDIUM',
     };
-    console.log(`[EmbeddedWallet] Creating transaction for asset ${assetId} with amount ${amount}`);
+    console.log(
+      `[EmbeddedWallet] Creating transaction for asset ${assetId} with amount ${amount} and fee level ${dataToSend?.feeLevel || 'MEDIUM'}`,
+    );
     const createdTrans = await rootStore?.fireblocksSDKStore.fireblocksEW.createTransaction(params);
     console.log('created transaction res: ', createdTrans);
     return transactionResponseToTransactionData(createdTrans);
