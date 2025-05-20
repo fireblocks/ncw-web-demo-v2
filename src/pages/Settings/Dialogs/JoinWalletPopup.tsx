@@ -78,7 +78,7 @@ export const JoinWalletDialog: React.FC<IProps> = observer(function JoinWalletDi
   useEffect(() => {
     if (authStore.capturedRequestId && requestId !== authStore.capturedRequestId) {
       const encodedRequestId = encode(
-        `{"email":"${userStore?.loggedUser?.email ?? 'not available'}","platform":"Web","requestId":"${authStore.capturedRequestId}"}`,
+        `{"email":"${userStore?.loggedUser?.email ?? 'not available'}","platform":"desktop","requestId":"${authStore.capturedRequestId}"}`,
       );
       setRequestId(encodedRequestId);
     }

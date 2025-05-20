@@ -149,6 +149,10 @@ export class FireblocksSDKStore {
         deviceId: this._rootStore.deviceStore.deviceId ?? '',
         logger: ConsoleLoggerFactory(),
       });
+
+      // Add a small delay to ensure the database connection is fully established
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       const ewOpts: IEmbeddedWalletOptions = {
         env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
         logLevel: 'VERBOSE',
@@ -257,6 +261,10 @@ export class FireblocksSDKStore {
 
       // this.setLogger(logger);
       this.logger = await IndexedDBLoggerFactory({ deviceId, logger: ConsoleLoggerFactory() });
+
+      // Add a small delay to ensure the database connection is fully established
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       const coreNCWOptions: ICoreOptions = {
         deviceId,
         eventsHandler,
@@ -361,6 +369,9 @@ export class FireblocksSDKStore {
         deviceId: this._rootStore.deviceStore.deviceId,
         logger: ConsoleLoggerFactory(),
       });
+
+      // Add a small delay to ensure the database connection is fully established
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       let fireblocksNCW: IFireblocksNCW | null = null;
 

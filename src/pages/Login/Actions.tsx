@@ -76,7 +76,7 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
   useEffect(() => {
     if (authStore.capturedRequestId && isJoiningWallet) {
       const encoded = encode(
-        `{"email":"${userStore?.loggedUser?.email ?? 'not available'}","platform":"Web","requestId":"${authStore.capturedRequestId}"}`,
+        `{"email":"${userStore?.loggedUser?.email ?? 'not available'}","platform":"desktop","requestId":"${authStore.capturedRequestId}"}`,
       );
       setEncodedRequestId(encoded);
     }

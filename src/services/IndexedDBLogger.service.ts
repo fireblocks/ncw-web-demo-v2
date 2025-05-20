@@ -152,20 +152,39 @@ export class IndexedDBLogger implements ILogger {
       this._logger.log('ERROR', 'IndexedDB is not initialized');
       return;
     }
-    const transaction = this._dbInstance.transaction(this._tableName, 'readwrite');
-    const store = transaction.objectStore(this._tableName);
 
     try {
+      // Check if the connection is still open
+      if (this._dbInstance.version === 0) {
+        console.warn('IndexedDB connection is closed');
+        // Try to reinitialize the database
+        this._initializeDB().catch(err => console.error('Failed to reinitialize IndexedDB', err));
+        // Fall back to console logging
+        console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
+        return;
+      }
+
+      const transaction = this._dbInstance.transaction(this._tableName, 'readwrite');
+      const store = transaction.objectStore(this._tableName);
+
       const addRequest = store.add(logEntry);
       addRequest.onsuccess = () => {
         this._logger.log('VERBOSE', 'Message saved to IndexedDB');
       };
 
-      addRequest.onerror = () => {
-        this._logger.log('ERROR', 'Error saving message to IndexedDB');
+      addRequest.onerror = (event) => {
+        this._logger.log('ERROR', 'Error saving message to IndexedDB', event);
+      };
+
+      transaction.onerror = (event) => {
+        console.error('Transaction error:', event);
+        // Fall back to console logging
+        console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
       };
     } catch (error) {
       console.error('IndexedDBLogger._saveLog: ', error);
+      // Fall back to console logging
+      console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
     }
   }
 
