@@ -41,7 +41,7 @@ export const DeviceInfo: React.FC<IDeviceInfoProps> = ({ decodedData, addDevice,
                 ? t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_MOBILE')
                 : decodedData.platform === 'desktop'
                   ? t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_DESKTOP')
-                  : t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_UNKNOWN')}
+                  : decodedData.platform ?? t('SETTINGS.DIALOGS.ADD_DEVICE.DEVICE_TYPE_UNKNOWN')}
             </Typography>
           </DeviceInfoRowStyled>
 
