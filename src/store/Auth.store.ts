@@ -263,6 +263,10 @@ export class AuthStore {
           try {
             console.log('[Auth] Initializing accounts after joining wallet');
             await this._rootStore.accountsStore.init();
+
+            // Get devices to ensure walletId is available
+            console.log('[Auth] Getting devices after joining wallet');
+            this._rootStore.userStore.getMyDevices();
           } catch (accountError) {
             console.error('[Auth] Error initializing accounts after joining wallet:', accountError);
             // Continue despite account initialization errors
