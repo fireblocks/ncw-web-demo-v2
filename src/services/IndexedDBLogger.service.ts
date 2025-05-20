@@ -164,23 +164,39 @@ export class IndexedDBLogger implements ILogger {
         return;
       }
 
-      const transaction = this._dbInstance.transaction(this._tableName, 'readwrite');
-      const store = transaction.objectStore(this._tableName);
+      try {
+        const transaction = this._dbInstance.transaction(this._tableName, 'readwrite');
+        const store = transaction.objectStore(this._tableName);
 
-      const addRequest = store.add(logEntry);
-      addRequest.onsuccess = () => {
-        this._logger.log('VERBOSE', 'Message saved to IndexedDB');
-      };
+        const addRequest = store.add(logEntry);
+        addRequest.onsuccess = () => {
+          this._logger.log('VERBOSE', 'Message saved to IndexedDB');
+        };
 
-      addRequest.onerror = (event) => {
-        this._logger.log('ERROR', 'Error saving message to IndexedDB', event);
-      };
+        addRequest.onerror = (event) => {
+          this._logger.log('ERROR', 'Error saving message to IndexedDB', event);
+        };
 
-      transaction.onerror = (event) => {
-        console.error('Transaction error:', event);
-        // Fall back to console logging
-        console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
-      };
+        transaction.onerror = (event) => {
+          console.error('Transaction error:', event);
+          // Fall back to console logging
+          console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
+        };
+      } catch (transactionError) {
+        // Handle the specific case when the database connection is closing
+        if (transactionError instanceof DOMException && 
+            (transactionError.name === 'InvalidStateError' || 
+             transactionError.message.includes('database connection is closing'))) {
+          console.warn('IndexedDB connection is closing, cannot create transaction');
+          // Try to reinitialize the database on next operation
+          this._dbInstance = null;
+          // Fall back to console logging
+          console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
+        } else {
+          // Rethrow other transaction errors to be caught by the outer catch block
+          throw transactionError;
+        }
+      }
     } catch (error) {
       console.error('IndexedDBLogger._saveLog: ', error);
       // Fall back to console logging

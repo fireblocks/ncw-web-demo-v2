@@ -2,8 +2,9 @@
  * DeviceInfo component for displaying and approving device information
  */
 import React from 'react';
-import { Typography, ActionButton, BlueButton, Progress } from '@foundation';
+import { Typography, ActionButton, BlueButton } from '@foundation';
 import ConfirmDeviceIcon from '@icons/confirm-device.svg';
+import { CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ParametersStyled, DeviceInfoRowStyled } from './styled';
 import { IDeviceInfoProps } from './types';
@@ -70,13 +71,17 @@ export const DeviceInfo: React.FC<IDeviceInfoProps> = ({ decodedData, addDevice,
         <ActionButton caption="Cancel" onClick={onCancel} isDialog={true} secondary={true} disabled={isLoading} />
 
         {/* Add Device Button - Blue background with white text */}
-        <BlueButton
-          caption={isLoading ? '' : t('SETTINGS.DIALOGS.ADD_DEVICE.APPROVE_DEVICE')}
-          onClick={() => !isLoading && addDevice()}
-          isDialog={true}
-          disabled={isLoading}
-          startIcon={isLoading ? <Progress size="small" /> : undefined}
-        />
+        {isLoading ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '150px' }}>
+            <CircularProgress size={24} color="primary" />
+          </div>
+        ) : (
+          <BlueButton
+            caption={t('SETTINGS.DIALOGS.ADD_DEVICE.APPROVE_DEVICE')}
+            onClick={addDevice}
+            isDialog={true}
+          />
+        )}
       </div>
     </ParametersStyled>
   );
