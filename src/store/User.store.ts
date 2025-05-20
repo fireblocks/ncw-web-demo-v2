@@ -49,6 +49,7 @@ export class UserStore {
       })
       .catch((e) => {
         this.setError(e.message);
+        this.setIsGettingUser(false); // Reset loading state when error occurs
       });
   }
 

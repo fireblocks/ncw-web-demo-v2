@@ -58,8 +58,14 @@ export class FirebaseAuthManager implements IAuthManager {
       unsubscribe();
     });
 
-    const result = await signInWithPopup(this._auth, authProvider);
-    this._loggedUser = result.user;
+    try {
+      const result = await signInWithPopup(this._auth, authProvider);
+      this._loggedUser = result.user;
+    } catch (error) {
+      console.error('Authentication error:', error);
+      // Re-throw the error to be handled by the caller
+      throw error;
+    }
   }
 
   public logout(): Promise<void> {
