@@ -60,7 +60,16 @@ export const AssetAmountInput: React.FC<IProps> = ({
       <InputLabelStyled htmlFor={label} shrink={false}>
         {label}
       </InputLabelStyled>
-      <NumericFormat allowNegative={false} value={value} customInput={InputStyled} {...materialUIInputProps} />
+      <NumericFormat
+        allowNegative={false}
+        value={value}
+        customInput={InputStyled}
+        decimalScale={8}
+        allowLeadingZeros={true}
+        thousandSeparator={true}
+        decimalSeparator="."
+        {...materialUIInputProps}
+      />
     </FormControlRootStyled>
   );
 };
