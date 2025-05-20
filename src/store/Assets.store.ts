@@ -9,8 +9,9 @@ import {
   getSupportedAssets,
 } from '@api';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
-import { AssetStore, localizedCurrencyView } from './Asset.store';
+import { AssetStore, localizedCurrencyView, NOT_AVAILABLE_PLACEHOLDER } from './Asset.store';
 import { RootStore } from './Root.store';
+import { top100Cryptos } from '@services';
 
 /**
  * Debounce utility function
@@ -82,15 +83,58 @@ export class AssetsStore {
   }
 
   /**
+   * Gets price from top100Cryptos based on asset symbol or name
+   * @param asset The asset to get the price for
+   * @returns The price from top100Cryptos or 0 if not found
+   */
+  private getAssetPriceFromTop100Cryptos(asset: AssetStore): number {
+    // Get the price from top100Cryptos using the asset symbol
+    const symbol = asset.symbol.toUpperCase();
+    let cryptoData = top100Cryptos[symbol];
+
+    // If not found, try to find it by name
+    if (!cryptoData) {
+      // Try to find a match by comparing the asset name with the titles in top100Cryptos
+      const assetNameLower = asset.name.toLowerCase();
+
+      // Find a matching cryptocurrency by comparing the asset name with the titles in top100Cryptos
+      const matchingSymbol = Object.keys(top100Cryptos).find((key) => {
+        const cryptoTitle = top100Cryptos[key].title.toLowerCase();
+        return assetNameLower.includes(cryptoTitle) || cryptoTitle.includes(assetNameLower);
+      });
+
+      if (matchingSymbol) {
+        cryptoData = top100Cryptos[matchingSymbol];
+      }
+    }
+
+    // Return the price if found, otherwise 0
+    return cryptoData ? cryptoData.price : 0;
+  }
+
+  /**
    * Calculates the total value of all assets in USD
-   * @returns The total balance formatted as a currency string
+   * @returns The total balance formatted as a currency string or placeholder if still loading
    */
   @computed
   public get totalAvailableBalanceInUSD(): string {
+    // Check if data is still loading
+    if (this.isLoading) {
+      return NOT_AVAILABLE_PLACEHOLDER;
+    }
+
+    // Ensure myAssets is initialized and not empty
+    if (!this.myAssets || this.myAssets.length === 0) {
+      return localizedCurrencyView(0);
+    }
+
     const balance = this.myAssets.reduce((acc, a) => {
-      const rate = a.assetData?.rate || 0;
-      const total = Number(a.totalBalance || 0);
-      return acc + total * rate;
+      // Use top100Cryptos to get the price instead of a.assetData.rate
+      const rate = this.getAssetPriceFromTop100Cryptos(a);
+      console.log('Asset:', a.symbol, 'Price from top100Cryptos:', rate, 'Balance:', a.totalBalance);
+
+      const total = Number(a.totalBalance > 0 ? a.totalBalance * rate : 0);
+      return acc + total;
     }, 0);
     return localizedCurrencyView(balance);
   }

@@ -149,7 +149,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
         formattedPrice: new Intl.NumberFormat('en-US', {
           style: 'currency',
           currency: 'USD',
-          maximumFractionDigits: 0,
+          maximumFractionDigits: 2,
         }).format(price),
         totalValue: '--',
       };
@@ -161,12 +161,12 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
       formattedPrice: new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 2,
       }).format(price),
       totalValue: new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 2,
       }).format(totalValueAmount),
     };
   }, [currentAsset.symbol, currentAsset.name, currentAsset.totalBalance]);
