@@ -67,7 +67,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   };
 
   const shouldDisableAction =
-    (txType === 'TRANSFER' && mode === 'SEND' && (!amount || !address || isAmountTooHigh)) || isCreatingTransfer;
+    (txType === 'TRANSFER' && mode === 'SEND' && (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0 || !address || isAmountTooHigh)) || isCreatingTransfer;
 
   const createNewTransaction = () => {
     setIsCreatingTransfer(true);
