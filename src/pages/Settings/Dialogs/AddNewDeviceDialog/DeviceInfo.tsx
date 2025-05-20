@@ -2,7 +2,7 @@
  * DeviceInfo component for displaying and approving device information
  */
 import React from 'react';
-import { Typography, ActionButton, BlueButton, CircularProgress } from '@foundation';
+import { Typography, ActionButton, BlueButton, Progress } from '@foundation';
 import ConfirmDeviceIcon from '@icons/confirm-device.svg';
 import { useTranslation } from 'react-i18next';
 import { ParametersStyled, DeviceInfoRowStyled } from './styled';
@@ -75,7 +75,7 @@ export const DeviceInfo: React.FC<IDeviceInfoProps> = ({ decodedData, addDevice,
           onClick={() => !isLoading && addDevice()}
           isDialog={true}
           disabled={isLoading}
-          startIcon={isLoading ? <CircularProgress size={24} color="inherit" /> : undefined}
+          startIcon={isLoading ? <Progress size="small" /> : undefined}
         />
       </div>
     </ParametersStyled>
