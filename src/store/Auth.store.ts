@@ -259,8 +259,16 @@ export class AuthStore {
           console.log('[Auth] Setting status to READY after successful join wallet');
           this.setStatus('READY');
 
-          // Initialize accounts to ensure accountId is available
+          // Get walletId from the SDK and set it in the DeviceStore
           try {
+            console.log('[Auth] Getting walletId after joining wallet');
+            const assignResponse = await this._rootStore.fireblocksSDKStore.fireblocksEW?.assignWallet();
+            if (assignResponse?.walletId) {
+              console.log('[Auth] Setting walletId after joining wallet:', assignResponse.walletId);
+              this._rootStore.deviceStore.setWalletId(assignResponse.walletId);
+            }
+
+            // Initialize accounts to ensure accountId is available
             console.log('[Auth] Initializing accounts after joining wallet');
             await this._rootStore.accountsStore.init();
 
