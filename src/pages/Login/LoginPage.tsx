@@ -1,8 +1,8 @@
 import React from 'react';
 import { Typography, alpha, styled } from '@foundation';
+import IconLogo from '@icons/login-ew-icon.svg';
 import IconAssets from '@icons/login_assets.svg';
 import IconBG from '@icons/login_bg.svg';
-import IconLogo from '@icons/logo.svg';
 import { useAuthStore, useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';

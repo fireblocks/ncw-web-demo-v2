@@ -1,7 +1,7 @@
 import React from 'react';
 import { DropDownMenu, IconButton, MenuItem, Tooltip, Typography, styled } from '@foundation';
 import IconArrowLeft from '@icons/arrow-left.svg';
-import IconLogo from '@icons/logo.svg';
+import IconLogo from '@icons/login-ew-icon.svg';
 import IconSettings from '@icons/settings.svg';
 import { useTransactionsStore, useUserStore } from '@store';
 import { ENV_CONFIG } from 'env_config';
