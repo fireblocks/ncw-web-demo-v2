@@ -177,6 +177,7 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
               sortDirection={sortDirection}
               onSort={handleSort}
             />
+            {/* Commented out 24h change column as requested
             <SortableTableHeaderCell
               title={t('ASSETS.TABLE.HEADERS.CHANGE_24H')}
               sortField="change24h"
@@ -184,6 +185,8 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
               sortDirection={sortDirection}
               onSort={handleSort}
             />
+            */}
+            {/* Commented out market cap column as requested
             <SortableTableHeaderCell
               title={t('ASSETS.TABLE.HEADERS.MARKET_CAP')}
               sortField="marketCap"
@@ -191,6 +194,8 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
               sortDirection={sortDirection}
               onSort={handleSort}
             />
+            */}
+            {/* Commented out 24h volume column as requested
             <SortableTableHeaderCell
               title={t('ASSETS.TABLE.HEADERS.VOLUME_24H')}
               sortField="volume24h"
@@ -198,6 +203,7 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
               sortDirection={sortDirection}
               onSort={handleSort}
             />
+            */}
             <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.ADDRESS')} />
             <TableHeaderCell title={t('ASSETS.TABLE.HEADERS.BASE_ASSET')} />
           </RowStyled>

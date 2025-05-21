@@ -19,7 +19,7 @@ import { observer } from 'mobx-react';
 
 export const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
-  gridTemplateColumns: '1.5fr 1fr 0.7fr 0.7fr 0.7fr 0.7fr 1fr 0.6fr',
+  gridTemplateColumns: '1.5fr 1fr 0.7fr 1fr 0.6fr', // Removed columns for 24h change, market cap, and 24h volume
   columnGap: theme.spacing(2), // Add spacing between columns
   '& > *': {
     maxWidth: '100%', // Ensure each child has max width
@@ -191,9 +191,15 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
             assetSymbol={currentAsset.symbol}
           />
           <TablePriceCell price={formattedPrice} />
+          {/* Commented out 24h change column as requested
           <TableChangeCell change={change24h} />
+          */}
+          {/* Commented out market cap column as requested
           <TableTextCell text={formattedMarketCap} />
+          */}
+          {/* Commented out 24h volume column as requested
           <TableTextCell text={formattedVolume24h} />
+          */}
           <TableCell>
             <CopyText text={currentAsset.address} />
           </TableCell>
