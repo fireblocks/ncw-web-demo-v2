@@ -191,10 +191,45 @@ export class AssetsStore {
 
   @action
   public setMyAssets(assets: IAssetsSummaryDTO[]): void {
-    this.myAssets = [];
-    assets.forEach((a) => {
-      if (a?.asset) this.addMyAsset(a);
+    // Create a map of existing assets by ID for quick lookup
+    const existingAssetsMap = new Map<string, AssetStore>();
+    this.myAssets.forEach(asset => {
+      existingAssetsMap.set(asset.id, asset);
     });
+
+    // Create a new array to hold updated assets
+    const updatedAssets: AssetStore[] = [];
+
+    // Process each asset from the API
+    assets.forEach((a) => {
+      if (a?.asset) {
+        const assetId = a.asset.id;
+        const existingAsset = existingAssetsMap.get(assetId);
+
+        if (existingAsset) {
+          // Update existing asset
+          if (a.balance) existingAsset.setBalance(a.balance);
+          if (a.address) existingAsset.setAddress(a.address);
+          updatedAssets.push(existingAsset);
+          // Remove from map to track which assets were processed
+          existingAssetsMap.delete(assetId);
+        } else {
+          // Add new asset
+          const newAsset = new AssetStore(
+            a.asset,
+            a.balance || null,
+            a.address || null,
+            this._rootStore
+          );
+          updatedAssets.push(newAsset);
+        }
+      }
+    });
+
+    // Replace the assets array with the updated one
+    this.myAssets = updatedAssets;
+
+    console.log(`[AssetsStore] Updated assets: ${updatedAssets.length} total assets`);
   }
 
   /**
@@ -320,12 +355,11 @@ export class AssetsStore {
       getAssetsSummary(deviceId, accountId, accessToken, this._rootStore)
         .then((assetsSummary) => {
           console.log('[AssetsStore] Balance refresh completed successfully');
-          assetsSummary.map((a) => {
-            const asset = this.getAssetById(a.asset.id);
-            if (asset) {
-              asset.setBalance(a.balance);
-            }
-          });
+
+          // Use setMyAssets to properly handle updates and new assets
+          this.setMyAssets(assetsSummary);
+
+          console.log(`[AssetsStore] Refreshed ${assetsSummary.length} assets`);
         })
         .catch((e) => {
           console.error('[AssetsStore] Balance refresh failed:', e);
