@@ -1,7 +1,6 @@
 import { IGetTransactionsParams, ITransactionRequest } from '@fireblocks/embedded-wallet-sdk';
 import { RootStore } from '@store';
 import { TransactionResponse } from 'ethers';
-import { CreateTransactionResponse } from 'fireblocks-sdk';
 
 export type TTransactionStatus =
   | 'PENDING_SIGNATURE'
@@ -235,20 +234,38 @@ export const createTransaction = async (
     const assetId = dataToSend?.assetId;
     const destAddress = dataToSend?.destAddress ?? '';
     const amount = dataToSend?.amount || '0.00000001';
-    const params: ITransactionRequest = {
-      assetId,
-      source: {
-        id: '0',
-      },
-      destination: {
-        type: 'ONE_TIME_ADDRESS' as any,
-        oneTimeAddress: {
-          address: destAddress,
+    let params: ITransactionRequest;
+    if (!dataToSend) {
+      params = {
+        operation: 'TYPED_MESSAGE',
+        extraParameters: {
+          rawMessageData: {
+            messages: [
+              {
+                type: 'EIP712',
+                content: buildTypedData(),
+              },
+            ],
+          },
         },
-      },
-      amount,
-      feeLevel: dataToSend?.feeLevel || 'MEDIUM',
-    };
+        source: {},
+      };
+    } else {
+      params = {
+        assetId,
+        source: {
+          id: '0',
+        },
+        destination: {
+          type: 'ONE_TIME_ADDRESS' as any,
+          oneTimeAddress: {
+            address: destAddress,
+          },
+        },
+        amount,
+        feeLevel: dataToSend?.feeLevel || 'MEDIUM',
+      };
+    }
     console.log(
       `[EmbeddedWallet] Creating transaction for asset ${assetId} with amount ${amount} and fee level ${dataToSend?.feeLevel || 'MEDIUM'}`,
     );
@@ -284,3 +301,67 @@ export const cancelTransaction = async (
     throw error;
   }
 };
+
+export const buildTypedData = (
+  chainId = 42,
+  fromAddress = '0x9EE5e175D09895b8E1E28c22b961345e1dF4B5aE',
+  spender = '0xE1B48CddD97Fa4b2F960Ca52A66CeF8f1f8A58A5',
+  nonce = 1,
+) => ({
+  types: {
+    EIP712Domain: [
+      {
+        name: 'name',
+        type: 'string',
+      },
+      {
+        name: 'version',
+        type: 'string',
+      },
+      {
+        name: 'chainId',
+        type: 'uint256',
+      },
+      {
+        name: 'verifyingContract',
+        type: 'address',
+      },
+    ],
+    Permit: [
+      {
+        name: 'holder',
+        type: 'address',
+      },
+      {
+        name: 'spender',
+        type: 'address',
+      },
+      {
+        name: 'nonce',
+        type: 'uint256',
+      },
+      {
+        name: 'expiry',
+        type: 'uint256',
+      },
+      {
+        name: 'allowed',
+        type: 'bool',
+      },
+    ],
+  },
+  primaryType: 'Permit',
+  domain: {
+    name: 'Dai Stablecoin',
+    version: '1',
+    chainId,
+    verifyingContract: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
+  },
+  message: {
+    holder: fromAddress,
+    spender,
+    nonce,
+    expiry: Math.trunc((Date.now() + 60_000) / 1000),
+    allowed: true,
+  },
+});
