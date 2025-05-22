@@ -232,7 +232,7 @@ export const createTransaction = async (
       token,
     );
     const walletId = rootStore?.accountsStore.currentAccount?.data.walletId;
-    const accountId = rootStore.accountsStore.currentAccount?.accountId
+    const accountId = rootStore.accountsStore.currentAccount?.accountId;
     const assetId = dataToSend?.assetId;
     const destAddress = dataToSend?.destAddress ?? '';
     const amount = dataToSend?.amount || '0.00000001';
@@ -254,7 +254,7 @@ export const createTransaction = async (
         source: {
           type: 'END_USER_WALLET',
           walletId,
-          id: accountId,
+          id: `${accountId}` ?? '',
         },
         note: `API Transaction`,
       };
