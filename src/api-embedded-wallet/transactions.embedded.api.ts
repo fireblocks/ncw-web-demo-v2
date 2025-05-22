@@ -231,6 +231,8 @@ export const createTransaction = async (
       'token: ',
       token,
     );
+    const walletId = rootStore?.accountsStore.currentAccount?.data.walletId;
+    const accountId = rootStore.accountsStore.currentAccount?.accountId
     const assetId = dataToSend?.assetId;
     const destAddress = dataToSend?.destAddress ?? '';
     const amount = dataToSend?.amount || '0.00000001';
@@ -248,7 +250,13 @@ export const createTransaction = async (
             ],
           },
         },
-        source: {},
+        assetId: 'ETH_TEST5',
+        source: {
+          type: 'END_USER_WALLET',
+          walletId,
+          id: accountId,
+        },
+        note: `API Transaction`,
       };
     } else {
       params = {
