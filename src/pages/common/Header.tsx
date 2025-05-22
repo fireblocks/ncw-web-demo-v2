@@ -145,6 +145,14 @@ export const Header: React.FC = observer(function Header() {
               </Typography>
               {isNftsPage && <LinkMarkerStyled />}
             </NavLinkStyled>
+            {ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && (
+              <NavLinkStyled to="web3">
+                <Typography variant="h6" color="inherit">
+                  {t('NAVIGATION.WEB3')}
+                </Typography>
+                {isWeb3Page && <LinkMarkerStyled />}
+              </NavLinkStyled>
+            )}
             <NavLinkStyled to="transactions">
               <Typography variant="h6" color="inherit">
                 {t('NAVIGATION.TRANSACTIONS')}
@@ -156,14 +164,6 @@ export const Header: React.FC = observer(function Header() {
                 </Tooltip>
               )}
             </NavLinkStyled>
-            {ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && (
-              <NavLinkStyled to="web3">
-                <Typography variant="h6" color="inherit">
-                  {t('NAVIGATION.WEB3')}
-                </Typography>
-                {isWeb3Page && <LinkMarkerStyled />}
-              </NavLinkStyled>
-            )}
           </>
         )}
       </TreasuryPagesStyled>
