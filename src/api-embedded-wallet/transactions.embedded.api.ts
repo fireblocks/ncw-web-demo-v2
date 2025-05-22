@@ -274,7 +274,7 @@ export const createTransaction = async (
     return transactionResponseToTransactionData(createdTrans);
   } catch (e) {
     console.error('transactions.embedded.api.ts - createTransaction err: ', e);
-    return transactionResponseToTransactionData({});
+    throw new Error('Transactions creation failed');
   }
 };
 
