@@ -2,6 +2,7 @@ name: Deploy Multiple Site Versions to Pages
 
 on:
   push:
+    # TODO: rename to main
     branches: ['v2-embedded-wallet-deployment']
   workflow_dispatch:
 
@@ -53,30 +54,30 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Download 'direct' build (for root deployment)
-        uses: actions/download-artifact@v4
-        with:
-          name: build-direct
-          path: direct # Content for the root of the site
-
-      - name: Download 'backend-proxy' build (for /bp deployment)
+      - name: Download 'backend-proxy' build (for root deployment)
         uses: actions/download-artifact@v4
         with:
           name: build-backend-proxy
-          path: backend-proxy # Content for the /bp subdirectory
+          path: backend-proxy # Content for the root of the site
+
+      - name: Download 'direct' build (for /ew deployment)
+        uses: actions/download-artifact@v4
+        with:
+          name: build-direct
+          path: direct # Content for the /ew subdirectory
 
       - name: Prepare final deployment structure
         run: |
           echo "Preparing merged content directory..."
           mkdir -p merged-content
-          echo "Copying main site content (direct) to merged-content root..."
-          cp -r direct/* merged-content/
-          echo "Creating /bp directory in merged-content..."
-          mkdir -p merged-content/bp
-          echo "Copying secondary site content (backend-proxy) to merged-content/bp..."
-          cp -r backend-proxy/* merged-content/bp/
+          echo "Copying main site content (backend-proxy) to merged-content root..."
+          cp -r backend-proxy/* merged-content/
+          echo "Creating /ew directory in merged-content..."
+          mkdir -p merged-content/ew
+          echo "Copying secondary site content (direct) to merged-content/ew..."
+          cp -r direct/* merged-content/ew/
           echo "Final structure prepared."
-          ls -R merged-content # Optional: list contents for debugging
+          ls -R merged-content
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
