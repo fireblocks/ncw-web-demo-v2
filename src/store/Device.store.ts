@@ -31,7 +31,7 @@ export class DeviceStore {
    */
   @action
   public init(): void {
-    console.log('Device Store: device store init');
+    // DEBUG_TRACE console.log('Device Store: device store init');
     this.deviceId = getDeviceIdFromLocalStorage(this._rootStore.userStore.userId) || '';
   }
 
@@ -41,7 +41,7 @@ export class DeviceStore {
    */
   @action
   public setDeviceId(deviceId: string): void {
-    console.log('Device Store: setDeviceId: ', deviceId);
+    // DEBUG_TRACE console.log('Device Store: setDeviceId: ', deviceId);
     this.deviceId = deviceId;
   }
 
@@ -51,7 +51,7 @@ export class DeviceStore {
    */
   @action
   public setWalletId(walletId: string): void {
-    console.log('Device Store: setWalletId: ', walletId);
+    // DEBUG_TRACE console.log('Device Store: setWalletId: ', walletId);
     this.walletId = walletId;
   }
 
@@ -61,7 +61,7 @@ export class DeviceStore {
    */
   @action
   public generateNewDeviceId(): void {
-    console.log('Device Store: generateNewDeviceId');
+    // DEBUG_TRACE console.log('Device Store: generateNewDeviceId');
     this.deviceId = generateNewDeviceId(this._rootStore.userStore.userId);
   }
 
@@ -74,7 +74,7 @@ export class DeviceStore {
   public async assignDeviceToNewWallet(): Promise<void> {
     const deviceId = this.deviceId;
     const accessToken = this._rootStore.userStore.accessToken;
-    console.log('Device Store: assignDeviceToNewWallet: ', this.deviceId, accessToken);
+    // DEBUG_TRACE console.log('Device Store: assignDeviceToNewWallet: ', this.deviceId, accessToken);
 
     if (deviceId && accessToken) {
       try {

@@ -1,7 +1,12 @@
-import { getWeb3Connections, createWeb3Connection, submitWeb3Connection, removeWeb3Connection } from '../api-embedded-wallet';
 import { ICreateNcwConnectionRequest } from '@fireblocks/embedded-wallet-sdk';
 import { RespondToConnectionRequest, SessionDTO } from '@fireblocks/ts-sdk';
 import { action, makeObservable, observable } from 'mobx';
+import {
+  getWeb3Connections,
+  createWeb3Connection,
+  submitWeb3Connection,
+  removeWeb3Connection,
+} from '../api-embedded-wallet';
 import { RootStore } from './Root.store';
 
 /**
@@ -142,10 +147,10 @@ export class Web3Store {
 
   @action
   public setConnections(connections: SessionDTO[]): void {
-    console.log('[Web3Store] Setting connections:', connections);
+    // DEBUG_TRACE console.log('[Web3Store] Setting connections:', connections);
     this.connections = [];
     this.connections = connections;
-    console.log('[Web3Store] Connections set, this.connections:', this.connections);
+    // DEBUG_TRACE console.log('[Web3Store] Connections set, this.connections:', this.connections);
   }
 
   @action

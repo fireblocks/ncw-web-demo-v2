@@ -8,10 +8,10 @@ import {
   getBalance,
   getSupportedAssets,
 } from '@api';
+import { top100Cryptos } from '@services';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { AssetStore, localizedCurrencyView, NOT_AVAILABLE_PLACEHOLDER } from './Asset.store';
 import { RootStore } from './Root.store';
-import { top100Cryptos } from '@services';
 
 /**
  * Debounce utility function
@@ -131,7 +131,7 @@ export class AssetsStore {
     const balance = this.myAssets.reduce((acc, a) => {
       // Use top100Cryptos to get the price instead of a.assetData.rate
       const rate = this.getAssetPriceFromTop100Cryptos(a);
-      console.log('Asset:', a.symbol, 'Price from top100Cryptos:', rate, 'Balance:', a.totalBalance);
+      // DEBUG_TRACE console.log('Asset:', a.symbol, 'Price from top100Cryptos:', rate, 'Balance:', a.totalBalance);
 
       const total = Number(a.totalBalance > 0 ? a.totalBalance * rate : 0);
       return acc + total;
@@ -193,7 +193,7 @@ export class AssetsStore {
   public setMyAssets(assets: IAssetsSummaryDTO[]): void {
     // Create a map of existing assets by ID for quick lookup
     const existingAssetsMap = new Map<string, AssetStore>();
-    this.myAssets.forEach(asset => {
+    this.myAssets.forEach((asset) => {
       existingAssetsMap.set(asset.id, asset);
     });
 
@@ -215,12 +215,7 @@ export class AssetsStore {
           existingAssetsMap.delete(assetId);
         } else {
           // Add new asset
-          const newAsset = new AssetStore(
-            a.asset,
-            a.balance || null,
-            a.address || null,
-            this._rootStore
-          );
+          const newAsset = new AssetStore(a.asset, a.balance || null, a.address || null, this._rootStore);
           updatedAssets.push(newAsset);
         }
       }
@@ -229,7 +224,7 @@ export class AssetsStore {
     // Replace the assets array with the updated one
     this.myAssets = updatedAssets;
 
-    console.log(`[AssetsStore] Updated assets: ${updatedAssets.length} total assets`);
+    // DEBUG_TRACE console.log(`[AssetsStore] Updated assets: ${updatedAssets.length} total assets`);
   }
 
   /**
@@ -243,7 +238,7 @@ export class AssetsStore {
       await this.getMyAssets();
       await this.getSupported();
     } catch (error: any) {
-      console.error('Error initializing assets:', error);
+      // DEBUG_TRACE console.error('Error initializing assets:', error);
       this.setError(error.message);
     } finally {
       this.setIsLoading(false);
@@ -333,17 +328,17 @@ export class AssetsStore {
         address: addressDTO || null,
       });
     } catch (error: any) {
-      console.error('Error adding asset:', error);
+      // DEBUG_TRACE console.error('Error adding asset:', error);
       this.setError(error.message);
       throw error;
     }
   }
 
   private _doRefreshBalances(): void {
-    console.log('[AssetsStore] Starting balance refresh', {
-      timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
-      isGettingBalances: this.isGettingBalances,
-    });
+    // DEBUG_TRACE console.log('[AssetsStore] Starting balance refresh', {
+    //   timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
+    //   isGettingBalances: this.isGettingBalances
+    // });
 
     this.setIsGettingBalances(true);
     const deviceId = this._rootStore.deviceStore.deviceId;
@@ -354,15 +349,15 @@ export class AssetsStore {
       // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       getAssetsSummary(deviceId, accountId, accessToken, this._rootStore)
         .then((assetsSummary) => {
-          console.log('[AssetsStore] Balance refresh completed successfully');
+          // DEBUG_TRACE console.log('[AssetsStore] Balance refresh completed successfully');
 
           // Use setMyAssets to properly handle updates and new assets
           this.setMyAssets(assetsSummary);
 
-          console.log(`[AssetsStore] Refreshed ${assetsSummary.length} assets`);
+          // DEBUG_TRACE console.log(`[AssetsStore] Refreshed ${assetsSummary.length} assets`);
         })
         .catch((e) => {
-          console.error('[AssetsStore] Balance refresh failed:', e);
+          // DEBUG_TRACE console.error('[AssetsStore] Balance refresh failed:', e);
           this.setError(e.message);
         })
         .finally(() => {
@@ -377,10 +372,10 @@ export class AssetsStore {
    * Uses debouncing to prevent too frequent API calls
    */
   public refreshBalances(): void {
-    console.log('[AssetsStore] refreshBalances called', {
-      timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
-      isGettingBalances: this.isGettingBalances,
-    });
+    // DEBUG_TRACE console.log('[AssetsStore] refreshBalances called', {
+    //   timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
+    //   isGettingBalances: this.isGettingBalances
+    // });
 
     // Only allow refresh if at least 5 seconds have passed since last refresh
     const now = Date.now();
@@ -388,7 +383,7 @@ export class AssetsStore {
       this._doRefreshBalances();
     } else {
       // If less than 5 seconds have passed, schedule a debounced refresh
-      console.log('[AssetsStore] Scheduling debounced refresh');
+      // DEBUG_TRACE console.log('[AssetsStore] Scheduling debounced refresh');
       this._refreshDebounced();
     }
   }
@@ -420,38 +415,38 @@ export class AssetsStore {
       let accountId = this._rootStore.accountsStore.currentAccount?.accountId;
       const accessToken = this._rootStore.userStore.accessToken;
 
-      console.log('getMyAssets - Debug Info:', {
-        deviceId,
-        accountId,
-        hasAccessToken: !!accessToken,
-        accountStoreInitialized: !!this._rootStore.accountsStore,
-      });
+      // DEBUG_TRACE console.log('getMyAssets - Debug Info:', {
+      //   deviceId,
+      //   accountId,
+      //   hasAccessToken: !!accessToken,
+      //   accountStoreInitialized: !!this._rootStore.accountsStore
+      // });
 
       // If accountId is missing but we have deviceId and accessToken, try to initialize accounts
       if (!accountId && deviceId && accessToken && this._rootStore.accountsStore) {
-        console.log('Attempting to initialize account before fetching assets...');
+        // DEBUG_TRACE console.log('Attempting to initialize account before fetching assets...');
         await this._rootStore.accountsStore.init();
         // Get the accountId again after initialization
         accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-        console.log('After account initialization, accountId:', accountId);
+        // DEBUG_TRACE console.log('After account initialization, accountId:', accountId);
       }
 
       if (deviceId && accountId !== undefined && accessToken) {
-        console.log('Fetching assets with deviceId, accountId, and accessToken');
+        // DEBUG_TRACE console.log('Fetching assets with deviceId, accountId, and accessToken');
         // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken, this._rootStore);
         this.setMyAssets(assetsSummary);
       } else {
-        console.warn('Cannot get assets - missing required data:', {
-          deviceId: !!deviceId,
-          accountId: accountId, // Show actual value to debug
-          accessToken: !!accessToken,
-        });
+        // DEBUG_TRACE console.warn('Cannot get assets - missing required data:', {
+        //   deviceId: !!deviceId,
+        //   accountId: accountId, // Show actual value to debug
+        //   accessToken: !!accessToken,
+        // });
 
         this.setIsLoading(false);
       }
     } catch (error) {
-      console.error('Error in getMyAssets:', error);
+      // DEBUG_TRACE console.error('Error in getMyAssets:', error);
       this.setIsLoading(false);
     }
   }

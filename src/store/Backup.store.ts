@@ -12,7 +12,6 @@ import { IUser } from '@auth';
 import { cloudkitBackup, cloudkitRecover, googleDriveBackup, googleDriveRecover, randomPassPhrase } from '@services';
 import { action, makeObservable, observable } from 'mobx';
 import CloudKit from 'tsl-apple-cloudkit';
-import { ENV_CONFIG } from '../env_config.ts';
 import { RootStore } from './Root.store';
 
 /**
@@ -156,10 +155,10 @@ export class BackupStore {
   @action
   public async createPassphraseInfo(passphraseId: string, location: TPassphraseLocation): Promise<void> {
     try {
-      console.log('createPassphraseInfo action: ', passphraseId, location);
+      // DEBUG_TRACE console.log('createPassphraseInfo action: ', passphraseId, location);
       // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       await createPassphraseInfo(passphraseId, location, this._rootStore.userStore.accessToken, this._rootStore);
-      console.log('createPassphraseInfo addPassPhrases: ', passphraseId, location);
+      // DEBUG_TRACE console.log('createPassphraseInfo addPassPhrases: ', passphraseId, location);
       this.addPassPhrases(passphraseId, location);
     } catch (e: any) {
       this.setError(e.message);
@@ -182,14 +181,13 @@ export class BackupStore {
       const token = await this._rootStore.userStore.getGoogleDriveCredentials();
       await googleDriveBackup(token, passphrase, passphraseId);
     } catch (e: any) {
-      console.log('backupGoogleDrive error: ', e);
-      //this.setError(e.message);
+      // DEBUG_TRACE console.log('backupGoogleDrive error: ', e);
     }
   }
 
   public async getMyLatestBackup(walletId: string = ''): Promise<IBackupInfo | null> {
     try {
-      console.log('get latest backup for walletId: ', walletId, this._rootStore.deviceStore.walletId);
+      // DEBUG_TRACE console.log('get latest backup for walletId: ', walletId, this._rootStore.deviceStore.walletId);
       const walletIdItem = walletId ? walletId : this._rootStore.deviceStore.walletId;
       const latestBackup = await getLatestBackup(
         walletIdItem ?? '',
@@ -197,7 +195,7 @@ export class BackupStore {
         // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         this._rootStore,
       );
-      console.log(`latestBackup found (true/false): `, Boolean(latestBackup));
+      // DEBUG_TRACE console.log(`latestBackup found (true/false): `, Boolean(latestBackup));
       return latestBackup;
     } catch (e: any) {
       this.setError(e.message);
@@ -247,11 +245,12 @@ export class BackupStore {
 
   public async passphrasePersist(location: TPassphraseLocation): Promise<IPassphrase> {
     if (this.passPhrases === null) {
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-        console.log('create passPhrases if not found');
-        await this.init();
-      } else {
-        throw new Error('Passphrases not loaded');
+      // DEBUG_TRACE console.log('Loading passphrases before proceeding');
+      await this.init();
+
+      // If passphrases are still null after initialization, then throw an error
+      if (this.passPhrases === null) {
+        throw new Error('Failed to load passphrases');
       }
     }
 
@@ -328,7 +327,8 @@ export class BackupStore {
     this.clearProgress();
     this.setIsBackupInProgress(true);
     try {
-      //await this._rootStore.backupStore.init();
+      // Ensure passphrases are loaded before proceeding
+      await this.init();
       const { passphrase, passphraseId } = await this.passphrasePersist(location);
       await this._rootStore.fireblocksSDKStore.sdkInstance?.backupKeys(passphrase, passphraseId);
       const latestBackup = await this.getMyLatestBackup();
@@ -350,6 +350,8 @@ export class BackupStore {
     this.clearProgress();
     this.setIsRecoverInProgress(true);
     try {
+      // Ensure passphrases are loaded before proceeding
+      await this.init();
       const { passphraseId } = await this.passphrasePersist(location);
       if (this._rootStore.fireblocksSDKStore.sdkInstance) {
         await this._rootStore.fireblocksSDKStore.sdkInstance.recoverKeys(() => this.recoverPassphraseId(passphraseId));

@@ -165,11 +165,11 @@ export const getTransactions = async (
   token: string,
   rootStore: RootStore | null = null,
 ): Promise<ITransactionDTO[]> => {
-  console.log('[EmbeddedWallet] getTransactions called, token: ', token);
-  console.log(
-    '[EmbeddedWallet] Getting transactions, SDK instance:',
-    rootStore?.fireblocksSDKStore.fireblocksEW ? 'exists' : 'missing',
-  );
+  // DEBUG_TRACE console.log('[EmbeddedWallet] getTransactions called, token: ', token);
+  // DEBUG_TRACE console.log(
+  //   '[EmbeddedWallet] Getting transactions, SDK instance:',
+  //   rootStore?.fireblocksSDKStore.fireblocksEW ? 'exists' : 'missing',
+  // );
 
   if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
     console.error('[EmbeddedWallet] Embedded wallet SDK is not initialized');
@@ -178,9 +178,9 @@ export const getTransactions = async (
   }
 
   try {
-    console.log(
-      `[EmbeddedWallet] Fetching transactions for device ${deviceId} since ${new Date(startDate).toISOString()}`,
-    );
+    // DEBUG_TRACE console.log(
+    //   `[EmbeddedWallet] Fetching transactions for device ${deviceId} since ${new Date(startDate).toISOString()}`,
+    // );
 
     // Attempt to fetch transactions from the SDK
     try {
@@ -220,17 +220,17 @@ export const createTransaction = async (
   rootStore: RootStore | null = null,
 ): Promise<ITransactionDTO> => {
   try {
-    console.log('[EmbeddedWallet] Creating transaction dataToSend: ', dataToSend, deviceId, token);
+    // DEBUG_TRACE console.log('[EmbeddedWallet] Creating transaction dataToSend: ', dataToSend, deviceId, token);
     if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
       console.error('[EmbeddedWallet] Embedded wallet SDK is not initialized');
       throw new Error('Embedded wallet SDK is not initialized');
     }
-    console.log(
-      `[EmbeddedWallet] Creating transaction for device ${deviceId} with data: `,
-      dataToSend,
-      'token: ',
-      token,
-    );
+    // DEBUG_TRACE console.log(
+    //   `[EmbeddedWallet] Creating transaction for device ${deviceId} with data: `,
+    //   dataToSend,
+    //   'token: ',
+    //   token,
+    // );
     const walletId = rootStore?.accountsStore.currentAccount?.data.walletId;
     const accountId = rootStore.accountsStore.currentAccount?.accountId;
     const assetId = dataToSend?.assetId;
@@ -274,11 +274,11 @@ export const createTransaction = async (
         feeLevel: dataToSend?.feeLevel || 'MEDIUM',
       };
     }
-    console.log(
-      `[EmbeddedWallet] Creating transaction for asset ${assetId} with amount ${amount} and fee level ${dataToSend?.feeLevel || 'MEDIUM'}`,
-    );
+    // DEBUG_TRACE console.log(
+    //   `[EmbeddedWallet] Creating transaction for asset ${assetId} with amount ${amount} and fee level ${dataToSend?.feeLevel || 'MEDIUM'}`,
+    // );
     const createdTrans = await rootStore?.fireblocksSDKStore.fireblocksEW.createTransaction(params);
-    console.log('created transaction res: ', createdTrans);
+    // DEBUG_TRACE console.log('created transaction res: ', createdTrans);
     return transactionResponseToTransactionData(createdTrans);
   } catch (e) {
     console.error('transactions.embedded.api.ts - createTransaction err: ', e);
@@ -292,8 +292,8 @@ export const cancelTransaction = async (
   txId: string,
   rootStore: RootStore | null = null,
 ): Promise<any> => {
-  console.log('[EmbeddedWallet] cancelTransaction called: ', deviceId, token);
-  console.log(`[EmbeddedWallet] Cancelling transaction: ${txId}`);
+  // DEBUG_TRACE console.log('[EmbeddedWallet] cancelTransaction called: ', deviceId, token);
+  // DEBUG_TRACE console.log(`[EmbeddedWallet] Cancelling transaction: ${txId}`);
 
   if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
     console.error('[EmbeddedWallet] Cannot cancel transaction - Embedded wallet SDK is not initialized');
@@ -301,9 +301,9 @@ export const cancelTransaction = async (
   }
 
   try {
-    console.log(`[EmbeddedWallet] Sending cancel request for transaction: ${txId}`);
+    // DEBUG_TRACE console.log(`[EmbeddedWallet] Sending cancel request for transaction: ${txId}`);
     await rootStore.fireblocksSDKStore.fireblocksEW.cancelTransaction(txId);
-    console.log(`[EmbeddedWallet] Transaction ${txId} cancelled successfully`);
+    // DEBUG_TRACE console.log(`[EmbeddedWallet] Transaction ${txId} cancelled successfully`);
   } catch (error) {
     console.error(`[EmbeddedWallet] Error cancelling transaction ${txId}:`, error);
     throw error;
