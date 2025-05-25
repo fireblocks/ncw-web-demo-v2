@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { CreateNcwConnectionRequestFeeLevelEnum } from '@fireblocks/ts-sdk/models/create-ncw-connection-request.ts';
 import { Dialog, TextInput, ActionButton, styled } from '@foundation';
 import { Button } from '@mui/material';
 import { useStores } from '@store';
@@ -9,7 +10,6 @@ import { Connection } from '../Web3List';
 import { preloadAllImages, failedUrlsCache } from '../Web3ListItem';
 import { mapSessionDTOToConnection } from '../mappers';
 import { ConnectionConfirmation } from './ConnectionConfirmation';
-import { CreateNcwConnectionRequestFeeLevelEnum } from '@fireblocks/ts-sdk/models/create-ncw-connection-request.ts';
 
 const FormContainerStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(3),

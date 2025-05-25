@@ -1,4 +1,9 @@
-import { TPassphraseLocation, getDeviceIdFromLocalStorage, saveDeviceIdToLocalStorage, generateNewDeviceId } from '@api';
+import {
+  TPassphraseLocation,
+  getDeviceIdFromLocalStorage,
+  saveDeviceIdToLocalStorage,
+  generateNewDeviceId,
+} from '@api';
 import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
 import { RootStore, useFireblocksSDKStore } from '@store';
 import { encode } from 'js-base64';
@@ -251,9 +256,7 @@ export class AuthStore {
 
       // Set status to READY when we have a successful response
       if (response instanceof Set && response.size > 0) {
-        const allItemsHaveKeyId = Array.from(response).every(
-          (item) => item.keyStatus === 'READY' && item.keyId !== '',
-        );
+        const allItemsHaveKeyId = Array.from(response).every((item) => item.keyStatus === 'READY' && item.keyId !== '');
 
         if (allItemsHaveKeyId) {
           console.log('[Auth] Setting status to READY after successful join wallet');

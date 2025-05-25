@@ -72,11 +72,7 @@ export const DeviceInfo: React.FC<IDeviceInfoProps> = ({ decodedData, addDevice,
             <CircularProgress size={24} color="primary" />
           </div>
         ) : (
-          <BlueButton
-            caption={t('SETTINGS.DIALOGS.ADD_DEVICE.APPROVE_DEVICE')}
-            onClick={addDevice}
-            isDialog={true}
-          />
+          <BlueButton caption={t('SETTINGS.DIALOGS.ADD_DEVICE.APPROVE_DEVICE')} onClick={addDevice} isDialog={true} />
         )}
       </div>
     </ParametersStyled>

@@ -151,7 +151,12 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
 
               {/* Phase 1: Device Info */}
               {phase === 1 && decodedData && (
-                <DeviceInfo decodedData={decodedData} addDevice={addDevice} onCancel={resetBeforeClose} isLoading={isLoading} />
+                <DeviceInfo
+                  decodedData={decodedData}
+                  addDevice={addDevice}
+                  onCancel={resetBeforeClose}
+                  isLoading={isLoading}
+                />
               )}
 
               {/* Phase 2: Success */}

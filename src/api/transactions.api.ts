@@ -95,11 +95,7 @@ export const TX_POLL_INTERVAL = 5000;
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export const getTransactions = async (
-  deviceId: string,
-  startDate: number,
-  token: string,
-): Promise<Response> => {
+export const getTransactions = async (deviceId: string, startDate: number, token: string): Promise<Response> => {
   const response = await getCall(
     `api/devices/${deviceId}/transactions?poll=true&startDate=${startDate.toString()}&details=true`,
     token,
@@ -116,11 +112,7 @@ export const createTransaction = async (
   return createTxResponse;
 };
 
-export const cancelTransaction = async (
-  deviceId: string,
-  token: string,
-  txId: string,
-): Promise<void> => {
+export const cancelTransaction = async (deviceId: string, token: string, txId: string): Promise<void> => {
   const response = await postCall(`api/devices/${deviceId}/transactions/${txId}/cancel`, token);
   return response;
 };

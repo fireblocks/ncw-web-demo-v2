@@ -158,7 +158,9 @@ export class IndexedDBLogger implements ILogger {
       if (this._dbInstance.version === 0) {
         console.warn('IndexedDB connection is closed');
         // Try to reinitialize the database
-        this._initializeDB().catch(err => console.error('Failed to reinitialize IndexedDB', err));
+        this._initializeDB().catch((err) => {
+          console.error('Failed to reinitialize IndexedDB', err);
+        });
         // Fall back to console logging
         console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
         return;
@@ -184,9 +186,11 @@ export class IndexedDBLogger implements ILogger {
         };
       } catch (transactionError) {
         // Handle the specific case when the database connection is closing
-        if (transactionError instanceof DOMException && 
-            (transactionError.name === 'InvalidStateError' || 
-             transactionError.message.includes('database connection is closing'))) {
+        if (
+          transactionError instanceof DOMException &&
+          (transactionError.name === 'InvalidStateError' ||
+            transactionError.message.includes('database connection is closing'))
+        ) {
           console.warn('IndexedDB connection is closing, cannot create transaction');
           // Try to reinitialize the database on next operation
           this._dbInstance = null;

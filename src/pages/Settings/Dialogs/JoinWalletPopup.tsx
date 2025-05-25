@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { CopyText, Dialog, Typography, styled, LoadingPage } from '@foundation';
 import { useAuthStore, useUserStore } from '@store';
+import { encode } from 'js-base64';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
-import { encode } from 'js-base64';
 
 const RootStyled = styled('div')(({ theme }) => ({
   padding: theme.spacing(7, 5),
@@ -110,7 +110,9 @@ export const JoinWalletDialog: React.FC<IProps> = observer(function JoinWalletDi
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+    };
   }, [isOpen, onClose]);
 
   const cancelJoin = () => {

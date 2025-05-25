@@ -1,6 +1,6 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import IconCloud from '@icons/cloud.svg';
+import { useTranslation } from 'react-i18next';
 import { ActionPlate } from '../ActionPlate';
 import { RootStyled, SkipButtonWrapperStyled, ButtonDarkStyledSpecial } from './styles';
 

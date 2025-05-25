@@ -23,14 +23,14 @@ interface ISelectionPhaseProps {
   onScanError?: () => void;
 }
 
-export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({ 
-  onSelectQrScan, 
-  requestId, 
-  setRequestId, 
+export const SelectionPhase: React.FC<ISelectionPhaseProps> = ({
+  onSelectQrScan,
+  requestId,
+  setRequestId,
   handleCheckRequestId,
   isQrScannerActive,
   toggleQrScanner,
-  onScanError
+  onScanError,
 }) => {
   const { t } = useTranslation();
 

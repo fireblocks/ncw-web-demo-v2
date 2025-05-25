@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { CreateNcwConnectionRequestFeeLevelEnum } from '@fireblocks/ts-sdk/models/create-ncw-connection-request.ts';
 import { LoadingPage, Typography, styled } from '@foundation';
 import { useStores } from '@store';
 import { ENV_CONFIG } from 'env_config';
@@ -12,7 +13,6 @@ import { DAppDetailsDialog } from './DAppDetailsDialog/DAppDetailsDialog';
 import { Connection, Web3List } from './Web3List';
 import { preloadAllImages } from './Web3ListItem';
 import { mapSessionDTOsToConnections, mapSessionDTOToConnection } from './mappers';
-import { CreateNcwConnectionRequestFeeLevelEnum } from '@fireblocks/ts-sdk/models/create-ncw-connection-request.ts';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -247,11 +247,7 @@ export const Web3Page: React.FC = observer(() => {
               {t('WEB3.TITLE')}
             </Typography>
             <AmountsStyled>
-              <HeadingAmount
-                title="DAPPS"
-                titleColor="text.secondary"
-                value={connections.length.toString()}
-              />
+              <HeadingAmount title="DAPPS" titleColor="text.secondary" value={connections.length.toString()} />
             </AmountsStyled>
           </HeadingStyled>
           <Web3List

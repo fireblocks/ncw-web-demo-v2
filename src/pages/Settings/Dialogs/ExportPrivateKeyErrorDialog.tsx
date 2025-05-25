@@ -68,7 +68,7 @@ export const ExportPrivateKeyErrorDialog: React.FC<IProps> = observer(function E
           <img src={IconCloseIcon} alt="error" width="48px" height="48px" />
         </IconContainerStyled>
         <CenteredTextContainerStyled>
-          <Typography variant="body1" color="text.primary" align="center" sx={{ fontSize: '18px'}}>
+          <Typography variant="body1" color="text.primary" align="center" sx={{ fontSize: '18px' }}>
             We couldn't create a key backup
           </Typography>
         </CenteredTextContainerStyled>

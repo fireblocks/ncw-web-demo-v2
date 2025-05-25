@@ -1,8 +1,8 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import IconWallet from '@icons/join_existing_wallet.svg';
-import IconRecovery from '@icons/recover.svg';
 import IconKey from '@icons/key.svg';
+import IconRecovery from '@icons/recover.svg';
+import { useTranslation } from 'react-i18next';
 import { ActionPlate } from '../ActionPlate';
 import { RootStyled } from './styles';
 

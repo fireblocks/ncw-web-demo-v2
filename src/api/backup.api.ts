@@ -29,10 +29,7 @@ export interface IPassphrase {
   passphraseId: string;
 }
 
-export const getLatestBackup = async (
-  walletId: string,
-  token: string,
-): Promise<IBackupInfo | null> => {
+export const getLatestBackup = async (walletId: string, token: string): Promise<IBackupInfo | null> => {
   const response = await getCall(`api/wallets/${walletId}/backup/latest`, token);
   if (response.status >= 200 && response.status < 300) {
     return response.json();
@@ -51,18 +48,12 @@ export const getPassphraseInfo = async (
   return response.json();
 };
 
-export const getPassphraseInfos = async (
-  token: string,
-): Promise<{ passphrases: IPassphraseInfo[] }> => {
+export const getPassphraseInfos = async (token: string): Promise<{ passphrases: IPassphraseInfo[] }> => {
   const response = await getCall(`api/passphrase/`, token);
   return response.json();
 };
 
-export const createPassphraseInfo = async (
-  passphraseId: string,
-  location: TPassphraseLocation,
-  token: string,
-) => {
+export const createPassphraseInfo = async (passphraseId: string, location: TPassphraseLocation, token: string) => {
   const response = await postCall(`api/passphrase/${passphraseId}`, token, { location });
   return response;
 };

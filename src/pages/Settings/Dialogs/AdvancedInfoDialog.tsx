@@ -27,12 +27,7 @@ export const AdvancedInfoDialog: React.FC<IProps> = observer(function AdvancedIn
   const fireblocksSDKStore = useFireblocksSDKStore();
 
   return (
-    <Dialog
-      title={t('SETTINGS.DIALOGS.ADVANCED_INFO.TITLE')}
-      isOpen={isOpen}
-      onClose={onClose}
-      size="small"
-    >
+    <Dialog title={t('SETTINGS.DIALOGS.ADVANCED_INFO.TITLE')} isOpen={isOpen} onClose={onClose} size="small">
       <DataBlockStyled>
         <Typography variant="h6" color="text.secondary">
           {t('SETTINGS.DIALOGS.ADVANCED_INFO.USER_NAME')}

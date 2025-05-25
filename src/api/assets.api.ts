@@ -1,6 +1,6 @@
 import { RootStore } from '@store';
-import { getCall, postCall } from './utils.api';
 import { ENV_CONFIG } from '../env_config.ts';
+import { getCall, postCall } from './utils.api';
 
 export interface IAssetDTO {
   id: string;
@@ -80,11 +80,7 @@ export const getAsset = async (
   return response.json();
 };
 
-export const getAssets = async (
-  deviceId: string,
-  accountId: number,
-  token: string,
-): Promise<IAssetDTO[]> => {
+export const getAssets = async (deviceId: string, accountId: number, token: string): Promise<IAssetDTO[]> => {
   const response = await getCall(`api/devices/${deviceId}/accounts/${accountId.toString()}/assets`, token);
   return response.json();
 };
@@ -99,11 +95,7 @@ export const getAssetsSummary = async (
   return Object.values(assetsMap);
 };
 
-export const getSupportedAssets = async (
-  deviceId: string,
-  accountId: number,
-  token: string,
-): Promise<IAssetDTO[]> => {
+export const getSupportedAssets = async (deviceId: string, accountId: number, token: string): Promise<IAssetDTO[]> => {
   const response = await getCall(
     `api/devices/${deviceId}/accounts/${accountId.toString()}/assets/supported_assets`,
     token,
@@ -288,4 +280,3 @@ const coinsUsdRate = [
   { symbol: 'ETC', price: 37.0979 },
   { symbol: 'DAI', price: 1.0003 },
 ];
-

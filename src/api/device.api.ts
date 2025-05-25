@@ -34,10 +34,7 @@ export const generateNewDeviceId = (userId: string) => {
   return uuid;
 };
 
-export const assignDeviceToNewWallet = async (
-  deviceId: string,
-  token: string,
-): Promise<string> => {
+export const assignDeviceToNewWallet = async (deviceId: string, token: string): Promise<string> => {
   const response = await postCall(`api/devices/${deviceId}/assign`, token);
   return response.walletId;
 };

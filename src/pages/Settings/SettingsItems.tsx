@@ -4,8 +4,8 @@ import IconGoogle from '@icons/google.svg';
 import IconInfo from '@icons/info.svg';
 import IconKey from '@icons/key.svg';
 import IconWallet from '@icons/new-wallet.svg';
-import IconLogs from '@icons/share_logs.svg';
 import IconRecoverWallet from '@icons/setting-recover-wallet.svg';
+import IconLogs from '@icons/share_logs.svg';
 import { useAssetsStore, useAuthStore, useBackupStore, useFireblocksSDKStore } from '@store';
 import { decode } from 'js-base64';
 import { observer } from 'mobx-react';
@@ -97,7 +97,6 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
           }}
         />
       )}
-
 
       <ActionPlate
         iconSrc={IconLogs}
