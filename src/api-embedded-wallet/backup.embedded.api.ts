@@ -12,9 +12,7 @@ export const getLatestBackup = async (
   rootStore: RootStore | null = null,
 ): Promise<IBackupInfo | null> => {
   try {
-    console.log('[EmbeddedWalletSDK] Getting latest backup: ', walletId, token);
     const response = await rootStore?.fireblocksSDKStore?.fireblocksEW?.getLatestBackup();
-    console.log('[EmbeddedWalletSDK] Latest backup: ', response);
     if (response) {
       return {
         passphraseId: response?.passphraseId,

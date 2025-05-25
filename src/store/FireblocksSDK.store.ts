@@ -226,7 +226,6 @@ export class FireblocksSDKStore {
         }
         return Promise.resolve(password || '');
       });
-      // this.setLogger(logger);
       this.logger = await IndexedDBLoggerFactory({ deviceId, logger: ConsoleLoggerFactory() });
 
       // Add a small delay to ensure the database connection is fully established
@@ -243,8 +242,6 @@ export class FireblocksSDKStore {
       if (sdkIns) {
         this.setSDKInstance(sdkIns);
       }
-
-      // const txSubscriber = await TransactionSubscriberService.initialize(this.fireblocksEW);
 
       this.setUnsubscribeTransactionsPolling(
         this._rootStore.transactionsStore.listenToTransactions((transaction: ITransactionDTO) => {

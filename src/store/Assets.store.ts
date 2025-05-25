@@ -329,10 +329,6 @@ export class AssetsStore {
   }
 
   private _doRefreshBalances(): void {
-    //   timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
-    //   isGettingBalances: this.isGettingBalances
-    // });
-
     this.setIsGettingBalances(true);
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
@@ -360,10 +356,6 @@ export class AssetsStore {
    * Uses debouncing to prevent too frequent API calls
    */
   public refreshBalances(): void {
-    //   timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
-    //   isGettingBalances: this.isGettingBalances
-    // });
-
     // Only allow refresh if at least 5 seconds have passed since last refresh
     const now = Date.now();
     if (now - this._lastRefreshTime >= 5000) {
@@ -401,12 +393,6 @@ export class AssetsStore {
       let accountId = this._rootStore.accountsStore.currentAccount?.accountId;
       const accessToken = this._rootStore.userStore.accessToken;
 
-      //   deviceId,
-      //   accountId,
-      //   hasAccessToken: !!accessToken,
-      //   accountStoreInitialized: !!this._rootStore.accountsStore
-      // });
-
       // If accountId is missing but we have deviceId and accessToken, try to initialize accounts
       if (!accountId && deviceId && accessToken && this._rootStore.accountsStore) {
         await this._rootStore.accountsStore.init();
@@ -419,11 +405,6 @@ export class AssetsStore {
         const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken, this._rootStore);
         this.setMyAssets(assetsSummary);
       } else {
-        //   deviceId: !!deviceId,
-        //   accountId: accountId, // Show actual value to debug
-        //   accessToken: !!accessToken,
-        // });
-
         this.setIsLoading(false);
       }
     } catch (error) {

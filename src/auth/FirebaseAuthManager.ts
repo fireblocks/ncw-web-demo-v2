@@ -28,7 +28,6 @@ export class FirebaseAuthManager implements IAuthManager {
   public async getGoogleDriveCredentials() {
     const provider = getUserGoogleDriveProvider(this._auth.currentUser!.email!);
     const result = await signInWithPopup(this._auth, provider);
-    // TODO: persist credential from original firebase login
     const credential = GoogleAuthProvider.credentialFromResult(result);
     const token = credential?.accessToken;
     if (!token) {
