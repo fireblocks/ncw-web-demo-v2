@@ -137,7 +137,6 @@ export class FireblocksSDKStore {
     this.setSDKInstance(null);
     this.setSDKStatus('initializing_sdk');
 
-    // DEBUG_TRACE console.log('initEmbeddedWalletProcess: initializing_sdk');
     try {
       const deviceId = this._rootStore.deviceStore.deviceId ?? '';
 
@@ -163,7 +162,6 @@ export class FireblocksSDKStore {
       };
       this.fireblocksEW = new EmbeddedWallet(ewOpts);
 
-      // DEBUG_TRACE console.log('DeviceId: ', deviceId);
       if (!deviceId) {
         this._rootStore.userStore.getMyDevices(); // todo: we should initialize the sdk core first, but it also want deviceId
         this._rootStore.userStore.setIsGettingUser(false);
@@ -193,28 +191,23 @@ export class FireblocksSDKStore {
               const _keysStatus: Record<TMPCAlgorithm, IKeyDescriptor> =
                 this.keysStatus ?? ({} as Record<TMPCAlgorithm, IKeyDescriptor>);
               _keysStatus[event.keyDescriptor.algorithm] = event.keyDescriptor;
-              // DEBUG_TRACE console.log(`Key status: ${JSON.stringify(_keysStatus)}`);
               this.setKeysStatus(_keysStatus);
               break;
             case 'transaction_signature_changed':
-              // DEBUG_TRACE console.log(`Transaction signature status: ${event.transactionSignature.transactionSignatureStatus}`);
               this._rootStore.transactionsStore
                 .getTransactionById(event.transactionSignature.txId)
                 ?.updateSignatureStatus(event.transactionSignature.transactionSignatureStatus);
               break;
             case 'keys_backup':
-              // DEBUG_TRACE console.log(`Key backup status: ${JSON.stringify(event.keysBackup)}`);
               this.setKeysBackupStatus(JSON.stringify(event.keysBackup));
               this._rootStore.backupStore.getMyLatestBackup().catch((error) => {
                 console.error('[EmbeddedWalletSDK] Error getting latest backup:', error);
               });
               break;
             case 'keys_recovery':
-              // DEBUG_TRACE console.log(`Key recover status: ${JSON.stringify(event.keyDescriptor)}`);
               this.setKeysRecoveryStatus(JSON.stringify(event.keyDescriptor));
               break;
             case 'join_wallet_descriptor':
-              // DEBUG_TRACE console.log(`join wallet event: ${JSON.stringify(event.joinWalletDescriptor)}`);
               if (event.joinWalletDescriptor?.requestId) {
                 this._rootStore.authStore.setCapturedRequestId(event.joinWalletDescriptor?.requestId);
               }
@@ -233,8 +226,6 @@ export class FireblocksSDKStore {
         }
         return Promise.resolve(password || '');
       });
-      // DEBUG_TRACE console.log('embedded wallet set logger: ', secureStorageProvider);
-
       // this.setLogger(logger);
       this.logger = await IndexedDBLoggerFactory({ deviceId, logger: ConsoleLoggerFactory() });
 
@@ -263,14 +254,12 @@ export class FireblocksSDKStore {
 
       if (this.sdkInstance) {
         const keyStatus = await this.sdkInstance.getKeysStatus();
-        // DEBUG_TRACE console.log('embedded wallet keysStatus: ', keyStatus);
         if (Object.keys(keyStatus).length > 0) {
           this.setKeysStatus(keyStatus);
           this.setSDKStatus('sdk_available');
         }
         this.setIsMPCGenerating(false);
       }
-      // DEBUG_TRACE console.log('sdk_available');
       this.setSDKStatus('sdk_available');
     } catch (error: any) {
       this.setIsMPCGenerating(false);
@@ -289,7 +278,6 @@ export class FireblocksSDKStore {
     this.setSDKInstance(null);
     this.setSDKStatus('initializing_sdk');
 
-    // DEBUG_TRACE console.log('initWithProxyBackendProcess: initializing_sdk');
     try {
       const messagesHandler: IMessagesHandler = {
         handleOutgoingMessage: (message: string) => {
@@ -396,7 +384,6 @@ export class FireblocksSDKStore {
    */
   @action
   public async init() {
-    // DEBUG_TRACE console.log('ENV_CONFIG.USE_EMBEDDED_WALLET_SDK: ', ENV_CONFIG.USE_EMBEDDED_WALLET_SDK);
     if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
       await this.initEmbeddedWalletProcess();
     } else {
@@ -457,7 +444,6 @@ export class FireblocksSDKStore {
     } else {
       await this.checkMPCKeys();
       if (this.isMPCReady) {
-        // DEBUG_TRACE console.log('MPC keys are already generated');
         return;
       }
       this.setIsMPCReady(false);
@@ -466,7 +452,6 @@ export class FireblocksSDKStore {
       try {
         const started = Date.now();
         await this.sdkInstance.generateMPCKeys(ALGORITHMS);
-        // DEBUG_TRACE console.log(`took ${Date.now() - started} ms to generate keys`);
         this.setIsMPCReady(true);
 
         // Update keysStatus after generating MPC keys
@@ -503,9 +488,7 @@ export class FireblocksSDKStore {
       const secP256K1Status = keysStatus.MPC_CMP_ECDSA_SECP256K1?.keyStatus ?? null;
       const ed25519Status = keysStatus.MPC_CMP_EDDSA_ED25519?.keyStatus ?? null;
 
-      // DEBUG_TRACE console.log('key status: ', { secP256K1Status, ed25519Status });
       if (secP256K1Status === 'READY' || ed25519Status === 'READY') {
-        // DEBUG_TRACE console.log('keys were already generated');
         this.setIsMPCReady(true);
       } else {
         this.setIsMPCReady(false);

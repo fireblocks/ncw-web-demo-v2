@@ -31,7 +31,6 @@ export class DeviceStore {
    */
   @action
   public init(): void {
-    // DEBUG_TRACE console.log('Device Store: device store init');
     this.deviceId = getDeviceIdFromLocalStorage(this._rootStore.userStore.userId) || '';
   }
 
@@ -41,7 +40,6 @@ export class DeviceStore {
    */
   @action
   public setDeviceId(deviceId: string): void {
-    // DEBUG_TRACE console.log('Device Store: setDeviceId: ', deviceId);
     this.deviceId = deviceId;
   }
 
@@ -51,7 +49,6 @@ export class DeviceStore {
    */
   @action
   public setWalletId(walletId: string): void {
-    // DEBUG_TRACE console.log('Device Store: setWalletId: ', walletId);
     this.walletId = walletId;
   }
 
@@ -61,7 +58,6 @@ export class DeviceStore {
    */
   @action
   public generateNewDeviceId(): void {
-    // DEBUG_TRACE console.log('Device Store: generateNewDeviceId');
     this.deviceId = generateNewDeviceId(this._rootStore.userStore.userId);
   }
 
@@ -74,8 +70,6 @@ export class DeviceStore {
   public async assignDeviceToNewWallet(): Promise<void> {
     const deviceId = this.deviceId;
     const accessToken = this._rootStore.userStore.accessToken;
-    // DEBUG_TRACE console.log('Device Store: assignDeviceToNewWallet: ', this.deviceId, accessToken);
-
     if (deviceId && accessToken) {
       try {
         // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend

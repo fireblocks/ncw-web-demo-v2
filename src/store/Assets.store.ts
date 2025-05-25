@@ -131,8 +131,6 @@ export class AssetsStore {
     const balance = this.myAssets.reduce((acc, a) => {
       // Use top100Cryptos to get the price instead of a.assetData.rate
       const rate = this.getAssetPriceFromTop100Cryptos(a);
-      // DEBUG_TRACE console.log('Asset:', a.symbol, 'Price from top100Cryptos:', rate, 'Balance:', a.totalBalance);
-
       const total = Number(a.totalBalance > 0 ? a.totalBalance * rate : 0);
       return acc + total;
     }, 0);
@@ -223,8 +221,6 @@ export class AssetsStore {
 
     // Replace the assets array with the updated one
     this.myAssets = updatedAssets;
-
-    // DEBUG_TRACE console.log(`[AssetsStore] Updated assets: ${updatedAssets.length} total assets`);
   }
 
   /**
@@ -238,7 +234,6 @@ export class AssetsStore {
       await this.getMyAssets();
       await this.getSupported();
     } catch (error: any) {
-      // DEBUG_TRACE console.error('Error initializing assets:', error);
       this.setError(error.message);
     } finally {
       this.setIsLoading(false);
@@ -328,14 +323,12 @@ export class AssetsStore {
         address: addressDTO || null,
       });
     } catch (error: any) {
-      // DEBUG_TRACE console.error('Error adding asset:', error);
       this.setError(error.message);
       throw error;
     }
   }
 
   private _doRefreshBalances(): void {
-    // DEBUG_TRACE console.log('[AssetsStore] Starting balance refresh', {
     //   timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
     //   isGettingBalances: this.isGettingBalances
     // });
@@ -349,15 +342,10 @@ export class AssetsStore {
       // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       getAssetsSummary(deviceId, accountId, accessToken, this._rootStore)
         .then((assetsSummary) => {
-          // DEBUG_TRACE console.log('[AssetsStore] Balance refresh completed successfully');
-
           // Use setMyAssets to properly handle updates and new assets
           this.setMyAssets(assetsSummary);
-
-          // DEBUG_TRACE console.log(`[AssetsStore] Refreshed ${assetsSummary.length} assets`);
         })
         .catch((e) => {
-          // DEBUG_TRACE console.error('[AssetsStore] Balance refresh failed:', e);
           this.setError(e.message);
         })
         .finally(() => {
@@ -372,7 +360,6 @@ export class AssetsStore {
    * Uses debouncing to prevent too frequent API calls
    */
   public refreshBalances(): void {
-    // DEBUG_TRACE console.log('[AssetsStore] refreshBalances called', {
     //   timeSinceLastRefresh: Date.now() - this._lastRefreshTime,
     //   isGettingBalances: this.isGettingBalances
     // });
@@ -383,7 +370,6 @@ export class AssetsStore {
       this._doRefreshBalances();
     } else {
       // If less than 5 seconds have passed, schedule a debounced refresh
-      // DEBUG_TRACE console.log('[AssetsStore] Scheduling debounced refresh');
       this._refreshDebounced();
     }
   }
@@ -415,7 +401,6 @@ export class AssetsStore {
       let accountId = this._rootStore.accountsStore.currentAccount?.accountId;
       const accessToken = this._rootStore.userStore.accessToken;
 
-      // DEBUG_TRACE console.log('getMyAssets - Debug Info:', {
       //   deviceId,
       //   accountId,
       //   hasAccessToken: !!accessToken,
@@ -424,20 +409,16 @@ export class AssetsStore {
 
       // If accountId is missing but we have deviceId and accessToken, try to initialize accounts
       if (!accountId && deviceId && accessToken && this._rootStore.accountsStore) {
-        // DEBUG_TRACE console.log('Attempting to initialize account before fetching assets...');
         await this._rootStore.accountsStore.init();
         // Get the accountId again after initialization
         accountId = this._rootStore.accountsStore.currentAccount?.accountId;
-        // DEBUG_TRACE console.log('After account initialization, accountId:', accountId);
       }
 
       if (deviceId && accountId !== undefined && accessToken) {
-        // DEBUG_TRACE console.log('Fetching assets with deviceId, accountId, and accessToken');
         // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         const assetsSummary = await getAssetsSummary(deviceId, accountId, accessToken, this._rootStore);
         this.setMyAssets(assetsSummary);
       } else {
-        // DEBUG_TRACE console.warn('Cannot get assets - missing required data:', {
         //   deviceId: !!deviceId,
         //   accountId: accountId, // Show actual value to debug
         //   accessToken: !!accessToken,
@@ -446,7 +427,6 @@ export class AssetsStore {
         this.setIsLoading(false);
       }
     } catch (error) {
-      // DEBUG_TRACE console.error('Error in getMyAssets:', error);
       this.setIsLoading(false);
     }
   }

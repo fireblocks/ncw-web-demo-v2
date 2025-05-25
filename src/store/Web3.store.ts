@@ -147,10 +147,8 @@ export class Web3Store {
 
   @action
   public setConnections(connections: SessionDTO[]): void {
-    // DEBUG_TRACE console.log('[Web3Store] Setting connections:', connections);
     this.connections = [];
     this.connections = connections;
-    // DEBUG_TRACE console.log('[Web3Store] Connections set, this.connections:', this.connections);
   }
 
   @action

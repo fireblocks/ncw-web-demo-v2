@@ -155,10 +155,8 @@ export class BackupStore {
   @action
   public async createPassphraseInfo(passphraseId: string, location: TPassphraseLocation): Promise<void> {
     try {
-      // DEBUG_TRACE console.log('createPassphraseInfo action: ', passphraseId, location);
       // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       await createPassphraseInfo(passphraseId, location, this._rootStore.userStore.accessToken, this._rootStore);
-      // DEBUG_TRACE console.log('createPassphraseInfo addPassPhrases: ', passphraseId, location);
       this.addPassPhrases(passphraseId, location);
     } catch (e: any) {
       this.setError(e.message);
@@ -180,14 +178,11 @@ export class BackupStore {
     try {
       const token = await this._rootStore.userStore.getGoogleDriveCredentials();
       await googleDriveBackup(token, passphrase, passphraseId);
-    } catch (e: any) {
-      // DEBUG_TRACE console.log('backupGoogleDrive error: ', e);
-    }
+    } catch (e: any) {}
   }
 
   public async getMyLatestBackup(walletId: string = ''): Promise<IBackupInfo | null> {
     try {
-      // DEBUG_TRACE console.log('get latest backup for walletId: ', walletId, this._rootStore.deviceStore.walletId);
       const walletIdItem = walletId ? walletId : this._rootStore.deviceStore.walletId;
       const latestBackup = await getLatestBackup(
         walletIdItem ?? '',
@@ -195,7 +190,6 @@ export class BackupStore {
         // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         this._rootStore,
       );
-      // DEBUG_TRACE console.log(`latestBackup found (true/false): `, Boolean(latestBackup));
       return latestBackup;
     } catch (e: any) {
       this.setError(e.message);
@@ -245,7 +239,6 @@ export class BackupStore {
 
   public async passphrasePersist(location: TPassphraseLocation): Promise<IPassphrase> {
     if (this.passPhrases === null) {
-      // DEBUG_TRACE console.log('Loading passphrases before proceeding');
       await this.init();
 
       // If passphrases are still null after initialization, then throw an error
