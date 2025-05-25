@@ -34,10 +34,10 @@ module.exports = {
         }
       ],
       "no-console": "warn",
-      "no-unused-vars": ["error", { argsIgnorePattern: "req|res|next|val" }],
+      "no-unused-vars": ["error", { argsIgnorePattern: "^_|req|res|next|val" }],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_|req|res|next|val", "varsIgnorePattern": "^_" }],
       "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
       "@typescript-eslint/no-unnecessary-condition": "warn",

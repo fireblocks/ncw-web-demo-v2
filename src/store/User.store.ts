@@ -93,18 +93,16 @@ export class UserStore {
     if (user) {
       this._authManager
         .getAccessToken()
-        .then(async (token): Promise<void> => {
+        .then((token) => {
           this.setAccessToken(token);
           if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-            // with embedded wallet
+            // direct
             if (this._authManager.loggedUser !== null) {
               const userFirebase = this._authManager.loggedUser;
-              this.setUserId(userFirebase.uid); // this will also initialize the embedded wallet sdk
-              // this.getMyDevices(); // todo: we should initialize the sdk core first, but it also want deviceId
-              // this.setIsGettingUser(false);
+              this.setUserId(userFirebase.uid);
             }
           } else {
-            // with backend proxy
+            // proxy backend
             getUserId(token)
               .then((userId: string) => {
                 this.setUserId(userId);

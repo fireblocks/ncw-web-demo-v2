@@ -213,14 +213,6 @@ export const getAssets = async (
   }
 };
 
-// Add cache for asset summaries
-let assetSummaryCache: {
-  data: IAssetsSummaryDTO[];
-  timestamp: number;
-} | null = null;
-
-const CACHE_DURATION = 30000; // Changed from 5000 to 30000 (30 seconds)
-
 export const getEmbeddedWalletAssetsSummary = async (
   rootStore: RootStore,
   accountId: number,
@@ -273,12 +265,6 @@ export const getEmbeddedWalletAssetsSummary = async (
   });
 
   const summaries = await Promise.all(promises);
-
-  // Update cache
-  assetSummaryCache = {
-    data: summaries,
-    timestamp: Date.now(),
-  };
 
   return summaries;
 };

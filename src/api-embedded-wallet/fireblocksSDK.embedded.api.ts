@@ -5,10 +5,10 @@ export type TFireblocksNCWStatus = 'sdk_not_ready' | 'initializing_sdk' | 'sdk_a
 export type TKeysStatusRecord = Record<TMPCAlgorithm, IKeyDescriptor>;
 
 export const sendMessage = async (
-  deviceId: string,
-  token: string,
-  message: string,
-  rootStore: RootStore | null = null,
+  _deviceId: string,
+  _token: string,
+  _message: string,
+  _rootStore: RootStore | null = null,
 ): Promise<any> => ({
   status: 'ok',
   message: 'ok',

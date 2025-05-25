@@ -155,8 +155,7 @@ export class BackupStore {
   @action
   public async createPassphraseInfo(passphraseId: string, location: TPassphraseLocation): Promise<void> {
     try {
-      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
-      await createPassphraseInfo(passphraseId, location, this._rootStore.userStore.accessToken, this._rootStore);
+      await createPassphraseInfo(passphraseId, location, this._rootStore.userStore.accessToken);
       this.addPassPhrases(passphraseId, location);
     } catch (e: any) {
       this.setError(e.message);

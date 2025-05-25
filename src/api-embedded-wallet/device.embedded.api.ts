@@ -34,8 +34,8 @@ export const generateNewDeviceId = (userId: string) => {
 };
 
 export const assignDeviceToNewWallet = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<string> => {
   try {
@@ -47,7 +47,7 @@ export const assignDeviceToNewWallet = async (
   }
 };
 
-export const getDevices = async (token: string, rootStore: RootStore | null = null): Promise<IDeviceDTO[]> => {
+export const getDevices = async (_token: string, rootStore: RootStore | null = null): Promise<IDeviceDTO[]> => {
   if (rootStore?.deviceStore?.walletId) {
     return new Promise((resolve) => {
       resolve([

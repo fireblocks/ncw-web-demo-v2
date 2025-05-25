@@ -3,6 +3,7 @@ import { User } from 'firebase/auth';
 export interface IUser {
   displayName: string | null;
   email: string | null;
+  uid: string;
 }
 
 export interface IAuthManager {

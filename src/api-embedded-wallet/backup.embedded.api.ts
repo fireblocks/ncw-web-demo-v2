@@ -7,8 +7,8 @@ export type TPassphraseLocation = 'GoogleDrive' | 'iCloud';
 export type TPassphrases = Record<string, IPassphraseInfo>;
 
 export const getLatestBackup = async (
-  walletId: string = '',
-  token: string,
+  _walletId: string = '',
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IBackupInfo | null> => {
   try {
@@ -42,8 +42,8 @@ function determineLocation(passphraseId: string): TPassphraseLocation {
 
 export const getPassphraseInfo = async (
   passphraseId: string,
-  token: string,
-  rootStore: RootStore | null = null,
+  _token: string,
+  _rootStore: RootStore | null = null,
 ): Promise<IPassphraseInfo> => {
   try {
     return Promise.resolve({ passphraseId: passphraseId, location: 'GoogleDrive' });
@@ -55,7 +55,7 @@ export const getPassphraseInfo = async (
 };
 
 export const getPassphraseInfos = async (
-  token: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<{ passphrases: IPassphraseInfo[] } | null> => {
   const passphrases: { passphrases: IPassphraseInfo[] } = {
@@ -77,16 +77,5 @@ export const getPassphraseInfos = async (
   return passphrases;
 };
 
-export const createPassphraseInfo = async (
-  passphraseId: string,
-  location: TPassphraseLocation,
-  token: string,
-  rootStore: RootStore | null = null,
-) => {
-  try {
-    const startWith = location === 'GoogleDrive' ? 'gdrive' : 'icloud';
-    return Promise.resolve({ passphraseId: startWith + passphraseId, location: 'GoogleDrive' });
-  } catch (e) {
-    console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);
-  }
-};
+export const createPassphraseInfo = async (passphraseId: string, location: TPassphraseLocation, _token: string) =>
+  Promise.resolve({ passphraseId, location });

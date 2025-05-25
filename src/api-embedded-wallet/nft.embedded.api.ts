@@ -6,14 +6,14 @@ import { CollectionOwnership, Token, TokenWithBalance } from 'fireblocks-sdk';
  * Retrieves all NFT tokens owned by the user.
  * @param deviceId - The ID of the device
  * @param accountId - The ID of the account
- * @param token - Authentication token
+ * @param _token - Authentication token
  * @param rootStore - The root store instance containing the Fireblocks SDK
  * @returns Promise resolving to an array of TokenWithBalance objects
  */
 export const getNFTTokens = async (
   deviceId: string,
   accountId: number,
-  token: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<TokenWithBalance[]> => {
   try {
@@ -68,14 +68,14 @@ export const getNFTTokens = async (
 
 /**
  * Retrieves all NFT collections owned by the user.
- * @param deviceId - The ID of the device
- * @param token - Authentication token
+ * @param _deviceId - The ID of the device
+ * @param _token - Authentication token
  * @param rootStore - The root store instance containing the Fireblocks SDK
  * @returns Promise resolving to an array of CollectionOwnership objects
  */
 export const getNFTCollections = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<CollectionOwnership[]> => {
   try {
@@ -108,14 +108,14 @@ export const getNFTCollections = async (
 
 /**
  * Retrieves all NFT assets owned by the user.
- * @param deviceId - The ID of the device
- * @param token - Authentication token
+ * @param _deviceId - The ID of the device
+ * @param _token - Authentication token
  * @param rootStore - The root store instance containing the Fireblocks SDK
  * @returns Promise resolving to an array of Token objects
  */
 export const getNFTAssets = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<Token[]> => {
   try {
@@ -159,14 +159,14 @@ export const getNFTAssets = async (
 /**
  * Retrieves a single NFT asset by its ID.
  * @param assetId - The ID of the NFT to retrieve
- * @param token - Authentication token
+ * @param _token - Authentication token
  * @param rootStore - The root store instance containing the Fireblocks SDK
  * @returns Promise resolving to a Token object
  * @throws Error if the SDK is not initialized or if the NFT is not found
  */
 export const getSingleNFTAsset = async (
   assetId: string,
-  token: string,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<Token> => {
   if (!rootStore?.fireblocksSDKStore?.fireblocksEW) {

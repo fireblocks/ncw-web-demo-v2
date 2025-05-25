@@ -1,4 +1,3 @@
-import { RootStore } from '@store';
 import { postCall } from './utils.api';
 
 export const getUserId = async (token: string): Promise<string> => {

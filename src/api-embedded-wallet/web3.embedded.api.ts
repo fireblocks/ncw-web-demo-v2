@@ -4,15 +4,15 @@ import { RootStore } from '@store';
 
 /**
  * Retrieves all Web3 connections for the user.
- * @param deviceId - The ID of the device
- * @param token - Authentication token
+ * @param _deviceId - The ID of the device
+ * @param _token - Authentication token
  * @param payload - Optional parameters for filtering connections
  * @param rootStore - The root store instance containing the Fireblocks SDK
  * @returns Promise resolving to an array of SessionDTO objects
  */
 export const getWeb3Connections = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   payload?: IWeb3ConnectionsApiGetRequest,
   rootStore: RootStore | null = null,
 ): Promise<SessionDTO[]> => {
@@ -30,15 +30,15 @@ export const getWeb3Connections = async (
 
 /**
  * Creates a new Web3 connection.
- * @param deviceId - The ID of the device
- * @param token - Authentication token
+ * @param _deviceId - The ID of the device
+ * @param _token - Authentication token
  * @param payload - The connection request payload
  * @param rootStore - The root store instance containing the Fireblocks SDK
  * @returns Promise resolving to the created connection response
  */
 export const createWeb3Connection = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   payload: ICreateNcwConnectionRequest,
   rootStore: RootStore | null = null,
 ) => {
@@ -56,16 +56,16 @@ export const createWeb3Connection = async (
 
 /**
  * Submits a response to a Web3 connection request.
- * @param deviceId - The ID of the device
- * @param token - Authentication token
+ * @param _deviceId - The ID of the device
+ * @param _token - Authentication token
  * @param id - The ID of the connection request
  * @param payload - The response payload
  * @param rootStore - The root store instance containing the Fireblocks SDK
  * @returns Promise resolving when the response is submitted
  */
 export const submitWeb3Connection = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   id: string,
   payload: RespondToConnectionRequest,
   rootStore: RootStore | null = null,
@@ -83,15 +83,15 @@ export const submitWeb3Connection = async (
 
 /**
  * Removes a Web3 connection.
- * @param deviceId - The ID of the device
- * @param token - Authentication token
+ * @param _deviceId - The ID of the device
+ * @param _token - Authentication token
  * @param id - The ID of the connection to remove
  * @param rootStore - The root store instance containing the Fireblocks SDK
  * @returns Promise resolving when the connection is removed
  */
 export const removeWeb3Connection = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   id: string,
   rootStore: RootStore | null = null,
 ): Promise<void> => {

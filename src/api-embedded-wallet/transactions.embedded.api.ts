@@ -160,9 +160,9 @@ export const fetchTransactionsAllPages = async (
 };
 
 export const getTransactions = async (
-  deviceId: string,
-  startDate: number,
-  token: string,
+  _deviceId: string,
+  _startDate: number,
+  _token: string,
   rootStore: RootStore | null = null,
 ): Promise<ITransactionDTO[]> => {
   if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
@@ -204,8 +204,8 @@ export const getTransactions = async (
 };
 
 export const createTransaction = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   dataToSend?: INewTransactionDTO,
   rootStore: RootStore | null = null,
 ): Promise<ITransactionDTO> => {
@@ -267,8 +267,8 @@ export const createTransaction = async (
 };
 
 export const cancelTransaction = async (
-  deviceId: string,
-  token: string,
+  _deviceId: string,
+  _token: string,
   txId: string,
   rootStore: RootStore | null = null,
 ): Promise<any> => {
