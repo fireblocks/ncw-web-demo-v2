@@ -189,8 +189,7 @@ export class BackupStore {
 
   public async getMyLatestBackup(walletId: string = ''): Promise<IBackupInfo | null> {
     try {
-      console.log('@@@@@@@ getMyLatestBackup walletId: ', walletId, this._rootStore.deviceStore.walletId);
-      console.log('@@@@@@@ getMyLatestBackup this._rootStore.userStore.accessToken: ', walletId);
+      console.log('get latest backup for walletId: ', walletId, this._rootStore.deviceStore.walletId);
       const walletIdItem = walletId ? walletId : this._rootStore.deviceStore.walletId;
       const latestBackup = await getLatestBackup(
         walletIdItem ?? '',
@@ -198,7 +197,7 @@ export class BackupStore {
         // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         this._rootStore,
       );
-      console.log('@@@@@@@ latestBackup: ', latestBackup);
+      console.log(`latestBackup found (true/false): `, Boolean(latestBackup));
       return latestBackup;
     } catch (e: any) {
       this.setError(e.message);
@@ -291,8 +290,6 @@ export class BackupStore {
   public async recoverPassphraseId(passphraseId: string): Promise<string> {
     // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
     const { passphrases } = await getPassphraseInfos(this._rootStore.userStore.accessToken, this._rootStore);
-
-    console.log('@@@@@@@ recoverPassphraseId passphrases: ', passphrases);
 
     if (passphrases === null) {
       throw new Error();

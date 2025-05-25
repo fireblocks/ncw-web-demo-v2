@@ -481,7 +481,7 @@ export class FireblocksSDKStore {
     } else {
       await this.checkMPCKeys();
       if (this.isMPCReady) {
-        console.log('// @@@ DEBUGS: MPC keys are already generated');
+        console.log('MPC keys are already generated');
         return;
       }
       this.setIsMPCReady(false);
@@ -490,7 +490,7 @@ export class FireblocksSDKStore {
       try {
         const started = Date.now();
         await this.sdkInstance.generateMPCKeys(ALGORITHMS);
-        console.log(`// @@@ DEBUGS: took ${Date.now() - started}ms to generate keys`);
+        console.log(`took ${Date.now() - started} ms to generate keys`);
         this.setIsMPCReady(true);
 
         // Update keysStatus after generating MPC keys
@@ -527,10 +527,9 @@ export class FireblocksSDKStore {
       const secP256K1Status = keysStatus.MPC_CMP_ECDSA_SECP256K1?.keyStatus ?? null;
       const ed25519Status = keysStatus.MPC_CMP_EDDSA_ED25519?.keyStatus ?? null;
 
-      console.log('// @@@ DEBUGS: MPC keys status secP256K1Status: ', secP256K1Status);
-      console.log('// @@@ DEBUGS: MPC keys status ed25519Status: ', ed25519Status);
+      console.log('key status: ', { secP256K1Status, ed25519Status });
       if (secP256K1Status === 'READY' || ed25519Status === 'READY') {
-        console.log('// @@@ DEBUGS: MPC keys are already generated');
+        console.log('keys were already generated');
         this.setIsMPCReady(true);
       } else {
         this.setIsMPCReady(false);
