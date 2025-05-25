@@ -6,7 +6,14 @@ import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 // Load env file manually for vite config
-dotenv.config();
+dotenv.config({ path: process.env.ENV_FILENAME || '.env' });
+
+console.log(
+  'Environment variables loaded:',
+  Object.keys(process.env)
+    .filter((key) => key.startsWith('VITE_'))
+    .map((key) => `${key}: ${process.env[key] ?? ''}`),
+);
 
 // Now you can debug
 console.log('VITE_USE_EMBEDDED_WALLET_SDK:', process.env.VITE_USE_EMBEDDED_WALLET_SDK);
