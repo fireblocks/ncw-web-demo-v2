@@ -47,7 +47,6 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
     }
     setIsLoading(true);
     try {
-      console.log('Checking request ID:', requestId);
       // Decode the request ID and validate it
       const decoded: TRequestDecodedData = JSON.parse(decode(requestId));
       if (decoded.requestId && decoded.email) {
@@ -102,9 +101,6 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
     if (decodedData && decodedData.requestId) {
       try {
         setIsLoading(true); // Set loading state to true before making the API call
-        console.log('addDevice requestId: ', decodedData.requestId);
-        const result = await fireblockStore.sdkInstance?.approveJoinWalletRequest(decodedData.requestId);
-        console.log('approveJoinWallet result', result);
         setIsLoading(false); // Set loading state to false after API call completes
         setPhase(2); // Set phase to 2 for success
       } catch (e) {
@@ -113,7 +109,6 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
         setPhase(3); // Set phase to 3 for error
       }
     } else {
-      console.log('approveJoinWallet cancelled');
       setPhase(3); // Set phase to 3 for error
     }
   };

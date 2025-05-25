@@ -37,20 +37,16 @@ export class AccountsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId) {
-      console.log('Accounts store init');
       // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       const myAccounts = await getAccounts(deviceId, accessToken, this._rootStore);
       if (!myAccounts?.length && ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-        console.log('No accounts found, creating new account');
         const fireblocksEW = this._rootStore.fireblocksSDKStore.fireblocksEW;
         if (!fireblocksEW) {
           throw new Error('Fireblocks Embedded Wallet is not initialized');
         }
         const newAccount = await fireblocksEW.createAccount();
-        console.log('newAccount: ', newAccount);
         this.addAccount(newAccount);
       } else {
-        console.log('Found accounts: ', myAccounts);
         myAccounts.map((a: IAccountDTO) => {
           this.addAccount(a);
         });

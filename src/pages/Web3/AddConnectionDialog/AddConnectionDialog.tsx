@@ -133,9 +133,7 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
         uri: connectionLink, // uri is the same as url/website
       };
 
-      console.log('[AddConnectionDialog] Creating connection with payload:', payload);
       const response: any = await web3Store.createConnection(payload);
-      console.log('[AddConnectionDialog] Connection created successfully:', response);
 
       if (response && response.id) {
         // Store the connection ID for later use
@@ -186,9 +184,7 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
         approve: true, // Approve the connection
       };
 
-      console.log(`[AddConnectionDialog] Submitting connection ${connectionId} with payload:`, payload);
       await web3Store.submitConnection(connectionId, payload);
-      console.log(`[AddConnectionDialog] Connection ${connectionId} submitted successfully`);
 
       // Refresh the connections list
       await web3Store.getConnections(false);

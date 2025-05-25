@@ -161,8 +161,6 @@ export class IndexedDBLogger implements ILogger {
         this._initializeDB().catch((err) => {
           console.error('Failed to reinitialize IndexedDB', err);
         });
-        // Fall back to console logging
-        console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
         return;
       }
 
@@ -181,8 +179,6 @@ export class IndexedDBLogger implements ILogger {
 
         transaction.onerror = (event) => {
           console.error('Transaction error:', event);
-          // Fall back to console logging
-          console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
         };
       } catch (transactionError) {
         // Handle the specific case when the database connection is closing
@@ -194,8 +190,6 @@ export class IndexedDBLogger implements ILogger {
           console.warn('IndexedDB connection is closing, cannot create transaction');
           // Try to reinitialize the database on next operation
           this._dbInstance = null;
-          // Fall back to console logging
-          console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
         } else {
           // Rethrow other transaction errors to be caught by the outer catch block
           throw transactionError;
@@ -203,8 +197,6 @@ export class IndexedDBLogger implements ILogger {
       }
     } catch (error) {
       console.error('IndexedDBLogger._saveLog: ', error);
-      // Fall back to console logging
-      console.log(`[${logEntry.level}] ${logEntry.message}`, logEntry.data);
     }
   }
 

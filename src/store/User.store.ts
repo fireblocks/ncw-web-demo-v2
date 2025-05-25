@@ -242,7 +242,6 @@ export class UserStore {
       .then((devices: IDeviceDTO[]) => {
         this.setMyDevices(devices);
         if (devices?.length || ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-          console.log('[UserStore] Checking latest backup');
           this.checkLatestBackup(devices?.length ? devices[devices.length - 1] : undefined);
         }
       })

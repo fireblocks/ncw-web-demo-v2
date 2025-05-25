@@ -11,7 +11,6 @@ export const getAccounts = async (
       return [];
     }
     const accounts = await rootStore.fireblocksSDKStore.fireblocksEW.getAccounts();
-    console.log('getAccounts embedded wallet: ', accounts);
     return accounts?.data ?? [];
   } catch (error) {
     console.error('[EmbeddedWallet] Error getting assets:', error);

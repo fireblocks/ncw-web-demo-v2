@@ -75,7 +75,6 @@ export const addAsset = async (
     if (!response) {
       throw new Error('Failed to add asset');
     }
-    console.log('[EmbeddedWallet] Added asset:', response);
     return response;
   } catch (error) {
     console.error('addAsset error:', error);
@@ -202,8 +201,6 @@ export const getAssets = async (
   _token: string,
   rootStore: RootStore | null = null,
 ): Promise<Promise<IAssetDTO>[]> => {
-  console.log('[EmbeddedWallet] Getting assets');
-
   if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
     console.error('[EmbeddedWallet] Embedded wallet SDK is not initialized');
     return [];
@@ -212,7 +209,6 @@ export const getAssets = async (
     const response = await rootStore.fireblocksSDKStore.fireblocksEW.getAssets(accountId);
     return response.data.map((asset) => getEmbeddedWalletAsset(rootStore, asset.id, accountId));
   } catch (error) {
-    console.log('[EmbeddedWallet] Error getting assets:', error);
     return [];
   }
 };
@@ -229,13 +225,6 @@ export const getEmbeddedWalletAssetsSummary = async (
   rootStore: RootStore,
   accountId: number,
 ): Promise<IAssetsSummaryDTO[]> => {
-  // Check cache first
-  // if (assetSummaryCache && (Date.now() - assetSummaryCache.timestamp) < CACHE_DURATION) {
-  //   console.log('[EmbeddedWallet] Returning cached assets summary');
-  //   return assetSummaryCache.data;
-  // }
-
-  console.log('[EmbeddedWallet] Fetching fresh assets summary');
   if (!rootStore.fireblocksSDKStore.fireblocksEW) {
     throw new Error('Embedded wallet SDK is not initialized');
   }
@@ -291,7 +280,6 @@ export const getEmbeddedWalletAssetsSummary = async (
     timestamp: Date.now(),
   };
 
-  console.log('[EmbeddedWallet] Assets summary:', summaries);
   return summaries;
 };
 
@@ -301,14 +289,12 @@ export const getAssetsSummary = async (
   _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IAssetsSummaryDTO[]> => {
-  console.log('[EmbeddedWallet] Getting assets summary');
   try {
     if (!rootStore) {
       throw new Error('Embedded wallet SDK is not initialized');
     }
     return await getEmbeddedWalletAssetsSummary(rootStore, accountId);
   } catch (error) {
-    console.log('[EmbeddedWallet] Error getting assets summary:', error);
     throw new Error('[EmbeddedWallet] Error getting assets summary:');
   }
 };
@@ -464,7 +450,6 @@ const getAllRatesLive = async (coinSymbolToIdMap: CoinSymbolToIdMap): Promise<Co
       rate: data[id]?.usd ?? null,
     }));
 
-    console.log('Coin prices:', result);
     return result;
   } catch (error) {
     console.error('Error fetching coin prices:', error);
