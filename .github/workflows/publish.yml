@@ -3,7 +3,7 @@ name: Deploy Multiple Site Versions to Pages
 on:
   push:
     # TODO: rename to main
-    branches: ['v2-embedded-wallet-deployment']
+    branches: ['main', 'v2-embedded-wallet-deployment']
   workflow_dispatch:
 
 permissions:
