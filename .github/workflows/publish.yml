@@ -1,9 +1,8 @@
-name: Deploy Multiple Site Versions to Pages
+name: Deploy 'Direct' (SaaS) and 'Backend Proxy' to Pages
 
 on:
   push:
-    # TODO: rename to main
-    branches: ['main', 'v2-embedded-wallet-deployment']
+    branches: ['main']
   workflow_dispatch:
 
 permissions:
