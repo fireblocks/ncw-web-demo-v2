@@ -1,15 +1,10 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy 'Direct' (SaaS) and 'Backend Proxy' to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ['main']
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
@@ -21,31 +16,76 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Single deploy job since we're just deploying
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        profile: ['direct', 'backend-proxy']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        env:
+          ENV_FILENAME: ${{ matrix.profile == 'backend-proxy' && 'backend-proxy.env' || '' }}
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.profile }} # Results in 'build-direct' and 'build-backend-proxy'
+          path: './dist'
+          retention-days: 1
+
   deploy:
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Download 'backend-proxy' build (for root deployment)
+        uses: actions/download-artifact@v4
         with:
-          node-version: 20
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: npm run build
+          name: build-backend-proxy
+          path: backend-proxy # Content for the root of the site
+
+      - name: Download 'direct' build (for /ew deployment)
+        uses: actions/download-artifact@v4
+        with:
+          name: build-direct
+          path: direct # Content for the /ew subdirectory
+
+      - name: Prepare final deployment structure
+        run: |
+          echo "Preparing merged content directory..."
+          mkdir -p merged-content
+          echo "Copying main site content (backend-proxy) to merged-content root..."
+          cp -r backend-proxy/* merged-content/
+          echo "Creating /ew directory in merged-content..."
+          mkdir -p merged-content/ew
+          echo "Copying secondary site content (direct) to merged-content/ew..."
+          cp -r direct/* merged-content/ew/
+          echo "Final structure prepared."
+          ls -R merged-content
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Upload artifact
+
+      - name: Upload merged artifact to Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload dist repository
-          path: './dist'
+          path: './merged-content'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

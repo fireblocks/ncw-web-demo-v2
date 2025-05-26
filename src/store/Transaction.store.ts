@@ -59,12 +59,12 @@ export class TransactionStore {
 
   @computed
   public get amountInUSD(): string {
-    return this.details?.amountUSD ? localizedCurrencyView(this.details.amountUSD) : NOT_AVAILABLE_PLACEHOLDER;
+    return this.details?.amountUSD ? localizedCurrencyView(this.details?.amountUSD) : NOT_AVAILABLE_PLACEHOLDER;
   }
 
   @computed
   public get fee(): string {
-    return this.details?.feeInfo.networkFee || NOT_AVAILABLE_PLACEHOLDER;
+    return this.details?.feeInfo?.networkFee || NOT_AVAILABLE_PLACEHOLDER;
   }
 
   @computed
@@ -79,24 +79,24 @@ export class TransactionStore {
   @computed
   public get operationType(): TNewTransactionType | null {
     if (this.details?.operation) {
-      return this.details.operation as TNewTransactionType;
+      return this.details?.operation as TNewTransactionType;
     }
     return null;
   }
 
   @computed
   public get isOutgoing(): boolean {
-    return this.details?.source.walletId === this._rootStore.deviceStore.walletId;
+    return this.details?.source?.walletId === this._rootStore?.deviceStore?.walletId;
   }
 
   @computed
   public get cantBeCanceled(): boolean {
-    return !!this.status && ['COMPLETED', 'FAILED', 'CANCELLED', 'CONFIRMING', 'CANCELLING'].includes(this.status);
+    return !!this?.status && ['COMPLETED', 'FAILED', 'CANCELLED', 'CONFIRMING', 'CANCELLING'].includes(this.status);
   }
 
   @computed
   public get isSubmitted(): boolean {
-    return this.status === 'SUBMITTED';
+    return this?.status === 'SUBMITTED';
   }
 
   @computed
@@ -124,9 +124,12 @@ export class TransactionStore {
   @action
   public updateStatus(status: TTransactionStatus) {
     this.status = status;
+
+    // Only refresh balances for significant status changes
+    const significantStatuses: TTransactionStatus[] = ['COMPLETED', 'FAILED', 'CANCELLED'];
     if (this.isNFT) {
       this._rootStore.nftStore.getTokens().catch(() => {});
-    } else {
+    } else if (significantStatuses.includes(status)) {
       this._rootStore.assetsStore.refreshBalances();
     }
     this.setIsSigning(false);
@@ -165,7 +168,8 @@ export class TransactionStore {
 
     if (deviceId && accessToken) {
       this.updateStatus('CANCELLING');
-      cancelTransaction(deviceId, accessToken, this.id)
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+      cancelTransaction(deviceId, accessToken, this.id, this._rootStore)
         .then(() => {
           this.updateStatus('CANCELLED');
         })

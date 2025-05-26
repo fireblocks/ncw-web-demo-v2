@@ -2,12 +2,20 @@ import { getCall, postCall } from './utils.api';
 
 export type TPassphraseLocation = 'GoogleDrive' | 'iCloud';
 
+export interface LatestBackupKey {
+  deviceId: string;
+  publicKey: string;
+  keyId: string;
+  algorithm: string;
+}
+
 export type TPassphrases = Record<string, IPassphraseInfo>;
 
 export interface IBackupInfo {
   passphraseId: string;
   location: TPassphraseLocation;
   createdAt: number;
+  keys?: Array<LatestBackupKey>;
 }
 
 export interface IPassphraseInfo {
@@ -31,20 +39,12 @@ export const getLatestBackup = async (walletId: string, token: string): Promise<
   }
 };
 
-export const getPassphraseInfo = async (
-  passphraseId: string,
-  token: string,
-): Promise<{ location: TPassphraseLocation }> => {
-  const response = await getCall(`api/passphrase/${passphraseId}`, token);
+export const getPassphraseInfos = async (token: string): Promise<{ passphrases: IPassphraseInfo[] }> => {
+  const response = await getCall(`api/passphrase/`, token);
   return response.json();
 };
 
 export const createPassphraseInfo = async (passphraseId: string, location: TPassphraseLocation, token: string) => {
   const response = await postCall(`api/passphrase/${passphraseId}`, token, { location });
   return response;
-};
-
-export const getPassphraseInfos = async (token: string): Promise<{ passphrases: IPassphraseInfo[] }> => {
-  const response = await getCall(`api/passphrase/`, token);
-  return response.json();
 };

@@ -1,12 +1,18 @@
 import React from 'react';
 import { TableRow, TableTextCell, TableTitleCell, TableTransferCell, styled } from '@foundation';
+import IconEth from '@icons/crypto-icons/eth.png';
 import IconNoNft from '@icons/no_nft_image.svg';
 import { NFTTokenStore } from '@store';
 import { observer } from 'mobx-react';
 
-export const RowStyled = styled('div')(() => ({
+export const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
-  gridTemplateColumns: '1.3fr 1.2fr 1fr 1fr 0.5fr',
+  gridTemplateColumns: '1.3fr 0.8fr 1fr 1.2fr 1fr 0.8fr 1fr',
+  columnGap: theme.spacing(2), // Add spacing between columns
+  '& > *': {
+    maxWidth: '100%', // Ensure each child has max width
+    overflow: 'hidden', // Hide overflow
+  },
 }));
 
 interface IProps {
@@ -52,9 +58,11 @@ export const NFTsListItem: React.FC<IProps> = observer(function NFTsListItem({
             subtitle={token.blockchainDescriptor}
             iconUrl={token.imageUrl || IconNoNft}
           />
+          <TableTextCell text="--" />
+          <TableTitleCell title={token.blockchainDescriptor || '--'} subtitle="" iconUrl={IconEth} />
           <TableTextCell text={token.collectionName} />
           <TableTextCell text={date} />
-          <TableTextCell text={token.tokenId} />
+          <TableTextCell text={token.standard} />
           {selectedTokenId === token.id ? (
             <TableTransferCell
               onSend={() => {
@@ -62,7 +70,7 @@ export const NFTsListItem: React.FC<IProps> = observer(function NFTsListItem({
               }}
             />
           ) : (
-            <TableTextCell text={token.standard} />
+            <TableTextCell text={token.tokenId} />
           )}
         </RowStyled>
       </TableRow>

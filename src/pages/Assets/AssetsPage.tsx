@@ -48,7 +48,7 @@ export const AssetsPage: React.FC = observer(function AssetsPage() {
               <HeadingAmount
                 title={t('ASSETS.CURRENT_BALANCE')}
                 titleColor="text.secondary"
-                value={assetsStore.totalAvailableBalanceInUSD}
+                value={assetsStore.myAssets.length ? assetsStore.totalAvailableBalanceInUSD : '--'}
               />
             </AmountsStyled>
           </HeadingStyled>

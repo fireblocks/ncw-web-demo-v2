@@ -3,7 +3,7 @@ import { Dialog, Progress, Typography, styled } from '@foundation';
 import IconBackup from '@icons/backup_large.svg';
 import IconGoogle from '@icons/google.svg';
 import IconKey from '@icons/key.svg';
-import { useBackupStore } from '@store';
+import { useBackupStore, useUserStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -56,6 +56,7 @@ interface IProps {
 export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ isOpen, onClose }) {
   const { t } = useTranslation();
   const backupStore = useBackupStore();
+  const userStore = useUserStore();
   const { enqueueSnackbar } = useSnackbar();
 
   const onDriveClick = () => {
@@ -65,19 +66,15 @@ export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ i
         enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.SUCCESS_MESSAGE'), { variant: 'success' });
         onClose();
       })
-      .catch(() => {
+      .catch((e: any) => {
+        console.error('Backup Error: ', e);
         enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.ERROR_MESSAGE'), { variant: 'error' });
       });
   };
 
   return (
     <Dialog
-      title={
-        backupStore.latestBackup
-          ? t('SETTINGS.DIALOGS.BACKUP.UPDATE_KEY_BACKUP')
-          : t('SETTINGS.DIALOGS.BACKUP.CREATE_KEY_BACKUP')
-      }
-      description={t('SETTINGS.DIALOGS.BACKUP.DESCRIPTION')}
+      title="Create a key backup"
       isOpen={isOpen}
       onClose={onClose}
       size="medium"
@@ -116,6 +113,15 @@ export const BackupDialog: React.FC<IProps> = observer(function BackupDialog({ i
                 <AlignerStyled>
                   <img src={IconGoogle} alt="google" /> {backupStore.latestBackup.location}
                 </AlignerStyled>
+              </Typography>
+            </ParameterStyled>
+
+            <ParameterStyled>
+              <Typography variant="h6" color="text.secondary">
+                ACCOUNT
+              </Typography>
+              <Typography variant="h6" color="text.primary">
+                {userStore?.loggedUser?.email || 'not available'}
               </Typography>
             </ParameterStyled>
 

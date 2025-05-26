@@ -4,6 +4,10 @@ import { action, makeObservable, observable } from 'mobx';
 import { NFTTokenStore } from './NFTToken.store';
 import { RootStore } from './Root.store';
 
+/**
+ * NFTStore manages NFT collections and tokens owned by the user.
+ * It provides methods for fetching, storing, and accessing NFT data.
+ */
 export class NFTStore {
   @observable public collections: CollectionOwnership[];
   @observable public tokens: NFTTokenStore[];
@@ -12,6 +16,10 @@ export class NFTStore {
 
   private _rootStore: RootStore;
 
+  /**
+   * Initializes the NFTStore with default values and a reference to the root store
+   * @param rootStore Reference to the root store
+   */
   constructor(rootStore: RootStore) {
     this.collections = [];
     this.tokens = [];
@@ -36,8 +44,10 @@ export class NFTStore {
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
 
     if (deviceId && accountId !== undefined && accessToken) {
-      const myCollections = await getNFTCollections(deviceId, accessToken);
-      const myTokens = await getNFTTokens(deviceId, accountId, accessToken);
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+      const myCollections = await getNFTCollections(deviceId, accessToken, this._rootStore);
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+      const myTokens = await getNFTTokens(deviceId, accountId, accessToken, this._rootStore);
 
       this.setCollections(myCollections);
       this.setTokens(myTokens);

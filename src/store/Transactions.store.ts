@@ -1,5 +1,6 @@
 import { INewTransactionDTO, ITransactionDTO, TX_POLL_INTERVAL, createTransaction, getTransactions, sleep } from '@api';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import { ENV_CONFIG } from '../env_config.ts';
 import { RootStore } from './Root.store';
 import { TransactionStore } from './Transaction.store';
 
@@ -11,7 +12,7 @@ export class TransactionsStore {
   @observable public error: string;
 
   private _transactionSubscriptions: Map<string, TTransactionHandler[]>;
-  private _transactionsActivePolling: Map<string, boolean>;
+  public _transactionsActivePolling: Map<string, boolean>;
   private _disposed: boolean;
   private _rootStore: RootStore;
 
@@ -119,14 +120,16 @@ export class TransactionsStore {
           this._rootStore.deviceStore.deviceId,
           startDate,
           this._rootStore.userStore.accessToken,
+          // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+          this._rootStore,
         );
 
-        if (!response.ok) {
+        if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && !response?.ok) {
           await sleep(TX_POLL_INTERVAL);
           continue;
         }
 
-        const transactions = await response.json();
+        const transactions = ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? response : await response.json();
 
         transactions.forEach((tx: ITransactionDTO) => {
           if (tx.id && tx.lastUpdated) {
@@ -143,6 +146,11 @@ export class TransactionsStore {
             }
           }
         });
+
+        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+          await sleep(TX_POLL_INTERVAL);
+          continue;
+        }
       } catch (e: any) {
         this.setError(e.message);
         await sleep(TX_POLL_INTERVAL);
@@ -161,7 +169,7 @@ export class TransactionsStore {
   }
 
   @computed
-  private get _hasTransactionsActivePollingForCurrentDevice(): boolean {
+  public get _hasTransactionsActivePollingForCurrentDevice(): boolean {
     return !!this._transactionsActivePolling.get(this._rootStore.deviceStore.deviceId);
   }
 
@@ -171,7 +179,8 @@ export class TransactionsStore {
     const accessToken = this._rootStore.userStore.accessToken;
 
     if (deviceId && accountId !== undefined && accessToken) {
-      const newTxData = await createTransaction(deviceId, accessToken, dataToSend);
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+      const newTxData = await createTransaction(deviceId, accessToken, dataToSend, this._rootStore);
       this.addTransaction(newTxData);
     }
   }

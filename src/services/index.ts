@@ -5,3 +5,4 @@ export * from './IndexedDBLogger.factory';
 export * from './Cloudkit.service';
 export * from './GoogleDrive.service';
 export * from './randomPassPhrase.service';
+export * from './extra-helper';

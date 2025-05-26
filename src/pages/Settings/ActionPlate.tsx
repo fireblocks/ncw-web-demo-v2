@@ -4,7 +4,7 @@ const RootStyled = styled('div')(({ theme }) => ({
   cursor: 'pointer',
   padding: theme.spacing(15, 3, 3, 8),
   backgroundColor: theme.palette.secondary.light,
-  height: 360,
+  minHeight: 300,
   boxSizing: 'border-box',
   '&:hover .IconStyled': {
     backgroundColor: theme.palette.primary.dark,

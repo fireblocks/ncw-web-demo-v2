@@ -1,4 +1,5 @@
 import { Typography, styled } from '@foundation';
+import { Tooltip } from '@mui/material';
 
 const RootStyled = styled('div')(() => ({
   display: 'flex',
@@ -7,6 +8,12 @@ const RootStyled = styled('div')(() => ({
   overflow: 'hidden',
   width: '100%',
   maxWidth: '100%',
+}));
+
+const TypographyStyled = styled(Typography)(() => ({
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 }));
 
 interface IProps {
@@ -28,11 +35,22 @@ export const TableTextCell: React.FC<IProps> = ({ text, mode = 'REGULAR' }) => {
       color = 'text.primary';
   }
 
+  // Convert the text to string to ensure it works with both string and number types
+  const textContent = String(text);
+
   return (
     <RootStyled>
-      <Typography component="p" variant="body1" color={color}>
-        {text}
-      </Typography>
+      {textContent && textContent !== '--' ? (
+        <Tooltip title={textContent} arrow placement="top">
+          <TypographyStyled variant="body1" color={color}>
+            {textContent}
+          </TypographyStyled>
+        </Tooltip>
+      ) : (
+        <TypographyStyled variant="body1" color={color}>
+          {textContent}
+        </TypographyStyled>
+      )}
     </RootStyled>
   );
 };

@@ -1,6 +1,7 @@
 import { IDeviceDTO, getDevices, getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
+import { ENV_CONFIG } from '../env_config.ts';
 import { RootStore } from './Root.store';
 
 export class UserStore {
@@ -48,6 +49,7 @@ export class UserStore {
       })
       .catch((e) => {
         this.setError(e.message);
+        this.setIsGettingUser(false); // Reset loading state when error occurs
       });
   }
 
@@ -93,17 +95,26 @@ export class UserStore {
         .getAccessToken()
         .then((token) => {
           this.setAccessToken(token);
-          getUserId(token)
-            .then((userId) => {
-              this.setUserId(userId);
-              this.getMyDevices();
-              this.setIsGettingUser(false);
-            })
-            .catch((e) => {
-              this.setError(e.message);
-            });
+          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+            // direct
+            if (this._authManager.loggedUser !== null) {
+              const userFirebase = this._authManager.loggedUser;
+              this.setUserId(userFirebase.uid);
+            }
+          } else {
+            // proxy backend
+            getUserId(token)
+              .then((userId: string) => {
+                this.setUserId(userId);
+                this.getMyDevices();
+                this.setIsGettingUser(false);
+              })
+              .catch((e: Error) => {
+                this.setError(e.message);
+              });
+          }
         })
-        .catch((e) => {
+        .catch((e: Error) => {
           this.setError(e.message);
         });
     }
@@ -175,16 +186,27 @@ export class UserStore {
     return null;
   }
 
-  public checkLatestBackup(device: IDeviceDTO): void {
+  public checkLatestBackup(walletId?: string): void {
     this.setIsCheckingBackup(true);
     this._rootStore.backupStore
-      .getMyLatestBackup(device.walletId)
+      .getMyLatestBackup(walletId)
       .then((result) => {
         if (result) {
+          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+            const devices: IDeviceDTO[] = [];
+            result.keys?.forEach((key) => {
+              devices.push({
+                deviceId: key.deviceId,
+                walletId: result.walletId,
+                createdAt: new Date().getTime(), // Adding required property as number
+              });
+            });
+            this.setMyDevices(devices);
+          }
           this.setHasBackup(true);
         }
       })
-      .catch((e) => {
+      .catch((e: Error) => {
         throw new Error(e.message);
       })
       .finally(() => {
@@ -213,14 +235,16 @@ export class UserStore {
       this.setError('User is not logged in');
     }
 
-    getDevices(this.accessToken)
-      .then((devices) => {
+    // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+    getDevices(this.accessToken, this._rootStore)
+      .then((devices: IDeviceDTO[]) => {
         this.setMyDevices(devices);
-        if (devices?.length) {
-          this.checkLatestBackup(devices[devices.length - 1]);
+        if (devices?.length || ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+          const walletId = devices?.at(-1)?.walletId;
+          this.checkLatestBackup(walletId);
         }
       })
-      .catch((e) => {
+      .catch((e: Error) => {
         this.setError(e.message);
       });
   }

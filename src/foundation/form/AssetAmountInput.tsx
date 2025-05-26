@@ -17,6 +17,11 @@ const InputAdornmentStyled = styled(InputAdornment)(({ theme }) => ({
   },
 }));
 
+const _PriceDisplayStyled = styled('div')(({ theme }) => ({
+  marginTop: theme.spacing(0.5),
+  textAlign: 'right',
+}));
+
 interface IProps {
   value: string;
   label: string;
@@ -27,15 +32,7 @@ interface IProps {
   setValue: (value: string) => void;
 }
 
-export const AssetAmountInput: React.FC<IProps> = ({
-  value,
-  placeholder,
-  label,
-  adornment,
-  assetSymbol,
-  disabled,
-  setValue,
-}) => {
+export const AssetAmountInput: React.FC<IProps> = ({ value, placeholder, label, adornment, disabled, setValue }) => {
   const materialUIInputProps = {
     id: label,
     disableUnderline: true,
@@ -51,9 +48,18 @@ export const AssetAmountInput: React.FC<IProps> = ({
   return (
     <FormControlRootStyled>
       <InputLabelStyled htmlFor={label} shrink={false}>
-        {label} {assetSymbol}
+        {label}
       </InputLabelStyled>
-      <NumericFormat allowNegative={false} value={value} customInput={InputStyled} {...materialUIInputProps} />
+      <NumericFormat
+        allowNegative={false}
+        value={value}
+        customInput={InputStyled}
+        decimalScale={8}
+        allowLeadingZeros={true}
+        thousandSeparator={true}
+        decimalSeparator="."
+        {...materialUIInputProps}
+      />
     </FormControlRootStyled>
   );
 };

@@ -1,30 +1,68 @@
 import { ITransactionDTO, TFireblocksNCWStatus, TKeysStatusRecord, sendMessage } from '@api';
+import { EmbeddedWallet, ICoreOptions, IEmbeddedWalletOptions } from '@fireblocks/embedded-wallet-sdk';
 import {
+  BrowserLocalStorageProvider,
   ConsoleLoggerFactory,
   FireblocksNCWFactory,
   getFireblocksNCWInstance,
   IEventsHandler,
   IFireblocksNCW,
   IFullKey,
+  IKeyDescriptor,
   IMessagesHandler,
   TEnv,
   TEvent,
   TMPCAlgorithm,
 } from '@fireblocks/ncw-js-sdk';
-import { IndexedDBLogger, IndexedDBLoggerFactory, secureStorageProviderFactory } from '@services';
+import {
+  IndexedDBLogger,
+  IndexedDBLoggerFactory,
+  PasswordEncryptedLocalStorage,
+  secureStorageProviderFactory,
+} from '@services';
 import { ENV_CONFIG } from 'env_config';
 import { action, computed, makeObservable, observable } from 'mobx';
+import { saveDeviceIdToLocalStorage } from '../api';
 import { RootStore } from './Root.store';
 
+const _createSafeLogger = (baseLogger: any) => {
+  const sanitizeData = (data: any) => {
+    if (!data) return data;
+    try {
+      // This will throw an error for non-serializable objects
+      JSON.stringify(data);
+      return data;
+    } catch (e) {
+      // Return a simplified version of the object
+      return { info: 'Data contained non-serializable objects (like XMLHttpRequest)' };
+    }
+  };
+
+  return {
+    debug: (message: string, data?: any) => baseLogger.debug(message, sanitizeData(data)),
+    info: (message: string, data?: any) => baseLogger.info(message, sanitizeData(data)),
+    warn: (message: string, data?: any) => baseLogger.warn(message, sanitizeData(data)),
+    error: (message: string, data?: any) => baseLogger.error(message, sanitizeData(data)),
+  };
+};
+
+/**
+ * FireblocksSDKStore manages the integration with Fireblocks SDK.
+ * It handles initialization of the SDK, MPC key generation and management,
+ * wallet operations, and event handling for both embedded wallet and proxy backend modes.
+ * This store is central to the wallet's cryptographic operations and security features.
+ */
 export class FireblocksSDKStore {
   @observable public sdkStatus: TFireblocksNCWStatus;
   @observable public keysStatus: TKeysStatusRecord | null;
+  @observable public fireblocksEW: EmbeddedWallet | null;
   @observable public sdkInstance: IFireblocksNCW | null;
   @observable public keysBackupStatus: string;
   @observable public keysRecoveryStatus: string;
   @observable public joinWalletEventDescriptor: string;
   @observable public isMPCReady: boolean;
   @observable public isMPCGenerating: boolean;
+  @observable public isBackupPhase: boolean;
   @observable public isKeysExportInProcess: boolean;
   @observable public exportedKeys: IFullKey[] | null;
   @observable public error: string;
@@ -35,9 +73,15 @@ export class FireblocksSDKStore {
   private _rootStore: RootStore;
   private _unsubscribeTransactionsPolling: (() => void) | null;
 
+  /**
+   * Initializes the FireblocksSDKStore with default values and a reference to the root store
+   * Sets up initial state for SDK status, keys, and other properties
+   * @param rootStore Reference to the root store
+   */
   constructor(rootStore: RootStore) {
     this.sdkStatus = 'sdk_not_ready';
     this.keysStatus = null;
+    this.fireblocksEW = null;
     this.sdkInstance = null;
     this.logger = null;
     this.keysBackupStatus = '';
@@ -50,6 +94,7 @@ export class FireblocksSDKStore {
     this.exportedKeys = null;
     this.fprvKey = null;
     this.xprvKey = null;
+    this.isBackupPhase = false;
 
     this._unsubscribeTransactionsPolling = null;
     this._rootStore = rootStore;
@@ -57,6 +102,10 @@ export class FireblocksSDKStore {
     makeObservable(this);
   }
 
+  /**
+   * Cleans up resources used by the SDK
+   * Stops transaction polling, disposes the SDK instance, and resets state
+   */
   @action
   public async dispose(): Promise<void> {
     if (!this.sdkInstance) {
@@ -74,8 +123,150 @@ export class FireblocksSDKStore {
     this.setSDKStatus('sdk_not_ready');
   }
 
-  @action
-  public async init() {
+  /**
+   * Initializes the embedded wallet process
+   * Sets up the SDK with the embedded wallet configuration, initializes the logger,
+   * and prepares the device ID for wallet operations
+   */
+  public async initEmbeddedWalletProcess(): Promise<void> {
+    this.setIsMPCGenerating(true);
+    this.setSDKInstance(null);
+    this.setSDKStatus('initializing_sdk');
+
+    try {
+      const deviceId = this._rootStore.deviceStore.deviceId ?? '';
+
+      const logger = await IndexedDBLoggerFactory({
+        deviceId: this._rootStore.deviceStore.deviceId ?? '',
+        logger: ConsoleLoggerFactory(),
+      });
+
+      // Add a small delay to ensure the database connection is fully established
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const ewOpts: IEmbeddedWalletOptions = {
+        env: ENV_CONFIG.NCW_SDK_ENV as TEnv,
+        logLevel: 'VERBOSE',
+        logger,
+        authClientId: ENV_CONFIG.AUTH_CLIENT_ID,
+        authTokenRetriever: {
+          getAuthToken: () => this._rootStore.userStore.getAccessToken(),
+        },
+        reporting: {
+          enabled: false,
+        },
+      };
+      this.fireblocksEW = new EmbeddedWallet(ewOpts);
+
+      if (!deviceId) {
+        this._rootStore.userStore.getMyDevices(); // todo: we should initialize the sdk core first, but it also want deviceId
+        this._rootStore.userStore.setIsGettingUser(false);
+      } else {
+        await this.initEmbeddedWalletCore(deviceId);
+        this._rootStore.userStore.getMyDevices(); // todo: we should initialize the sdk core first, but it also want deviceId
+        this._rootStore.userStore.setIsGettingUser(false);
+      }
+    } catch (error: any) {
+      this.setIsMPCGenerating(false);
+      this.setSDKStatus('sdk_initialization_failed');
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * Initializes the core of the embedded wallet with a specific device ID
+   * Sets up event handlers for key operations, wallet joining, and transactions
+   * @param deviceId The device ID to use for initialization
+   */
+  public async initEmbeddedWalletCore(deviceId: string): Promise<void> {
+    try {
+      const eventsHandler: IEventsHandler = {
+        handleEvent: (event: TEvent) => {
+          let _keysStatus: Record<TMPCAlgorithm, IKeyDescriptor>;
+          switch (event.type) {
+            case 'key_descriptor_changed':
+              _keysStatus = this.keysStatus ?? ({} as Record<TMPCAlgorithm, IKeyDescriptor>);
+              _keysStatus[event.keyDescriptor.algorithm] = event.keyDescriptor;
+              this.setKeysStatus(_keysStatus);
+              break;
+            case 'transaction_signature_changed':
+              this._rootStore.transactionsStore
+                .getTransactionById(event.transactionSignature.txId)
+                ?.updateSignatureStatus(event.transactionSignature.transactionSignatureStatus);
+              break;
+            case 'keys_backup':
+              this.setKeysBackupStatus(JSON.stringify(event.keysBackup));
+              this._rootStore.backupStore.getMyLatestBackup().catch((error) => {
+                console.error('[EmbeddedWalletSDK] Error getting latest backup:', error);
+              });
+              break;
+            case 'keys_recovery':
+              this.setKeysRecoveryStatus(JSON.stringify(event.keyDescriptor));
+              break;
+            case 'join_wallet_descriptor':
+              if (event.joinWalletDescriptor?.requestId) {
+                this._rootStore.authStore.setCapturedRequestId(event.joinWalletDescriptor?.requestId);
+              }
+              this.setJoinWalletEventDescriptor(JSON.stringify(event.joinWalletDescriptor));
+              break;
+          }
+        },
+      };
+      this._rootStore.deviceStore.setDeviceId(deviceId);
+      saveDeviceIdToLocalStorage(deviceId, this._rootStore.userStore.userId);
+      const storageProvider = new BrowserLocalStorageProvider();
+      const secureStorageProvider = new PasswordEncryptedLocalStorage(deviceId, () => {
+        const password = prompt('Enter password', '');
+        if (password === null) {
+          return Promise.reject(new Error('Rejected by user'));
+        }
+        return Promise.resolve(password || '');
+      });
+      this.logger = await IndexedDBLoggerFactory({ deviceId, logger: ConsoleLoggerFactory() });
+
+      // Add a small delay to ensure the database connection is fully established
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const coreNCWOptions: ICoreOptions = {
+        deviceId,
+        eventsHandler,
+        secureStorageProvider,
+        storageProvider,
+      };
+      const sdkIns =
+        getFireblocksNCWInstance(coreNCWOptions.deviceId) ?? (await this?.fireblocksEW?.initializeCore(coreNCWOptions));
+      if (sdkIns) {
+        this.setSDKInstance(sdkIns);
+      }
+
+      this.setUnsubscribeTransactionsPolling(
+        this._rootStore.transactionsStore.listenToTransactions((transaction: ITransactionDTO) => {
+          this._rootStore.transactionsStore.addOrEditTransaction(transaction);
+        }),
+      );
+
+      if (this.sdkInstance) {
+        const keyStatus = await this.sdkInstance.getKeysStatus();
+        if (Object.keys(keyStatus).length > 0) {
+          this.setKeysStatus(keyStatus);
+          this.setSDKStatus('sdk_available');
+        }
+        this.setIsMPCGenerating(false);
+      }
+      this.setSDKStatus('sdk_available');
+    } catch (error: any) {
+      this.setIsMPCGenerating(false);
+      this.setSDKStatus('sdk_initialization_failed');
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * Initializes the SDK using the proxy backend process
+   * Sets up message handlers, event handlers, and initializes the SDK with proxy backend configuration
+   * This is used when not using the embedded wallet mode
+   */
+  public async initWithProxyBackendProcess(): Promise<void> {
     this.setIsMPCGenerating(true);
     this.setSDKInstance(null);
     this.setSDKStatus('initializing_sdk');
@@ -86,7 +277,13 @@ export class FireblocksSDKStore {
           if (!this._rootStore.deviceStore.deviceId) {
             throw new Error('deviceId is not set');
           }
-          return sendMessage(this._rootStore.deviceStore.deviceId, this._rootStore.userStore.accessToken, message);
+          return sendMessage(
+            this._rootStore.deviceStore.deviceId,
+            this._rootStore.userStore.accessToken,
+            message,
+            // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+            this._rootStore,
+          );
         },
       };
 
@@ -130,9 +327,12 @@ export class FireblocksSDKStore {
         logger: ConsoleLoggerFactory(),
       });
 
+      // Add a small delay to ensure the database connection is fully established
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       let fireblocksNCW: IFireblocksNCW | null = null;
 
-      let ncwInstance = getFireblocksNCWInstance(this._rootStore.deviceStore.deviceId);
+      const ncwInstance = getFireblocksNCWInstance(this._rootStore.deviceStore.deviceId);
       if (ncwInstance) {
         fireblocksNCW = ncwInstance;
       } else {
@@ -166,7 +366,21 @@ export class FireblocksSDKStore {
     } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
-      throw new Error(error.message);
+      throw new Error(error);
+    }
+  }
+
+  /**
+   * Initializes the SDK based on the configuration
+   * Calls either initEmbeddedWalletProcess or initWithProxyBackendProcess
+   * depending on the USE_EMBEDDED_WALLET_SDK environment variable
+   */
+  @action
+  public async init() {
+    if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+      await this.initEmbeddedWalletProcess();
+    } else {
+      await this.initWithProxyBackendProcess();
     }
   }
 
@@ -210,17 +424,33 @@ export class FireblocksSDKStore {
     }
   }
 
+  /**
+   * Generates MPC keys for the wallet
+   * Checks if keys are already generated, and if not, generates new keys
+   * for both ECDSA and EDDSA algorithms
+   * @throws Error if the SDK is not initialized or key generation fails
+   */
   @action
   public async generateMPCKeys(): Promise<void> {
     if (!this.sdkInstance) {
       this.setError('fireblocksNCW is not initialized');
     } else {
+      await this.checkMPCKeys();
+      if (this.isMPCReady) {
+        return;
+      }
       this.setIsMPCReady(false);
       this.setIsMPCGenerating(true);
       const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1', 'MPC_CMP_EDDSA_ED25519']);
       try {
         await this.sdkInstance.generateMPCKeys(ALGORITHMS);
         this.setIsMPCReady(true);
+
+        // Update keysStatus after generating MPC keys
+        const keyStatus = await this.sdkInstance.getKeysStatus();
+        if (Object.keys(keyStatus).length > 0) {
+          this.setKeysStatus(keyStatus);
+        }
       } catch (error: any) {
         throw new Error(error.message);
       } finally {
@@ -229,6 +459,11 @@ export class FireblocksSDKStore {
     }
   }
 
+  /**
+   * Checks if MPC keys are already generated and available
+   * Updates the isMPCReady state based on the check result
+   * @throws Error if the SDK is not initialized
+   */
   public async checkMPCKeys() {
     if (!this.sdkInstance) {
       this.setError('fireblocksNCW is not initialized');
@@ -236,6 +471,11 @@ export class FireblocksSDKStore {
       this.setIsMPCReady(false);
       this.setIsMPCGenerating(true);
       const keysStatus = await this.sdkInstance.getKeysStatus();
+
+      // Update keysStatus to ensure keysAreReady is updated correctly
+      if (Object.keys(keysStatus).length > 0) {
+        this.setKeysStatus(keysStatus);
+      }
 
       const secP256K1Status = keysStatus.MPC_CMP_ECDSA_SECP256K1?.keyStatus ?? null;
       const ed25519Status = keysStatus.MPC_CMP_EDDSA_ED25519?.keyStatus ?? null;
@@ -345,6 +585,11 @@ export class FireblocksSDKStore {
     this.isMPCReady = false;
     this.isMPCGenerating = false;
     this.error = '';
+  }
+
+  @action
+  public backupPhase(isBackupPage: boolean) {
+    this.isBackupPhase = isBackupPage;
   }
 
   @computed

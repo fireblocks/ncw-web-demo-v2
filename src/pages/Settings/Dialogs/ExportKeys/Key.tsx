@@ -1,8 +1,8 @@
 import React from 'react';
 import { SecondaryIconButton, styled } from '@foundation';
-import IconCopy from '@icons/copy.svg';
-import IconEye from '@icons/eye.svg';
-import IconEyeOff from '@icons/eye_off.svg';
+import IconCopyWhite from '@icons/copy_white.svg';
+import IconEyeOffWhite from '@icons/eye_off_white.svg';
+import IconEyeWhite from '@icons/eye_white.svg';
 import Tooltip from '@mui/material/Tooltip/Tooltip';
 import { useTranslation } from 'react-i18next';
 
@@ -70,7 +70,7 @@ export const Key: React.FC<IProps> = ({ assetKey }) => {
               ? 'SETTINGS.DIALOGS.EXPORT_PRIVATE_KEYS.SHOW_KEY'
               : 'SETTINGS.DIALOGS.EXPORT_PRIVATE_KEYS.HIDE_KEY',
           )}
-          iconSrc={isHiddenKey ? IconEyeOff : IconEye}
+          iconSrc={isHiddenKey ? IconEyeOffWhite : IconEyeWhite}
           onClick={() => {
             setIsHiddenKey(!isHiddenKey);
           }}
@@ -78,7 +78,7 @@ export const Key: React.FC<IProps> = ({ assetKey }) => {
         <Tooltip arrow placement="top" title={t('COMMON.COPIED')} open={isCopyTooltipOpen} onClose={hideCopyTooltip}>
           <div>
             <SecondaryIconButton
-              iconSrc={IconCopy}
+              iconSrc={IconCopyWhite}
               onMouseLeave={hideCopyTooltip}
               onClick={() => {
                 copyTextHandler();

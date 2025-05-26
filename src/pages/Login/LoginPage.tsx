@@ -1,12 +1,13 @@
 import React from 'react';
 import { Typography, alpha, styled } from '@foundation';
+import IconLogo from '@icons/login-ew-icon.svg';
 import IconAssets from '@icons/login_assets.svg';
 import IconBG from '@icons/login_bg.svg';
-import IconLogo from '@icons/logo.svg';
-import { useFireblocksSDKStore } from '@store';
+import { useAuthStore, useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { redirect } from 'react-router-dom';
+import { ENV_CONFIG } from '../../env_config.ts';
 import { Actions } from './Actions';
 
 const RootStyled = styled('div')(() => ({
@@ -39,6 +40,7 @@ const IllustrationBlockBGStyled = styled('img')(() => ({
   position: 'absolute',
   top: 0,
   left: 0,
+  height: '100%',
 }));
 
 const IllustrationContentStyled = styled('div')(() => ({
@@ -82,7 +84,7 @@ const ActionsBlockStyled = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   width: '48%',
-  height: 700,
+  height: '100%',
   minHeight: 700,
   boxSizing: 'border-box',
   margin: theme.spacing(3, 3, 3, 0),
@@ -110,10 +112,40 @@ export const LoginPage: React.FC = observer(function LoginPage() {
   const { t } = useTranslation();
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
   const fireblocksSDKStore = useFireblocksSDKStore();
+  const authStore = useAuthStore();
 
-  if (fireblocksSDKStore.keysAreReady) {
-    redirect(lastVisitedPage ? lastVisitedPage : 'assets');
-  }
+  const getWelcomeText = () => {
+    if (authStore.needToGenerateKeys) {
+      return t('LOGIN.GET_STARTED');
+    }
+    return ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? t('LOGIN.WELCOME_EW') : t('LOGIN.WELCOME');
+  };
+
+  const getDescriptionText = () => {
+    if (authStore.needToGenerateKeys) {
+      return t('LOGIN.JOIN_OR_RECOVER_DESCRIPTION');
+    }
+    return ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? t('LOGIN.DESCRIPTION_EW') : t('LOGIN.DESCRIPTION');
+  };
+
+  const updateBackupPupdateBackupPhasehase = (backupPage: boolean) => {
+    fireblocksSDKStore.backupPhase(backupPage);
+  };
+
+  // Pass this state to Actions component to know if we're in backup phase
+  React.useEffect(() => {
+    // This effect will run when keysAreReady changes
+    // If keys are ready and we're not in backup phase, redirect to assets
+    // But only if we're not in the process of generating MPC keys
+    if (fireblocksSDKStore.keysAreReady && !fireblocksSDKStore.isBackupPhase && !fireblocksSDKStore.isMPCGenerating) {
+      redirect(lastVisitedPage ? lastVisitedPage : 'assets');
+    }
+  }, [
+    fireblocksSDKStore.keysAreReady,
+    lastVisitedPage,
+    fireblocksSDKStore.isMPCGenerating,
+    fireblocksSDKStore.isBackupPhase,
+  ]);
 
   return (
     <RootStyled>
@@ -137,14 +169,14 @@ export const LoginPage: React.FC = observer(function LoginPage() {
               <LogoWrapperStyled>
                 <img src={IconLogo} />
               </LogoWrapperStyled>
-              <Typography variant="h3" color="text.primary">
-                {t('LOGIN.WELCOME')}
+              <Typography variant="h3" color="text.primary" sx={{ textTransform: 'uppercase' }}>
+                {getWelcomeText()}
               </Typography>
-              <Typography variant="h6" color="text.secondary">
-                {t('LOGIN.DESCRIPTION')}
+              <Typography variant="h6" color="text.secondary" sx={{ textTransform: 'uppercase' }}>
+                {getDescriptionText()}
               </Typography>
             </ActionsHeadingStyled>
-            <Actions />
+            <Actions setIsInBackupPhase={updateBackupPupdateBackupPhasehase} />
           </ActionsContentStyled>
         </ActionsBlockStyled>
       </ContentWrapperStyled>

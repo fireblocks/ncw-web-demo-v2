@@ -1,14 +1,20 @@
-import React from 'react';
-import { ActionButton, Progress, TableCell, TableRow, TableTitleCell, styled } from '@foundation';
+import React, { useMemo } from 'react';
+import { ActionButton, Progress, TableCell, TableRow, TableTextCell, TableTitleCell, styled } from '@foundation';
 import IconNoAsset from '@icons/no_asset_image.svg';
-import { AssetStore, useAssetsStore } from '@store';
+import { top100Cryptos } from '@services';
+import { AssetStore, NOT_AVAILABLE_PLACEHOLDER, useAssetsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 
-const RowStyled = styled('div')(() => ({
+const RowStyled = styled('div')(({ theme }) => ({
   display: 'grid',
-  gridTemplateColumns: '1fr 130px',
+  gridTemplateColumns: '250px 100px 130px',
+  columnGap: theme.spacing(2), // Add spacing between columns
+  '& > *': {
+    maxWidth: '100%', // Ensure each child has max width
+    overflow: 'hidden', // Hide overflow
+  },
 }));
 
 interface IProps {
@@ -47,6 +53,53 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
       });
   };
 
+  const titleCellProps = useMemo(
+    () => ({
+      title: currentAsset.name,
+      subtitle: currentAsset.symbol,
+      iconUrl: currentAsset.iconUrl || IconNoAsset,
+    }),
+    [currentAsset.name, currentAsset.symbol, currentAsset.iconUrl],
+  );
+
+  // Get the price for the current asset from top100Cryptos
+  const formattedPrice = useMemo(() => {
+    // Get the price from top100Cryptos using the asset symbol
+    // Try different variations of the symbol to find a match
+    const symbol = currentAsset.symbol.toUpperCase();
+    let cryptoData = top100Cryptos[symbol];
+
+    // If not found, try to find it by name
+    if (!cryptoData) {
+      // Try to find a match by comparing the asset name with the titles in top100Cryptos
+      const assetNameLower = currentAsset.name.toLowerCase();
+
+      // Find a matching cryptocurrency by comparing the asset name with the titles in top100Cryptos
+      const matchingSymbol = Object.keys(top100Cryptos).find((key) => {
+        const cryptoTitle = top100Cryptos[key].title.toLowerCase();
+        return assetNameLower.includes(cryptoTitle) || cryptoTitle.includes(assetNameLower);
+      });
+
+      if (matchingSymbol) {
+        cryptoData = top100Cryptos[matchingSymbol];
+      }
+    }
+
+    // If we don't have price data for this coin, return placeholder instead of "$0"
+    if (!cryptoData) {
+      return NOT_AVAILABLE_PLACEHOLDER;
+    }
+
+    const price = cryptoData.price;
+
+    // Format the price as a dollar amount with commas
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(price);
+  }, [currentAsset.symbol, currentAsset.name]);
+
   return (
     <div
       style={style}
@@ -60,11 +113,8 @@ export const AssetListItem: React.FC<IProps> = observer(function AssetListItem({
     >
       <TableRow>
         <RowStyled>
-          <TableTitleCell
-            title={currentAsset.name}
-            subtitle={currentAsset.symbol}
-            iconUrl={currentAsset.iconUrl || IconNoAsset}
-          />
+          <TableTitleCell {...titleCellProps} />
+          <TableTextCell text={formattedPrice} />
           <TableCell>
             {hoveredLine === currentAsset.id ? (
               <>

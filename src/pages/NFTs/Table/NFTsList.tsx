@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableBody, TableHead, TableHeaderCell } from '@foundation';
+import { Table, TableBody, TableHead, TableHeaderCell, SortableTableHeaderCell, SortDirection } from '@foundation';
 import { useNFTStore } from '@store';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
@@ -26,21 +26,64 @@ export const NFTsList: React.FC<IProps> = observer(function NFTsList({
   const NFTStore = useNFTStore();
   const { t } = useTranslation();
 
-  const filteredTokens = NFTStore.tokens.filter(
+  const [sortField, setSortField] = React.useState<string | null>(null);
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>(null);
+
+  // Handle sorting
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new field and default to descending
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  // Filter tokens based on search query
+  const filteredBySearch = NFTStore.tokens.filter(
     (token) =>
-      token.name.toLowerCase().includes(query.toLowerCase()) ||
-      token.tokenId.toLowerCase().includes(query.toLowerCase()),
+      (token.name?.toLowerCase() || '').includes(query.toLowerCase()) ||
+      (token.tokenId?.toLowerCase() || '').includes(query.toLowerCase()),
   );
+
+  // Sort tokens based on sort field and direction
+  const filteredTokens = React.useMemo(() => {
+    if (!sortField || !sortDirection) {
+      return filteredBySearch;
+    }
+
+    return [...filteredBySearch].sort((a, b) => {
+      if (sortField === 'date') {
+        // Sort by ownership start time
+        const timeA = a.ownershipStartTime || 0;
+        const timeB = b.ownershipStartTime || 0;
+
+        return sortDirection === 'asc' ? timeA - timeB : timeB - timeA;
+      }
+
+      return 0;
+    });
+  }, [filteredBySearch, sortField, sortDirection]);
 
   return (
     <Table>
       <TableHead>
         <RowStyled>
           <TableHeaderCell title={t('NFT.TABLE.HEADERS.NFT')} />
+          <TableHeaderCell title={t('NFT.TABLE.HEADERS.AMOUNT')} />
+          <TableHeaderCell title={t('NFT.TABLE.HEADERS.NETWORK')} />
           <TableHeaderCell title={t('NFT.TABLE.HEADERS.COLLECTION')} />
-          <TableHeaderCell title={t('NFT.TABLE.HEADERS.DATE')} />
-          <TableHeaderCell title={t('NFT.TABLE.HEADERS.TOKEN_ID')} />
+          <SortableTableHeaderCell
+            title={t('NFT.TABLE.HEADERS.DATE')}
+            sortField="date"
+            currentSortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+          />
           <TableHeaderCell title={t('NFT.TABLE.HEADERS.STANDARD')} />
+          <TableHeaderCell title={t('NFT.TABLE.HEADERS.TOKEN_ID')} />
         </RowStyled>
       </TableHead>
       <TableBody>

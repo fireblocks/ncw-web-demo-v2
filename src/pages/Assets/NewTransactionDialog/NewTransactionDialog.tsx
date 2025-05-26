@@ -1,7 +1,8 @@
 import React from 'react';
 import { TNewTransactionMode, TFeeLevel } from '@api';
-import { AddressField, AssetAmountInput, Dialog, QRField, TextInput, styled } from '@foundation';
-import { AssetStore, localizedCurrencyView, useAccountsStore, useDeviceStore, useTransactionsStore } from '@store';
+import { AddressField, AssetAmountInput, Dialog, QRField, TextInput, styled, Typography } from '@foundation';
+import { top100Cryptos } from '@services';
+import { AssetStore, useAccountsStore, useDeviceStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +37,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
   const [address, setAddress] = React.useState('');
   const [feeLevel, setFeeLevel] = React.useState('LOW');
   const [txType, setTxType] = React.useState('TRANSFER');
+  const [isAmountTooHigh, setIsAmountTooHigh] = React.useState(false);
   const [isCreatingTransfer, setIsCreatingTransfer] = React.useState(false);
 
   React.useEffect(() => {
@@ -46,13 +48,29 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
     }
   }, [asset]);
 
+  React.useEffect(() => {
+    if (!amount || !asset?.totalBalance) {
+      setIsAmountTooHigh(false);
+      return;
+    }
+
+    const amountValue = parseFloat(amount);
+    const balanceValue = asset.totalBalance;
+
+    setIsAmountTooHigh(amountValue > balanceValue);
+  }, [amount, asset?.totalBalance]);
+
   const clearState = () => {
     setAmount('');
     setAddress('');
     setFeeLevel('LOW');
   };
 
-  const shouldDisableAction = (txType === 'TRANSFER' && mode === 'SEND' && (!amount || !address)) || isCreatingTransfer;
+  const shouldDisableAction =
+    (txType === 'TRANSFER' &&
+      mode === 'SEND' &&
+      (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0 || !address || isAmountTooHigh)) ||
+    isCreatingTransfer;
 
   const createNewTransaction = () => {
     setIsCreatingTransfer(true);
@@ -101,11 +119,48 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
     }
   }, [mode, asset]);
 
+  // Get price from top100Cryptos based on asset symbol, myRate --> (true) do we want to calculate the amount based
+  // on what we have in our wallet or (false) based on the amount entered in the text input amount
+  const getAssetPriceFromTop100Cryptos = (assetItem: any, myRate = true) => {
+    if (!assetItem) return '--';
+
+    // Get the price from top100Cryptos using the asset symbol
+    const symbol = assetItem.symbol.toUpperCase();
+    let cryptoData = top100Cryptos[symbol];
+
+    // If not found, try to find it by name
+    if (!cryptoData) {
+      // Try to find a match by comparing the asset name with the titles in top100Cryptos
+      const assetNameLower = assetItem.name.toLowerCase();
+
+      // Find a matching cryptocurrency by comparing the asset name with the titles in top100Cryptos
+      const matchingSymbol = Object.keys(top100Cryptos).find((key) => {
+        const cryptoTitle = top100Cryptos[key].title.toLowerCase();
+        return assetNameLower.includes(cryptoTitle) || cryptoTitle.includes(assetNameLower);
+      });
+
+      if (matchingSymbol) {
+        cryptoData = top100Cryptos[matchingSymbol];
+      }
+    }
+
+    // If we don't have price data for this coin, return assetItem.rate as fallback
+    if (!cryptoData) {
+      return assetItem.rate;
+    }
+
+    const price = cryptoData.price;
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    }).format(amount && !myRate ? price * Number(amount) : price * assetItem.totalBalance);
+  };
+
   if (!asset) {
     return null;
   }
-
-  const convertedAmount = asset.assetData.rate ? localizedCurrencyView(Number(amount) * asset.assetData.rate) : '--';
 
   return (
     <Dialog
@@ -124,23 +179,26 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       actionCaption={t('ASSETS.NEW_TRANSACTION_DIALOG.ACTION')}
     >
       <RootStyled>
-        <SelectedAsset asset={asset} />
+        <Typography component="p" color="text.secondary" variant="subtitle1" style={{ marginBottom: '5px' }}>
+          Asset
+        </Typography>
+        <SelectedAsset asset={asset} rate={getAssetPriceFromTop100Cryptos(asset)} />
         {mode === 'SEND' ? (
           <>
             <TxType setType={setTxType} type={txType} disabled={asset?.totalBalance === 0} />
             <AssetAmountInput
               disabled={txType !== 'TRANSFER'}
-              placeholder="0"
+              placeholder={'0' + ' ' + asset.symbol}
               label={t('ASSETS.NEW_TRANSACTION_DIALOG.AMOUNT')}
               value={amount}
               setValue={setAmount}
               assetSymbol={asset.symbol}
-              adornment={convertedAmount}
+              adornment={Number(amount) > 0 ? getAssetPriceFromTop100Cryptos(asset, false) : asset.rate}
             />
             <TextInput
               disabled={txType !== 'TRANSFER'}
               placeholder={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
-              label={t('ASSETS.NEW_TRANSACTION_DIALOG.RECEIVING_ADDRESS')}
+              label={t('ASSETS.NEW_TRANSACTION_DIALOG.SEND_TO')}
               value={address}
               setValue={setAddress}
             />

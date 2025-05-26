@@ -10,6 +10,7 @@ import { NFTStore } from './NFT.store';
 import { RootStore } from './Root.store';
 import { TransactionsStore } from './Transactions.store';
 import { UserStore } from './User.store';
+import { Web3Store } from './Web3.store';
 
 export function useRootStore(): RootStore {
   const stores = useContext(MobXProviderContext);
@@ -59,4 +60,25 @@ export function useBackupStore(): BackupStore {
 export function useAuthStore(): AuthStore {
   const rootStore = useRootStore();
   return rootStore.authStore;
+}
+
+export function useWeb3Store(): Web3Store {
+  const rootStore = useRootStore();
+  return rootStore.web3Store;
+}
+
+export function useStores() {
+  const rootStore = useRootStore();
+  return {
+    userStore: rootStore.userStore,
+    deviceStore: rootStore.deviceStore,
+    assetsStore: rootStore.assetsStore,
+    transactionsStore: rootStore.transactionsStore,
+    accountsStore: rootStore.accountsStore,
+    fireblocksSDKStore: rootStore.fireblocksSDKStore,
+    nftStore: rootStore.nftStore,
+    backupStore: rootStore.backupStore,
+    authStore: rootStore.authStore,
+    web3Store: rootStore.web3Store,
+  };
 }

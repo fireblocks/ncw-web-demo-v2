@@ -1,9 +1,10 @@
 import React from 'react';
 import { DropDownMenu, IconButton, MenuItem, Tooltip, Typography, styled } from '@foundation';
 import IconArrowLeft from '@icons/arrow-left.svg';
-import IconLogo from '@icons/logo.svg';
+import IconLogo from '@icons/login-ew-icon.svg';
 import IconSettings from '@icons/settings.svg';
 import { useTransactionsStore, useUserStore } from '@store';
+import { ENV_CONFIG } from 'env_config';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -84,6 +85,7 @@ export const Header: React.FC = observer(function Header() {
   const isAssetsPage = location.pathname === '/assets';
   const isTransactionsPage = location.pathname === '/transactions';
   const isNftsPage = location.pathname === '/nfts';
+  const isWeb3Page = location.pathname === '/web3';
   const isUserMenuOpen = Boolean(userMenuAnchorEl);
   const showTransactionsNotification = transactionsStore.hasPendingSignature;
 
@@ -112,7 +114,7 @@ export const Header: React.FC = observer(function Header() {
           <IconButton
             large
             onClick={() => {
-              navigate('assets');
+              navigate('/assets');
             }}
           >
             <img src={IconLogo} />
@@ -143,6 +145,14 @@ export const Header: React.FC = observer(function Header() {
               </Typography>
               {isNftsPage && <LinkMarkerStyled />}
             </NavLinkStyled>
+            {ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && (
+              <NavLinkStyled to="web3">
+                <Typography variant="h6" color="inherit">
+                  {t('NAVIGATION.WEB3')}
+                </Typography>
+                {isWeb3Page && <LinkMarkerStyled />}
+              </NavLinkStyled>
+            )}
             <NavLinkStyled to="transactions">
               <Typography variant="h6" color="inherit">
                 {t('NAVIGATION.TRANSACTIONS')}
@@ -162,7 +172,7 @@ export const Header: React.FC = observer(function Header() {
           large
           tooltip={t('SETTINGS.NAME')}
           onClick={() => {
-            navigate('settings');
+            navigate('/settings');
           }}
         >
           <img src={IconSettings} />
