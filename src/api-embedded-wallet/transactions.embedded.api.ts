@@ -233,7 +233,7 @@ export const createTransaction = async (
             ],
           },
         },
-        assetId: 'ETH_TEST5',
+        assetId,
         source: {
           type: 'END_USER_WALLET',
           walletId,
