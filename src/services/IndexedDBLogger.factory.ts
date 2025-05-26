@@ -24,7 +24,9 @@ export function IndexedDBLoggerFactory(options: IIndexedDBLoggerOptions): Promis
   loggerPromise.catch((error) => {
     console.error('Error initializing IndexedDBLogger:', error);
     // Remove failed instance from cache so it can be retried
-    delete loggerInstances[key];
+    if (Object.prototype.hasOwnProperty.call(loggerInstances, key)) {
+      loggerInstances[key] = null as unknown as Promise<IndexedDBLogger>;
+    }
   });
 
   return loggerPromise;

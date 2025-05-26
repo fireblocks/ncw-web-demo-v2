@@ -4,7 +4,6 @@ import {
   CopyText,
   TableBalanceCell,
   TableCell,
-  TableChangeCell,
   TablePriceCell,
   TableRow,
   TableTextCell,
@@ -59,7 +58,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
   );
 
   // Generate a random number between -5 and 20 for the 24H change
-  const change24h = useMemo(() => {
+  const _change24h = useMemo(() => {
     // Use the asset ID as a seed for the random number to ensure consistency
     const seed = parseInt(currentAsset.id.replace(/\D/g, '') || '0', 10);
     // Use Math.abs to ensure we get a positive value before taking modulo
@@ -79,7 +78,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
   }, [currentAsset.id]);
 
   // Format market cap as a dollar amount with commas
-  const formattedMarketCap = useMemo(
+  const _formattedMarketCap = useMemo(
     () =>
       new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -100,7 +99,7 @@ export const AssetsListItem: React.FC<IProps> = observer(function AssetsListItem
   }, [currentAsset.id]);
 
   // Format 24H volume as a dollar amount with commas
-  const formattedVolume24h = useMemo(
+  const _formattedVolume24h = useMemo(
     () =>
       new Intl.NumberFormat('en-US', {
         style: 'currency',

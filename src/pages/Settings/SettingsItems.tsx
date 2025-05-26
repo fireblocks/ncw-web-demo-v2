@@ -6,8 +6,7 @@ import IconKey from '@icons/key.svg';
 import IconWallet from '@icons/new-wallet.svg';
 import IconRecoverWallet from '@icons/setting-recover-wallet.svg';
 import IconLogs from '@icons/share_logs.svg';
-import { useAssetsStore, useAuthStore, useBackupStore, useFireblocksSDKStore } from '@store';
-import { decode } from 'js-base64';
+import { useAssetsStore, useBackupStore, useFireblocksSDKStore } from '@store';
 import { observer } from 'mobx-react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -35,8 +34,8 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
   const backupStore = useBackupStore();
   const fireblocksSDKStore = useFireblocksSDKStore();
   const assetsStore = useAssetsStore();
-  const fireblockStore = useFireblocksSDKStore();
-  const { enqueueSnackbar } = useSnackbar();
+  const _fireblockStore = useFireblocksSDKStore();
+  const { enqueueSnackbar: _enqueueSnackbar } = useSnackbar();
 
   const [isAdvancedInfoDialogOpen, setIsAdvancedInfoDialogOpen] = React.useState(false);
   const [isLogsDialogOpen, setIsLogsDialogOpen] = React.useState(false);
@@ -50,7 +49,7 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
    * Approves join wallet request.
    * @param requestData - encoded request data from the other device we want to approve
    */
-  const approveJoinWallet = async (): Promise<void> => {
+  const approveJoinWallet = (): void => {
     setIsAddNewDeviceDialogOpen(true);
   };
 
@@ -121,7 +120,7 @@ export const SettingsItems: React.FC = observer(function SettingsItems() {
         caption={t('SETTINGS.ITEMS.APPROVE_JOIN_DEVICE.TITLE')}
         description={t('SETTINGS.ITEMS.APPROVE_JOIN_DEVICE.DESCRIPTION')}
         onClick={() => {
-          void approveJoinWallet();
+          approveJoinWallet();
         }}
       />
 

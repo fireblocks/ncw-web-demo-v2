@@ -89,7 +89,7 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
             }
           />
           <TableBalanceCell
-            balance={`${transaction.amount} ${transaction.asset?.symbol || ''}`}
+            balance={`${String(transaction.amount)} ${transaction.asset?.symbol || ''}`}
             balanceInUsd={transaction.amountInUSD}
           />
           <TableTitleCell

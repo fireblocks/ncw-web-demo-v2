@@ -183,9 +183,8 @@ export const getTransactions = async (
       });
 
       const allTransactions = [...(transactionsIncoming.data ?? []), ...(transactionsOutgoing?.data ?? [])];
-      // @ts-expect-error
       return allTransactions.map((tx) => ({
-        id: tx.id,
+        id: tx.id!,
         status: tx.status as TTransactionStatus,
         createdAt: tx.createdAt,
         lastUpdated: tx.lastUpdated,
@@ -238,7 +237,7 @@ export const createTransaction = async (
         source: {
           type: 'END_USER_WALLET',
           walletId,
-          id: `${accountId}` ?? '',
+          id: String(accountId),
         },
         note: `API Transaction`,
       };

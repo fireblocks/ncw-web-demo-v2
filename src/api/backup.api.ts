@@ -1,4 +1,3 @@
-import { RootStore } from '@store';
 import { getCall, postCall } from './utils.api';
 
 export type TPassphraseLocation = 'GoogleDrive' | 'iCloud';
@@ -38,14 +37,6 @@ export const getLatestBackup = async (walletId: string, token: string): Promise<
   } else {
     throw new Error('Failed to get latest backup');
   }
-};
-
-export const getPassphraseInfo = async (
-  passphraseId: string,
-  token: string,
-): Promise<{ location: TPassphraseLocation }> => {
-  const response = await getCall(`api/passphrase/${passphraseId}`, token);
-  return response.json();
 };
 
 export const getPassphraseInfos = async (token: string): Promise<{ passphrases: IPassphraseInfo[] }> => {

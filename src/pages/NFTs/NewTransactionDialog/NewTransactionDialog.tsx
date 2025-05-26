@@ -42,9 +42,9 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
     setIsCreatingTransfer(true);
     transactionsStore
       .createTransaction({
-        note: `API Transaction by ${deviceStore.deviceId}`,
-        accountId: `${accountsStore.currentAccount?.accountId}`,
-        assetId: `${token?.id}`,
+        note: `API Transaction by ${String(deviceStore.deviceId)}`,
+        accountId: accountsStore.currentAccount?.accountId ? String(accountsStore.currentAccount.accountId) : '',
+        assetId: token?.id ? String(token.id) : '',
         destAddress: address,
         estimateFee: false,
         feeLevel: feeLevel as TFeeLevel,

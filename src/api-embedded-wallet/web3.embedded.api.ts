@@ -42,16 +42,12 @@ export const createWeb3Connection = async (
   payload: ICreateNcwConnectionRequest,
   rootStore: RootStore | null = null,
 ) => {
-  try {
-    if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
-      throw new Error('Embedded wallet SDK is not initialized');
-    }
-
-    const response = await rootStore.fireblocksSDKStore.fireblocksEW.createWeb3Connection(payload);
-    return response;
-  } catch (error) {
-    throw error;
+  if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
   }
+
+  const response = await rootStore.fireblocksSDKStore.fireblocksEW.createWeb3Connection(payload);
+  return response;
 };
 
 /**
@@ -70,15 +66,11 @@ export const submitWeb3Connection = async (
   payload: RespondToConnectionRequest,
   rootStore: RootStore | null = null,
 ): Promise<void> => {
-  try {
-    if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
-      throw new Error('Embedded wallet SDK is not initialized');
-    }
-
-    await rootStore.fireblocksSDKStore.fireblocksEW.submitWeb3Connection(id, payload);
-  } catch (error) {
-    throw error;
+  if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
   }
+
+  await rootStore.fireblocksSDKStore.fireblocksEW.submitWeb3Connection(id, payload);
 };
 
 /**
@@ -95,13 +87,9 @@ export const removeWeb3Connection = async (
   id: string,
   rootStore: RootStore | null = null,
 ): Promise<void> => {
-  try {
-    if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
-      throw new Error('Embedded wallet SDK is not initialized');
-    }
-
-    await rootStore.fireblocksSDKStore.fireblocksEW.removeWeb3Connection(id);
-  } catch (error) {
-    throw error;
+  if (!rootStore?.fireblocksSDKStore.fireblocksEW) {
+    throw new Error('Embedded wallet SDK is not initialized');
   }
+
+  await rootStore.fireblocksSDKStore.fireblocksEW.removeWeb3Connection(id);
 };

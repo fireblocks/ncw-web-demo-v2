@@ -423,7 +423,7 @@ interface CoinRate {
  * @param coinSymbolToIdMap Map of coin symbols to their CoinGecko IDs
  * @returns Promise with an array of coin rates
  */
-const getAllRatesLive = async (coinSymbolToIdMap: CoinSymbolToIdMap): Promise<CoinRate[]> => {
+const _getAllRatesLive = async (coinSymbolToIdMap: CoinSymbolToIdMap): Promise<CoinRate[]> => {
   const coinIds = Object.values(coinSymbolToIdMap).join(',');
   const apiUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds}&vs_currencies=usd`;
 
@@ -446,7 +446,7 @@ const getAllRatesLive = async (coinSymbolToIdMap: CoinSymbolToIdMap): Promise<Co
 export const getCryptoIconUrl = (symbol: string) => {
   const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
   return normalizedSymbol?.length && cryptoIconNamesLocally.includes(normalizedSymbol)
-    ? `${ENV_CONFIG.VITE_BASE_FOLDER}/icons/crypto-icons/${normalizedSymbol}.png`
+    ? `${String(ENV_CONFIG.VITE_BASE_FOLDER)}/icons/crypto-icons/${normalizedSymbol}.png`
     : '';
 };
 
@@ -506,7 +506,7 @@ const cryptoIconNamesLocally = [
   'yfi', // yearn.finance
 ];
 
-const coinSymbolToIdMap = {
+const _coinSymbolToIdMap = {
   btc: 'bitcoin',
   eth: 'ethereum',
   usdt: 'tether',

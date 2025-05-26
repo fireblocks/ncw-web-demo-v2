@@ -90,7 +90,7 @@ export const Web3List: React.FC<IProps> = observer(
               query={query}
               setQuery={setQuery}
               placeholder={
-                t('WEB3.SEARCH') + (sortedConnections.length > 0 ? ' (' + `${sortedConnections.length}` + ')' : '')
+                t('WEB3.SEARCH') + (sortedConnections.length > 0 ? ' (' + String(sortedConnections.length) + ')' : '')
               }
             />
           </SearchWrapperStyled>

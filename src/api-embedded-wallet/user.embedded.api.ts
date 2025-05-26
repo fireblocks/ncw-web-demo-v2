@@ -1,6 +1,7 @@
 import { RootStore } from '@store';
 
-export const getUserId = async (_token: string, rootStore: RootStore | null = null): Promise<string> => {
+// eslint-disable-next-line @typescript-eslint/require-await
+export const getUserId = async (_token: string, rootStore: RootStore | null = null) => {
   const user = rootStore?.userStore.getGoogleDriveUserInfo();
-  return Promise.resolve(user?.uid || '');
+  return user?.uid;
 };

@@ -190,7 +190,7 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
       await web3Store.getConnections(false);
 
       // Call the parent component's onAddConnection function to update the UI
-      await onAddConnection(connection);
+      onAddConnection(connection);
 
       // Show success message
       enqueueSnackbar(t('WEB3.ADD_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
@@ -221,7 +221,9 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
         <ConnectionConfirmation
           connection={connectionDetails}
           onCancel={handleCancel}
-          onConnect={handleConnect}
+          onConnect={(conn) => {
+            void handleConnect(conn);
+          }}
           isLoading={isLoading}
         />
       ) : (
@@ -251,7 +253,9 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
 
             <ActionButton
               caption={t('WEB3.ADD_DIALOG.CONTINUE')}
-              onClick={handleContinue}
+              onClick={() => {
+                void handleContinue();
+              }}
               disabled={!connectionLink || isLoading}
               isDialog={true}
             />

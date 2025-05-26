@@ -7,7 +7,7 @@ export type TPassphraseLocation = 'GoogleDrive' | 'iCloud';
 export type TPassphrases = Record<string, IPassphraseInfo>;
 
 export const getLatestBackup = async (
-  _walletId: string = '',
+  _walletId: string,
   _token: string,
   rootStore: RootStore | null = null,
 ): Promise<IBackupInfo | null> => {
@@ -15,67 +15,40 @@ export const getLatestBackup = async (
     const response = await rootStore?.fireblocksSDKStore?.fireblocksEW?.getLatestBackup();
     if (response) {
       return {
-        passphraseId: response?.passphraseId,
-        location: determineLocation(response.passphraseId),
-        createdAt: response?.createdAt,
-        keys: response?.keys,
+        passphraseId: response.passphraseId,
+        location: 'GoogleDrive',
+        createdAt: response.createdAt,
+        keys: response.keys,
       };
-    } else {
-      return null;
     }
   } catch (error) {
     console.error('getLatestBackup: [EmbeddedWalletSDK] Error getting latest backup:', error);
-    return null;
   }
-};
 
-function determineLocation(passphraseId: string): TPassphraseLocation {
-  if (passphraseId.startsWith('gdrive')) {
-    return 'GoogleDrive';
-  } else if (passphraseId.startsWith('icloud')) {
-    return 'iCloud';
-  } else {
-    // default to GoogleDrive
-    return 'GoogleDrive';
-  }
-}
-
-export const getPassphraseInfo = async (
-  passphraseId: string,
-  _token: string,
-  _rootStore: RootStore | null = null,
-): Promise<IPassphraseInfo> => {
-  try {
-    return Promise.resolve({ passphraseId: passphraseId, location: 'GoogleDrive' });
-  } catch (e) {
-    console.error('backup.embedded.api.ts - getPassphraseInfo err: ', e);
-    // Return a default value even in case of error
-    return { passphraseId: passphraseId, location: 'GoogleDrive' };
-  }
+  return null;
 };
 
 export const getPassphraseInfos = async (
   _token: string,
-  rootStore: RootStore | null = null,
+  rootStore?: RootStore,
 ): Promise<{ passphrases: IPassphraseInfo[] } | null> => {
-  const passphrases: { passphrases: IPassphraseInfo[] } = {
-    passphrases: [],
-  };
   try {
     const res: any = await rootStore?.fireblocksSDKStore?.fireblocksEW?.getLatestBackup();
-    passphrases.passphrases.push({ passphraseId: res.passphraseId, location: 'GoogleDrive' });
+    return { passphrases: [{ passphraseId: res.passphraseId, location: 'GoogleDrive' }] };
   } catch (error: any) {
     // Check if this is the "No backup found" error
-    if (error.message === 'No backup found' || (error.code === 'UNKNOWN' && error.message === 'No backup found')) {
-      return null; // Return null to indicate no backup exists yet
+    if (error.message === 'No backup found') {
+      console.warn('getPassphraseInfos: No backup found');
+      return { passphrases: [] };
     }
 
-    // Log other errors and rethrow
-    console.error('backup.embedded.api.ts - getPassphraseInfo err: ', error);
+    console.error('getPassphraseInfos: ', error);
     throw error;
   }
-  return passphrases;
 };
 
-export const createPassphraseInfo = async (passphraseId: string, location: TPassphraseLocation, _token: string) =>
-  Promise.resolve({ passphraseId, location });
+// eslint-disable-next-line @typescript-eslint/require-await
+export const createPassphraseInfo = async (passphraseId: string, location: TPassphraseLocation, _token: string) => ({
+  passphraseId,
+  location,
+});

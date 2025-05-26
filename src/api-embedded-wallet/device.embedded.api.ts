@@ -47,23 +47,17 @@ export const assignDeviceToNewWallet = async (
   }
 };
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export const getDevices = async (_token: string, rootStore: RootStore | null = null): Promise<IDeviceDTO[]> => {
   if (rootStore?.deviceStore?.walletId) {
-    return new Promise((resolve) => {
-      resolve([
-        {
-          deviceId: rootStore?.deviceStore?.deviceId,
-          walletId: rootStore?.deviceStore?.walletId,
-          createdAt: Date.now(),
-        },
-        {
-          deviceId: rootStore?.deviceStore?.deviceId,
-          walletId: rootStore?.deviceStore?.walletId,
-          createdAt: Date.now(),
-        },
-      ]);
-    });
-  } else {
-    return [];
+    return [
+      {
+        deviceId: rootStore?.deviceStore?.deviceId,
+        walletId: rootStore?.deviceStore?.walletId,
+        createdAt: Date.now(),
+      },
+    ];
   }
+
+  return [];
 };

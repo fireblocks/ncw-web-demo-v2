@@ -6,6 +6,7 @@ import { Connection } from './Web3List';
  * @param session The SessionDTO object from the API
  * @returns A Connection object for the UI
  */
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export const mapSessionDTOToConnection = (session: SessionDTO | any): Connection => ({
   id: session.id,
   name: session.sessionMetadata?.appName || session?.name || 'Unknown DApp',

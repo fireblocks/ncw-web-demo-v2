@@ -59,7 +59,7 @@ export const ExportPrivateKeyErrorDialog: React.FC<IProps> = observer(function E
   onClose,
   onTryAgain,
 }) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
 
   return (
     <Dialog title="Export private key" isOpen={isOpen} onClose={onClose} size="medium">

@@ -8,7 +8,7 @@ module.exports = {
       "plugin:react-hooks/recommended",
       "prettier",
     ],
-    ignorePatterns: ["dist", ".eslintrc.cjs", "node_modules"],
+    ignorePatterns: ["dist", ".eslintrc.cjs", "node_modules", "public/icons/**/*.d.ts"],
     parser: "@typescript-eslint/parser",
     parserOptions: {
       sourceType: "module",

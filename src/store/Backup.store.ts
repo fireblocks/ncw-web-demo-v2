@@ -177,38 +177,45 @@ export class BackupStore {
     try {
       const token = await this._rootStore.userStore.getGoogleDriveCredentials();
       await googleDriveBackup(token, passphrase, passphraseId);
-    } catch (e: any) {}
+    } catch (e: any) {
+      // Errors during backup are handled by the UI layer
+    }
   }
 
-  public async getMyLatestBackup(walletId: string = ''): Promise<IBackupInfo | null> {
+  public async getMyLatestBackup(walletId?: string): Promise<(IBackupInfo & { walletId: string }) | null> {
     try {
-      const walletIdItem = walletId ? walletId : this._rootStore.deviceStore.walletId;
+      walletId = walletId || this._rootStore?.deviceStore?.walletId;
       const latestBackup = await getLatestBackup(
-        walletIdItem ?? '',
+        walletId,
         this._rootStore.userStore.accessToken,
         // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
         this._rootStore,
       );
-      return latestBackup;
+      if (latestBackup) {
+        return { ...latestBackup, walletId };
+      }
     } catch (e: any) {
       this.setError(e.message);
-      return null;
     }
+
+    return null;
   }
 
   public async recoverGoogleDrive(passphraseId: string): Promise<string> {
     try {
       const token = await this._rootStore.userStore.getGoogleDriveCredentials();
-      return googleDriveRecover(token, passphraseId);
+      return await googleDriveRecover(token, passphraseId);
     } catch (e: any) {
+      console.error('Error recovering passphrase from Google Drive:', e);
       this.setError(e.message);
     }
-    return '';
+
+    throw new Error('Failed to recover passphrase from Google Drive');
   }
 
   public async passphraseRecover(location: TPassphraseLocation): Promise<IPassphrase> {
     if (this.passPhrases === null) {
-      throw new Error();
+      throw new Error('passphraseRecover: Passphrases not initialized');
     }
 
     // try to reuse previous
@@ -236,19 +243,18 @@ export class BackupStore {
     throw new Error(`Not found backup location ${location as string}`);
   }
 
-  public async passphrasePersist(location: TPassphraseLocation): Promise<IPassphrase> {
+  public async passphraseRecoverOrCreate(location: TPassphraseLocation): Promise<IPassphrase> {
     if (this.passPhrases === null) {
       await this.init();
-
-      // If passphrases are still null after initialization, then throw an error
       if (this.passPhrases === null) {
-        throw new Error('Failed to load passphrases');
+        throw new Error('passphraseRecoverOrCreate: Failed to load passphrases');
       }
     }
 
     try {
       const recover = await this.passphraseRecover(location);
       if (recover) {
+        console.log('Reusing existing passphrase for location: ', location);
         return recover;
       }
     } catch (e: any) {
@@ -283,7 +289,7 @@ export class BackupStore {
     const { passphrases } = await getPassphraseInfos(this._rootStore.userStore.accessToken, this._rootStore);
 
     if (passphrases === null) {
-      throw new Error();
+      throw new Error('recoverPassphraseId: Passphrases not initialized');
     }
 
     this.setPassPhrases(passphrases);
@@ -319,9 +325,7 @@ export class BackupStore {
     this.clearProgress();
     this.setIsBackupInProgress(true);
     try {
-      // Ensure passphrases are loaded before proceeding
-      await this.init();
-      const { passphrase, passphraseId } = await this.passphrasePersist(location);
+      const { passphrase, passphraseId } = await this.passphraseRecoverOrCreate(location);
       await this._rootStore.fireblocksSDKStore.sdkInstance?.backupKeys(passphrase, passphraseId);
       const latestBackup = await this.getMyLatestBackup();
       this.setLatestBackup(latestBackup);
@@ -342,11 +346,12 @@ export class BackupStore {
     this.clearProgress();
     this.setIsRecoverInProgress(true);
     try {
-      // Ensure passphrases are loaded before proceeding
-      await this.init();
-      const { passphraseId } = await this.passphrasePersist(location);
+      await this.passphraseRecover(location);
       if (this._rootStore.fireblocksSDKStore.sdkInstance) {
-        await this._rootStore.fireblocksSDKStore.sdkInstance.recoverKeys(() => this.recoverPassphraseId(passphraseId));
+        await this._rootStore.fireblocksSDKStore.sdkInstance.recoverKeys(async (passphraseId: string) => {
+          const passphrase = await this.recoverPassphraseId(passphraseId);
+          return passphrase;
+        });
         const keysStatus = await this._rootStore.fireblocksSDKStore.sdkInstance.getKeysStatus();
         if (Object.keys(keysStatus).length > 0) {
           this._rootStore.fireblocksSDKStore.setKeysStatus(keysStatus);

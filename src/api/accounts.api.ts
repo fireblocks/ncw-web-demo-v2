@@ -1,4 +1,3 @@
-import { RootStore } from '@store';
 import { getCall } from './utils.api';
 
 export interface IAccountDTO {

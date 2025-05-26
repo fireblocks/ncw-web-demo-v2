@@ -76,7 +76,7 @@ interface IProps {
 export const RecoverWalletDialog: React.FC<IProps> = observer(function RecoverWalletDialog({ isOpen, onClose }) {
   const { t } = useTranslation();
   const authStore = useAuthStore();
-  const backupStore = useBackupStore();
+  const _backupStore = useBackupStore();
   const { enqueueSnackbar } = useSnackbar();
   const [recoveryPhase, setRecoveryPhase] = useState<RecoveryPhase>('initial');
 

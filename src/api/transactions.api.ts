@@ -1,4 +1,3 @@
-import { RootStore } from '@store';
 import { getCall, postCall } from './utils.api';
 
 export type TTransactionStatus =

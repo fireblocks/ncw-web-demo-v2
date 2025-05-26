@@ -4,9 +4,7 @@ import {
   saveDeviceIdToLocalStorage,
   generateNewDeviceId,
 } from '@api';
-import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
-import { RootStore, useFireblocksSDKStore } from '@store';
-import { encode } from 'js-base64';
+import { RootStore } from '@store';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ENV_CONFIG } from '../env_config.ts';
 

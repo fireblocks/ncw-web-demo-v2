@@ -35,18 +35,6 @@ const IconWrapperStyled = styled('div')(({ theme }) => ({
   alignItems: 'center',
 }));
 
-const DriveStyled = styled('div')(({ theme }) => ({
-  display: 'flex',
-  gap: theme.spacing(1),
-  paddingTop: theme.spacing(0.5),
-}));
-
-const AlignerStyled = styled('div')(({ theme }) => ({
-  display: 'flex',
-  gap: theme.spacing(1),
-  alignItems: 'center',
-}));
-
 const CountdownContainerStyled = styled('div')(() => ({
   display: 'flex',
   flexDirection: 'column',

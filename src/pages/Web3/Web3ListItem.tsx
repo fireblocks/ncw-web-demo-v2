@@ -70,7 +70,9 @@ export const preloadAllImages = (connections: Connection[]) => {
         // Mark URL as failed
         failedUrlsCache.add(connection.icon);
         // Don't cache failed images
-        delete imageCache[connection.icon];
+        if (Object.prototype.hasOwnProperty.call(imageCache, connection.icon)) {
+          imageCache[connection.icon] = null as unknown as HTMLImageElement;
+        }
       };
     }
   });
@@ -126,7 +128,9 @@ const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: strin
           // Mark URL as failed globally
           failedUrlsCache.add(iconUrl);
           // Don't cache failed images
-          delete imageCache[iconUrl];
+          if (Object.prototype.hasOwnProperty.call(imageCache, iconUrl)) {
+            imageCache[iconUrl] = null as unknown as HTMLImageElement;
+          }
         };
       }
     }
@@ -139,7 +143,9 @@ const DAppTitleCell: React.FC<{ title: string; subtitle?: string; iconUrl: strin
     setHasError(true);
     setIsLoaded(true); // Set as loaded so it's visible
     // Remove from cache if it was cached
-    delete imageCache[iconUrl];
+    if (Object.prototype.hasOwnProperty.call(imageCache, iconUrl)) {
+      imageCache[iconUrl] = null as unknown as HTMLImageElement;
+    }
   }, [iconUrl]);
 
   return (

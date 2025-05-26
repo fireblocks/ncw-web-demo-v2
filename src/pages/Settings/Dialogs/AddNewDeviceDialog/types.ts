@@ -39,7 +39,7 @@ export interface IQrScannerProps {
 // Props for the DeviceInfo component
 export interface IDeviceInfoProps {
   decodedData: TRequestDecodedData;
-  addDevice: () => Promise<void>;
+  addDevice: () => void;
   onCancel: () => void;
   isLoading?: boolean; // Flag to indicate if the device addition is in progress
 }

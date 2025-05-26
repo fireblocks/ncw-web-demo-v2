@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { styled, Typography, ActionButton, Dialog, CopyText } from '@foundation';
+import { styled, Typography, Dialog, CopyText } from '@foundation';
 import IconNoAsset from '@icons/no_asset_image.svg';
 import IconUnlink from '@icons/unlink.svg';
 import { Button } from '@mui/material';
@@ -362,22 +362,26 @@ export const DAppDetailsDialog: React.FC<IProps> = ({ isOpen, onClose, connectio
           <InfoRowStyled>
             <LabelStyled>{t('WEB3.ADD_DIALOG.URL_LABEL')}</LabelStyled>
             <ValueStyled>
-              {connection.website ? (
-                isValidUrl(connection.website) ? (
-                  <a
-                    href={connection.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: 'white', textDecoration: 'none' }}
-                  >
-                    {connection.website}
-                  </a>
-                ) : (
-                  connection.website
-                )
-              ) : (
-                t('WEB3.ADD_DIALOG.NA')
-              )}
+              {(() => {
+                if (!connection.website) {
+                  return t('WEB3.ADD_DIALOG.NA');
+                }
+
+                if (isValidUrl(connection.website)) {
+                  return (
+                    <a
+                      href={connection.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: 'white', textDecoration: 'none' }}
+                    >
+                      {connection.website}
+                    </a>
+                  );
+                }
+
+                return connection.website;
+              })()}
             </ValueStyled>
           </InfoRowStyled>
 

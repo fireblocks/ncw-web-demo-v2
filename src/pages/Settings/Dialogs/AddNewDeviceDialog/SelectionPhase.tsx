@@ -7,7 +7,6 @@
  */
 import React from 'react';
 import { Typography, TextInput, ActionButton } from '@foundation';
-import NewDeviceIcon from '@icons/pencil-icon-with-frame.svg';
 import ScanQRcodeIcon from '@icons/scan-qr-code.svg';
 import { useTranslation } from 'react-i18next';
 import { QrScanner } from './QrScanner';

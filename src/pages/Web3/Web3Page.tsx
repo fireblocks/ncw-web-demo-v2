@@ -119,7 +119,7 @@ export const Web3Page: React.FC = observer(() => {
   localStorage.setItem('VISITED_PAGE', 'web3');
 
   // Toggle between mock data and real API data
-  const toggleDataSource = () => {
+  const _toggleDataSource = () => {
     setUseMockData(!useMockData);
   };
 
@@ -264,7 +264,9 @@ export const Web3Page: React.FC = observer(() => {
         onClose={() => {
           setIsAddConnectionDialogOpen(false);
         }}
-        onAddConnection={handleAddConnection}
+        onAddConnection={(conn) => {
+          void handleAddConnection(conn);
+        }}
       />
       <DAppDetailsDialog
         isOpen={isDAppDetailsDialogOpen}
@@ -273,7 +275,9 @@ export const Web3Page: React.FC = observer(() => {
           setSelectedConnection(null);
         }}
         connection={selectedConnection}
-        onRemoveConnection={handleRemoveConnection}
+        onRemoveConnection={(id) => {
+          void handleRemoveConnection(id);
+        }}
       />
     </RootStyled>
   );

@@ -84,13 +84,12 @@ export const App: React.FC = observer(function App() {
                 path="*"
                 element={
                   <Navigate
-                    to={
-                      lastVisitedPage
-                        ? lastVisitedPage.startsWith('/')
-                          ? lastVisitedPage
-                          : `/${lastVisitedPage}`
-                        : '/assets'
-                    }
+                    to={(() => {
+                      if (!lastVisitedPage) {
+                        return '/assets';
+                      }
+                      return lastVisitedPage.startsWith('/') ? lastVisitedPage : `/${lastVisitedPage}`;
+                    })()}
                   />
                 }
               />

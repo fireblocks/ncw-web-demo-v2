@@ -121,17 +121,17 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
 
   // Get price from top100Cryptos based on asset symbol, myRate --> (true) do we want to calculate the amount based
   // on what we have in our wallet or (false) based on the amount entered in the text input amount
-  const getAssetPriceFromTop100Cryptos = (asset: any, myRate = true) => {
-    if (!asset) return '--';
+  const getAssetPriceFromTop100Cryptos = (assetItem: any, myRate = true) => {
+    if (!assetItem) return '--';
 
     // Get the price from top100Cryptos using the asset symbol
-    const symbol = asset.symbol.toUpperCase();
+    const symbol = assetItem.symbol.toUpperCase();
     let cryptoData = top100Cryptos[symbol];
 
     // If not found, try to find it by name
     if (!cryptoData) {
       // Try to find a match by comparing the asset name with the titles in top100Cryptos
-      const assetNameLower = asset.name.toLowerCase();
+      const assetNameLower = assetItem.name.toLowerCase();
 
       // Find a matching cryptocurrency by comparing the asset name with the titles in top100Cryptos
       const matchingSymbol = Object.keys(top100Cryptos).find((key) => {
@@ -144,9 +144,9 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       }
     }
 
-    // If we don't have price data for this coin, return asset.rate as fallback
+    // If we don't have price data for this coin, return assetItem.rate as fallback
     if (!cryptoData) {
-      return asset.rate;
+      return assetItem.rate;
     }
 
     const price = cryptoData.price;
@@ -155,7 +155,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
       style: 'currency',
       currency: 'USD',
       maximumFractionDigits: 2,
-    }).format(amount && !myRate ? price * Number(amount) : price * asset.totalBalance);
+    }).format(amount && !myRate ? price * Number(amount) : price * assetItem.totalBalance);
   };
 
   if (!asset) {

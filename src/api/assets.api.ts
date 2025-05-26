@@ -1,4 +1,3 @@
-import { RootStore } from '@store';
 import { ENV_CONFIG } from '../env_config.ts';
 import { getCall, postCall } from './utils.api';
 
@@ -132,7 +131,7 @@ export const getBalance = async (
 export const getCryptoIconUrl = (symbol: string) => {
   const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
   return normalizedSymbol?.length && cryptoIconNamesLocally.includes(normalizedSymbol)
-    ? `${ENV_CONFIG.VITE_BASE_FOLDER}/icons/crypto-icons/${normalizedSymbol}.png`
+    ? `${String(ENV_CONFIG.VITE_BASE_FOLDER)}/icons/crypto-icons/${normalizedSymbol}.png`
     : '';
 };
 
@@ -192,7 +191,7 @@ const cryptoIconNamesLocally = [
   'yfi', // yearn.finance
 ];
 
-const coinSymbolToIdMap = {
+const _coinSymbolToIdMap = {
   btc: 'bitcoin',
   eth: 'ethereum',
   usdt: 'tether',
@@ -247,7 +246,7 @@ const coinSymbolToIdMap = {
   yfi: 'yearn-finance',
 };
 
-const coinsUsdRate = [
+const _coinsUsdRate = [
   { symbol: 'BTC', price: 103445.17 },
   { symbol: 'ETH', price: 3929.31 },
   { symbol: 'USDT', price: 1.001 },

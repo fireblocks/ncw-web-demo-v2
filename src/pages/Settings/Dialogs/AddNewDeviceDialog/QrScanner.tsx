@@ -5,12 +5,7 @@ import React, { useEffect, useRef } from 'react';
 import { Typography, ActionButton } from '@foundation';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import {
-  QrScannerContainerStyled,
-  QrReaderContainerStyled,
-  QrScannerFallbackStyled,
-  QrScannerPlaceholderStyled,
-} from './styled';
+import { QrScannerContainerStyled, QrReaderContainerStyled, QrScannerFallbackStyled } from './styled';
 import { IQrScannerProps } from './types';
 
 export const QrScanner: React.FC<IQrScannerProps> = ({ onScan, toggleQrScanner, onScanError }) => {
@@ -20,10 +15,7 @@ export const QrScanner: React.FC<IQrScannerProps> = ({ onScan, toggleQrScanner, 
   const scannerInstanceRef = useRef<any>(null);
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    // Add a small delay to ensure the div is rendered
-    timeoutId = setTimeout(() => {
+    const timeoutId: NodeJS.Timeout = setTimeout(() => {
       try {
         if (!qrScannerRef.current) {
           console.error('QR scanner container not found');

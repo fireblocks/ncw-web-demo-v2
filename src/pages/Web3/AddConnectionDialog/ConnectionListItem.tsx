@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ActionButton, Progress, TableCell, TableRow, styled } from '@foundation';
 import IconNoAsset from '@icons/no_asset_image.svg';
 import { observer } from 'mobx-react';
@@ -122,7 +122,7 @@ export const ConnectionListItem: React.FC<IProps> = observer(function Connection
 
   const connection = filteredConnections[index];
 
-  const handleAddConnection = (connection: Connection) => {
+  const handleAddConnection = (_connectionItem: Connection) => {
     setIsAddingConnection(true);
 
     // Simulate an API call with a timeout

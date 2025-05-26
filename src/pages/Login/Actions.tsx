@@ -156,7 +156,9 @@ export const Actions: React.FC<IProps> = observer(function Actions({ setIsInBack
       <WalletGenerationOptionsUI
         isEmbeddedWallet={isEmbeddedWallet}
         hasBackup={userStore.hasBackup}
-        joinExistingWallet={joinExistingWallet}
+        joinExistingWallet={() => {
+          void joinExistingWallet();
+        }}
         recoverMPCKeys={recoverMPCKeys}
         generateMPCKeys={generateMPCKeys}
       />

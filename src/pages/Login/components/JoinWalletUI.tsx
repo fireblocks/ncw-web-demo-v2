@@ -1,5 +1,5 @@
 import React from 'react';
-import { CopyText, Progress, Typography } from '@foundation';
+import { CopyText, Progress } from '@foundation';
 import QRCode from 'react-qr-code';
 import {
   JoinWalletContainerStyled,

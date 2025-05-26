@@ -1,4 +1,3 @@
-import { RootStore } from '@store';
 import { TokenWithBalance, CollectionOwnership, Token } from 'fireblocks-sdk';
 import { getCall } from './utils.api';
 

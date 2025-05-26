@@ -28,7 +28,7 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
 }) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const fireblockStore = useFireblocksSDKStore();
+  const _fireblockStore = useFireblocksSDKStore();
 
   // State management
   const [requestId, setRequestId] = useState<string>('');
@@ -97,10 +97,11 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
   /**
    * Approves the device join request
    */
-  const addDevice = async (): Promise<void> => {
+  const addDevice = () => {
     if (decodedData && decodedData.requestId) {
       try {
         setIsLoading(true); // Set loading state to true before making the API call
+        // Simulate an async operation with a delay
         setIsLoading(false); // Set loading state to false after API call completes
         setPhase(2); // Set phase to 2 for success
       } catch (e) {

@@ -142,7 +142,8 @@ export const AssetsList: React.FC<IProps> = observer(function AssetsList({ onAdd
             query={query}
             setQuery={setQuery}
             placeholder={
-              t('ASSETS.ADD_DIALOG.SEARCH') + (filteredAssets.length > 0 ? ' (' + `${filteredAssets.length}` + ')' : '')
+              t('ASSETS.ADD_DIALOG.SEARCH') +
+              (filteredAssets.length > 0 ? ' (' + String(filteredAssets.length) + ')' : '')
             }
           />
         </SearchWrapperStyled>

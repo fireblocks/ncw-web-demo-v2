@@ -20,10 +20,13 @@ interface IProps {
 }
 
 export const TableBalanceCell: React.FC<IProps> = ({ balance, balanceInUsd, assetSymbol }) => {
-  const balanceStr = String(balance);
   // If balance is already a string, assume it might already include the symbol
-  const balanceWithSymbol =
-    typeof balance === 'string' ? balance : assetSymbol ? `${balance} ${assetSymbol}` : String(balance);
+  const balanceWithSymbol = (() => {
+    if (typeof balance === 'string') {
+      return balance;
+    }
+    return assetSymbol ? `${String(balance)} ${assetSymbol}` : String(balance);
+  })();
 
   return (
     <RootStyled>

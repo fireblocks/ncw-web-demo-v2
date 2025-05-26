@@ -1,5 +1,4 @@
 import { generateDeviceId } from '@fireblocks/ncw-js-sdk';
-import { RootStore } from '@store';
 import { getCall, postCall } from './utils.api';
 
 const DEVICE_ID_KEY = 'DEMO_APP:deviceId';

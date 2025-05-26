@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { useEffect } from 'react';
-import { styled, Typography } from '@foundation';
+import { styled } from '@foundation';
 import InputAdornment from '@mui/material/InputAdornment/InputAdornment';
 import { NumericFormat } from 'react-number-format';
 import { InputLabelStyled, FormControlRootStyled, InputStyled } from './commonStyledComponents';
@@ -18,7 +17,7 @@ const InputAdornmentStyled = styled(InputAdornment)(({ theme }) => ({
   },
 }));
 
-const PriceDisplayStyled = styled('div')(({ theme }) => ({
+const _PriceDisplayStyled = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(0.5),
   textAlign: 'right',
 }));

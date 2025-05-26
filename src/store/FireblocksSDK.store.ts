@@ -25,7 +25,7 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import { saveDeviceIdToLocalStorage } from '../api';
 import { RootStore } from './Root.store';
 
-const createSafeLogger = (baseLogger: any) => {
+const _createSafeLogger = (baseLogger: any) => {
   const sanitizeData = (data: any) => {
     if (!data) return data;
     try {
@@ -182,10 +182,10 @@ export class FireblocksSDKStore {
     try {
       const eventsHandler: IEventsHandler = {
         handleEvent: (event: TEvent) => {
+          let _keysStatus: Record<TMPCAlgorithm, IKeyDescriptor>;
           switch (event.type) {
             case 'key_descriptor_changed':
-              const _keysStatus: Record<TMPCAlgorithm, IKeyDescriptor> =
-                this.keysStatus ?? ({} as Record<TMPCAlgorithm, IKeyDescriptor>);
+              _keysStatus = this.keysStatus ?? ({} as Record<TMPCAlgorithm, IKeyDescriptor>);
               _keysStatus[event.keyDescriptor.algorithm] = event.keyDescriptor;
               this.setKeysStatus(_keysStatus);
               break;
@@ -443,7 +443,6 @@ export class FireblocksSDKStore {
       this.setIsMPCGenerating(true);
       const ALGORITHMS = new Set<TMPCAlgorithm>(['MPC_CMP_ECDSA_SECP256K1', 'MPC_CMP_EDDSA_ED25519']);
       try {
-        const started = Date.now();
         await this.sdkInstance.generateMPCKeys(ALGORITHMS);
         this.setIsMPCReady(true);
 

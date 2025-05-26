@@ -186,18 +186,18 @@ export class UserStore {
     return null;
   }
 
-  public checkLatestBackup(device: IDeviceDTO | undefined = undefined): void {
+  public checkLatestBackup(walletId?: string): void {
     this.setIsCheckingBackup(true);
     this._rootStore.backupStore
-      .getMyLatestBackup(device?.walletId ?? '')
+      .getMyLatestBackup(walletId)
       .then((result) => {
         if (result) {
           if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
             const devices: IDeviceDTO[] = [];
-            result.keys?.forEach((key: { deviceId: string; walletId?: string }) => {
+            result.keys?.forEach((key) => {
               devices.push({
                 deviceId: key.deviceId,
-                walletId: key?.walletId ?? '',
+                walletId: result.walletId,
                 createdAt: new Date().getTime(), // Adding required property as number
               });
             });
@@ -240,7 +240,8 @@ export class UserStore {
       .then((devices: IDeviceDTO[]) => {
         this.setMyDevices(devices);
         if (devices?.length || ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-          this.checkLatestBackup(devices?.length ? devices[devices.length - 1] : undefined);
+          const walletId = devices?.at(-1)?.walletId;
+          this.checkLatestBackup(walletId);
         }
       })
       .catch((e: Error) => {
