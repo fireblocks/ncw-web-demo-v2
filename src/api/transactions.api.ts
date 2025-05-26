@@ -12,7 +12,7 @@ export type TTransactionStatus =
 
 export type TFeeLevel = 'LOW' | 'MEDIUM' | 'HIGH';
 
-export type TNewTransactionType = 'TYPED_MESSAGE' | 'TRANSFER';
+export type TTransactionOperation = 'TYPED_MESSAGE' | 'TRANSFER';
 
 export type TNewTransactionMode = 'SEND' | 'RECEIVE' | null;
 
@@ -81,11 +81,12 @@ export interface ITransactionDTO {
 }
 
 export interface INewTransactionDTO {
+  operation: TTransactionOperation;
   note: string;
   accountId: string;
   assetId: string;
-  amount: string;
-  destAddress: string;
+  amount?: string;
+  destAddress?: string;
   feeLevel: TFeeLevel;
   estimateFee: boolean;
 }
@@ -105,7 +106,7 @@ export const getTransactions = async (deviceId: string, startDate: number, token
 export const createTransaction = async (
   deviceId: string,
   token: string,
-  dataToSend?: INewTransactionDTO,
+  dataToSend: INewTransactionDTO,
 ): Promise<ITransactionDTO> => {
   const createTxResponse = await postCall(`api/devices/${deviceId}/transactions`, token, dataToSend);
   return createTxResponse;

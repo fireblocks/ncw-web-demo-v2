@@ -77,6 +77,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
     if (txType === 'TRANSFER') {
       transactionsStore
         .createTransaction({
+          operation: 'TRANSFER',
           note: `API Transaction by ${deviceStore.deviceId}`,
           accountId: accountsStore.currentAccount?.accountId.toString() || '0',
           assetId: asset?.id || '',
@@ -97,7 +98,14 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
         });
     } else {
       transactionsStore
-        .createTransaction()
+        .createTransaction({
+          operation: 'TYPED_MESSAGE',
+          note: `API Transaction by ${deviceStore.deviceId}`,
+          accountId: accountsStore.currentAccount?.accountId.toString() || '0',
+          assetId: asset?.id || '',
+          estimateFee: false,
+          feeLevel: feeLevel as TFeeLevel,
+        })
         .then(() => {
           onClose();
           setIsCreatingTransfer(false);

@@ -1,7 +1,7 @@
 import {
   ITransactionDTO,
   ITransactionDetailsDTO,
-  TNewTransactionType,
+  TTransactionOperation,
   TTransactionStatus,
   cancelTransaction,
 } from '@api';
@@ -77,9 +77,9 @@ export class TransactionStore {
   }
 
   @computed
-  public get operationType(): TNewTransactionType | null {
+  public get operationType(): TTransactionOperation | null {
     if (this.details?.operation) {
-      return this.details?.operation as TNewTransactionType;
+      return this.details?.operation as TTransactionOperation;
     }
     return null;
   }

@@ -14,7 +14,7 @@ export type TTransactionStatus =
 
 export type TFeeLevel = 'LOW' | 'MEDIUM' | 'HIGH';
 
-export type TNewTransactionType = 'TYPED_MESSAGE' | 'TRANSFER';
+export type TTransactionOperation = 'TYPED_MESSAGE' | 'TRANSFER';
 
 export type TNewTransactionMode = 'SEND' | 'RECEIVE' | null;
 
@@ -83,6 +83,7 @@ export interface ITransactionDTO {
 }
 
 export interface INewTransactionDTO {
+  operation: TTransactionOperation;
   note: string;
   accountId: string;
   assetId: string;
@@ -193,7 +194,6 @@ export const getTransactions = async (
     } catch (sdkError) {
       // Log SDK error but don't throw
       console.error('[EmbeddedWallet] Error fetching transactions from SDK:', sdkError);
-      // Return an empty array to avoid breaking the application
       return [];
     }
   } catch (error) {
@@ -205,7 +205,7 @@ export const getTransactions = async (
 export const createTransaction = async (
   _deviceId: string,
   _token: string,
-  dataToSend?: INewTransactionDTO,
+  dataToSend: INewTransactionDTO,
   rootStore: RootStore | null = null,
 ): Promise<ITransactionDTO> => {
   try {
@@ -214,48 +214,53 @@ export const createTransaction = async (
       throw new Error('Embedded wallet SDK is not initialized');
     }
 
-    const walletId = rootStore?.accountsStore.currentAccount?.data.walletId;
-    const accountId = rootStore.accountsStore.currentAccount?.accountId;
     const assetId = dataToSend?.assetId;
     const destAddress = dataToSend?.destAddress ?? '';
     const amount = dataToSend?.amount || '0.00000001';
+
     let params: ITransactionRequest;
-    if (!dataToSend) {
-      params = {
-        operation: 'TYPED_MESSAGE',
-        extraParameters: {
-          rawMessageData: {
-            messages: [
-              {
-                type: 'EIP712',
-                content: buildTypedData(),
-              },
-            ],
+    switch (dataToSend?.operation) {
+      case 'TYPED_MESSAGE':
+        params = {
+          operation: 'TYPED_MESSAGE',
+          assetId,
+          source: {
+            id: dataToSend.accountId || '0',
           },
-        },
-        assetId,
-        source: {
-          type: 'END_USER_WALLET',
-          walletId,
-          id: String(accountId),
-        },
-        note: `API Transaction`,
-      };
-    } else {
-      params = {
-        assetId,
-        source: {
-          id: '0',
-        },
-        destination: {
-          type: 'ONE_TIME_ADDRESS' as any,
-          oneTimeAddress: {
-            address: destAddress,
+          extraParameters: {
+            rawMessageData: {
+              messages: [
+                {
+                  type: 'EIP712',
+                  content: buildTypedData(),
+                },
+              ],
+            },
           },
-        },
-        amount,
-        feeLevel: dataToSend?.feeLevel || 'MEDIUM',
-      };
+          note: dataToSend.note,
+        };
+        break;
+      case 'TRANSFER':
+        params = {
+          operation: 'TRANSFER',
+          assetId,
+          source: {
+            id: dataToSend.accountId || '0',
+          },
+          destination: {
+            type: 'ONE_TIME_ADDRESS' as any,
+            oneTimeAddress: {
+              address: destAddress,
+            },
+          },
+          amount,
+          feeLevel: dataToSend?.feeLevel || 'MEDIUM',
+          note: dataToSend.note,
+        };
+        break;
+      default:
+        console.error('transactions.embedded.api.ts - createTransaction: Invalid operation type');
+        throw new Error('Invalid operation type');
     }
     const createdTrans = await rootStore?.fireblocksSDKStore.fireblocksEW.createTransaction(params);
     return transactionResponseToTransactionData(createdTrans);

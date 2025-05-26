@@ -173,7 +173,7 @@ export class TransactionsStore {
     return !!this._transactionsActivePolling.get(this._rootStore.deviceStore.deviceId);
   }
 
-  public async createTransaction(dataToSend?: INewTransactionDTO): Promise<void> {
+  public async createTransaction(dataToSend: INewTransactionDTO): Promise<void> {
     const deviceId = this._rootStore.deviceStore.deviceId;
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
     const accessToken = this._rootStore.userStore.accessToken;
