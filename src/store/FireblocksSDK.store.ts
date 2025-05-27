@@ -158,14 +158,11 @@ export class FireblocksSDKStore {
       };
       this.fireblocksEW = new EmbeddedWallet(ewOpts);
 
-      if (!deviceId) {
-        this._rootStore.userStore.getMyDevices(); // todo: we should initialize the sdk core first, but it also want deviceId
-        this._rootStore.userStore.setIsGettingUser(false);
-      } else {
+      if (deviceId) {
         await this.initEmbeddedWalletCore(deviceId);
-        this._rootStore.userStore.getMyDevices(); // todo: we should initialize the sdk core first, but it also want deviceId
-        this._rootStore.userStore.setIsGettingUser(false);
       }
+      this._rootStore.userStore.getMyDevices();
+      this._rootStore.userStore.setIsGettingUser(false);
     } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');

@@ -104,23 +104,10 @@ export const JoinWalletDialog: React.FC<IProps> = observer(function JoinWalletDi
   }, [isOpen, onClose]);
 
   const cancelJoin = () => {
-    // todo: cancel join
     authStore.stopJoinWallet();
     enqueueSnackbar(t('LOGIN.CANCEL_JOIN_WALLET'), { variant: 'success' });
     onClose();
   };
-
-  // const onDriveClick = () => {
-  //   backupStore
-  //     .saveKeysBackup('GoogleDrive')
-  //     .then(() => {
-  //       enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.SUCCESS_MESSAGE'), { variant: 'success' });
-  //       onClose();
-  //     })
-  //     .catch(() => {
-  //       enqueueSnackbar(t('SETTINGS.DIALOGS.BACKUP.ERROR_MESSAGE'), { variant: 'error' });
-  //     });
-  // };
 
   return (
     <Dialog

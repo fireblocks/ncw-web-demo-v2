@@ -217,7 +217,6 @@ export class AuthStore {
         throw new Error('fireblocksNCW is not initialized');
       }
       let capturedRequestId: string | undefined;
-      // todo:
       const response = await this._rootStore.fireblocksSDKStore.sdkInstance?.requestJoinExistingWallet({
         onRequestId(requestId: string) {
           capturedRequestId = requestId;
@@ -261,10 +260,6 @@ export class AuthStore {
       }
 
       return response;
-
-      // todo: what to do with response?
-      // we should open a popup with the requestId to copy paste OR using a QR code.
-      // the user will need to copy the requestId and paste it in the other device OR scan the QR code with the camera in the other device.
     } catch (error: any) {
       console.error('[Auth] Error during join existing wallet process: ', error);
       this.setStatus('ERROR');
