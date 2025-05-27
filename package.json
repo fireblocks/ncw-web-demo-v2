@@ -20,6 +20,7 @@
     "@mui/material": "^5.15.14",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@types/node": "^20.11.30",
+    "@types/web-push": "^3.6.4",
     "autoprefixer": "^10.4.19",
     "base58-js": "^2.0.0",
     "eslint-config-prettier": "^9.1.0",
@@ -50,7 +51,8 @@
     "react-window": "^1.8.10",
     "styled-components": "^6.1.8",
     "usehooks-ts": "^3.0.1",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^4.3.2",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@types/gapi": "^0.0.47",

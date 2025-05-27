@@ -38,25 +38,28 @@ yarn install
 
 ### Option 1: Using Embedded Wallet SDK (Direct Integration)
 ```env
-VITE_BACKEND_BASE_URL=your-backend-url
-VITE_NCW_SDK_ENV=sandbox
 VITE_CLOUDKIT_APITOKEN=your-api-token
 VITE_CLOUDKIT_CONTAINER_ID=your-container-id
 VITE_CLOUDKIT_ENV=production
-VITE_BASE_FOLDER=/ncw-web-demo-v2
-VITE_AUTH_CLIENT_ID=your-client-id
+
+VITE_NCW_SDK_ENV=sandbox
 VITE_USE_EMBEDDED_WALLET_SDK=true
+VITE_BASE_FOLDER=/ncw-web-demo-v2/ew
+VITE_BACKEND_BASE_URL=your-backend-url
+VITE_AUTH_CLIENT_ID=your-client-id
+VITE_VAPID_PUBLIC_KEY=your-vapid-public-key
 ```
 
 ### Option 2: Using Proxy Backend
 ```env
-VITE_BACKEND_BASE_URL=your-backend-url
-VITE_NCW_SDK_ENV=sandbox
 VITE_CLOUDKIT_APITOKEN=your-api-token
 VITE_CLOUDKIT_CONTAINER_ID=your-container-id
 VITE_CLOUDKIT_ENV=production
-VITE_BASE_FOLDER=/ncw-web-demo-v2
+
+VITE_NCW_SDK_ENV=sandbox
 VITE_USE_EMBEDDED_WALLET_SDK=false
+VITE_BASE_FOLDER=/ncw-web-demo-v2
+VITE_BACKEND_BASE_URL=your-backend-url
 ```
 
 Note: Choose one of the options above based on your implementation needs. The key difference is the `VITE_USE_EMBEDDED_WALLET_SDK` setting, which determines whether the application uses direct integration with Fireblocks' Embedded Wallet SDK or communicates through a proxy backend server.
@@ -107,6 +110,21 @@ The project uses Fireblocks' API for:
 ## 📚 Documentation
 
 For more information about Fireblocks NCW, refer to the [official documentation](https://developers.fireblocks.com/docs/non-custodial-wallet).
+
+## 🔔 Push Notifications
+
+This application uses Firebase Cloud Messaging (FCM) for push notifications. The implementation requires a service worker file (`firebase-messaging-sw.js`) to be available at the root path of the application.
+
+### Service Worker Location
+
+In development mode with Vite, the service worker file must be placed in the `public` directory to be served at the root path. This ensures that Firebase can register the service worker correctly.
+
+```
+public/
+└── firebase-messaging-sw.js  # Service worker for Firebase Cloud Messaging
+```
+
+For more information about the Firebase Cloud Messaging implementation, see the [MESSAGING_README.md](src/auth/MESSAGING_README.md) file.
 
 ## ⚠️ Security Considerations
 

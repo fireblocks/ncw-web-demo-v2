@@ -131,7 +131,7 @@ export const getBalance = async (
 export const getCryptoIconUrl = (symbol: string) => {
   const normalizedSymbol = symbol.toLowerCase().replace(/(?:_?test\d*$)|(?:test\d*$)/i, '');
   return normalizedSymbol?.length && cryptoIconNamesLocally.includes(normalizedSymbol)
-    ? `${String(ENV_CONFIG.VITE_BASE_FOLDER)}/icons/crypto-icons/${normalizedSymbol}.png`
+    ? `${String(ENV_CONFIG.BASE_FOLDER)}/icons/crypto-icons/${normalizedSymbol}.png`
     : '';
 };
 

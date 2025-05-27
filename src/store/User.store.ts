@@ -54,6 +54,9 @@ export class UserStore {
   }
 
   public logout(): void {
+    // Unsubscribe from Firebase messaging before logging out
+    this._authManager.abortMessaging();
+
     this._authManager
       .logout()
       .then(() => {
@@ -247,5 +250,80 @@ export class UserStore {
       .catch((e: Error) => {
         this.setError(e.message);
       });
+  }
+
+  /**
+   * Initializes Firebase messaging and sets up push notifications.
+   * Should be called after user is logged in and device/wallet IDs are available.
+   */
+  public async initializeAndSetupPushNotifications(): Promise<void> {
+    if (this.loggedUser && this._rootStore.deviceStore.deviceId && this._rootStore.deviceStore.walletId) {
+      try {
+        if (ENV_CONFIG.BACKEND_BASE_URL) {
+          console.log('[FCM] Setting up push notifications.');
+          await this._authManager.setupPushNotifications(
+            this._rootStore.deviceStore.deviceId,
+            this._rootStore.deviceStore.walletId,
+            this.handlePushNotification.bind(this),
+          );
+        } else {
+          console.warn('[FCM] BACKEND_BASE_URL is not configured. Skipping push notification setup.');
+        }
+      } catch (error) {
+        console.error('[FCM] Error during push notifications setup:', error);
+        this.setError('[FCM] Error setting up push notifications.');
+      }
+    } else {
+      console.warn('[FCM] Cannot setup push notifications: User not logged in or deviceId/walletId missing.', {
+        isUserLoggedIn: !!this.loggedUser,
+        hasDeviceId: !!this._rootStore.deviceStore.deviceId,
+        hasWalletId: !!this._rootStore.deviceStore.walletId,
+      });
+    }
+  }
+
+  /**
+   * Handles incoming push notifications from Firebase Cloud Messaging.
+   * This method is passed as a callback to the setupPushNotifications method.
+   *
+   * @param payload The notification payload received from Firebase
+   */
+  public handlePushNotification(payload: any): void {
+    console.log('[FCM] Received push notification:', payload);
+
+    try {
+      // Extract notification details
+      const { notification, data } = payload;
+
+      // Handle different types of notifications based on data
+      if (data?.type === 'transaction') {
+        console.log('[FCM] Transaction notification received:', data);
+        // You could trigger a refresh of transaction data here
+        // this._rootStore.transactionStore.refreshTransactions();
+      } else if (data?.type === 'backup') {
+        console.log('[FCM] Backup notification received:', data);
+        // You could trigger a refresh of backup status here
+        // this.checkLatestBackup();
+      } else if (data?.type === 'device') {
+        console.log('[FCM] Device notification received:', data);
+        // You could trigger a refresh of devices here
+        this.getMyDevices();
+      } else {
+        console.log('[FCM] Generic notification received');
+      }
+
+      // You could also show a browser notification here if the app is in the background
+      if (notification && 'Notification' in window && Notification.permission === 'granted') {
+        // Check if the app is in focus
+        if (document.visibilityState !== 'visible') {
+          new Notification(notification.title || 'New Notification', {
+            body: notification.body || 'You have a new notification',
+            icon: '/favicon.ico',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('[FCM] Error handling push notification:', error);
+    }
   }
 }
