@@ -153,7 +153,7 @@ export class FireblocksSDKStore {
           getAuthToken: () => this._rootStore.userStore.getAccessToken(),
         },
         reporting: {
-          enabled: false,
+          enabled: true,
         },
       };
       this.fireblocksEW = new EmbeddedWallet(ewOpts);

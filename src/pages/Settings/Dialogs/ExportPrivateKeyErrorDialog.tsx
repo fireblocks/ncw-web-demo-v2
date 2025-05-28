@@ -69,7 +69,7 @@ export const ExportPrivateKeyErrorDialog: React.FC<IProps> = observer(function E
         </IconContainerStyled>
         <CenteredTextContainerStyled>
           <Typography variant="body1" color="text.primary" align="center" sx={{ fontSize: '18px' }}>
-            We couldn't create a key backup
+            Exporting private key failed
           </Typography>
         </CenteredTextContainerStyled>
         <ButtonContainerStyled>
