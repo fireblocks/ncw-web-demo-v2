@@ -126,7 +126,7 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
         ncwId: deviceStore.walletId, // The ID of the Non-Custodial Wallet (walletId)
         ncwAccountId: currentAccountId,
         feeLevel: CreateNcwConnectionRequestFeeLevelEnum.Medium, // Use MEDIUM as the default fee level
-        uri: connectionLink, // The WalletConnect uri provided by the dapp
+        uri: connectionLink || '', // The WalletConnect uri provided by the dapp
         chainIds: [], // Optional array of blockchain network IDs
       };
 
