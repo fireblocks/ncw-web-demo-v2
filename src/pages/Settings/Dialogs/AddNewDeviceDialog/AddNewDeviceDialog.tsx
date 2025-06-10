@@ -101,9 +101,19 @@ export const AddNewDeviceDialog: React.FC<IAddNewDeviceDialogProps> = observer(f
     if (decodedData && decodedData.requestId) {
       try {
         setIsLoading(true); // Set loading state to true before making the API call
-        // Simulate an async operation with a delay
-        setIsLoading(false); // Set loading state to false after API call completes
-        setPhase(2); // Set phase to 2 for success
+
+        // Call the SDK method to approve the join wallet request
+        _fireblockStore.sdkInstance
+          ?.approveJoinWalletRequest(decodedData.requestId)
+          .then(() => {
+            setIsLoading(false); // Set loading state to false after API call completes
+            setPhase(2); // Set phase to 2 for success
+          })
+          .catch((e) => {
+            console.error(e);
+            setIsLoading(false); // Set loading state to false if there's an error
+            setPhase(3); // Set phase to 3 for error
+          });
       } catch (e) {
         console.error(e);
         setIsLoading(false); // Set loading state to false if there's an error
