@@ -27,6 +27,7 @@ export interface Connection {
   website: string;
   connectionDate: Date;
   icon: string;
+  connectionLink?: string;
 }
 
 interface IProps {

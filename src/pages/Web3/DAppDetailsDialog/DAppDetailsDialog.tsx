@@ -258,7 +258,6 @@ export const DAppDetailsDialog: React.FC<IProps> = ({ isOpen, onClose, connectio
         onRemoveConnection(connection.id);
         onClose();
         setIsLoading(false);
-        enqueueSnackbar(t('WEB3.DETAILS_DIALOG.CONNECTION_REMOVED'), { variant: 'success' });
       } catch (error) {
         setIsLoading(false);
         enqueueSnackbar(t('WEB3.DETAILS_DIALOG.ERROR_REMOVING'), { variant: 'error' });

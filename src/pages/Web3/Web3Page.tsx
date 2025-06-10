@@ -63,7 +63,7 @@ const mockConnections = [
 export const Web3Page: React.FC = observer(() => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { web3Store, accountsStore } = useStores();
+  const { web3Store, accountsStore, deviceStore } = useStores();
 
   const [isAddConnectionDialogOpen, setIsAddConnectionDialogOpen] = useState(false);
   const [isDAppDetailsDialogOpen, setIsDAppDetailsDialogOpen] = useState(false);
@@ -162,33 +162,47 @@ export const Web3Page: React.FC = observer(() => {
   const handleAddConnection = async (connection: Connection) => {
     if (useMockData) {
       // Use mock data
-      setConnections([...connections, connection]);
+      // Check if the connection already exists in the connections array
+      const connectionExists = connections.some((conn) => conn.id === connection.id);
+
+      if (!connectionExists) {
+        // Only add the connection if it doesn't already exist
+        setConnections([...connections, connection]);
+      }
+
       setIsAddConnectionDialogOpen(false);
       enqueueSnackbar(t('WEB3.ADD_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
     } else {
       // Use real API
       try {
         setIsLoading(true);
-        // Get the current account ID
-        const currentAccountId = accountsStore.currentAccount?.accountId;
 
-        if (!currentAccountId && currentAccountId !== 0) {
-          throw new Error('No account selected. Please select an account first.');
+        let response;
+
+        // Check if the connection already has an ID (meaning it was already created in AddConnectionDialog)
+        if (connection.id && !connection.id.startsWith('temp_')) {
+          // Connection already exists, no need to create it again
+          console.log('Connection already exists, skipping creation:', connection.id);
+          response = { id: connection.id };
+        } else {
+          // Get the current account ID
+          const currentAccountId = accountsStore.currentAccount?.accountId;
+
+          if (!currentAccountId && currentAccountId !== 0) {
+            throw new Error('No account selected. Please select an account first.');
+          }
+
+          // Create a payload for the API that matches ICreateNcwConnectionRequest interface
+          const payload = {
+            ncwId: deviceStore.walletId, // The ID of the Non-Custodial Wallet (walletId)
+            ncwAccountId: currentAccountId,
+            feeLevel: CreateNcwConnectionRequestFeeLevelEnum.Medium, // Use MEDIUM as the default fee level
+            uri: connection.connectionLink || '', // The WalletConnect uri provided by the dapp
+            chainIds: [], // Optional array of blockchain network IDs
+          };
+          // Import the enum if not already imported at the top of the file
+          response = await web3Store.createConnection(payload);
         }
-
-        // Create a payload for the API
-        const payload = {
-          name: connection.name,
-          description: connection.description,
-          url: connection.website,
-          icon: connection.icon,
-          // Add required parameters
-          ncwAccountId: currentAccountId,
-          feeLevel: CreateNcwConnectionRequestFeeLevelEnum.Medium, // Use MEDIUM as the default fee level
-          uri: connection.website, // uri is the same as url/website
-        };
-        // Import the enum if not already imported at the top of the file
-        const response = await web3Store.createConnection(payload);
 
         // Manually refresh connections
         await web3Store.getConnections(false);
@@ -212,13 +226,8 @@ export const Web3Page: React.FC = observer(() => {
           };
         }
 
-        // Check if the new connection is already in the connections array
-        const connectionExists = connections.some((conn) => conn.id === newConnection.id);
-
-        if (!connectionExists) {
-          // Update the connections state directly
-          setConnections((prev) => [...prev, newConnection]);
-        }
+        // No need to update connections state directly
+        // The useEffect hook will update the connections state when web3Store.connections changes
 
         setIsAddConnectionDialogOpen(false);
         enqueueSnackbar(t('WEB3.ADD_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
