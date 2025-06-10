@@ -34,7 +34,7 @@ interface IProps {
 export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose, onAddConnection }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { web3Store, accountsStore } = useStores();
+  const { web3Store, accountsStore, deviceStore } = useStores();
   const [connectionLink, setConnectionLink] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [isConfirmationScreen, setIsConfirmationScreen] = React.useState(false);
@@ -121,16 +121,13 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
         throw new Error('No account selected. Please select an account first.');
       }
 
-      // Create a payload for the API
+      // Create a payload for the API that matches ICreateNcwConnectionRequest interface
       const payload = {
-        name: 'Custom Connection',
-        description: connectionLink,
-        url: connectionLink,
-        icon: defaultIconUrl,
-        // Add required parameters
+        ncwId: deviceStore.walletId, // The ID of the Non-Custodial Wallet (walletId)
         ncwAccountId: currentAccountId,
         feeLevel: CreateNcwConnectionRequestFeeLevelEnum.Medium, // Use MEDIUM as the default fee level
-        uri: connectionLink, // uri is the same as url/website
+        uri: connectionLink || '', // The WalletConnect uri provided by the dapp
+        chainIds: [], // Optional array of blockchain network IDs
       };
 
       const response: any = await web3Store.createConnection(payload);
@@ -146,6 +143,7 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
         if (response.sessionMetadata) {
           // Use the mapSessionDTOToConnection function to map the response to a Connection
           newConnection = mapSessionDTOToConnection(response);
+          newConnection.connectionLink = connectionLink || '';
         } else {
           // Fallback to a basic connection object
           newConnection = {
@@ -153,6 +151,7 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
             name: response?.name || 'Custom Connection',
             description: response?.description || connectionLink,
             website: response?.url || connectionLink,
+            connectionLink: connectionLink || '',
             connectionDate: new Date(),
             icon: response?.icon || defaultIconUrl,
           };
@@ -191,9 +190,6 @@ export const AddConnectionDialog: React.FC<IProps> = observer(({ isOpen, onClose
 
       // Call the parent component's onAddConnection function to update the UI
       onAddConnection(connection);
-
-      // Show success message
-      enqueueSnackbar(t('WEB3.ADD_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
 
       // Close the dialog
       onClose();
