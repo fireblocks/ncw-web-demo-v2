@@ -166,7 +166,7 @@ export class FirebaseAuthManager implements IAuthManager {
       if (vapidPublicKeyResponse.ok && vapidPublicKeyResponse.status === 200) {
         const vapidPublicKey = await vapidPublicKeyResponse.json();
         console.log('[FCM] Successfully fetched VAPID public key from backend');
-        return vapidPublicKey.data.publicKe;
+        return vapidPublicKey.data.publicKey;
       }
 
       console.error('[FCM] Failed to fetch VAPID public key:', await vapidPublicKeyResponse.text());
@@ -198,10 +198,25 @@ export class FirebaseAuthManager implements IAuthManager {
         vapidKey = await this.getVapidPublicKey();
       }
 
+      // Explicitly register the service worker
+      let swRegistration;
+      try {
+        console.log('[FCM] Registering service worker...');
+        // Use the base path from the environment config to construct the correct service worker URL
+        const swUrl = `${window.location.origin}${ENV_CONFIG.BASE_FOLDER}/firebase-messaging-sw.js`;
+        console.log(`[FCM] Service worker URL: ${swUrl}`);
+        swRegistration = await navigator.serviceWorker.register(swUrl);
+        console.log('[FCM] Service worker registered successfully:', swRegistration);
+      } catch (swError) {
+        console.error('[FCM] Error registering service worker:', swError);
+        // Try to get existing registration as fallback
+        swRegistration = await navigator.serviceWorker.getRegistration();
+      }
+
       // Get the token
       const currentToken = await getToken(this._messaging, {
         vapidKey,
-        serviceWorkerRegistration: await navigator.serviceWorker.getRegistration(),
+        serviceWorkerRegistration: swRegistration,
       });
 
       if (!currentToken) {

@@ -100,7 +100,10 @@ export class TransactionsStore {
   }
 
   public stopPollingTransactions(): void {
+    console.log('[Transactions] Stopping transaction updates subscription');
     this._transactionsActivePolling.delete(this._rootStore.deviceStore.deviceId);
+    // The actual unsubscription from Firebase messaging is handled in UserStore.logout()
+    // which calls FirebaseAuthManager.abortMessaging()
   }
 
   @action
@@ -111,49 +114,75 @@ export class TransactionsStore {
 
     this._transactionsActivePolling.set(this._rootStore.deviceStore.deviceId, true);
 
-    let startDate = 0;
+    // Fetch initial transactions to populate the store
+    await this.fetchTransactions();
 
-    while (!this._disposed) {
-      try {
-        await this._rootStore.userStore.resetAccessToken();
-        const response = await getTransactions(
-          this._rootStore.deviceStore.deviceId,
-          startDate,
-          this._rootStore.userStore.accessToken,
-          // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
-          this._rootStore,
-        );
+    // Instead of starting a polling loop, we rely on push notifications
+    // The push notification system is already set up in UserStore.initializeAndSetupPushNotifications()
+    console.log('[Transactions] Started listening for transaction updates via push notifications');
+  }
 
-        if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && !response?.ok) {
-          await sleep(TX_POLL_INTERVAL);
-          continue;
-        }
+  /**
+   * Fetches transactions from the server once
+   * This is used for the initial load and can be called to refresh transactions manually
+   */
+  @action
+  public async fetchTransactions(): Promise<void> {
+    try {
+      await this._rootStore.userStore.resetAccessToken();
+      const response = await getTransactions(
+        this._rootStore.deviceStore.deviceId,
+        0, // Get all transactions
+        this._rootStore.userStore.accessToken,
+        // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+        this._rootStore,
+      );
 
-        const transactions = ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? response : await response.json();
+      if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && !response?.ok) {
+        return;
+      }
 
-        transactions.forEach((tx: ITransactionDTO) => {
-          if (tx.id && tx.lastUpdated) {
-            startDate = Math.max(startDate, tx.lastUpdated);
-            const subscribers = this._transactionSubscriptions.get(this._rootStore.deviceStore.deviceId);
+      const transactions = ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? response : await response.json();
 
-            if (subscribers) {
-              for (const subscriber of subscribers) {
-                if (this._disposed || !this._transactionsActivePolling.get(this._rootStore.deviceStore.deviceId)) {
-                  break;
-                }
-                subscriber(tx);
+      transactions.forEach((tx: ITransactionDTO) => {
+        if (tx.id) {
+          const subscribers = this._transactionSubscriptions.get(this._rootStore.deviceStore.deviceId);
+
+          if (subscribers) {
+            for (const subscriber of subscribers) {
+              if (this._disposed || !this._transactionsActivePolling.get(this._rootStore.deviceStore.deviceId)) {
+                break;
               }
+              subscriber(tx);
             }
           }
-        });
-
-        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-          await sleep(TX_POLL_INTERVAL);
-          continue;
         }
-      } catch (e: any) {
-        this.setError(e.message);
-        await sleep(TX_POLL_INTERVAL);
+      });
+    } catch (e: any) {
+      this.setError(e.message);
+    }
+  }
+
+  /**
+   * Handles a transaction update received from a push notification
+   * @param transaction The transaction data from the push notification
+   */
+  @action
+  public handleTransactionUpdate(transaction: ITransactionDTO): void {
+    if (!transaction.id) {
+      console.error('[Transactions] Received transaction update without ID:', transaction);
+      return;
+    }
+
+    console.log(`[Transactions] Received update for transaction ${transaction.id}:`, transaction);
+
+    const subscribers = this._transactionSubscriptions.get(this._rootStore.deviceStore.deviceId);
+    if (subscribers) {
+      for (const subscriber of subscribers) {
+        if (this._disposed || !this._transactionsActivePolling.get(this._rootStore.deviceStore.deviceId)) {
+          break;
+        }
+        subscriber(transaction);
       }
     }
   }

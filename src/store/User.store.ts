@@ -1,4 +1,4 @@
-import { IDeviceDTO, getDevices, getUserId } from '@api';
+import { IDeviceDTO, TTransactionStatus, getDevices, getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ENV_CONFIG } from '../env_config.ts';
@@ -296,10 +296,30 @@ export class UserStore {
       const { notification, data } = payload;
 
       // Handle different types of notifications based on data
-      if (data?.type === 'transaction') {
+      console.log('[FCM] data:', data);
+      if (data?.type) {
         console.log('[FCM] Transaction notification received:', data);
-        // You could trigger a refresh of transaction data here
-        // this._rootStore.transactionStore.refreshTransactions();
+
+        // Process transaction update
+        if (data.txId) {
+          try {
+            // Transform the push notification data to match ITransactionDTO format
+            const transactionData = {
+              id: data.txId,
+              status: data.status as TTransactionStatus,
+              // Add other fields if available in the push notification
+              ...(data.txHash && { details: { txHash: data.txHash } })
+            };
+
+            // Handle the transaction update with properly formatted data
+            this._rootStore.transactionsStore.handleTransactionUpdate(transactionData);
+          } catch (error) {
+            console.error('[FCM] Error processing transaction data:', error);
+          }
+        } else {
+          // If no transaction data is provided, fetch all transactions
+          this._rootStore.transactionsStore.fetchTransactions();
+        }
       } else if (data?.type === 'backup') {
         console.log('[FCM] Backup notification received:', data);
         // You could trigger a refresh of backup status here
