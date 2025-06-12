@@ -420,4 +420,43 @@ export class AssetsStore {
   public getAssetById(assetId: string): AssetStore | undefined {
     return this.myAssets.find((a) => a.id === assetId);
   }
+
+  /**
+   * Refreshes the balance of a specific asset by its ID
+   * @param assetId The ID of the asset to refresh
+   * @returns A promise that resolves when the balance is refreshed
+   */
+  public async refreshAssetBalance(assetId: string): Promise<void> {
+    try {
+      const deviceId = this._rootStore.deviceStore.deviceId;
+      const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
+      const accessToken = this._rootStore.userStore.accessToken;
+
+      if (!deviceId || accountId === undefined || !accessToken) {
+        console.warn('[Assets] Missing required data for refreshing asset balance');
+        return;
+      }
+
+      const asset = this.getAssetById(assetId);
+      if (!asset) {
+        console.warn(`[Assets] Asset with ID ${assetId} not found`);
+        return;
+      }
+
+      console.log(`[Assets] Refreshing balance for asset ${assetId}`);
+
+      // Get the balance for the specific asset
+      // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+      const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken, this._rootStore);
+
+      if (balanceDTO) {
+        // Update the asset's balance
+        asset.setBalance(balanceDTO);
+        console.log(`[Assets] Successfully refreshed balance for asset ${assetId}`);
+      }
+    } catch (error: any) {
+      console.error(`[Assets] Error refreshing balance for asset ${assetId}:`, error);
+      this.setError(error.message);
+    }
+  }
 }

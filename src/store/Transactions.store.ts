@@ -1,4 +1,12 @@
-import { INewTransactionDTO, ITransactionDTO, TX_POLL_INTERVAL, createTransaction, getTransactions, sleep } from '@api';
+import {
+  INewTransactionDTO,
+  ITransactionDTO,
+  TX_POLL_INTERVAL,
+  createTransaction,
+  getTransactions,
+  sleep,
+  TTransactionStatus, ITransactionDetailsDTO,
+} from '@api';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { ENV_CONFIG } from '../env_config.ts';
 import { RootStore } from './Root.store';
@@ -65,6 +73,15 @@ export class TransactionsStore {
 
     if (existingTransaction) {
       existingTransaction.update(transactionData);
+    } else {
+      this.addTransaction(transactionData);
+    }
+  }
+
+  public updateOneTransaction(transactionData: ITransactionDTO): void {
+    const existingTransaction = this.getTransactionById(transactionData.id);
+    if (existingTransaction) {
+      existingTransaction.updateOneFromWebPush(transactionData);
     } else {
       this.addTransaction(transactionData);
     }
@@ -164,6 +181,77 @@ export class TransactionsStore {
   }
 
   /**
+   * Fetches a single transaction by ID from the server
+   * @param transactionId The ID of the transaction to fetch
+   * @returns A promise that resolves when the transaction is fetched
+   */
+  @action
+  public async fetchTransactionById(transactionId: string): Promise<void> {
+    console.log(`[Transactions] Fetching transaction by ID: ${transactionId}`);
+    try {
+      await this._rootStore.userStore.resetAccessToken();
+
+      if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+        // For non-embedded wallet, use the existing getTransactions API
+        const response = await getTransactions(
+          this._rootStore.deviceStore.deviceId,
+          0, // Get all transactions
+          this._rootStore.userStore.accessToken,
+        );
+
+        if (!response?.ok) {
+          return;
+        }
+
+        const transactions = await response.json();
+        const transaction = transactions.find((tx: ITransactionDTO) => tx.id === transactionId);
+
+        if (transaction) {
+          console.log(`[Transactions] Found transaction ${transactionId}:`, transaction);
+          this.handleTransactionUpdate(transaction);
+        } else {
+          console.warn(`[Transactions] Transaction with ID ${transactionId} not found`);
+        }
+      } else {
+        // For embedded wallet, use the getTransaction method directly
+        if (!this._rootStore.fireblocksSDKStore.fireblocksEW) {
+          console.error('[Transactions] Embedded wallet SDK is not initialized');
+          return;
+        }
+
+        try {
+          // Use getTransaction method to fetch a single transaction by ID
+          const transaction = await this._rootStore.fireblocksSDKStore.fireblocksEW.getTransaction(transactionId);
+
+          if (transaction) {
+            console.log(`[Transactions] Successfully fetched transaction ${transactionId}:`, transaction);
+
+            // Convert the transaction to the expected format
+            const formattedTransaction: ITransactionDTO = {
+              id: transaction.id!,
+              status: transaction.status as TTransactionStatus,
+              createdAt: transaction.createdAt,
+              lastUpdated: transaction.lastUpdated,
+              details: transaction as unknown as ITransactionDetailsDTO,
+            };
+
+            // Update the transaction in the store
+            this.handleTransactionUpdate(formattedTransaction);
+          } else {
+            console.warn(`[Transactions] Transaction with ID ${transactionId} not found`);
+          }
+        } catch (error) {
+          console.error(`[Transactions] Error fetching transaction by ID ${transactionId}:`, error);
+          throw error;
+        }
+      }
+    } catch (e: any) {
+      console.error(`[Transactions] Error fetching transaction by ID ${transactionId}:`, e);
+      this.setError(e.message);
+    }
+  }
+
+  /**
    * Handles a transaction update received from a push notification
    * @param transaction The transaction data from the push notification
    */
@@ -176,15 +264,8 @@ export class TransactionsStore {
 
     console.log(`[Transactions] Received update for transaction ${transaction.id}:`, transaction);
 
-    const subscribers = this._transactionSubscriptions.get(this._rootStore.deviceStore.deviceId);
-    if (subscribers) {
-      for (const subscriber of subscribers) {
-        if (this._disposed || !this._transactionsActivePolling.get(this._rootStore.deviceStore.deviceId)) {
-          break;
-        }
-        subscriber(transaction);
-      }
-    }
+    // Only notify subscribers about the specific transaction received
+    this.updateOneTransaction(transaction);
   }
 
   @computed

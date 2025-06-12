@@ -297,22 +297,23 @@ export class UserStore {
 
       // Handle different types of notifications based on data
       console.log('[FCM] data:', data);
-      if (data?.type) {
+      if (data?.type?.startsWith('transaction')) {
         console.log('[FCM] Transaction notification received:', data);
 
         // Process transaction update
         if (data.txId) {
           try {
-            // Transform the push notification data to match ITransactionDTO format
-            const transactionData = {
-              id: data.txId,
-              status: data.status as TTransactionStatus,
-              // Add other fields if available in the push notification
-              ...(data.txHash && { details: { txHash: data.txHash } })
-            };
-
-            // Handle the transaction update with properly formatted data
-            this._rootStore.transactionsStore.handleTransactionUpdate(transactionData);
+            // Skip updating with basic data and directly fetch the full transaction data
+            // This prevents multiple calls to updateOneFromWebPush
+            console.log('[FCM] Fetching full transaction data for txId:', data.txId);
+            this._rootStore.transactionsStore
+              .fetchTransactionById(data.txId)
+              .then(() => {
+                console.log('[FCM] Successfully fetched full transaction data');
+              })
+              .catch((error) => {
+                console.error('[FCM] Error fetching full transaction data:', error);
+              });
           } catch (error) {
             console.error('[FCM] Error processing transaction data:', error);
           }
