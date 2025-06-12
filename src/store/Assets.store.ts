@@ -439,7 +439,41 @@ export class AssetsStore {
 
       const asset = this.getAssetById(assetId);
       if (!asset) {
-        console.warn(`[Assets] Asset with ID ${assetId} not found`);
+        console.warn(`[Assets] Asset with ID ${assetId} not found, fetching asset data`);
+
+        try {
+          // Try to get the specific asset data
+          // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+          const assetData = await getAsset(deviceId, accountId, assetId, accessToken, this._rootStore);
+
+          if (assetData) {
+            // Create a new asset and add it to myAssets
+            const newAsset = new AssetStore(assetData, null, null, this._rootStore);
+            runInAction(() => {
+              this.myAssets.push(newAsset);
+            });
+
+            // Now get the balance for this new asset
+            // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+            const balanceDTO = await getBalance(deviceId, accountId, assetId, accessToken, this._rootStore);
+
+            if (balanceDTO) {
+              newAsset.setBalance(balanceDTO);
+              console.log(`[Assets] Successfully added and refreshed balance for new asset ${assetId}`);
+            }
+            return;
+          }
+        } catch (assetError) {
+          console.error(`[Assets] Error fetching asset data for ${assetId}:`, assetError);
+          // If we can't get the specific asset, refresh all assets as a fallback
+          console.log(`[Assets] Falling back to refreshing all assets`);
+          this.refreshBalances();
+          return;
+        }
+
+        // If we couldn't get the specific asset, refresh all assets
+        console.log(`[Assets] Asset ${assetId} not found, refreshing all assets instead`);
+        this.refreshBalances();
         return;
       }
 

@@ -226,10 +226,18 @@ export class TransactionStore {
     this.createdAt = dto.createdAt || null;
     this.lastUpdated = dto.lastUpdated || null;
     this.details = dto.details || null;
-    if (this.assetId) {
-      this._rootStore.assetsStore.refreshAssetBalance(this.assetId).catch((error) => {
-        console.error(`[Transaction] Error refreshing balance for asset ${this.assetId}:`, error);
-      });
+
+    // Update the transaction status which will trigger appropriate asset balance refreshes
+    if (dto.status) {
+      this.updateStatus(dto.status);
+    } else {
+      // If no status is provided, still refresh the asset balance
+      if (this.assetId) {
+        console.log(`[Transaction] Refreshing balance for asset ${this.assetId} from web push update`);
+        this._rootStore.assetsStore.refreshAssetBalance(this.assetId).catch((error) => {
+          console.error(`[Transaction] Error refreshing balance for asset ${this.assetId}:`, error);
+        });
+      }
     }
   }
 }
