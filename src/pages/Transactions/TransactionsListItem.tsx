@@ -16,6 +16,7 @@ import IconNoNft from '@icons/no_nft_image.svg';
 import { Button as MUIButton, Tooltip } from '@mui/material';
 import { TransactionStore, useTransactionsStore } from '@store';
 import { observer } from 'mobx-react';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { TransactionDetailsDialog } from './TransactionDetailsDialog';
 
@@ -61,6 +62,7 @@ interface IProps {
 export const TransactionsListItem: React.FC<IProps> = observer(function TransactionsListItem({ index, style }) {
   const { t } = useTranslation();
   const transactionsStore = useTransactionsStore();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = React.useState(false);
   const [selectedTx, setSelectedTx] = React.useState<TransactionStore | null>(null);
@@ -111,7 +113,22 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
               <TableSignCell
                 isSigning={transaction.isSigning}
                 onSign={() => {
+                  // Clear any previous error
+                  transaction.setError('');
+
+                  // Call signTransaction and watch for errors
                   transaction.signTransaction();
+
+                  // Set up an error watcher
+                  const errorWatcher = setInterval(() => {
+                    if (transaction.error) {
+                      enqueueSnackbar(`Transaction signing failed: ${transaction.error}`, { variant: 'error' });
+                      clearInterval(errorWatcher);
+                    } else if (!transaction.isSigning) {
+                      // If signing is no longer in progress and there's no error, we can stop watching
+                      clearInterval(errorWatcher);
+                    }
+                  }, 500); // Check every 500ms
                 }}
                 onCancel={() => {
                   transaction.cancelTransaction();

@@ -166,7 +166,14 @@ export class FireblocksSDKStore {
     } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
-      throw new Error(error.message);
+
+      // Provide more specific error messages for common failures
+      if (error.message.includes('decrypt') || error.message.includes('integrity') || 
+          error.message.includes('authentication failed') || error.message.includes('bad decrypt')) {
+        throw new Error('Incorrect password. Please try again with the correct password.');
+      } else {
+        throw new Error(error.message);
+      }
     }
   }
 
@@ -254,7 +261,14 @@ export class FireblocksSDKStore {
     } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
-      throw new Error(error.message);
+
+      // Provide more specific error messages for common failures
+      if (error.message.includes('decrypt') || error.message.includes('integrity') || 
+          error.message.includes('authentication failed') || error.message.includes('bad decrypt')) {
+        throw new Error('Incorrect password. Please try again with the correct password.');
+      } else {
+        throw new Error(error.message);
+      }
     }
   }
 
@@ -363,7 +377,15 @@ export class FireblocksSDKStore {
     } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
-      throw new Error(error);
+
+      // Provide more specific error messages for common failures
+      const errorMessage = error.message || String(error);
+      if (errorMessage.includes('decrypt') || errorMessage.includes('integrity') || 
+          errorMessage.includes('authentication failed') || errorMessage.includes('bad decrypt')) {
+        throw new Error('Incorrect password. Please try again with the correct password.');
+      } else {
+        throw new Error(errorMessage);
+      }
     }
   }
 

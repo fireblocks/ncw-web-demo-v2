@@ -152,7 +152,18 @@ export class TransactionStore {
       .then(() => {})
       .catch((e) => {
         this.setIsSigning(false);
-        this.setError(e.message);
+
+        // Check for specific error conditions and provide more descriptive messages
+        if (
+          e.message.includes('device not found') ||
+          e.message.includes('invalid device') ||
+          e.message.includes('Fireblocks API returned an error: Unexpected physicalDeviceId')
+        ) {
+          this.setError('Invalid physical device. This device may have been disconnected or replaced after recovery.');
+        } else {
+          this.setError(e.message);
+        }
+
         this._rootStore.fireblocksSDKStore.sdkInstance
           ?.stopInProgressSignTransaction()
           .then(() => {})
