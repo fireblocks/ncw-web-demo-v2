@@ -50,9 +50,35 @@ export class IndexedDBLogger implements ILogger {
   public log(level: TLogLevel, message: string, data?: any): void {
     this._logger.log(level, message, data);
 
+    console.log('data: !!!!!! : ', data)
+
     // Show a snackbar for error messages
-    if (level === 'ERROR' && data?.error?.message === 'Fireblocks API returned an error: Unexpected physicalDeviceId') {
-      snackbarService.enqueueSnackbar(`Error: ${data.error.message}`, { variant: 'error' });
+    if (level === 'ERROR') {
+      // Check for device-related errors
+      if (data?.error?.message === 'Fireblocks API returned an error: Unexpected physicalDeviceId') {
+        snackbarService.enqueueSnackbar(
+          `Error: Invalid physical device. This device may have been disconnected or replaced after recovery.`,
+          { variant: 'error' },
+        );
+      } else if (data?.message === 'Destination address is invalid') {
+        snackbarService.enqueueSnackbar(`Error: Destination address is invalid`, { variant: 'error' });
+      } else if (
+        message.includes('Incorrect password') ||
+        (data?.error?.message && data.error.message.includes('Incorrect password')) ||
+        message.includes('decrypt') ||
+        message.includes('integrity') ||
+        message.includes('authentication failed') ||
+        message.includes('bad decrypt') ||
+        (data?.error?.message &&
+          (data.error.message.includes('decrypt') ||
+            data.error.message.includes('integrity') ||
+            data.error.message.includes('authentication failed') ||
+            data.error.message.includes('bad decrypt')))
+      ) {
+        snackbarService.enqueueSnackbar(`Error: Incorrect password. Please try again with the correct password.`, {
+          variant: 'error',
+        });
+      }
     }
 
     this._saveLog({

@@ -160,8 +160,39 @@ export class TransactionStore {
           e.message.includes('Fireblocks API returned an error: Unexpected physicalDeviceId')
         ) {
           this.setError('Invalid physical device. This device may have been disconnected or replaced after recovery.');
+
+          // Log the device-related error
+          if (this._rootStore.fireblocksSDKStore.logger) {
+            this._rootStore.fireblocksSDKStore.logger.log(
+              'ERROR',
+              'Invalid physical device during transaction signing',
+              { error: e },
+            );
+          }
+        }
+        // Check for password-related errors
+        else if (
+          e.message.includes('Incorrect password') ||
+          e.message.includes('decrypt') ||
+          e.message.includes('integrity') ||
+          e.message.includes('authentication failed') ||
+          e.message.includes('bad decrypt')
+        ) {
+          this.setError('Incorrect password. Please try again with the correct password.');
+
+          // Log the password-related error
+          if (this._rootStore.fireblocksSDKStore.logger) {
+            this._rootStore.fireblocksSDKStore.logger.log('ERROR', 'Incorrect password during transaction signing', {
+              error: e,
+            });
+          }
         } else {
           this.setError(e.message);
+
+          // Log other errors
+          if (this._rootStore.fireblocksSDKStore.logger) {
+            this._rootStore.fireblocksSDKStore.logger.log('ERROR', 'Error during transaction signing', { error: e });
+          }
         }
 
         this._rootStore.fireblocksSDKStore.sdkInstance
@@ -169,6 +200,13 @@ export class TransactionStore {
           .then(() => {})
           .catch((err) => {
             this.setError(err.message);
+
+            // Log errors from stopInProgressSignTransaction
+            if (this._rootStore.fireblocksSDKStore.logger) {
+              this._rootStore.fireblocksSDKStore.logger.log('ERROR', 'Error stopping in-progress transaction signing', {
+                error: err,
+              });
+            }
           });
       });
   }
