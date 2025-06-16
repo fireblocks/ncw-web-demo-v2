@@ -122,7 +122,12 @@ export const TransactionsListItem: React.FC<IProps> = observer(function Transact
                   // Set up an error watcher
                   const errorWatcher = setInterval(() => {
                     if (transaction.error) {
-                      enqueueSnackbar(`Transaction signing failed: ${transaction.error}`, { variant: 'error' });
+                      enqueueSnackbar(
+                        transaction.error !== 'UNKNOWN_ERROR'
+                          ? `Transaction signing failed: ${transaction.error}`
+                          : 'Transaction signing failed',
+                        { variant: 'error' },
+                      );
                       clearInterval(errorWatcher);
                     } else if (!transaction.isSigning) {
                       // If signing is no longer in progress and there's no error, we can stop watching
