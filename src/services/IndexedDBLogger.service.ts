@@ -50,8 +50,6 @@ export class IndexedDBLogger implements ILogger {
   public log(level: TLogLevel, message: string, data?: any): void {
     this._logger.log(level, message, data);
 
-    console.log('data: !!!!!! : ', data)
-
     // Show a snackbar for error messages
     if (level === 'ERROR') {
       // Check for device-related errors
