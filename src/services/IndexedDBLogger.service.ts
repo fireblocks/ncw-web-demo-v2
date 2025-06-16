@@ -71,7 +71,8 @@ export class IndexedDBLogger implements ILogger {
           (data.error.message.includes('decrypt') ||
             data.error.message.includes('integrity') ||
             data.error.message.includes('authentication failed') ||
-            data.error.message.includes('bad decrypt')))
+            data.error.message.includes('bad decrypt'))) ||
+        (data.error?.name === 'OperationError' && data?.error?.code === 0)
       ) {
         snackbarService.enqueueSnackbar(`Error: Incorrect password. Please try again with the correct password.`, {
           variant: 'error',
