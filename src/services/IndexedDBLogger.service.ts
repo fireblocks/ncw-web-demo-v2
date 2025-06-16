@@ -60,20 +60,7 @@ export class IndexedDBLogger implements ILogger {
         );
       } else if (data?.message === 'Destination address is invalid') {
         snackbarService.enqueueSnackbar(`Error: Destination address is invalid`, { variant: 'error' });
-      } else if (
-        message.includes('Incorrect password') ||
-        (data?.error?.message && data.error.message.includes('Incorrect password')) ||
-        message.includes('decrypt') ||
-        message.includes('integrity') ||
-        message.includes('authentication failed') ||
-        message.includes('bad decrypt') ||
-        (data?.error?.message &&
-          (data.error.message.includes('decrypt') ||
-            data.error.message.includes('integrity') ||
-            data.error.message.includes('authentication failed') ||
-            data.error.message.includes('bad decrypt'))) ||
-        (data.error?.name === 'OperationError' && data?.error?.code === 0)
-      ) {
+      } else if (data.error?.name === 'OperationError' && data?.error?.code === 0) {
         snackbarService.enqueueSnackbar(`Error: Incorrect password. Please try again with the correct password.`, {
           variant: 'error',
         });
