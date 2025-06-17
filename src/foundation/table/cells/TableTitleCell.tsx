@@ -10,7 +10,7 @@ const RootStyled = styled('div')(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
-const ImageStyled = styled('div')(({ theme }) => ({
+const ImageStyled = styled('div')<{ isNft?: boolean }>(({ theme, isNft }) => ({
   display: 'flex',
   justifyContent: 'space-around',
   alignItems: 'center',
@@ -24,12 +24,12 @@ const ImageStyled = styled('div')(({ theme }) => ({
   position: 'relative', // Added for positioning the secondary icon
 }));
 
-const SecondaryIconStyled = styled('div')(() => ({
+const SecondaryIconStyled = styled('div')<{ isNft?: boolean }>(({ isNft }) => ({
   position: 'absolute',
-  width: 14,
-  height: 14,
-  bottom: 17,
-  right: 15,
+  width: isNft ? 18 : 14,
+  height: isNft ? 18 : 14,
+  bottom: isNft ? 0 : 17,
+  right: isNft ? 0 : 15,
   zIndex: 2,
   display: 'flex',
   justifyContent: 'center',
@@ -70,20 +70,33 @@ interface IProps {
   iconUrl: string;
   // The asset symbol is used to determine the secondary icon
   assetSymbol?: string;
+  // Flag to indicate if this is for NFT display
+  isNft?: boolean;
 }
 
-export const TableTitleCell: React.FC<IProps> = ({ title, subtitle, iconUrl, assetSymbol }) => {
+export const TableTitleCell: React.FC<IProps> = ({ title, subtitle, iconUrl, assetSymbol, isNft = false }) => {
   // Get the secondary icon URL based on the asset symbol
   const secondaryIconUrl = assetSymbol ? getSecondaryIconUrl(assetSymbol) : null;
 
   return (
     <RootStyled>
-      <ImageStyled>
-        <img width="24px" height="24px" src={iconUrl} alt={title} />
+      <ImageStyled isNft={isNft}>
+        <img
+          width={isNft ? '100%' : '24px'}
+          height={isNft ? '100%' : '24px'}
+          src={iconUrl}
+          alt={title}
+          style={isNft ? { objectFit: 'cover', width: '100%', height: '100%' } : undefined}
+        />
         {/* Render the secondary icon if assetSymbol is provided */}
         {assetSymbol && (
-          <SecondaryIconStyled>
-            <img width="14px" height="14px" src={secondaryIconUrl || IconNoAsset} alt={assetSymbol} />
+          <SecondaryIconStyled isNft={isNft}>
+            <img
+              width={isNft ? '18px' : '14px'}
+              height={isNft ? '18px' : '14px'}
+              src={secondaryIconUrl || IconNoAsset}
+              alt={assetSymbol}
+            />
           </SecondaryIconStyled>
         )}
       </ImageStyled>

@@ -58,6 +58,7 @@ export const NFTsListItem: React.FC<IProps> = observer(function NFTsListItem({
             subtitle={token.blockchainDescriptor}
             iconUrl={token.imageUrl || IconNoNft}
             assetSymbol={token.blockchainDescriptor}
+            isNft={true}
           />
           <TableTextCell text="--" />
           <TableTextCell text={token.collectionName} />
