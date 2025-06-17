@@ -12,4 +12,5 @@ export const ENV_CONFIG = {
   BACKEND_BASE_URL: import.meta.env.VITE_BACKEND_BASE_URL,
   AUTH_CLIENT_ID: import.meta.env.VITE_AUTH_CLIENT_ID,
   VAPID_PUBLIC_KEY: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+  USE_WEB_PUSH: import.meta.env.VITE_USE_WEB_PUSH === 'true',
 };

@@ -255,8 +255,15 @@ export class UserStore {
   /**
    * Initializes Firebase messaging and sets up push notifications.
    * Should be called after user is logged in and device/wallet IDs are available.
+   * Only initializes if USE_WEB_PUSH is true.
    */
   public async initializeAndSetupPushNotifications(): Promise<void> {
+    // Skip FCM initialization if web push is disabled
+    if (!ENV_CONFIG.USE_WEB_PUSH) {
+      console.log('Web push notifications are disabled. Skipping FCM initialization.');
+      return;
+    }
+
     if (this.loggedUser && this._rootStore.deviceStore.deviceId && this._rootStore.deviceStore.walletId) {
       try {
         if (ENV_CONFIG.BACKEND_BASE_URL) {

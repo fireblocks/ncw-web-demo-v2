@@ -134,9 +134,32 @@ export class TransactionsStore {
     // Fetch initial transactions to populate the store
     await this.fetchTransactions();
 
-    // Instead of starting a polling loop, we rely on push notifications
-    // The push notification system is already set up in UserStore.initializeAndSetupPushNotifications()
-    console.log('[Transactions] Started listening for transaction updates via push notifications');
+    if (ENV_CONFIG.USE_WEB_PUSH) {
+      // If web push is enabled, rely on push notifications
+      // The push notification system is already set up in UserStore.initializeAndSetupPushNotifications()
+      console.log('[Transactions] Started listening for transaction updates via push notifications');
+    } else {
+      // If web push is disabled, use polling
+      console.log('[Transactions] Started polling for transaction updates');
+      this.startPollingLoop();
+    }
+  }
+
+  private async startPollingLoop(): Promise<void> {
+    while (this._hasTransactionsActivePollingForCurrentDevice && !this._disposed) {
+      try {
+        await sleep(TX_POLL_INTERVAL);
+
+        if (!this._hasTransactionsActivePollingForCurrentDevice || this._disposed) {
+          break;
+        }
+
+        await this.fetchTransactions();
+      } catch (error) {
+        console.error('[Transactions] Error during transaction polling:', error);
+        // Continue polling despite errors
+      }
+    }
   }
 
   /**
