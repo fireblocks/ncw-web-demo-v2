@@ -92,9 +92,9 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
           setIsCreatingTransfer(false);
           enqueueSnackbar(t('ASSETS.NEW_TRANSACTION_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
         })
-        .catch(() => {
+        .catch((error) => {
           setIsCreatingTransfer(false);
-          enqueueSnackbar(t('ASSETS.NEW_TRANSACTION_DIALOG.ERROR_MESSAGE'), { variant: 'error' });
+          enqueueSnackbar(`${t('ASSETS.NEW_TRANSACTION_DIALOG.ERROR_MESSAGE')}: ${error.message}`, { variant: 'error' });
         });
     } else {
       transactionsStore
@@ -112,9 +112,9 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
           clearState();
           enqueueSnackbar(t('ASSETS.NEW_TRANSACTION_DIALOG.SUCCESS_MESSAGE'), { variant: 'success' });
         })
-        .catch(() => {
+        .catch((error) => {
           setIsCreatingTransfer(false);
-          enqueueSnackbar(t('ASSETS.NEW_TRANSACTION_DIALOG.ERROR_MESSAGE'), { variant: 'error' });
+          enqueueSnackbar(`${t('ASSETS.NEW_TRANSACTION_DIALOG.ERROR_MESSAGE')}: ${error.message}`, { variant: 'error' });
         });
     }
   };

@@ -311,6 +311,17 @@ export class TransactionsStore {
     const accountId = this._rootStore.accountsStore.currentAccount?.accountId;
     const accessToken = this._rootStore.userStore.accessToken;
 
+    // Check if amount exceeds balance for transfer operations
+    if (dataToSend.operation === 'TRANSFER' && dataToSend.amount && dataToSend.assetId) {
+      const asset = this._rootStore.assetsStore.getAssetById(dataToSend.assetId);
+      // Remove commas from amount string before parsing
+      const amountWithoutCommas = dataToSend.amount.replace(/,/g, '');
+      if (asset && parseFloat(amountWithoutCommas) > asset.totalBalance) {
+        this.setError('Transaction amount exceeds available balance');
+        throw new Error('Transaction amount exceeds available balance');
+      }
+    }
+
     if (deviceId && accountId !== undefined && accessToken) {
       // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
       const newTxData = await createTransaction(deviceId, accessToken, dataToSend, this._rootStore);

@@ -1,4 +1,5 @@
 import { ILogger, NullLoggerFactory, TLogLevel } from '@fireblocks/ncw-js-sdk';
+import { snackbarService } from './Snackbar.service';
 
 const DB_NAME = 'fireblocks-ncw-sdk-logs';
 const TABLE_NAME = 'logs';
@@ -48,6 +49,23 @@ export class IndexedDBLogger implements ILogger {
 
   public log(level: TLogLevel, message: string, data?: any): void {
     this._logger.log(level, message, data);
+
+    // Show a snackbar for error messages
+    if (level === 'ERROR') {
+      // Check for device-related errors
+      if (data?.error?.message === 'Fireblocks API returned an error: Unexpected physicalDeviceId') {
+        snackbarService.enqueueSnackbar(
+          `Error: Invalid physical device. This device may have been disconnected or replaced after recovery.`,
+          { variant: 'error' },
+        );
+      } else if (data?.message === 'Destination address is invalid') {
+        snackbarService.enqueueSnackbar(`Error: Destination address is invalid`, { variant: 'error' });
+      } else if (data.error?.name === 'OperationError' && data?.error?.code === 0) {
+        snackbarService.enqueueSnackbar(`Error: Incorrect password. Please try again with the correct password.`, {
+          variant: 'error',
+        });
+      }
+    }
 
     this._saveLog({
       level,

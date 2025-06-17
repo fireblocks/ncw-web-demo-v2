@@ -48,7 +48,16 @@ export class UserStore {
         }
       })
       .catch((e) => {
-        this.setError(e.message);
+        // Provide more specific error messages for common authentication failures
+        if (e.message.includes('password') && e.message.includes('wrong')) {
+          this.setError('Incorrect password. Please try again with the correct password.');
+        } else if (e.message.includes('password') && e.message.includes('weak')) {
+          this.setError('Password is too weak. Please use a stronger password.');
+        } else if (e.message.includes('user') && e.message.includes('not found')) {
+          this.setError('User not found. Please check your email or sign up for a new account.');
+        } else {
+          this.setError(e.message);
+        }
         this.setIsGettingUser(false); // Reset loading state when error occurs
       });
   }
