@@ -28,8 +28,8 @@ const SecondaryIconStyled = styled('div')(() => ({
   position: 'absolute',
   width: 14,
   height: 14,
-  bottom: 5,
-  right: 5,
+  bottom: 17,
+  right: 15,
   zIndex: 2,
   display: 'flex',
   justifyContent: 'center',
@@ -79,11 +79,11 @@ export const TableTitleCell: React.FC<IProps> = ({ title, subtitle, iconUrl, ass
   return (
     <RootStyled>
       <ImageStyled>
-        <img width="64px" height="64px" src={iconUrl} alt={title} />
+        <img width="24px" height="24px" src={iconUrl} alt={title} />
         {/* Render the secondary icon if assetSymbol is provided */}
         {assetSymbol && (
           <SecondaryIconStyled>
-            <img width="25px" height="25px" src={secondaryIconUrl || IconNoAsset} alt={assetSymbol} />
+            <img width="14px" height="14px" src={secondaryIconUrl || IconNoAsset} alt={assetSymbol} />
           </SecondaryIconStyled>
         )}
       </ImageStyled>
