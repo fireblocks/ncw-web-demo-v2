@@ -73,7 +73,6 @@ export const NFTsList: React.FC<IProps> = observer(function NFTsList({
         <RowStyled>
           <TableHeaderCell title={t('NFT.TABLE.HEADERS.NFT')} />
           <TableHeaderCell title={t('NFT.TABLE.HEADERS.AMOUNT')} />
-          <TableHeaderCell title={t('NFT.TABLE.HEADERS.NETWORK')} />
           <TableHeaderCell title={t('NFT.TABLE.HEADERS.COLLECTION')} />
           <SortableTableHeaderCell
             title={t('NFT.TABLE.HEADERS.DATE')}
