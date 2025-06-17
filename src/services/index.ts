@@ -6,3 +6,5 @@ export * from './Cloudkit.service';
 export * from './GoogleDrive.service';
 export * from './randomPassPhrase.service';
 export * from './extra-helper';
+export * from './Snackbar.service';
+export * from './ErrorHandling.utils';

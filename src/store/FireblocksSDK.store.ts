@@ -19,6 +19,7 @@ import {
   IndexedDBLoggerFactory,
   PasswordEncryptedLocalStorage,
   secureStorageProviderFactory,
+  handleDecryptionError,
 } from '@services';
 import { ENV_CONFIG } from 'env_config';
 import { action, computed, makeObservable, observable } from 'mobx';
@@ -166,7 +167,9 @@ export class FireblocksSDKStore {
     } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
-      throw new Error(error.message);
+
+      // Provide more specific error messages for common failures
+      handleDecryptionError(error, true);
     }
   }
 
@@ -254,7 +257,9 @@ export class FireblocksSDKStore {
     } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
-      throw new Error(error.message);
+
+      // Provide more specific error messages for common failures
+      handleDecryptionError(error, true);
     }
   }
 
@@ -363,7 +368,15 @@ export class FireblocksSDKStore {
     } catch (error: any) {
       this.setIsMPCGenerating(false);
       this.setSDKStatus('sdk_initialization_failed');
-      throw new Error(error);
+
+      // Provide more specific error messages for common failures
+      const errorMessage = error.message || String(error);
+      if (errorMessage.includes('decrypt') || errorMessage.includes('integrity') || 
+          errorMessage.includes('authentication failed') || errorMessage.includes('bad decrypt')) {
+        throw new Error('Incorrect password. Please try again with the correct password.');
+      } else {
+        throw new Error(errorMessage);
+      }
     }
   }
 
