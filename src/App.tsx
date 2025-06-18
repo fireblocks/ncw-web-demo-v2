@@ -59,22 +59,27 @@ export const App: React.FC = observer(function App() {
     }
   }, [authStore.status, assetsStore, NFTStore]);
 
-  // optional: Add event listener for tab visibility change,
+  // Add event listener for tab visibility change only when web push is enabled
   // if we out of focus on the tab and than return to the tab, than we will do refreshBalance
-  // React.useEffect(() => {
-  //   const handleVisibilityChange = () => {
-  //     if (document.visibilityState === 'visible' && authStore.status === 'READY') {
-  //       // Refresh balances when tab comes back into focus
-  //       assetsStore.refreshBalances();
-  //     }
-  //   };
-  //
-  //   document.addEventListener('visibilitychange', handleVisibilityChange);
-  //
-  //   return () => {
-  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
-  //   };
-  // }, [assetsStore, authStore.status]);
+  React.useEffect(() => {
+    // Only set up visibility change handler if web push is enabled
+    if (ENV_CONFIG.USE_WEB_PUSH) {
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible' && authStore.status === 'READY') {
+          // Refresh balances when tab comes back into focus
+          assetsStore.refreshBalances();
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }
+    // Empty cleanup function when web push is disabled
+    return () => {};
+  }, [assetsStore, authStore.status]);
 
   return (
     <RootStyled>
