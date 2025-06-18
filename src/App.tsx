@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Header, SettingsPage, TransactionsPage, Web3Page } from '@pages';
-import { useAssetsStore, useAuthStore, useNFTStore, useTransactionsStore, useUserStore } from '@store';
+import { useAssetsStore, useAuthStore, useNFTStore, useTransactionsStore, useUserStore, useWeb3Store } from '@store';
 import { ENV_CONFIG } from 'env_config';
 import { observer } from 'mobx-react';
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -32,6 +32,7 @@ export const App: React.FC = observer(function App() {
   const authStore = useAuthStore();
   const assetsStore = useAssetsStore();
   const NFTStore = useNFTStore();
+  const web3Store = useWeb3Store();
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
   const canShowDashboard = authStore.status === 'READY' && userStore.loggedUser;
 
@@ -60,14 +61,19 @@ export const App: React.FC = observer(function App() {
   }, [authStore.status, assetsStore, NFTStore]);
 
   // Add event listener for tab visibility change only when web push is enabled
-  // if we out of focus on the tab and than return to the tab, than we will do refreshBalance
+  // if we out of focus on the tab and than return to the tab, than we will refresh all data
   React.useEffect(() => {
     // Only set up visibility change handler if web push is enabled
     if (ENV_CONFIG.USE_WEB_PUSH) {
       const handleVisibilityChange = () => {
         if (document.visibilityState === 'visible' && authStore.status === 'READY') {
-          // Refresh balances when tab comes back into focus
+          // Refresh all data when tab comes back into focus
           assetsStore.refreshBalances();
+          transactionsStore.fetchTransactions();
+          NFTStore.getTokens();
+          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+            web3Store.getConnections();
+          }
         }
       };
 
@@ -79,7 +85,7 @@ export const App: React.FC = observer(function App() {
     }
     // Empty cleanup function when web push is disabled
     return () => {};
-  }, [assetsStore, authStore.status]);
+  }, [assetsStore, authStore.status, transactionsStore, NFTStore, web3Store]);
 
   return (
     <RootStyled>
