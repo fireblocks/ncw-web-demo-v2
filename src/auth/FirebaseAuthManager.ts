@@ -213,11 +213,64 @@ export class FirebaseAuthManager implements IAuthManager {
         swRegistration = await navigator.serviceWorker.getRegistration();
       }
 
+      // Ensure service worker is activated before getting token
+      if (swRegistration && (swRegistration.installing || swRegistration.waiting)) {
+        console.log('[FCM] Service worker is installing or waiting, waiting for it to activate...');
+        await new Promise<void>((resolve) => {
+          const serviceWorker = swRegistration.installing || swRegistration.waiting;
+          if (!serviceWorker) {
+            resolve();
+            return;
+          }
+
+          // If already activated, resolve immediately
+          if (swRegistration.active && serviceWorker.state === 'activated') {
+            console.log('[FCM] Service worker already activated');
+            resolve();
+            return;
+          }
+
+          // Listen for state changes
+          const stateChangeListener = (e: Event) => {
+            if ((e.target as ServiceWorker).state === 'activated') {
+              console.log('[FCM] Service worker activated successfully');
+              serviceWorker.removeEventListener('statechange', stateChangeListener);
+              resolve();
+            }
+          };
+
+          serviceWorker.addEventListener('statechange', stateChangeListener);
+
+          // Also set a timeout in case the state change event doesn't fire
+          setTimeout(() => {
+            serviceWorker.removeEventListener('statechange', stateChangeListener);
+            console.log('[FCM] Service worker activation timeout - continuing anyway');
+            resolve();
+          }, 3000);
+        });
+      }
+
       // Get the token
-      const currentToken = await getToken(this._messaging, {
-        vapidKey,
-        serviceWorkerRegistration: swRegistration,
-      });
+      let currentToken = null;
+      try {
+        // First try with the service worker registration
+        if (swRegistration) {
+          currentToken = await getToken(this._messaging, {
+            vapidKey,
+            serviceWorkerRegistration: swRegistration,
+          });
+        }
+
+        // If that fails, try without specifying the service worker registration
+        if (!currentToken) {
+          console.log('[FCM] Trying to get token without explicit service worker registration...');
+          currentToken = await getToken(this._messaging, {
+            vapidKey,
+          });
+        }
+      } catch (tokenError) {
+        console.error('[FCM] Error getting token:', tokenError);
+      }
 
       if (!currentToken) {
         console.log('[FCM] No registration token available. Request permission to generate one.');

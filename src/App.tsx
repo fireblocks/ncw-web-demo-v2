@@ -59,6 +59,23 @@ export const App: React.FC = observer(function App() {
     }
   }, [authStore.status, assetsStore, NFTStore]);
 
+  // optional: Add event listener for tab visibility change,
+  // if we out of focus on the tab and than return to the tab, than we will do refreshBalance
+  // React.useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     if (document.visibilityState === 'visible' && authStore.status === 'READY') {
+  //       // Refresh balances when tab comes back into focus
+  //       assetsStore.refreshBalances();
+  //     }
+  //   };
+  //
+  //   document.addEventListener('visibilitychange', handleVisibilityChange);
+  //
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
+  //   };
+  // }, [assetsStore, authStore.status]);
+
   return (
     <RootStyled>
       <ContentStyled>
