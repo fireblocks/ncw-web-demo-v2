@@ -14,7 +14,7 @@ import { snackbarService } from './services/Snackbar.service';
 configure({ enforceActions: 'always' });
 
 // Component to initialize the snackbar service
-const SnackbarInitializer: React.FC = ({ children }) => {
+const SnackbarInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   useEffect(() => {

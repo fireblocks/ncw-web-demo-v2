@@ -10,7 +10,7 @@ const RootStyled = styled('div')(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
-const ImageStyled = styled('div')<{ isNft?: boolean }>(({ theme, isNft }) => ({
+const ImageStyled = styled('div')<{ isNft?: boolean }>(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-around',
   alignItems: 'center',
