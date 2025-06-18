@@ -340,17 +340,6 @@ export class UserStore {
       } else {
         console.log('[FCM] Unknown notification type received');
       }
-
-      // You could also show a browser notification here if the app is in the background
-      if (notification && 'Notification' in window && Notification.permission === 'granted') {
-        // Check if the app is in focus
-        if (document.visibilityState !== 'visible') {
-          new Notification(notification.title || 'New Notification', {
-            body: notification.body || 'You have a new notification',
-            icon: '/favicon.ico',
-          });
-        }
-      }
     } catch (error) {
       console.error('[FCM] Error handling push notification:', error);
     }

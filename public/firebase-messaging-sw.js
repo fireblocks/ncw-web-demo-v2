@@ -25,9 +25,9 @@ messaging.onBackgroundMessage((payload) => {
   console.log('[FCM] Received background message ', payload);
 
   // Customize notification here
-  const notificationTitle = payload.notification.title || 'Background Message Title';
+  const notificationTitle = 'Received background message';
   const notificationOptions = {
-    body: payload.notification.body || 'Background Message body.',
+    body: payload.data || 'Background Message body.',
     icon: '/favicon.ico',
   };
 
