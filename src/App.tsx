@@ -69,11 +69,6 @@ export const App: React.FC = observer(function App() {
         if (document.visibilityState === 'visible' && authStore.status === 'READY') {
           // Refresh all data when tab comes back into focus
           assetsStore.refreshBalances();
-          transactionsStore.fetchTransactions();
-          NFTStore.getTokens();
-          if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-            web3Store.getConnections();
-          }
         }
       };
 
