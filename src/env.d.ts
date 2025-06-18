@@ -13,6 +13,7 @@ interface ImportMetaEnv {
   readonly VITE_BACKEND_BASE_URL: string;
   readonly VITE_AUTH_CLIENT_ID: string;
   readonly VITE_VAPID_PUBLIC_KEY: string;
+  readonly VITE_USE_WEB_PUSH: string;
 }
 
 interface ImportMeta {

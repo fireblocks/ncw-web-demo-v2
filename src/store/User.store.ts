@@ -1,4 +1,4 @@
-import { IDeviceDTO, TTransactionStatus, getDevices, getUserId } from '@api';
+import { IDeviceDTO, getDevices, getUserId } from '@api';
 import { FirebaseAuthManager, IAuthManager, IUser } from '@auth';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ENV_CONFIG } from '../env_config.ts';
@@ -337,16 +337,8 @@ export class UserStore {
           // If no transaction data is provided, fetch all transactions
           this._rootStore.transactionsStore.fetchTransactions();
         }
-      } else if (data?.type === 'backup') {
-        console.log('[FCM] Backup notification received:', data);
-        // You could trigger a refresh of backup status here
-        // this.checkLatestBackup();
-      } else if (data?.type === 'device') {
-        console.log('[FCM] Device notification received:', data);
-        // You could trigger a refresh of devices here
-        this.getMyDevices();
       } else {
-        console.log('[FCM] Generic notification received');
+        console.log('[FCM] Unknown notification type received');
       }
 
       // You could also show a browser notification here if the app is in the background

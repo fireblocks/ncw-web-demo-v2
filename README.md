@@ -61,7 +61,7 @@ VITE_NCW_SDK_ENV=sandbox
 VITE_USE_EMBEDDED_WALLET_SDK=false
 VITE_BASE_FOLDER=/ncw-web-demo-v2
 VITE_BACKEND_BASE_URL=your-backend-url
-VITE_USE_WEB_PUSH=true
+VITE_USE_WEB_PUSH=false
 ```
 
 Note: Choose one of the options above based on your implementation needs. The key difference is the `VITE_USE_EMBEDDED_WALLET_SDK` setting, which determines whether the application uses direct integration with Fireblocks' Embedded Wallet SDK or communicates through a proxy backend server.
