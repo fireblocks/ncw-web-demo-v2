@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { styled } from '@foundation';
+import { styled, Typography } from '@foundation';
 import InputAdornment from '@mui/material/InputAdornment/InputAdornment';
 import { NumericFormat } from 'react-number-format';
 import { InputLabelStyled, FormControlRootStyled, InputStyled } from './commonStyledComponents';
@@ -22,6 +22,14 @@ const _PriceDisplayStyled = styled('div')(({ theme }) => ({
   textAlign: 'right',
 }));
 
+const ErrorMessageStyled = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+  fontSize: theme.typography.subtitle2.fontSize,
+  position: 'absolute',
+  bottom: theme.spacing(-1.2),
+  left: theme.spacing(1),
+}));
+
 interface IProps {
   value: string;
   label: string;
@@ -29,10 +37,11 @@ interface IProps {
   adornment: string;
   assetSymbol: string;
   disabled?: boolean;
+  error?: boolean;
   setValue: (value: string) => void;
 }
 
-export const AssetAmountInput: React.FC<IProps> = ({ value, placeholder, label, adornment, disabled, setValue }) => {
+export const AssetAmountInput: React.FC<IProps> = ({ value, placeholder, label, adornment, disabled, error, setValue }) => {
   const materialUIInputProps = {
     id: label,
     disableUnderline: true,
@@ -58,8 +67,10 @@ export const AssetAmountInput: React.FC<IProps> = ({ value, placeholder, label, 
         allowLeadingZeros={true}
         thousandSeparator={true}
         decimalSeparator="."
+        error={error}
         {...materialUIInputProps}
       />
+      {error && <ErrorMessageStyled>This amount is not available in your wallet</ErrorMessageStyled>}
     </FormControlRootStyled>
   );
 };
