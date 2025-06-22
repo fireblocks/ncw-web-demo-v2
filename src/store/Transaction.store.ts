@@ -130,7 +130,41 @@ export class TransactionStore {
     if (this.isNFT) {
       this._rootStore.nftStore.getTokens().catch(() => {});
     } else if (significantStatuses.includes(status)) {
-      this._rootStore.assetsStore.refreshBalances();
+      // Only refresh the balance for the specific asset related to this transaction
+      if (this.assetId) {
+        console.log(
+          `[Transaction] Refreshing balance for asset ${this.assetId} after transaction status change to ${status}`,
+        );
+        this._rootStore.assetsStore.refreshAssetBalance(this.assetId).catch((error) => {
+          console.error(`[Transaction] Error refreshing balance for asset ${this.assetId}:`, error);
+        });
+      } else {
+        console.warn('[Transaction] Cannot refresh asset balance: assetId is missing');
+        // Fall back to refreshing all balances if assetId is missing
+        this._rootStore.assetsStore.refreshBalances();
+      }
+    }
+    this.setIsSigning(false);
+  }
+
+  @action
+  public updateOne(status: TTransactionStatus) {
+    this.status = status;
+
+    // Only refresh balances for significant status changes
+    const significantStatuses: TTransactionStatus[] = ['COMPLETED', 'FAILED', 'CANCELLED'];
+    if (this.isNFT) {
+      this._rootStore.nftStore.getTokens().catch(() => {});
+    } else if (significantStatuses.includes(status)) {
+      // Only refresh the balance for the specific asset related to this transaction
+      if (this.assetId) {
+        console.log(
+          `[Transaction] Refreshing balance for asset ${this.assetId} after transaction status change to ${status}`,
+        );
+        this._rootStore.assetsStore.refreshAssetBalance(this.assetId).catch((error) => {
+          console.error(`[Transaction] Error refreshing balance for asset ${this.assetId}:`, error);
+        });
+      }
     }
     this.setIsSigning(false);
   }
@@ -230,9 +264,29 @@ export class TransactionStore {
 
   @action
   public update(dto: ITransactionDTO) {
-    this.updateStatus(dto.status);
     this.createdAt = dto.createdAt || null;
     this.lastUpdated = dto.lastUpdated || null;
     this.details = dto.details || null;
+    this.updateStatus(dto.status);
+  }
+
+  @action
+  public updateOneFromWebPush(dto: ITransactionDTO) {
+    this.createdAt = dto.createdAt || null;
+    this.lastUpdated = dto.lastUpdated || null;
+    this.details = dto.details || null;
+
+    // Update the transaction status which will trigger appropriate asset balance refreshes
+    if (dto.status) {
+      this.updateStatus(dto.status);
+    } else {
+      // If no status is provided, still refresh the asset balance
+      if (this.assetId) {
+        console.log(`[Transaction] Refreshing balance for asset ${this.assetId} from web push update`);
+        this._rootStore.assetsStore.refreshAssetBalance(this.assetId).catch((error) => {
+          console.error(`[Transaction] Error refreshing balance for asset ${this.assetId}:`, error);
+        });
+      }
+    }
   }
 }

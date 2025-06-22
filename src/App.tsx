@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled } from '@foundation';
 import { AssetsPage, LoginPage, NFTsPage, Header, SettingsPage, TransactionsPage, Web3Page } from '@pages';
-import { useAssetsStore, useAuthStore, useNFTStore, useTransactionsStore, useUserStore } from '@store';
+import { useAssetsStore, useAuthStore, useNFTStore, useTransactionsStore, useUserStore, useWeb3Store } from '@store';
 import { ENV_CONFIG } from 'env_config';
 import { observer } from 'mobx-react';
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -32,6 +32,7 @@ export const App: React.FC = observer(function App() {
   const authStore = useAuthStore();
   const assetsStore = useAssetsStore();
   const NFTStore = useNFTStore();
+  const web3Store = useWeb3Store();
   const lastVisitedPage = localStorage.getItem('VISITED_PAGE');
   const canShowDashboard = authStore.status === 'READY' && userStore.loggedUser;
 
@@ -58,6 +59,33 @@ export const App: React.FC = observer(function App() {
       fetchAssets().catch(() => {});
     }
   }, [authStore.status, assetsStore, NFTStore]);
+
+  // Add event listener for tab visibility change only when web push is enabled
+  // if we out of focus on the tab and then return to the tab, than we will refresh all data
+  React.useEffect(() => {
+    // Only set up a visibility change handler if web push is enabled
+    if (ENV_CONFIG.USE_WEB_PUSH) {
+      const handleVisibilityChange = async () => {
+        if (document.visibilityState === 'visible' && authStore.status === 'READY' && userStore.loggedUser) {
+          // Refresh all data when tab comes back into focus
+          await transactionsStore.fetchTransactions();
+          await web3Store.getConnections();
+          await NFTStore.getTokens(false);
+          assetsStore.refreshBalances();
+        }
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }
+    // Empty cleanup function when web push is disabled
+    return () => {};
+  }, [authStore.status]);
 
   return (
     <RootStyled>

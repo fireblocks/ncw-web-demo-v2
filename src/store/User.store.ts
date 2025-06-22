@@ -63,6 +63,9 @@ export class UserStore {
   }
 
   public logout(): void {
+    // Unsubscribe from Firebase messaging before logging out
+    this._authManager.abortMessaging();
+
     this._authManager
       .logout()
       .then(() => {
@@ -256,5 +259,89 @@ export class UserStore {
       .catch((e: Error) => {
         this.setError(e.message);
       });
+  }
+
+  /**
+   * Initializes Firebase messaging and sets up push notifications.
+   * Should be called after user is logged in and device/wallet IDs are available.
+   * Only initializes if USE_WEB_PUSH is true.
+   */
+  public async initializeAndSetupPushNotifications(): Promise<void> {
+    // Skip FCM initialization if web push is disabled
+    if (!ENV_CONFIG.USE_WEB_PUSH) {
+      console.log('Web push notifications are disabled. Skipping FCM initialization.');
+      return;
+    }
+
+    if (this.loggedUser && this._rootStore.deviceStore.deviceId && this._rootStore.deviceStore.walletId) {
+      try {
+        if (ENV_CONFIG.BACKEND_BASE_URL) {
+          console.log('[FCM] Setting up push notifications.');
+          await this._authManager.setupPushNotifications(
+            this._rootStore.deviceStore.deviceId,
+            this._rootStore.deviceStore.walletId,
+            this.handlePushNotification.bind(this),
+          );
+        } else {
+          console.warn('[FCM] BACKEND_BASE_URL is not configured. Skipping push notification setup.');
+        }
+      } catch (error) {
+        console.error('[FCM] Error during push notifications setup:', error);
+        this.setError('[FCM] Error setting up push notifications.');
+      }
+    } else {
+      console.warn('[FCM] Cannot setup push notifications: User not logged in or deviceId/walletId missing.', {
+        isUserLoggedIn: !!this.loggedUser,
+        hasDeviceId: !!this._rootStore.deviceStore.deviceId,
+        hasWalletId: !!this._rootStore.deviceStore.walletId,
+      });
+    }
+  }
+
+  /**
+   * Handles incoming push notifications from Firebase Cloud Messaging.
+   * This method is passed as a callback to the setupPushNotifications method.
+   *
+   * @param payload The notification payload received from Firebase
+   */
+  public handlePushNotification(payload: any): void {
+    console.log('[FCM] Received push notification:', payload);
+
+    try {
+      // Extract notification details
+      const { notification, data } = payload;
+
+      // Handle different types of notifications based on data
+      console.log('[FCM] data:', data);
+      if (data?.type?.startsWith('transaction')) {
+        console.log('[FCM] Transaction notification received:', data);
+
+        // Process transaction update
+        if (data.txId) {
+          try {
+            // Skip updating with basic data and directly fetch the full transaction data
+            // This prevents multiple calls to updateOneFromWebPush
+            console.log('[FCM] Fetching full transaction data for txId:', data.txId);
+            this._rootStore.transactionsStore
+              .fetchTransactionById(data.txId)
+              .then(() => {
+                console.log('[FCM] Successfully fetched full transaction data');
+              })
+              .catch((error) => {
+                console.error('[FCM] Error fetching full transaction data:', error);
+              });
+          } catch (error) {
+            console.error('[FCM] Error processing transaction data:', error);
+          }
+        } else {
+          // If no transaction data is provided, fetch all transactions
+          this._rootStore.transactionsStore.fetchTransactions();
+        }
+      } else {
+        console.log('[FCM] Unknown notification type received');
+      }
+    } catch (error) {
+      console.error('[FCM] Error handling push notification:', error);
+    }
   }
 }

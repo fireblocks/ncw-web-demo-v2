@@ -1,4 +1,12 @@
-import { INewTransactionDTO, ITransactionDTO, TX_POLL_INTERVAL, createTransaction, getTransactions, sleep } from '@api';
+import {
+  INewTransactionDTO,
+  ITransactionDTO,
+  TX_POLL_INTERVAL,
+  createTransaction,
+  getTransactions,
+  sleep,
+  TTransactionStatus, ITransactionDetailsDTO,
+} from '@api';
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { ENV_CONFIG } from '../env_config.ts';
 import { RootStore } from './Root.store';
@@ -70,6 +78,15 @@ export class TransactionsStore {
     }
   }
 
+  public updateOneTransaction(transactionData: ITransactionDTO): void {
+    const existingTransaction = this.getTransactionById(transactionData.id);
+    if (existingTransaction) {
+      existingTransaction.updateOneFromWebPush(transactionData);
+    } else {
+      this.addTransaction(transactionData);
+    }
+  }
+
   public listenToTransactions(callBack: TTransactionHandler): () => void {
     let subscriptions = this._transactionSubscriptions.get(this._rootStore.deviceStore.deviceId);
 
@@ -100,7 +117,10 @@ export class TransactionsStore {
   }
 
   public stopPollingTransactions(): void {
+    console.log('[Transactions] Stopping transaction updates subscription');
     this._transactionsActivePolling.delete(this._rootStore.deviceStore.deviceId);
+    // The actual unsubscription from Firebase messaging is handled in UserStore.logout()
+    // which calls FirebaseAuthManager.abortMessaging()
   }
 
   @action
@@ -111,51 +131,164 @@ export class TransactionsStore {
 
     this._transactionsActivePolling.set(this._rootStore.deviceStore.deviceId, true);
 
-    let startDate = 0;
+    // Fetch initial transactions to populate the store
+    await this.fetchTransactions();
 
-    while (!this._disposed) {
+    if (ENV_CONFIG.USE_WEB_PUSH) {
+      // If web push is enabled, rely on push notifications
+      // The push notification system is already set up in UserStore.initializeAndSetupPushNotifications()
+      console.log('[Transactions] Started listening for transaction updates via push notifications');
+    } else {
+      // If web push is disabled, use polling
+      console.log('[Transactions] Started polling for transaction updates');
+      this.startPollingLoop();
+    }
+  }
+
+  private async startPollingLoop(): Promise<void> {
+    while (this._hasTransactionsActivePollingForCurrentDevice && !this._disposed) {
       try {
-        await this._rootStore.userStore.resetAccessToken();
-        const response = await getTransactions(
-          this._rootStore.deviceStore.deviceId,
-          startDate,
-          this._rootStore.userStore.accessToken,
-          // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
-          this._rootStore,
-        );
-
-        if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && !response?.ok) {
-          await sleep(TX_POLL_INTERVAL);
-          continue;
-        }
-
-        const transactions = ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? response : await response.json();
-
-        transactions.forEach((tx: ITransactionDTO) => {
-          if (tx.id && tx.lastUpdated) {
-            startDate = Math.max(startDate, tx.lastUpdated);
-            const subscribers = this._transactionSubscriptions.get(this._rootStore.deviceStore.deviceId);
-
-            if (subscribers) {
-              for (const subscriber of subscribers) {
-                if (this._disposed || !this._transactionsActivePolling.get(this._rootStore.deviceStore.deviceId)) {
-                  break;
-                }
-                subscriber(tx);
-              }
-            }
-          }
-        });
-
-        if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
-          await sleep(TX_POLL_INTERVAL);
-          continue;
-        }
-      } catch (e: any) {
-        this.setError(e.message);
         await sleep(TX_POLL_INTERVAL);
+
+        if (!this._hasTransactionsActivePollingForCurrentDevice || this._disposed) {
+          break;
+        }
+
+        await this.fetchTransactions();
+      } catch (error) {
+        console.error('[Transactions] Error during transaction polling:', error);
+        // Continue polling despite errors
       }
     }
+  }
+
+  /**
+   * Fetches transactions from the server once
+   * This is used for the initial load and can be called to refresh transactions manually
+   */
+  @action
+  public async fetchTransactions(): Promise<void> {
+    try {
+      await this._rootStore.userStore.resetAccessToken();
+      const response = await getTransactions(
+        this._rootStore.deviceStore.deviceId,
+        0, // Get all transactions
+        this._rootStore.userStore.accessToken,
+        // @ts-expect-error in embedded wallet masking we need rootStore, but we don't need it for proxy backend
+        this._rootStore,
+      );
+
+      if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && !response?.ok) {
+        return;
+      }
+
+      const transactions = ENV_CONFIG.USE_EMBEDDED_WALLET_SDK ? response : await response.json();
+
+      transactions.forEach((tx: ITransactionDTO) => {
+        if (tx.id) {
+          const subscribers = this._transactionSubscriptions.get(this._rootStore.deviceStore.deviceId);
+
+          if (subscribers) {
+            for (const subscriber of subscribers) {
+              if (this._disposed || !this._transactionsActivePolling.get(this._rootStore.deviceStore.deviceId)) {
+                break;
+              }
+              subscriber(tx);
+            }
+          }
+        }
+      });
+    } catch (e: any) {
+      this.setError(e.message);
+    }
+  }
+
+  /**
+   * Fetches a single transaction by ID from the server
+   * @param transactionId The ID of the transaction to fetch
+   * @returns A promise that resolves when the transaction is fetched
+   */
+  @action
+  public async fetchTransactionById(transactionId: string): Promise<void> {
+    console.log(`[Transactions] Fetching transaction by ID: ${transactionId}`);
+    try {
+      await this._rootStore.userStore.resetAccessToken();
+
+      if (!ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
+        // For non-embedded wallet, use the existing getTransactions API
+        const response = await getTransactions(
+          this._rootStore.deviceStore.deviceId,
+          0, // Get all transactions
+          this._rootStore.userStore.accessToken,
+        );
+
+        if (!response?.ok) {
+          return;
+        }
+
+        const transactions = await response.json();
+        const transaction = transactions.find((tx: ITransactionDTO) => tx.id === transactionId);
+
+        if (transaction) {
+          console.log(`[Transactions] Found transaction ${transactionId}:`, transaction);
+          this.handleTransactionUpdate(transaction);
+        } else {
+          console.warn(`[Transactions] Transaction with ID ${transactionId} not found`);
+        }
+      } else {
+        // For embedded wallet, use the getTransaction method directly
+        if (!this._rootStore.fireblocksSDKStore.fireblocksEW) {
+          console.error('[Transactions] Embedded wallet SDK is not initialized');
+          return;
+        }
+
+        try {
+          // Use getTransaction method to fetch a single transaction by ID
+          const transaction = await this._rootStore.fireblocksSDKStore.fireblocksEW.getTransaction(transactionId);
+
+          if (transaction) {
+            console.log(`[Transactions] Successfully fetched transaction ${transactionId}:`, transaction);
+
+            // Convert the transaction to the expected format
+            const formattedTransaction: ITransactionDTO = {
+              id: transaction.id!,
+              status: transaction.status as TTransactionStatus,
+              createdAt: transaction.createdAt,
+              lastUpdated: transaction.lastUpdated,
+              details: transaction as unknown as ITransactionDetailsDTO,
+            };
+
+            // Update the transaction in the store
+            this.handleTransactionUpdate(formattedTransaction);
+          } else {
+            console.warn(`[Transactions] Transaction with ID ${transactionId} not found`);
+          }
+        } catch (error) {
+          console.error(`[Transactions] Error fetching transaction by ID ${transactionId}:`, error);
+          throw error;
+        }
+      }
+    } catch (e: any) {
+      console.error(`[Transactions] Error fetching transaction by ID ${transactionId}:`, e);
+      this.setError(e.message);
+    }
+  }
+
+  /**
+   * Handles a transaction update received from a push notification
+   * @param transaction The transaction data from the push notification
+   */
+  @action
+  public handleTransactionUpdate(transaction: ITransactionDTO): void {
+    if (!transaction.id) {
+      console.error('[Transactions] Received transaction update without ID:', transaction);
+      return;
+    }
+
+    console.log(`[Transactions] Received update for transaction ${transaction.id}:`, transaction);
+
+    // Only notify subscribers about the specific transaction received
+    this.updateOneTransaction(transaction);
   }
 
   @computed

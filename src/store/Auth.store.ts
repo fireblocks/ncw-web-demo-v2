@@ -1,8 +1,8 @@
 import {
   TPassphraseLocation,
+  generateNewDeviceId,
   getDeviceIdFromLocalStorage,
   saveDeviceIdToLocalStorage,
-  generateNewDeviceId,
 } from '@api';
 import { RootStore } from '@store';
 import { action, computed, makeObservable, observable } from 'mobx';
@@ -67,6 +67,7 @@ export class AuthStore {
         await this._rootStore.fireblocksSDKStore.init();
       }
       await this._rootStore.deviceStore.assignDeviceToNewWallet();
+      await this._rootStore.userStore.initializeAndSetupPushNotifications();
       await this._rootStore.accountsStore.init();
 
       if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK) {
@@ -294,6 +295,7 @@ export class AuthStore {
         // Assign device to wallet
 
         await this._rootStore.deviceStore.assignDeviceToNewWallet();
+        await this._rootStore.userStore.initializeAndSetupPushNotifications();
         await this._rootStore.accountsStore.init();
 
         // Generate MPC keys
@@ -339,6 +341,7 @@ export class AuthStore {
         this.setStatus('GENERATING');
         this._rootStore.deviceStore.generateNewDeviceId();
         await this._rootStore.deviceStore.assignDeviceToNewWallet();
+        await this._rootStore.userStore.initializeAndSetupPushNotifications();
         await this._rootStore.accountsStore.init();
         await this._rootStore.fireblocksSDKStore.init();
         await this._rootStore.fireblocksSDKStore.generateMPCKeys();
@@ -387,6 +390,7 @@ export class AuthStore {
         this.setStatus('RECOVERING');
       }
       await this._rootStore.deviceStore.assignDeviceToNewWallet();
+      await this._rootStore.userStore.initializeAndSetupPushNotifications();
       await this._rootStore.accountsStore.init();
       await this._rootStore.fireblocksSDKStore.init();
       await this._rootStore.backupStore.init();
