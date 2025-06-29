@@ -246,6 +246,9 @@ export class AuthStore {
               this._rootStore.deviceStore.setWalletId(assignResponse.walletId);
             }
 
+            // Initialize web push notifications
+            await this._rootStore.userStore.initializeAndSetupPushNotifications();
+
             // Initialize accounts to ensure accountId is available
 
             await this._rootStore.accountsStore.init();
