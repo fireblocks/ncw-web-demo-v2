@@ -135,6 +135,7 @@ export class FireblocksSDKStore {
     this.setSDKStatus('initializing_sdk');
 
     try {
+      this._rootStore.deviceStore.init();
       const deviceId = this._rootStore.deviceStore.deviceId ?? '';
 
       const logger = await IndexedDBLoggerFactory({
@@ -584,7 +585,20 @@ export class FireblocksSDKStore {
   }
 
   @action
-  public clearData() {
+  public async clearData() {
+    // Properly dispose the SDK instance if it exists
+    if (this.sdkInstance) {
+      try {
+        if (this._unsubscribeTransactionsPolling) {
+          this._unsubscribeTransactionsPolling();
+          this._unsubscribeTransactionsPolling = null;
+        }
+        await this.sdkInstance.dispose();
+      } catch (error) {
+        console.error('Error disposing SDK instance:', error);
+      }
+    }
+
     this.sdkStatus = 'sdk_not_ready';
     this.keysStatus = null;
     this.sdkInstance = null;

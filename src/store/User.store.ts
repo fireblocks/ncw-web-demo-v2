@@ -68,8 +68,8 @@ export class UserStore {
 
     this._authManager
       .logout()
-      .then(() => {
-        this.clearStoreData();
+      .then(async () => {
+        await this.clearStoreData();
       })
       .catch((e) => {
         this.setError(e.message);
@@ -112,6 +112,10 @@ export class UserStore {
             if (this._authManager.loggedUser !== null) {
               const userFirebase = this._authManager.loggedUser;
               this.setUserId(userFirebase.uid);
+              // Initialize the SDK after setting the user ID
+              this._rootStore.authStore.init().catch(e => {
+                console.error('Error initializing SDK after login:', e);
+              });
             }
           } else {
             // proxy backend
@@ -120,6 +124,10 @@ export class UserStore {
                 this.setUserId(userId);
                 this.getMyDevices();
                 this.setIsGettingUser(false);
+                // Initialize the SDK after setting the user ID
+                this._rootStore.authStore.init().catch(e => {
+                  console.error('Error initializing SDK after login:', e);
+                });
               })
               .catch((e: Error) => {
                 this.setError(e.message);
@@ -168,14 +176,14 @@ export class UserStore {
   }
 
   @action
-  public clearStoreData() {
+  public async clearStoreData() {
     this.setHasBackup(false);
     this.setUser(null);
     this.setAccessToken('');
     this.setUserId('');
     this.setError('');
     this._rootStore.transactionsStore.dispose();
-    this._rootStore.fireblocksSDKStore.clearData();
+    await this._rootStore.fireblocksSDKStore.clearData();
     this._rootStore.authStore.setStatus(null);
     localStorage.removeItem('VISITED_PAGE');
   }

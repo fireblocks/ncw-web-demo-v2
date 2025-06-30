@@ -181,8 +181,17 @@ export class TransactionStore {
 
   public signTransaction() {
     this.setIsSigning(true);
+
+    // Add debugging to check if SDK instance is available
+    if (!this._rootStore.fireblocksSDKStore.sdkInstance) {
+      console.error('SDK instance is null when attempting to sign transaction');
+      this.setError('SDK instance is not initialized. Please refresh the page and try again.');
+      this.setIsSigning(false);
+      return;
+    }
+
     this._rootStore.fireblocksSDKStore.sdkInstance
-      ?.signTransaction(this.id)
+      .signTransaction(this.id)
       .then(() => {})
       .catch((e) => {
         this.setIsSigning(false);

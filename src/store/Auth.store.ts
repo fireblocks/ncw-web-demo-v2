@@ -62,7 +62,10 @@ export class AuthStore {
       this._rootStore.deviceStore.init();
 
       // Initialize device
-      if (ENV_CONFIG.USE_EMBEDDED_WALLET_SDK && !this._rootStore.fireblocksSDKStore.fireblocksEW) {
+      if (
+        ENV_CONFIG.USE_EMBEDDED_WALLET_SDK &&
+        (!this._rootStore.fireblocksSDKStore.fireblocksEW || !this._rootStore.fireblocksSDKStore.sdkInstance)
+      ) {
         // Initialize the embedded wallet SDK
         await this._rootStore.fireblocksSDKStore.init();
       }
