@@ -70,6 +70,8 @@ export class UserStore {
       .logout()
       .then(async () => {
         await this.clearStoreData();
+        // Refresh the page after logout
+        window.location.reload();
       })
       .catch((e) => {
         this.setError(e.message);
