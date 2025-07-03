@@ -201,6 +201,7 @@ export const NewTransactionDialog: React.FC<IProps> = observer(function NewTrans
               value={amount}
               setValue={setAmount}
               assetSymbol={asset.symbol}
+              error={isAmountTooHigh}
               adornment={Number(amount) > 0 ? getAssetPriceFromTop100Cryptos(asset, false) : asset.rate}
             />
             <TextInput
