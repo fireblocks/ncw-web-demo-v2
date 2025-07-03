@@ -103,7 +103,7 @@ export const translationToEnglish = {
         DEVICE_NAME: 'Device name',
         DEVICE_TYPE: 'Device type',
         DEVICE_TYPE_MOBILE: 'Mobile',
-        DEVICE_TYPE_DESKTOP: 'Desktop',
+        DEVICE_TYPE_DESKTOP: 'Web',
         DEVICE_TYPE_OTHER: 'Other',
         DEVICE_TYPE_UNKNOWN: 'Unknown',
         REQUEST_ID: 'Or paste the link',
