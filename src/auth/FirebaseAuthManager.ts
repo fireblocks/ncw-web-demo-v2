@@ -6,12 +6,12 @@ import { IAuthManager, IUser } from './IAuthManager';
 import { getUserGoogleDriveProvider } from './providers';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyA2E5vK3fhxvftpfS02T8eIC3SrXnIUjrs',
-  authDomain: 'fireblocks-sdk-demo.firebaseapp.com',
-  projectId: 'fireblocks-sdk-demo',
-  storageBucket: 'fireblocks-sdk-demo.appspot.com',
-  messagingSenderId: '127498444203',
-  appId: '1:127498444203:web:31ff24e7a4c6bfa92e46ee',
+  apiKey: 'YOUR_API_KEY',
+  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
+  projectId: 'YOUR_PROJECT_ID',
+  storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+  appId: 'YOUR_APP_ID',
 };
 
 export class FirebaseAuthManager implements IAuthManager {
